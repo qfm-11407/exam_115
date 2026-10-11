@@ -401,6 +401,15 @@
         let incorrectQuestions = [];
         let isRetryMode = false;
 
+        // Fisher-Yates 洗牌演算法
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
         const screens = {
             home: document.getElementById('home-screen'),
             chapter: document.getElementById('chapter-screen'),
@@ -476,21 +485,25 @@
             const subject = quizData[subjectId];
             const chapter = subject.chapters[chapterIndex];
             
-            // 設定題目來源 (重測模式或一般模式)
+            // 複製並打亂題目
+            let questionsToLoad = [];
             if (retryData) {
-                currentQuestions = [...retryData];
+                questionsToLoad = JSON.parse(JSON.stringify(retryData)); // 深拷貝以避免影響原始錯題資料
                 isRetryMode = true;
                 uiElements.quizHeaderTitle.innerHTML = `<span class="${subject.text}">${subject.icon} ${subject.name}</span> <span class="mx-1 text-gray-300">/</span> ${chapter.name} <span class="ml-2 px-2 py-0.5 bg-rose-100 text-rose-600 rounded text-xs">錯題重測</span>`;
             } else {
-                currentQuestions = [...chapter.data];
+                questionsToLoad = JSON.parse(JSON.stringify(chapter.data)); // 深拷貝
                 isRetryMode = false;
                 uiElements.quizHeaderTitle.innerHTML = `<span class="${subject.text}">${subject.icon} ${subject.name}</span> <span class="mx-1 text-gray-300">/</span> ${chapter.name}`;
             }
 
-            if (currentQuestions.length === 0) {
+            if (questionsToLoad.length === 0) {
                 alert("此章節暫無題目。");
                 return;
             }
+
+            // 打亂題目順序
+            currentQuestions = shuffleArray(questionsToLoad);
 
             // 狀態重置
             currentQuestionIndex = 0;
@@ -530,16 +543,31 @@
             uiElements.questionText.textContent = q.question;
             uiElements.optionsContainer.innerHTML = '';
             
-            q.options.forEach((optionText, index) => {
+            // 建立包含原始索引的選項陣列，以便打亂後仍能知道哪個是正確答案
+            let optionsWithIndex = q.options.map((optionText, index) => {
+                return { text: optionText, originalIndex: index };
+            });
+
+            // 打亂選項順序
+            shuffleArray(optionsWithIndex);
+
+            // 更新題目物件中的正確答案索引為打亂後的新位置
+            const newAnswerIndex = optionsWithIndex.findIndex(opt => opt.originalIndex === q.answer);
+            // 我們把原始的 answer 記錄下來，並在按鈕上綁定新的索引檢查
+            q.shuffledAnswer = newAnswerIndex;
+
+
+            optionsWithIndex.forEach((optionData, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn w-full text-left p-4 md:p-5 rounded-xl border-2 border-gray-100 bg-white hover:border-gray-300 text-gray-700 font-medium flex items-start group';
                 
                 const label = String.fromCharCode(65 + index);
                 btn.innerHTML = `
                     <span class="option-label flex-shrink-0 w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center mr-3 font-bold group-hover:bg-gray-200 transition-colors">${label}</span>
-                    <span class="mt-1 leading-relaxed">${optionText}</span>
+                    <span class="mt-1 leading-relaxed">${optionData.text}</span>
                 `;
                 
+                // 傳入當前被打亂後的索引 (index)
                 btn.onclick = () => selectOption(index, btn);
                 uiElements.optionsContainer.appendChild(btn);
             });
@@ -550,7 +578,8 @@
             hasAnsweredCurrent = true;
 
             const q = currentQuestions[currentQuestionIndex];
-            const isCorrect = (selectedIndex === q.answer);
+            // 檢查被選中的索引是否等於打亂後儲存的正確答案索引
+            const isCorrect = (selectedIndex === q.shuffledAnswer);
             const allButtons = uiElements.optionsContainer.querySelectorAll('button');
 
             // 鎖定所有選項
@@ -570,15 +599,20 @@
                 correctAnswersCount++;
                 updateScoreDisplay();
 
-                const idx = incorrectQuestions.indexOf(q);
+                const idx = incorrectQuestions.findIndex(item => item.question === q.question);
                 if (idx > -1) incorrectQuestions.splice(idx, 1);
             } else {
                 selectedBtn.classList.add('incorrect');
                 selectedBtn.classList.remove('opacity-70');
-                allButtons[q.answer].classList.add('correct');
-                allButtons[q.answer].classList.remove('opacity-70');
+                // 顯示正確答案
+                allButtons[q.shuffledAnswer].classList.add('correct');
+                allButtons[q.shuffledAnswer].classList.remove('opacity-70');
 
-                if (!incorrectQuestions.includes(q)) incorrectQuestions.push(q);
+                // 檢查是否已在錯題簿中，用題目文字來比對避免深拷貝產生的參照問題
+                const isAlreadyInIncorrect = incorrectQuestions.some(item => item.question === q.question);
+                if (!isAlreadyInIncorrect) {
+                     incorrectQuestions.push(q);
+                }
             }
 
             // 顯示解答區塊
