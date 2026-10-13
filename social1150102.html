@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社會科互動式測驗系統｜一一五學年度上學期第二次段考 地理練習</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sea: #eff6ff; --land: #fef3c7; --border: #b45309; --land2: #e5e7eb; --border2: #9ca3af;
+            --accent: #ea580c; --bar: #60a5fa; --grid: #e5e7eb; --river: #2563eb; --dust: #a16207; --ink: #1f2937;
+        }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f3f4f6; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .option-btn { transition: all 0.2s; }
+        .option-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+        .option-btn.correct { background-color: #ecfdf5 !important; border-color: #10b981 !important; }
+        .option-btn.correct .option-label { background-color: #10b981 !important; color: white !important; }
+        .option-btn.incorrect { background-color: #fef2f2 !important; border-color: #ef4444 !important; }
+        .option-btn.incorrect .option-label { background-color: #ef4444 !important; color: white !important; }
+        .fig-wrap { margin-top: 1rem; }
+        .fig-svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; border-radius: 12px; }
+        .fig-svg .map-label { font-size: 17px; font-weight: 900; fill: var(--ink); paint-order: stroke; stroke: #fff; stroke-width: 4px; }
+        .fig-svg .map-label.sm { font-size: 13px; font-weight: 700; }
+        .fig-svg .map-note { font-size: 11px; fill: #6b7280; }
+        .fig-svg .axis { font-size: 12px; fill: #4b5563; }
+        .fig-svg .val { font-size: 12px; font-weight: 700; fill: var(--ink); }
+        .fig-svg .val.sm { font-size: 10px; }
+        .fig-svg .axis.lg { font-size: 14px; fill: #374151; }
+        .fig-svg .val.lg { font-size: 13px; }
+        .fig-table { width: 100%; max-width: 560px; margin: 0 auto; border-collapse: collapse; font-size: 0.95rem; }
+        .fig-table th, .fig-table td { border: 1px solid #d1d5db; padding: 0.5rem 0.65rem; text-align: center; }
+        .fig-table thead th { background: #f3f4f6; font-weight: 700; }
+        .fig-table tbody th { background: #fafafa; font-weight: 700; white-space: nowrap; }
+        .fig-cap { text-align: center; font-size: 0.8rem; color: #6b7280; margin: 0.4rem 0 0.8rem; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 py-10">
+
+    <div id="app" class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden relative">
+        <div id="header-bar" class="h-2 bg-emerald-500 w-full absolute top-0 left-0"></div>
+
+        <div class="p-5 md:p-10">
+
+            <div id="home-screen" class="text-center fade-in">
+                <div class="inline-block p-4 bg-emerald-50 rounded-full mb-4 text-5xl">🌏</div>
+                <h1 class="text-3xl md:text-4xl font-black text-gray-800 mb-2">社會科互動式測驗系統</h1>
+                <p class="text-lg md:text-xl font-bold text-indigo-600 tracking-wide mb-2">一一五學年度上學期第二次段考</p>
+                <span class="inline-block px-4 py-1 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm mb-6">地理練習</span>
+                <p class="text-gray-500 mb-8 max-w-lg mx-auto leading-relaxed">依段考命題模式設計，含地圖、圖表判讀與題組題。<br>請選擇要練習的課次。</p>
+                <div id="chapter-list" class="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto"></div>
+            </div>
+
+            <div id="quiz-screen" class="hidden fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <button onclick="goHome()" class="text-gray-400 hover:text-gray-700 flex items-center text-sm font-medium transition-colors">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        返回課次
+                    </button>
+                    <div class="text-sm font-bold bg-gray-50 border border-gray-200 px-4 py-1.5 rounded-full text-gray-700 flex items-center shadow-sm">
+                        ⭐ 得分：<span id="score-display" class="ml-1 text-lg">0</span>
+                    </div>
+                </div>
+
+                <div class="w-full bg-gray-100 rounded-full h-2.5 mb-2 shadow-inner overflow-hidden">
+                    <div id="progress-bar" class="h-full rounded-full transition-all duration-500 bg-emerald-500" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-xs md:text-sm text-gray-500 mb-6 font-medium">
+                    <span id="quiz-header-title" class="font-bold text-gray-700"></span>
+                    <span>進度 <span id="current-question-num" class="text-gray-900 font-bold text-base">1</span> / <span id="total-questions-num">?</span></span>
+                </div>
+
+                <div id="context-box" class="hidden mb-4 p-5 rounded-2xl border-2 border-amber-200 bg-amber-50">
+                    <div class="flex items-center mb-2">
+                        <span class="px-2 py-0.5 rounded bg-amber-500 text-white text-xs font-bold mr-2">題組</span>
+                        <span id="context-step" class="text-xs font-bold text-amber-700"></span>
+                    </div>
+                    <p id="context-text" class="text-gray-800 leading-relaxed text-justify"></p>
+                    <div id="context-fig" class="fig-wrap"></div>
+                </div>
+
+                <div class="bg-white p-5 md:p-8 rounded-2xl border border-gray-100 shadow-sm mb-6">
+                    <h2 id="question-text" class="text-lg md:text-xl font-bold text-gray-800 leading-relaxed text-justify">載入題目中...</h2>
+                    <div id="question-fig" class="fig-wrap hidden"></div>
+                </div>
+
+                <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+
+                <div id="explanation-container" class="hidden mt-6 p-6 rounded-xl shadow-sm">
+                    <h3 id="explanation-title" class="font-bold mb-3 flex items-center text-lg">
+                        <span id="explanation-icon" class="mr-2 text-2xl"></span>
+                        <span id="explanation-status-text">解題剖析</span>
+                    </h3>
+                    <p id="explanation-text" class="text-sm md:text-base leading-relaxed font-medium"></p>
+                    <p id="explanation-src" class="mt-3 text-xs md:text-sm text-gray-500"></p>
+                </div>
+
+                <div class="mt-8 flex justify-end">
+                    <button id="next-btn" onclick="nextQuestion()" class="hidden px-8 py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-xl transition-all shadow-md flex items-center">
+                        <span id="next-btn-text">下一題</span>
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="result-screen" class="hidden text-center fade-in py-10">
+                <div id="result-icon" class="w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg relative">🏆</div>
+                <h2 class="text-3xl md:text-4xl font-black text-gray-800 mb-3">測驗完成！</h2>
+                <p class="text-gray-500 mb-2 text-lg">您在 <span id="result-subject" class="font-bold text-gray-700"></span> 的表現：</p>
+                <p id="result-message" class="text-gray-600 mb-8"></p>
+                <div class="bg-gray-50 rounded-3xl p-8 mb-10 inline-block border border-gray-100 shadow-sm">
+                    <div class="text-6xl font-black text-gray-800 mb-3" id="final-score">0</div>
+                    <div class="text-base text-gray-500 flex items-center justify-center space-x-6">
+                        <div class="flex flex-col items-center"><span class="text-xs text-gray-400 mb-1">答對</span><span id="correct-count" class="font-black text-emerald-500 text-2xl">0</span></div>
+                        <div class="w-px h-8 bg-gray-200"></div>
+                        <div class="flex flex-col items-center"><span class="text-xs text-gray-400 mb-1">總題數</span><span id="total-count" class="font-black text-gray-700 text-2xl">0</span></div>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row justify-center gap-3">
+                    <button id="retry-incorrect-btn" onclick="retryIncorrect()" class="hidden px-8 py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-medium rounded-xl transition-all shadow-md">
+                        錯題重測 <span id="incorrect-badge" class="bg-white text-rose-500 rounded-full px-2 py-0.5 ml-2 text-xs font-black">0</span>
+                    </button>
+                    <button onclick="restartChapter()" class="px-8 py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-xl transition-all shadow-md">再測一次本課</button>
+                    <button onclick="goHome()" class="px-8 py-3.5 border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white font-medium rounded-xl transition-all">回主選單</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== 附圖（SVG 與表格）=====
+        // 中國輪廓為示意簡圖（經緯度近似值），僅供判讀位置使用
+        const CN_OUTLINE = [[134.7,48.3],[133.1,45.1],[131.3,44.9],[131.1,42.9],[130.6,42.4],[128.0,41.5],[126.0,40.9],[124.4,40.0],[121.3,38.8],[121.9,40.8],[120.0,40.2],[118.0,39.2],[117.7,38.9],[118.9,37.5],[120.7,37.8],[122.6,37.4],[121.5,36.8],[120.3,36.0],[119.2,35.0],[120.3,34.3],[121.0,32.5],[121.9,31.7],[121.9,30.8],[122.1,29.9],[121.4,28.3],[120.5,27.2],[119.6,26.0],[118.6,24.6],[117.2,23.6],[116.5,22.9],[114.3,22.3],[113.5,22.2],[112.0,21.7],[110.4,21.2],[110.2,20.3],[109.7,21.4],[108.5,21.6],[107.9,21.6],[106.7,22.0],[106.5,22.9],[105.4,23.3],[103.9,22.5],[102.2,22.4],[101.6,21.2],[100.1,21.7],[99.2,22.1],[99.5,22.9],[98.7,23.9],[97.6,24.0],[97.7,25.0],[98.7,25.9],[98.7,27.5],[97.4,28.3],[95.4,29.0],[94.0,27.6],[92.0,27.8],[89.2,27.5],[88.8,28.2],[88.0,27.9],[86.0,27.9],[84.0,28.6],[81.3,30.0],[79.0,30.9],[78.4,32.5],[78.9,34.3],[78.0,35.5],[76.0,35.8],[75.0,36.8],[74.6,37.7],[73.6,39.4],[75.6,40.6],[77.2,41.0],[80.2,42.1],[80.8,43.2],[80.4,45.0],[82.5,45.2],[83.0,47.2],[85.5,47.1],[85.9,48.1],[87.3,49.2],[88.3,48.4],[90.0,47.9],[90.9,46.6],[90.9,45.3],[93.5,44.9],[95.4,44.3],[96.4,42.7],[100.8,42.6],[105.0,41.6],[107.0,42.4],[110.4,42.8],[111.9,43.7],[111.4,44.6],[113.6,44.8],[116.7,46.4],[117.4,46.6],[119.9,46.7],[119.7,47.6],[118.5,47.9],[115.9,47.7],[116.2,49.0],[117.8,49.5],[119.3,50.2],[120.1,51.7],[121.0,53.0],[122.4,53.4],[124.8,53.1],[126.0,52.8],[127.5,50.0],[130.0,49.0],[131.0,47.7],[132.6,47.7]];
+        const HAINAN = [[108.6,19.2],[109.4,18.2],[110.5,18.4],[111.0,19.6],[110.3,20.1],[109.1,19.9]];
+        const TAIWAN = [[121.0,25.3],[121.9,25.0],[121.6,24.0],[121.0,22.6],[120.8,21.9],[120.3,22.5],[120.1,23.3],[120.6,24.5]];
+        const KOREA = [[124.4,40.0],[126.0,40.9],[128.0,41.5],[130.6,42.4],[129.7,40.8],[128.4,38.6],[129.4,36.6],[129.3,35.3],[127.7,34.7],[126.3,34.5],[126.5,36.0],[126.1,36.8],[126.7,37.8],[125.1,37.7],[125.3,38.6],[124.7,39.6]];
+        const JAPAN = [
+            [[129.7,33.4],[130.2,31.3],[131.3,31.4],[131.9,33.4],[130.9,34.0]],
+            [[131.0,34.4],[132.5,35.5],[135.5,35.6],[136.8,37.3],[139.0,38.0],[140.0,40.2],[140.9,41.4],[141.5,40.5],[141.9,39.0],[141.0,37.3],[140.6,36.0],[139.8,35.0],[138.8,34.6],[137.0,34.6],[135.2,33.7],[134.0,34.5],[132.0,33.9]],
+            [[140.0,41.5],[141.0,43.2],[141.7,45.4],[143.3,44.2],[145.5,43.3],[143.3,42.0],[141.3,42.4]]
+        ];
+
+        function makeProj(lonMin, latMax, k) {
+            return (lon, lat) => [((lon - lonMin) * k * 0.86).toFixed(1), ((latMax - lat) * k).toFixed(1)];
+        }
+        function poly(pts, P) { return pts.map(p => P(p[0], p[1]).join(',')).join(' '); }
+
+        function chinaMap({ markers = [], wide = false, extra = '', note = '' }) {
+            const lonMin = 71, latMax = 55, k = 8.4;
+            const P = makeProj(lonMin, latMax, k);
+            const lonMax = wide ? 147 : 136;
+            const W = ((lonMax - lonMin) * k * 0.86).toFixed(0), H = ((latMax - 17) * k).toFixed(0);
+            let s = `<svg viewBox="0 0 ${W} ${H}" class="fig-svg" role="img" aria-label="中國示意地圖">`;
+            s += `<rect x="0" y="0" width="${W}" height="${H}" fill="var(--sea)"/>`;
+            s += `<polygon points="${poly(CN_OUTLINE, P)}" fill="var(--land)" stroke="var(--border)" stroke-width="1.5" stroke-linejoin="round"/>`;
+            s += `<polygon points="${poly(HAINAN, P)}" fill="var(--land)" stroke="var(--border)" stroke-width="1.2"/>`;
+            s += `<polygon points="${poly(TAIWAN, P)}" fill="var(--land2)" stroke="var(--border2)" stroke-width="1.2"/>`;
+            if (wide) {
+                s += `<polygon points="${poly(KOREA, P)}" fill="var(--land2)" stroke="var(--border2)" stroke-width="1.2"/>`;
+                JAPAN.forEach(j => s += `<polygon points="${poly(j, P)}" fill="var(--land2)" stroke="var(--border2)" stroke-width="1.2"/>`);
+            }
+            s += extra.replace(/\{P:([\d.]+),([\d.]+)\}/g, (m, a, b) => P(+a, +b).join(','))
+                      .replace(/\{X:([\d.]+),([\d.]+)\}/g, (m, a, b) => P(+a, +b)[0])
+                      .replace(/\{Y:([\d.]+),([\d.]+)\}/g, (m, a, b) => P(+a, +b)[1]);
+            markers.forEach(m => {
+                const [x, y] = P(m.lon, m.lat);
+                s += `<circle cx="${x}" cy="${y}" r="6" fill="var(--accent)" stroke="#fff" stroke-width="2"/>`;
+                s += `<text x="${(+x + (m.dx ?? 9))}" y="${(+y + (m.dy ?? 6))}" class="map-label" text-anchor="${m.anchor || 'start'}">${m.label}</text>`;
+            });
+            s += `<text x="${W - 8}" y="${H - 10}" class="map-note" text-anchor="end">${note || '示意圖，非正確比例'}</text>`;
+            s += `</svg>`;
+            return s;
+        }
+
+        // 橫條圖：在手機上字體縮放較少
+        function hbar({ items, unit, max, fmt = v => v.toLocaleString() }) {
+            const w = 420, padL = 78, padR = 58, rowH = 30, h = items.length * rowH + 30;
+            const innerW = w - padL - padR;
+            let s = `<svg viewBox="0 0 ${w} ${h}" class="fig-svg" style="max-width:520px" role="img">`;
+            s += `<text x="${w - 4}" y="16" class="axis" text-anchor="end">單位：${unit}</text>`;
+            items.forEach((it, i) => {
+                const y = 26 + i * rowH, bw = Math.max(innerW * it[1] / max, 2);
+                s += `<text x="${padL - 8}" y="${y + 15}" class="axis lg" text-anchor="end">${it[0]}</text>`;
+                s += `<rect x="${padL}" y="${y + 2}" width="${bw}" height="${rowH - 10}" rx="3" fill="${it[2] ? 'var(--accent)' : 'var(--bar)'}"/>`;
+                s += `<text x="${padL + bw + 6}" y="${y + 16}" class="val lg">${it[3] || fmt(it[1])}</text>`;
+            });
+            return s + `</svg>`;
+        }
+
+        function table(head, rows, caption) {
+            return `<div class="overflow-x-auto"><table class="fig-table"><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => i === 0 ? `<th>${c}</th>` : `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>${caption ? `<p class="fig-cap">${caption}</p>` : ''}</div>`;
+        }
+
+        const FIG = {
+            f3_pasture: () => chinaMap({ markers: [
+                { lon: 85, lat: 42.5, label: '甲' }, { lon: 89, lat: 32.5, label: '乙' },
+                { lon: 117.5, lat: 44.5, label: '丙' }, { lon: 116, lat: 30.2, label: '丁' }] }),
+            f3_sez: () => chinaMap({ markers: [
+                { lon: 76, lat: 39.5, label: '甲' }, { lon: 91.1, lat: 29.7, label: '乙' },
+                { lon: 126.6, lat: 45.8, label: '丙' }, { lon: 121.4, lat: 31.2, label: '丁', dx: -10, anchor: 'end' }] }),
+            f3_circles: () => chinaMap({ markers: [
+                { lon: 117, lat: 39.6, label: '甲' }, { lon: 121.3, lat: 31.2, label: '乙', dx: -10, anchor: 'end' },
+                { lon: 113.6, lat: 22.9, label: '丙', dx: -10, anchor: 'end' }, { lon: 105, lat: 30.2, label: '丁' }] }),
+            f3_climate: () => table(['項目', '1月月均溫', '7月月均溫', '年降水量'], [['某地', '6℃', '29℃', '1,300 mm']], '自編資料'),
+            f3_employ: () => table(['產業', '1980年', '2000年', '2010年', '2023年'], [
+                ['第一級產業', '68.7%', '50.0%', '36.7%', '22.8%'],
+                ['第二級產業', '18.2%', '22.5%', '28.7%', '29.1%'],
+                ['第三級產業', '13.1%', '27.5%', '34.6%', '48.1%']], '中國三級產業就業人口比例（依課本圖1-3-8整理，中間年分為約略值）'),
+            f3_output: () => table(['產業', '就業人口比例', '產值比例'], [
+                ['第一級產業', '22.8%', '7.1%'], ['第二級產業', '29.1%', '38.3%'], ['第三級產業', '48.1%', '54.6%']], '西元2023年（依課本圖1-3-8、1-3-9）'),
+            f3_regions: () => table(['經濟區', '面積', '人口', '產值'], [
+                ['東部地區', '9.6%', '40.6%', '53.2%'], ['中部地區', '10.6%', '25.6%', '21.1%'],
+                ['西部地區', '71.4%', '27.0%', '21.0%'], ['東北地區', '8.4%', '6.8%', '4.7%']], '占全國比例（西元2023年）'),
+            f3_urban: () => table(['省分', '總人口（萬人）', '都市人口（萬人）'], [
+                ['甲', '1,200', '300'], ['乙', '2,500', '1,500'], ['丙', '4,000', '2,000'], ['丁', '800', '640']], '自編資料'),
+
+            f4_phone: () => hbar({ unit: '百萬臺', max: 400, items: [['蘋果', 232], ['三星', 223], ['小米', 168, 1], ['傳音', 106, 1], ['OPPO', 104, 1], ['其他', 395]], fmt: v => Math.round(v) }) + '<p class="fig-cap">西元2024年智慧型手機出貨量（依課本圖1-4-1重繪，數值為約略值；橘色為中國品牌）</p>',
+            f4_ev: () => hbar({ unit: '萬輛', max: 1200, items: [['中國', 1130, 1], ['美國', 160], ['德國', 60], ['英國', 55], ['法國', 50], ['加拿大', 25], ['比利時', 20], ['荷蘭', 20], ['瑞典', 18], ['西班牙', 15]], fmt: v => Math.round(v) }) + '<p class="fig-cap">西元2024年電動汽車總銷售量（依課本圖1-4-2重繪，數值為約略值）</p>',
+            f4_top10: () => hbar({ unit: '十億美元', max: 10000, items: [['美國', 9758], ['荷蘭', 3183], ['中國', 3140, 1], ['加拿大', 2793], ['英國', 2285], ['德國', 2253], ['中國香港', 2216, 1], ['日本', 2151], ['法國', 1679], ['盧森堡', 1652]] }) + '<p class="fig-cap">累計至西元2024年底對外投資額（依課本圖1-4-7）</p>',
+            f4_co2: () => hbar({ unit: '百萬噸', max: 12000, items: [['中國', 11950, 1, '11,950'], ['美國', 4416], ['印度', 3219], ['俄羅斯', 1659], ['日本', 891], ['印尼', 873], ['伊朗', 736], ['沙烏地', 626], ['德國', 531], ['南韓', 527]] }) + '<p class="fig-cap">中國占世界總量34.1%、美國12.6%</p>',
+            f4_trade: () => {
+                const d = [['中國', 2585, 3577], ['美國', 3359, 2065], ['德國', 1422, 1682], ['荷蘭', 814, 921], ['日本', 744, 707]];
+                const w = 420, padL = 52, padR = 58, grpH = 54, h = d.length * grpH + 34, innerW = w - padL - padR, max = 4000;
+                let s = `<svg viewBox="0 0 ${w} ${h}" class="fig-svg" style="max-width:520px" role="img">`;
+                s += `<rect x="${padL}" y="6" width="12" height="12" fill="var(--bar)"/><text x="${padL + 16}" y="16" class="axis lg">進口額</text><rect x="${padL + 80}" y="6" width="12" height="12" fill="var(--accent)"/><text x="${padL + 96}" y="16" class="axis lg">出口額</text><text x="${w - 4}" y="16" class="axis" text-anchor="end">單位：十億美元</text>`;
+                d.forEach((r, i) => {
+                    const y = 30 + i * grpH;
+                    s += `<text x="${padL - 8}" y="${y + 27}" class="axis lg" text-anchor="end">${r[0]}</text>`;
+                    [[r[1], 'var(--bar)'], [r[2], 'var(--accent)']].forEach((b, j) => {
+                        const bw = innerW * b[0] / max, yy = y + 4 + j * 22;
+                        s += `<rect x="${padL}" y="${yy}" width="${bw}" height="18" rx="2" fill="${b[1]}"/><text x="${padL + bw + 6}" y="${yy + 14}" class="val lg">${b[0].toLocaleString()}</text>`;
+                    });
+                });
+                return s + `</svg><p class="fig-cap">西元2024年（依課本圖1-4-6）</p>`;
+            },
+            f4_invest: () => {
+                const d = [['亞洲其他國家', 70.2], ['中南美洲', 18.1], ['歐洲', 5.4], ['北美洲', 3.7], ['非洲', 1.4], ['大洋洲', 1.2]];
+                const w = 420, rowH = 32, padL = 104, h = d.length * rowH + 16;
+                let s = `<svg viewBox="0 0 ${w} ${h}" class="fig-svg" style="max-width:520px" role="img">`;
+                d.forEach((r, i) => {
+                    const y = 8 + i * rowH, bw = (w - padL - 70) * r[1] / 75;
+                    s += `<text x="${padL - 8}" y="${y + 20}" class="axis lg" text-anchor="end">${r[0]}</text><rect x="${padL}" y="${y + 6}" width="${Math.max(bw, 2)}" height="20" rx="3" fill="${i === 0 ? 'var(--accent)' : 'var(--bar)'}"/><text x="${padL + bw + 6}" y="${y + 21}" class="val lg">${r[1]}%</text>`;
+                });
+                return s + `</svg><p class="fig-cap">中國對外投資總額3,141（十億美元）的分布（依課本圖1-4-8）</p>`;
+            },
+            f4_dust: () => chinaMap({ wide: true, note: '示意圖',
+                extra: `<defs><marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--dust)"/></marker></defs>
+                <text x="{X:100,46.5}" y="{Y:100,46.5}" class="map-label sm">蒙古</text>
+                <ellipse cx="{X:107,44}" cy="{Y:107,44}" rx="40" ry="18" fill="var(--dust)" opacity=".25"/>
+                <path d="M{P:109,43} Q{P:120,44} {P:127,37.5}" fill="none" stroke="var(--dust)" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#arw)"/>
+                <path d="M{P:110,42.5} Q{P:128,43} {P:137,37}" fill="none" stroke="var(--dust)" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#arw)"/>
+                <path d="M{P:108,42} Q{P:117,36} {P:120.9,26}" fill="none" stroke="var(--dust)" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#arw)"/>
+                <text x="{X:127.5,35.5}" y="{Y:127.5,35.5}" class="map-label sm">南韓</text>
+                <text x="{X:138,36}" y="{Y:138,36}" class="map-label sm">日本</text>
+                <text x="{X:122.3,23.2}" y="{Y:122.3,23.2}" class="map-label sm">臺灣</text>
+                <text x="{X:100,40}" y="{Y:100,40}" class="map-note">沙塵移動路線</text>` }),
+            f4_mekong: () => `<svg viewBox="0 0 360 420" class="fig-svg" style="max-width:380px" role="img" aria-label="瀾滄江流域示意圖">
+                <rect width="360" height="420" fill="var(--sea)"/>
+                <path d="M0,0 H360 V150 Q300,140 250,150 Q180,165 130,140 Q70,120 0,135 Z" fill="var(--land)" stroke="var(--border)"/>
+                <path d="M0,135 Q70,120 130,140 Q180,165 250,150 Q300,140 360,150 V300 Q320,330 300,380 L240,420 H0 Z" fill="var(--land2)" stroke="var(--border2)"/>
+                <path d="M150,150 Q170,230 160,300 Q155,350 210,395" fill="none" stroke="var(--border)" stroke-dasharray="4 4" stroke-width="1"/>
+                <path d="M95,10 Q110,60 105,100 Q100,140 130,175 Q160,215 150,260 Q140,300 175,330 Q205,355 230,400" fill="none" stroke="var(--river)" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="104" cy="58" r="6" fill="#dc2626" stroke="#fff" stroke-width="2"/><circle cx="106" cy="88" r="6" fill="#dc2626" stroke="#fff" stroke-width="2"/><circle cx="108" cy="118" r="6" fill="#dc2626" stroke="#fff" stroke-width="2"/>
+                <text x="190" y="60" class="map-label">中國</text>
+                <text x="122" y="95" class="map-label sm" fill="var(--river)">瀾滄江</text>
+                <text x="40" y="230" class="map-label sm">緬甸</text><text x="175" y="215" class="map-label sm">寮國</text>
+                <text x="60" y="320" class="map-label sm">泰國</text><text x="250" y="260" class="map-label sm">越南</text>
+                <text x="120" y="380" class="map-label sm">柬埔寨</text>
+                <text x="195" y="300" class="map-label sm" fill="var(--river)">？ 河</text>
+                <text x="300" y="400" class="map-label sm" fill="var(--river)">南海</text>
+                <text x="352" y="20" class="map-note" text-anchor="end">示意圖，非正確比例</text>
+            </svg>`,
+            f4_factory: () => table(['地區', '停工原因', '影響產業'], [
+                ['天津', '空汙黃色預警', '玻璃、化學、金屬加工、塗料、家具'],
+                ['江蘇 昆山', '吳淞江水質未達標', '電子、玻璃、建材'],
+                ['廣東 珠海', '中度區域性空汙', '印刷電路板、化學、製藥、紡織']], '表一　2017年12月工廠停工資料（依課本探究活動）') +
+                table(['方案', '優點', '缺點'], [
+                ['維持現狀', '維持目前營運模式，持續獲利', '政府嚴格執法時可能被重罰或停工'],
+                ['遷廠方案', '遷往內陸或東南亞，工資較低廉', '員工需重新訓練；外移須考量當地法規與關稅'],
+                ['升級方案', '設備升級、減少汙染，可繼續營運', '須付出高額成本，未必有成效'],
+                ['關廠方案', '至少保住目前賺到的錢', '沒有繼續發展與獲利的機會']], '表二　董事長歸納的四個方案'),
+        };
+
+
+        // ===== 題庫 =====
+        // 欄位：question 題幹｜options 選項｜answer 正確選項索引｜explanation 解析
+        //       source 課本出處｜pattern 命題模式｜image 附圖代號｜fixed 選項不打亂｜group 題組代號
+        const GROUPS = {
+ "L3A": {
+  "text": "小傑的阿姨住在東北的哈爾濱。她說：「這裡的農民用大型機械種玉米、大豆，糧食運往全國各地；可是附近許多老鋼鐵廠和煤礦，這幾年卻一間間關門了。」",
+  "img": null
+ },
+ "L3B": {
+  "text": "附表為西元2023年中國四大經濟區的面積、人口與產值占全國的比例（依課本圖1-3-11整理）。",
+  "img": "f3_regions"
+ },
+ "L3C": {
+  "text": "附圖甲～丁為中國四個地區。",
+  "img": "f3_circles"
+ },
+ "L4A": {
+  "text": "附圖為世界二氧化碳排放總量前十名國家（西元2024年，依課本圖1-4-12重繪）。",
+  "img": "f4_co2"
+ },
+ "L4B": {
+  "text": "附圖為瀾滄江流域示意圖，紅點為中國在瀾滄江興建的主要水壩。",
+  "img": "f4_mekong"
+ },
+ "L4C": {
+  "text": "西元2017年，在深圳玩具工廠工作二十多年的晉仁聽到消息：中國多地工廠被政府勒令停工。董事長桌上放著兩份資料（表一、表二）。",
+  "img": "f4_factory"
+ }
+};
+        const quizData = {
+            geography: {
+                name: '地理', icon: '🌏',
+                chapters: [
+                    { name: '第3課 中國的產業發展與地區差異', data: [
+ {
+  "question": "「能馱重物在寒冷山區行走，被譽為『高原之舟』。」這種牲畜主要分布在中國哪一個地形區？",
+  "options": [
+   "內蒙古高原",
+   "塔里木盆地",
+   "青藏高原",
+   "東北平原"
+  ],
+  "answer": 2,
+  "explanation": "犛牛能馱重物在寒冷山區行走，被譽為「高原之舟」，是青藏高原牧民重要的牲畜。容易混淆的是駱駝，牠適應沙漠環境，被稱為「沙漠之舟」。",
+  "source": "3-1 一 傳統農牧業｜課本第32頁 圖1-3-1 圖說",
+  "pattern": "模式2 圖說轉題"
+ },
+ {
+  "question": "附圖甲～丁為中國四個地區。哪一地區的牧民會順應季節草場的更替，驅趕牲口上、下山，採「山牧季移」的方式放牧？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 1,
+  "explanation": "乙是青藏高原，畜牧採「山牧季移」。甲是新疆，乾燥少雨，牧民「逐水草而居」，過游牧生活。丙是內蒙古高原東側，牧民在水草豐美的河岸放牧。丁是長江中下游，以種植水稻為主。要特別分清楚「游牧」和「山牧季移」。",
+  "source": "3-1 一 傳統農牧業｜課本第32頁 內文、圖1-3-1",
+  "pattern": "模式3 地圖代號＋模式4 相近概念辨析",
+  "image": "f3_pasture",
+  "fixed": true
+ },
+ {
+  "question": "附表為中國某地的氣候資料。依此判斷，當地傳統的主要糧食作物與飲食文化最可能為何？",
+  "options": [
+   "小麥、麵食",
+   "青稞、雜糧",
+   "放牧、乳肉",
+   "水稻、米食"
+  ],
+  "answer": 3,
+  "explanation": "判讀步驟：年降水量1,300mm，超過750mm；1月均溫6℃，高於0℃。第1課學過，年降水量750mm的等雨量線和1月0℃的等溫線，都大致與秦嶺、淮河一線重疊，所以此地位於秦嶺、淮河以南。南方氣溫高、降水豐富，以種植水稻為主，形成米食文化。",
+  "source": "3-1 一 傳統農牧業｜課本第32頁 圖1-3-1；第1課 地理工具箱",
+  "pattern": "模式5 自編數據套判讀＋模式7 跨課",
+  "image": "f3_climate"
+ },
+ {
+  "question": "中國東半部農業發達。農民通常用哪一種方式來增加糧食生產？",
+  "options": [
+   "驅趕牲口上下山放牧",
+   "逐水草而居移動放牧",
+   "有限耕地投入大量勞力",
+   "放棄耕地改種牧草"
+  ],
+  "answer": 2,
+  "explanation": "課本：中國東半部農業發達，農民在有限的耕地投入大量勞力，以增加糧食生產。另外兩個放牧選項是西半部的畜牧方式。",
+  "source": "3-1 一 傳統農牧業｜課本第32頁 內文",
+  "pattern": "模式1 內文關鍵句"
+ },
+ {
+  "question": "「河北省的實驗農場以無人機噴藥、監控農田。」這屬於中國農業轉型中的哪一項做法？",
+  "options": [
+   "增加糧食進口",
+   "建設農業專區",
+   "改善交通建設",
+   "提升農業生產效率"
+  ],
+  "answer": 3,
+  "explanation": "課本把現代農牧業轉型分成三項：提升農業生產效率（機械化、智慧科技、水利、化肥）、建設農業專區（商品糧基地）、改善交通建設。無人機噴藥、監控屬於引入智慧科技，用來提升生產效率。",
+  "source": "3-1 二 現代農牧業的轉型｜課本第33頁 圖1-3-3 圖說",
+  "pattern": "模式2 圖說轉題＋模式4 分類辨析"
+ },
+ {
+  "question": "中國設立多個全國性商品糧基地。下列哪一個地區「不」屬於這類基地？",
+  "options": [
+   "東北平原",
+   "塔里木盆地",
+   "四川盆地",
+   "珠江三角洲"
+  ],
+  "answer": 1,
+  "explanation": "課本圖1-3-5的商品糧基地有東北平原、華北平原、長江中下游平原、洞庭湖與鄱陽湖、珠江三角洲、四川盆地，都在東半部季風區的平原或盆地。塔里木盆地大部分是塔克拉瑪干沙漠（第1課），乾燥少雨，不適合大規模種植糧食。",
+  "source": "3-1 二 現代農牧業的轉型｜課本第33頁 圖1-3-5；第1課 地形",
+  "pattern": "模式7 跨課整合"
+ },
+ {
+  "question": "東北平原被設為全國性商品糧基地。這種「集中在少數地區大量生產糧食」的方式，可能帶來哪一種風險？",
+  "options": [
+   "農產品無法運出產區",
+   "遇水旱災易全國斷糧",
+   "農民無法使用機械",
+   "糧食價格一定下跌"
+  ],
+  "answer": 1,
+  "explanation": "課本：集中生產的糧食基地一旦遭遇水旱災害，便容易發生全國性斷糧的危機。這是課本在講商品糧基地的好處之後，緊接著提醒的缺點。",
+  "source": "3-1 二 現代農牧業的轉型｜課本第33頁 內文",
+  "pattern": "模式10 反向推論（優點→缺點）",
+  "group": "L3A"
+ },
+ {
+  "question": "阿姨提到東北的「老鋼鐵廠和煤礦關門」，主要原因為何？",
+  "options": [
+   "人口過度密集",
+   "降水太少無法生產",
+   "礦產枯竭、設備老舊",
+   "位置距離海洋太遠"
+  ],
+  "answer": 2,
+  "explanation": "課本：東北地區是中國早期重工業的發展重心，但因礦產枯竭、工廠設備老舊，導致發展式微。",
+  "source": "3-3 一 中國經濟發展的區域差異｜課本第36頁 內文",
+  "pattern": "模式1 內文關鍵句",
+  "group": "L3A"
+ },
+ {
+  "question": "為了改善上述東北工業衰退的情形，中國政府提出哪一項計畫？",
+  "options": [
+   "西部大開發",
+   "一帶一路",
+   "改革開放",
+   "東北振興"
+  ],
+  "answer": 3,
+  "explanation": "中國政府針對東北提出「東北振興」計畫，推動產業轉型。西部大開發是針對西部地區；改革開放始於一九八○年代，是全國性的政策；一帶一路則是第4課的對外投資倡議。",
+  "source": "3-3 一 中國經濟發展的區域差異｜課本第36頁 內文、圖1-3-11",
+  "pattern": "模式4 相近名詞誘答",
+  "group": "L3A"
+ },
+ {
+  "question": "煤、鐵、石油等基礎原料重量重、不易遠運。因此，中國早期的重工業多設在哪裡？",
+  "options": [
+   "原料產地",
+   "沿海港口",
+   "大都市郊區",
+   "國界邊境"
+  ],
+  "answer": 0,
+  "explanation": "課本：基礎原料重量重、不易遠運，因此原料產地成為中國早期重工業的主要生產基地，例如東北的鞍山（鐵礦）、撫順（煤礦）。",
+  "source": "3-2 一 中國工業發展的要素｜課本第34頁 內文、圖1-3-6",
+  "pattern": "模式1 內文關鍵句"
+ },
+ {
+  "question": "近年來，中國設立工廠的首選地區轉向「沿海及長江沿岸」，主要原因為何？",
+  "options": [
+   "當地礦產蘊藏量最豐富",
+   "礦產需大量進口，水運便利",
+   "當地氣候最為涼爽",
+   "當地人口最為稀少"
+  ],
+  "answer": 1,
+  "explanation": "經濟起飛之後，工業所需的礦產數量激增、種類變多，國內產量不敷使用，需要大量進口。水運便利的沿海及長江沿岸方便運入原料、運出產品，因此成為設廠首選。可以和早期「設在原料產地」的情況對照。",
+  "source": "3-2 一 中國工業發展的要素｜課本第34頁 內文",
+  "pattern": "模式10 前後對照推論"
+ },
+ {
+  "question": "中國的鐵路與高速公路分布呈「東密西疏」。這個分布特徵和第2課學過的哪一條人口分界線最相符？",
+  "options": [
+   "北回歸線",
+   "秦嶺—淮河線",
+   "黑河—騰衝線",
+   "長江"
+  ],
+  "answer": 2,
+  "explanation": "黑河—騰衝線以東住了全國94%的人口，工商業發達，鐵、公路密集；線以西人口少、工商業發展較遲緩，路線稀疏。秦嶺—淮河線則是南北氣候與農業的分界。",
+  "source": "3-2 一 中國工業發展的要素｜課本第34頁 圖1-3-7；第2課 2-1",
+  "pattern": "模式7 跨課整合"
+ },
+ {
+  "question": "附表為中國三級產業就業人口比例的變化。依表判斷，下列敘述何者正確？",
+  "options": [
+   "第二級產業比例持續下降",
+   "第二級產業在2023年比例最高",
+   "第三級產業在2000年已超過第一級",
+   "第一級產業比例持續下降"
+  ],
+  "answer": 3,
+  "explanation": "第一級產業從68.7%一路降到22.8%，持續下降。2023年比例最高的是第三級產業（48.1%）；2000年第三級（27.5%）還低於第一級（50.0%）；第二級產業則是由18.2%上升到29.1%。",
+  "source": "3-2 二 中國的工業發展｜課本第35頁 圖1-3-8",
+  "pattern": "模式3 圖轉表",
+  "image": "f3_employ"
+ },
+ {
+  "question": "附表為西元2023年中國三級產業的就業人口比例與產值比例。依表推論，下列何者最合理？",
+  "options": [
+   "第一級產業人均產值最低",
+   "第一級產業人均產值最高",
+   "第二級產業就業人數最多",
+   "三級產業人均產值相同"
+  ],
+  "answer": 0,
+  "explanation": "第一級產業用了22.8%的就業人口，卻只創造7.1%的產值，代表平均每位就業者創造的產值最低。就業人數最多的是第三級產業（48.1%）。",
+  "source": "3-2 二 中國的工業發展｜課本第35頁 圖1-3-8、圖1-3-9",
+  "pattern": "模式3 兩圖比較＋模式10 推論",
+  "image": "f3_output"
+ },
+ {
+  "question": "中國改革開放後在東南沿海設立經濟特區。下列何者「不是」經濟特區成功的條件？",
+  "options": [
+   "低廉的勞動成本",
+   "豐富的礦產資源",
+   "交通便利",
+   "政府的優惠政策"
+  ],
+  "answer": 1,
+  "explanation": "充電站：經濟特區以出口為導向，憑藉低廉的勞動成本、優惠政策與交通便利的優勢而成功。「豐富的礦產」是早期重工業設在原料產地的條件，不是經濟特區的條件，兩者不要混淆。",
+  "source": "3-2 二 中國的工業發展｜課本第35頁 充電站「經濟特區」",
+  "pattern": "模式4 陷阱辨析"
+ },
+ {
+  "question": "西元2010年，中國複製經濟特區的經驗，設立第六個經濟特區。這個經濟特區位於附圖中哪一處？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 0,
+  "explanation": "第六個經濟特區設在新疆的喀什（甲），也是唯一不在東南沿海的經濟特區。乙是拉薩，丙是哈爾濱，丁是上海。",
+  "source": "3-2 二 中國的工業發展｜課本第35頁 充電站、圖1-3-10",
+  "pattern": "模式3 地圖代號",
+  "image": "f3_sez",
+  "fixed": true
+ },
+ {
+  "question": "臺灣在西元1966年於高雄設立「加工出口區」，以優惠稅制和低廉勞力吸引外國企業設廠，產品主要外銷。中國改革開放後設立的哪一種地區，性質與它最相似？",
+  "options": [
+   "自治區",
+   "特別行政區",
+   "經濟特區",
+   "商品糧基地"
+  ],
+  "answer": 2,
+  "explanation": "經濟特區以出口為導向，用低廉勞動成本與優惠政策吸引外資，和臺灣的加工出口區相似。特別行政區是香港、澳門；自治區是少數民族聚居的地方（第1課行政區）；商品糧基地則是糧食生產區。",
+  "source": "3-2 二 中國的工業發展｜課本第35頁 充電站「經濟特區」",
+  "pattern": "模式9 臺灣在地類比"
+ },
+ {
+  "question": "隨著工業化地區擴大，中國推動產業轉型，逐漸把發展重心轉移到哪一類工業？",
+  "options": [
+   "勞力密集型工業",
+   "傳統手工業",
+   "原料產地型重工業",
+   "技術密集型高科技工業"
+  ],
+  "answer": 3,
+  "explanation": "課本：在工業化地區擴大的同時，也推動產業轉型，逐漸將發展重心從勞力密集型的工業，轉移到技術密集型的高科技工業。",
+  "source": "3-2 二 中國的工業發展｜課本第35頁 內文",
+  "pattern": "模式1 內文關鍵句"
+ },
+ {
+  "question": "中國在石化、鋼鐵、電子、汽車等領域的生產規模領先世界，許多產品在全球市場占有重要地位。因此，中國有什麼稱號？",
+  "options": [
+   "世界工廠",
+   "世界市場",
+   "中國矽谷",
+   "世界屋脊"
+  ],
+  "answer": 0,
+  "explanation": "「世界工廠」指中國製造的工業產品在全球市場占有重要地位，重點是「生產」。「世界市場」是第4課的概念，重點是「消費」；「中國矽谷」指北京的中關村；「世界屋脊」指青藏高原。",
+  "source": "3-2 二 中國的工業發展｜課本第35頁 內文",
+  "pattern": "模式1 內文關鍵句"
+ },
+ {
+  "question": "「若一個地區的產值比例高於人口比例，表示該區平均每人創造的產值高於全國平均。」依附表，哪一區符合這個條件？",
+  "options": [
+   "東部地區",
+   "中部地區",
+   "西部地區",
+   "東北地區"
+  ],
+  "answer": 0,
+  "explanation": "逐區比較產值比例和人口比例：東部53.2%＞40.6%（符合）；中部21.1%＜25.6%；西部21.0%＜27.0%；東北4.7%＜6.8%。只有東部地區的產值比例高於人口比例。",
+  "source": "3-3 一 中國經濟發展的區域差異｜課本第36頁 圖1-3-11",
+  "pattern": "模式6 題幹給原則→套用",
+  "fixed": true,
+  "group": "L3B"
+ },
+ {
+  "question": "西部地區面積占全國71.4%，產值卻只占21.0%。課本說明西部工商業發展較遲緩的主要原因為何？",
+  "options": [
+   "缺乏礦產資源",
+   "對外交通不便",
+   "人口過於密集",
+   "降水過多"
+  ],
+  "answer": 1,
+  "explanation": "課本：西部地區擁有豐富的林、牧及礦產資源，但對外交通不便，工商業發展較為遲緩。「缺乏礦產」剛好和課本說法相反，是陷阱。",
+  "source": "3-3 一 中國經濟發展的區域差異｜課本第36頁 內文",
+  "pattern": "模式1 內文關鍵句＋模式4 反向誘答",
+  "group": "L3B"
+ },
+ {
+  "question": "「將新疆塔里木盆地的天然氣以管線輸送到上海等東部地區。」這是西部大開發的哪一項工程？",
+  "options": [
+   "西電東送",
+   "南水北調",
+   "西氣東輸",
+   "青藏鐵路"
+  ],
+  "answer": 2,
+  "explanation": "西部大開發的四項重點工程：西電東送（電力）、西氣東輸（天然氣）、南水北調（水資源）、青藏鐵路（交通）。輸送天然氣是西氣東輸。",
+  "source": "3-3 一 中國經濟發展的區域差異｜課本第36頁 充電站「西部大開發」、圖1-3-12",
+  "pattern": "模式4 相近名詞辨析"
+ },
+ {
+  "question": "西部大開發包含「南水北調」工程，把長江流域的水引向北方。從第1課中國的氣候來看，北方需要調水的主要原因為何？",
+  "options": [
+   "北方地勢最高",
+   "北方氣溫較高",
+   "北方河川較多",
+   "北方降水較少"
+  ],
+  "answer": 3,
+  "explanation": "第1課：中國年降水量由東南向西北遞減，秦嶺、淮河以北的年降水量多不到750mm，加上人口與工業用水需求大，因此要從水量豐沛的長江流域調水北送。",
+  "source": "3-3 一 充電站「西部大開發」｜課本第36頁；第1課 1-2 降水",
+  "pattern": "模式7 跨課整合"
+ },
+ {
+  "question": "北京近郊的中關村聚集許多高科技產業的研發部門，有「中國矽谷」之稱。中關村位在附圖中哪一處？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 0,
+  "explanation": "中關村在北京近郊，屬於環渤海經濟圈（甲）。環渤海經濟圈是中國政治與交通的核心，除了鋼鐵、石化等重工業，也有先進的高科技產業。",
+  "source": "3-3 一 中國經濟發展的區域差異｜課本第37頁 內文、圖1-3-13",
+  "pattern": "模式2 圖說轉題＋模式3 地圖代號",
+  "fixed": true,
+  "group": "L3C"
+ },
+ {
+  "question": "「中國最早改革開放的地區，長期累積技術，加上香港、澳門大量資金湧入，成為最先進的新創產業中心。」這段敘述是指附圖中哪一處？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 2,
+  "explanation": "這是珠三角經濟圈（丙），包含深圳、廣州，鄰近香港、澳門。深圳的無人機產業就是新創產業的例子（圖1-3-14）。",
+  "source": "3-3 一 中國經濟發展的區域差異｜課本第37頁 內文",
+  "pattern": "模式1 內文關鍵句",
+  "fixed": true,
+  "group": "L3C"
+ },
+ {
+  "question": "「中國工商業最發達、都市化程度最高的地區，資訊流通快速、金融產業發達，已發展成電子、通訊、電腦等產業重鎮。」這段敘述是指附圖中哪一處？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 1,
+  "explanation": "這是長三角經濟圈（乙），以上海為核心。丁是四川盆地的成都、重慶一帶，不在課本的三大經濟圈中。",
+  "source": "3-3 一 中國經濟發展的區域差異｜課本第37頁 內文",
+  "pattern": "模式1 內文關鍵句",
+  "fixed": true,
+  "group": "L3C"
+ },
+ {
+  "question": "「原為珠江口東側的鄉村，在設立經濟特區後迅速發展，一度成為中國新興都市的典範；目前則深受房地產泡沫化及工廠大量外移所困擾。」這是哪一個都市？",
+  "options": [
+   "深圳",
+   "上海",
+   "廣州",
+   "北京"
+  ],
+  "answer": 0,
+  "explanation": "這是深圳。上海是「位處海岸線中點和長江出海口」的金融中心；廣州是「位處珠江流域門戶，自古即是重要商港」；北京是首都，市區內古蹟眾多。",
+  "source": "3-3 二 中國的主要都市｜課本第38頁 內文、圖1-3-18",
+  "pattern": "模式2 圖說改寫成引文"
+ },
+ {
+  "question": "明、清兩代的皇城「紫禁城」（今故宮）已列為世界文化遺產。它位在今天中國的哪一個都市？",
+  "options": [
+   "西安",
+   "北京",
+   "南京",
+   "上海"
+  ],
+  "answer": 1,
+  "explanation": "課本圖1-3-15：北京故宮舊稱紫禁城，為明清兩代的皇城。北京是中國首都，市區內古蹟眾多，近年也發展成現代化的國際大都市。",
+  "source": "3-3 二 中國的主要都市｜課本第38頁 圖1-3-15 圖說",
+  "pattern": "模式9 歷史情境＋模式2 圖說"
+ },
+ {
+  "question": "「都市化程度＝都市人口÷總人口×100%」。附表為四個省分的人口資料，哪一省的都市化程度最高？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 3,
+  "explanation": "依公式計算：甲300÷1,200＝25%；乙1,500÷2,500＝60%；丙2,000÷4,000＝50%；丁640÷800＝80%。丁最高。注意：丙的都市人口最多，但都市化程度看的是「比例」，不是人數。",
+  "source": "3-3 學習會考「中國的都市化」｜課本第39頁",
+  "pattern": "模式6 題幹給公式＋模式8 數學整合",
+  "image": "f3_urban",
+  "fixed": true
+ },
+ {
+  "question": "某地區常見現代化的蒙古包和大型風力發電機，但也面臨草場退化，以及開採稀土造成的汙染問題。這個地區最可能是哪裡？",
+  "options": [
+   "東北地區",
+   "青藏地區",
+   "內蒙古地區",
+   "東南沿海"
+  ],
+  "answer": 2,
+  "explanation": "扉頁學習圖解的內蒙古地區：草場退化、現代蒙古包、風力發電、開採稀土與汙染。第3課提到的白雲鄂博就是內蒙古著名的礦產地。",
+  "source": "第一單元 中國㈡ 扉頁學習圖解；3-2 圖1-3-6",
+  "pattern": "模式2 照片圖說＋模式7 跨節整合"
+ }
+] },
+                    { name: '第4課 中國的經濟發展與全球關連', data: [
+ {
+  "question": "中國成為「世界工廠」的起點，主要是因為外國企業把工廠的哪一個生產階段移到中國？",
+  "options": [
+   "最後組裝階段",
+   "研發設計階段",
+   "品牌行銷階段",
+   "原料開採階段"
+  ],
+  "answer": 0,
+  "explanation": "課本：外國企業將工廠生產過程的「最後組裝階段」移到中國後，中國成為世界工廠。研發、品牌行銷仍多留在外國企業的本國。",
+  "source": "4-1 一 世界工廠的轉型｜課本第40頁 內文",
+  "pattern": "模式1 內文關鍵句"
+ },
+ {
+  "question": "附圖為西元2024年世界前五大智慧型手機品牌出貨量，其中小米、傳音、OPPO都是中國品牌。這最能說明中國電子產業的哪一項轉變？",
+  "options": [
+   "零件全靠外國供應",
+   "只負責最後組裝",
+   "已退出全球手機市場",
+   "具備品牌與行銷能力"
+  ],
+  "answer": 3,
+  "explanation": "圖說：前五大品牌除了三星與蘋果外，都是中國品牌，顯示中國在電子產業不只製造，也具備創立品牌與行銷的能力。",
+  "source": "4-1 一 世界工廠的轉型｜課本第40頁 圖1-4-1 圖說",
+  "pattern": "模式3 課本圖表＋模式2 圖說",
+  "image": "f4_phone"
+ },
+ {
+  "question": "「中國政府扶植本土廠商，把原本需要從國外進口的零件改在國內生產，讓上、中、下游串成完整的在地供應鏈。」這稱為什麼？",
+  "options": [
+   "經濟特區",
+   "世界工廠",
+   "紅色供應鏈",
+   "一帶一路"
+  ],
+  "answer": 2,
+  "explanation": "課本側欄：上、中、下游串起完整的在地供應鏈，稱為「紅色供應鏈」。它讓中國降低對外國零件的依賴，轉型為製造強國。",
+  "source": "4-1 一 世界工廠的轉型｜課本第40頁 側欄",
+  "pattern": "模式2 側欄轉題"
+ },
+ {
+  "question": "附圖為西元2024年世界各國電動汽車總銷售量前十名。依圖判斷，下列敘述何者正確？",
+  "options": [
+   "德國銷量居第二名",
+   "美國銷量約為中國的一半",
+   "前十名多數位於亞洲",
+   "中國銷量超過其餘九國總和"
+  ],
+  "answer": 3,
+  "explanation": "中國約1,130萬輛；其餘九國加起來約420萬輛，所以中國超過其餘九國的總和。美國約160萬輛，遠不到中國的一半；前十名中只有中國在亞洲，其他是歐美國家；第二名是美國。",
+  "source": "4-1 一 世界工廠的轉型｜課本第40頁 圖1-4-2",
+  "pattern": "模式3 課本圖表判讀",
+  "image": "f4_ev"
+ },
+ {
+  "question": "瑞典知名家具賣場近年在中國設立30多家分店，全球各大企業也紛紛到中國設點，爭取中國的消費者。這最能說明中國已逐漸成為什麼？",
+  "options": [
+   "世界市場",
+   "世界工廠",
+   "紅色供應鏈",
+   "經濟特區"
+  ],
+  "answer": 0,
+  "explanation": "「世界市場」強調中國龐大的「消費」能力；「世界工廠」強調「生產」能力。企業到中國開店賣東西給中國人，是世界市場的表現。",
+  "source": "4-1 二 國內市場擴大帶來的影響｜課本第41頁 內文、圖1-4-3 圖說",
+  "pattern": "模式4 相近概念辨析"
+ },
+ {
+  "question": "中國國內的消費市場擴大，原因有哪些？(甲)平均薪資逐年提高　(乙)人口數量龐大　(丙)人口快速減少　(丁)人民消費能力提升",
+  "options": [
+   "甲乙丙",
+   "甲乙丁",
+   "甲丙丁",
+   "乙丙丁"
+  ],
+  "answer": 1,
+  "explanation": "課本：中國製造實力增強，平均薪資逐年提高，人民的消費能力大幅提升，加上龐大的人口數，使中國成為重要的消費市場。「人口快速減少」不是市場擴大的原因。",
+  "source": "4-1 二 國內市場擴大帶來的影響｜課本第41頁 內文",
+  "pattern": "模式1 內文關鍵句（組合題）",
+  "fixed": true
+ },
+ {
+  "question": "有些中國觀光客到臺灣的夜市購物，習慣拿出手機掃描QR Code付款，身上很少帶現金。這反映出中國哪一種交易方式很普及？",
+  "options": [
+   "以物易物",
+   "信用卡分期",
+   "無現金支付",
+   "郵政劃撥"
+  ],
+  "answer": 2,
+  "explanation": "課本：中國搭配手機與無線網路，發展出無現金支付的交易方式，普及程度名列世界前茅（扉頁也提到「中國行動支付全球第一」）。",
+  "source": "4-1 二 國內市場擴大帶來的影響｜課本第41頁 圖1-4-5",
+  "pattern": "模式9 臺灣生活情境"
+ },
+ {
+  "question": "中國的進口與出口貿易額都名列世界前茅，主要原因為何？",
+  "options": [
+   "以出口農產品為主",
+   "礦產完全自給自足",
+   "禁止外國產品進口",
+   "是世界主要加工基地"
+  ],
+  "answer": 3,
+  "explanation": "課本：中國是世界主要加工基地，許多原物料及零組件必須由國外輸入（進口），工業產品也大量外銷（出口），所以進出口額都很高。",
+  "source": "4-2 一 中國與世界經濟的關連｜課本第42頁 內文",
+  "pattern": "模式1 內文關鍵句"
+ },
+ {
+  "question": "附圖為西元2024年世界前五大貿易國的進口額與出口額。「進口額大於出口額」稱為貿易逆差。圖中哪一國的貿易逆差最大？",
+  "options": [
+   "美國",
+   "中國",
+   "德國",
+   "日本"
+  ],
+  "answer": 0,
+  "explanation": "只有美國和日本的進口額大於出口額。美國3,359－2,065＝1,294（十億美元）；日本744－707＝37。逆差最大的是美國。中國則是出口3,577大於進口2,585，屬於貿易順差。",
+  "source": "4-2 一 中國與世界經濟的關連｜課本第42頁 圖1-4-6",
+  "pattern": "模式3 課本圖表＋模式8 數學計算",
+  "image": "f4_trade"
+ },
+ {
+  "question": "附圖為累計至西元2024年底，中國對各洲的投資比例。除了亞洲以外，中國投資比例最高的是哪一洲？",
+  "options": [
+   "中南美洲",
+   "北美洲",
+   "歐洲",
+   "非洲"
+  ],
+  "answer": 0,
+  "explanation": "中國對外投資以亞洲為主（70.2%），其次是中南美洲（18.1%），再來是歐洲（5.4%）、北美洲（3.7%）、非洲（1.4%）、大洋洲（1.2%）。",
+  "source": "4-2 一 中國與世界經濟的關連｜課本第42頁 圖1-4-8",
+  "pattern": "模式3 課本圖表判讀",
+  "image": "f4_invest"
+ },
+ {
+  "question": "附圖為累計至西元2024年底，世界前十大對外投資國家（或地區）的投資額。若把「中國」與「中國香港」的投資額合併計算，排名會是第幾名？",
+  "options": [
+   "第一名",
+   "第二名",
+   "第三名",
+   "第四名"
+  ],
+  "answer": 1,
+  "explanation": "3,140＋2,216＝5,356（十億美元），比荷蘭的3,183多，但比美國的9,758少，所以是第二名。",
+  "source": "4-2 一 中國與世界經濟的關連｜課本第42頁 圖1-4-7",
+  "pattern": "模式3 課本圖表＋模式8 數學計算",
+  "image": "f4_top10",
+  "fixed": true
+ },
+ {
+  "question": "「一帶一路」倡議中的「一路」指的是什麼？",
+  "options": [
+   "絲綢之路經濟帶",
+   "二十一世紀海上絲綢之路",
+   "青藏鐵路",
+   "京杭大運河"
+  ],
+  "answer": 1,
+  "explanation": "「一帶」指絲綢之路經濟帶（陸路）；「一路」指二十一世紀海上絲綢之路（海路）。兩個名稱容易對調，要記清楚。",
+  "source": "4-2 一 中國與世界經濟的關連｜課本第43頁 圖1-4-9 圖說",
+  "pattern": "模式4 相近名詞辨析"
+ },
+ {
+  "question": "中國推動「一帶一路」倡議，對中國本身最主要的經濟好處為何？",
+  "options": [
+   "降低國內勞工的工資",
+   "減少對外投資的金額",
+   "為工業產品取得國際市場",
+   "減少國內的工廠數量"
+  ],
+  "answer": 2,
+  "explanation": "課本：藉由一帶一路，中國可以擴大經濟貿易範圍，為國內的工業產品取得廣大的國際市場；也可以協助沿線國家開採礦產、建設基礎設施，掌握重要資源與戰略要地。",
+  "source": "4-2 一 中國與世界經濟的關連｜課本第43頁 內文",
+  "pattern": "模式1 內文關鍵句"
+ },
+ {
+  "question": "中國在巴基斯坦投資興建瓜達爾港，並計畫建設輸油管線。從戰略角度來看，主要目的是什麼？",
+  "options": [
+   "推廣中國的飲食文化",
+   "發展當地的觀光產業",
+   "增加巴基斯坦的移民",
+   "提高石油輸送的安全性"
+  ],
+  "answer": 3,
+  "explanation": "圖1-4-10圖說：中國在巴基斯坦投資興建極具戰略價值的瓜達爾港，並計畫建設輸油管線，以提高輸送石油的安全性；也規畫中巴鐵路。",
+  "source": "4-2 一 中國與世界經濟的關連｜課本第43頁 圖1-4-10 圖說",
+  "pattern": "模式2 圖說轉題"
+ },
+ {
+  "question": "斯里蘭卡向中國貸款推動公共建設，後來無力償還，只好把漢班托塔港租借給中國99年，也引發國內民眾抗議。這個例子反映「一帶一路」的哪一個問題？",
+  "options": [
+   "債務導致主權易手",
+   "沿線礦產全被用完",
+   "中國工資大幅上漲",
+   "港口全部停止運作"
+  ],
+  "answer": 0,
+  "explanation": "課本：參與一帶一路的國家有些因為無法償還龐大債務，導致建設主權易手，增添了一帶一路未來發展的不確定性。斯里蘭卡就是例子。",
+  "source": "4-2 一 中國與世界經濟的關連｜課本第43頁 圖1-4-11 圖說",
+  "pattern": "模式2 圖說轉題"
+ },
+ {
+  "question": "「中歐班列」貨運火車從中國東部出發，經新疆前往歐洲。列車穿越中國西部邊境時常遭風沙侵襲，主要原因為何？",
+  "options": [
+   "當地受夏季季風影響",
+   "當地屬乾燥的沙漠氣候",
+   "當地屬於熱帶氣候",
+   "當地的地勢最低平"
+  ],
+  "answer": 1,
+  "explanation": "新疆深居內陸、距海遙遠，年降水量少，屬乾燥的沙漠氣候（第1課），地表多沙漠、裸露，容易颳起風沙。",
+  "source": "4-2 學習會考「一帶一路」第3題｜課本第45頁；第1課 1-2 氣候",
+  "pattern": "模式7 跨課整合"
+ },
+ {
+  "question": "「二十一世紀海上絲綢之路」從中國東南沿海出發，經東南亞、南亞前往非洲東岸。船隻航行途中一定會經過哪一個海洋？",
+  "options": [
+   "北極海",
+   "大西洋",
+   "印度洋",
+   "地中海"
+  ],
+  "answer": 2,
+  "explanation": "從東南亞（麻六甲海峽）往西，經過南亞前往非洲東岸，航行的海域是印度洋（七年級的世界海陸分布）。",
+  "source": "4-2 一 中國與世界經濟的關連｜課本第43頁 圖1-4-9",
+  "pattern": "模式8 舊課整合"
+ },
+ {
+  "question": "西元2018年中國與美國發生貿易爭端後，許多外商把部分產線移出中國。下列何者「不是」課本提到的原因？",
+  "options": [
+   "關鍵技術零組件禁入",
+   "工資及地價提高",
+   "環保標準變嚴格",
+   "中國工資大幅下降"
+  ],
+  "answer": 3,
+  "explanation": "課本列出的原因：關鍵技術與零組件被禁止進入中國、工資及地價提高、政策改變（例如環保標準變嚴格）。「工資大幅下降」和課本說法相反。",
+  "source": "4-2 一 中國與世界經濟的關連｜課本第43頁 內文",
+  "pattern": "模式4 反向誘答"
+ },
+ {
+  "question": "中國成為世界主要的對外投資國之一，主要原因為何？",
+  "options": [
+   "經濟快速成長累積資金",
+   "人口外移帶走資金",
+   "國內禁止企業投資",
+   "國內資源全部用完"
+  ],
+  "answer": 0,
+  "explanation": "課本：由於經濟快速成長，中國迅速累積對外投資的資金，成為世界主要的對外投資國之一，投資範圍遍及全球，以亞洲為主。",
+  "source": "4-2 一 中國與世界經濟的關連｜課本第42頁 內文",
+  "pattern": "模式1 內文關鍵句"
+ },
+ {
+  "question": "依附圖，中國的二氧化碳排放總量大約是美國的幾倍？",
+  "options": [
+   "約1.5倍",
+   "約2.7倍",
+   "約4倍",
+   "約12倍"
+  ],
+  "answer": 1,
+  "explanation": "11,950÷4,416≒2.7，所以約是美國的2.7倍。中國的排放量占全世界的34.1%，居世界第一，對全球暖化造成影響。",
+  "source": "4-2 二 中國與世界環境的關連｜課本第44頁 圖1-4-12",
+  "pattern": "模式8 數學計算",
+  "fixed": true,
+  "group": "L4A"
+ },
+ {
+  "question": "「人均排放量＝排放總量÷人口數」。中國人口約14.1億人，美國約3.4億人。依附圖計算，下列敘述何者正確？",
+  "options": [
+   "中國人均排放量較高",
+   "美國人均排放量較高",
+   "兩國人均排放量相同",
+   "無法比較人均排放量"
+  ],
+  "answer": 1,
+  "explanation": "中國：11,950百萬噸÷14.1億人≒8.5噸／人；美國：4,416百萬噸÷3.4億人≒13噸／人。雖然中國的排放「總量」第一，但美國的「人均」排放量較高。總量和人均要分清楚。",
+  "source": "4-2 二 中國與世界環境的關連｜課本第44頁 圖1-4-12",
+  "pattern": "模式6 題幹給公式＋模式10 反向推論",
+  "group": "L4A"
+ },
+ {
+  "question": "內蒙古與新疆一帶，原本有植物覆蓋的土地逐漸變成土壤裸露，稱為「沙漠化」。課本指出造成沙漠化的主要人為原因為何？",
+  "options": [
+   "發展觀光、旅遊",
+   "興建水壩、發電",
+   "過度農墾、過度放牧",
+   "推行一胎化政策"
+  ],
+  "answer": 2,
+  "explanation": "充電站：中國因人口增加，在內蒙古與新疆一帶過度農墾、過度放牧，因而形成沙漠化現象。裸露的塵土被強風颳起，就形成沙塵暴。",
+  "source": "4-2 二 中國與世界環境的關連｜課本第44頁 充電站「沙漠化」",
+  "pattern": "模式2 充電站轉題"
+ },
+ {
+  "question": "冬末春初，蒙古一帶颳起的塵土會隨氣流影響中國北部，甚至南韓、日本、臺灣（如附圖）。沙塵影響臺灣時，主要是隨著哪一種風吹來？",
+  "options": [
+   "颱風環流",
+   "夏季西南季風",
+   "夏季東南季風",
+   "冬季東北季風"
+  ],
+  "answer": 3,
+  "explanation": "第1課：冬季蒙古一帶形成高氣壓，冬季季風由陸地吹向海洋，到了華南與臺灣附近吹東北風。沙塵暴發生在冬末春初，所以會隨冬季東北季風影響臺灣；中國工廠與汽車排出的廢氣也會隨冬季季風飄向鄰近地區。",
+  "source": "4-2 二 中國與世界環境的關連｜課本第44頁 充電站「沙塵暴」；第1課 冬季季風",
+  "pattern": "模式7 跨課整合＋模式9 臺灣在地",
+  "image": "f4_dust"
+ },
+ {
+  "question": "瀾滄江流出中國之後，下游的河段稱為什麼？",
+  "options": [
+   "湄公河",
+   "長江",
+   "珠江",
+   "恆河"
+  ],
+  "answer": 0,
+  "explanation": "瀾滄江是湄公河的上游。湄公河流經寮國、泰國、柬埔寨、越南等中南半島國家，最後注入南海。",
+  "source": "4-2 二 中國與世界環境的關連｜課本第44頁 圖1-4-13",
+  "pattern": "模式3 課本地圖",
+  "group": "L4B"
+ },
+ {
+  "question": "中國在上游興建水壩之後，下游國家最直接受到哪一項影響？",
+  "options": [
+   "水量增加，引發大洪水",
+   "水量減少，影響農業與航運",
+   "河川結冰期變得更長",
+   "沙塵暴變得更頻繁"
+  ],
+  "answer": 1,
+  "explanation": "充電站：自西元1986年起，中國在瀾滄江流域陸續興建水壩，導致下游湄公河水量減少，影響中南半島國家的農業及航運。",
+  "source": "4-2 二 充電站「瀾滄江的跨國水權問題」｜課本第44頁",
+  "pattern": "模式2 充電站轉題",
+  "group": "L4B"
+ },
+ {
+  "question": "瀾滄江水壩的例子，屬於課本所說「中國對世界環境的影響」中的哪一項？",
+  "options": [
+   "碳排放",
+   "空氣汙染",
+   "水資源使用",
+   "沙漠化"
+  ],
+  "answer": 2,
+  "explanation": "課本把中國對世界環境的影響分成三項：碳排放、空氣汙染、水資源使用。水壩造成的跨國水權爭議屬於「水資源使用」。",
+  "source": "4-2 二 中國與世界環境的關連｜課本第44頁 內文",
+  "pattern": "模式4 分類辨析",
+  "group": "L4B"
+ },
+ {
+  "question": "依表一，三地工廠在西元2017年被勒令停工的共同原因為何？",
+  "options": [
+   "颱風侵襲停電",
+   "工人集體罷工",
+   "原料供應中斷",
+   "汙染不符環保標準"
+  ],
+  "answer": 3,
+  "explanation": "天津、珠海是空氣汙染預警，昆山是吳淞江水質未達標準，共同原因是工廠排放的廢氣、廢水不符環保標準。",
+  "source": "第4課 探究活動｜課本第46頁",
+  "pattern": "模式3 課本資料表判讀",
+  "group": "L4C"
+ },
+ {
+  "question": "中國早在西元2015年就頒布了環境保護法，為什麼到2017年仍有大量工廠因排汙而被停工？",
+  "options": [
+   "過去取締力道不強",
+   "法律禁止政府取締",
+   "工廠原本都沒有排汙",
+   "環保法只管理農業"
+  ],
+  "answer": 0,
+  "explanation": "探究活動：過去政府取締的力道不強，很多工廠就「拖著」沒改善；直到政府嚴格執法，廠商才開始叫苦連天。",
+  "source": "第4課 探究活動 第1題｜課本第46～47頁",
+  "pattern": "模式10 反向推論",
+  "group": "L4C"
+ },
+ {
+  "question": "董事長希望「繼續營運，同時減少汙染」。依表二，最符合的是哪一個方案？",
+  "options": [
+   "維持現狀",
+   "遷廠方案",
+   "升級方案",
+   "關廠方案"
+  ],
+  "answer": 2,
+  "explanation": "升級方案：將設備升級、減少汙染，工廠就可以繼續營運；缺點是要付出高額成本，最後也不一定有成效。維持現狀可能被罰款或停工；遷廠是為了較低的工資；關廠則沒有繼續發展的機會。",
+  "source": "第4課 探究活動 第3題｜課本第47頁",
+  "pattern": "模式5 依表格條件判斷",
+  "fixed": true,
+  "group": "L4C"
+ },
+ {
+  "question": "面對國際輿論對環境問題的批評，中國目前希望用什麼方式，兼顧經濟發展與環境保護？",
+  "options": [
+   "全面停止工業生產",
+   "調整產業結構",
+   "增加高汙染工廠",
+   "擴大過度放牧"
+  ],
+  "answer": 1,
+  "explanation": "課本：現在的中國已逐漸正視環境議題，努力透過產業結構的調整，達成兼顧經濟發展與環境保護的目標。",
+  "source": "4-2 二 中國與世界環境的關連｜課本第44頁 內文",
+  "pattern": "模式1 內文關鍵句"
+ }
+] }
+                ]
+            }
+        };
+
+        let currentChapterIndex = 0, currentQuestions = [], currentQuestionIndex = 0;
+        let score = 0, correctAnswersCount = 0, hasAnsweredCurrent = false, incorrectQuestions = [], isRetryMode = false;
+        const subject = quizData.geography;
+        const $ = id => document.getElementById(id);
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 打亂題目，但同一題組的題目保持相鄰且依原順序
+        function shuffleKeepGroups(list) {
+            const units = [], seen = {};
+            list.forEach(q => {
+                if (q.group) {
+                    if (!seen[q.group]) { seen[q.group] = []; units.push(seen[q.group]); }
+                    seen[q.group].push(q);
+                } else units.push([q]);
+            });
+            return shuffleArray(units).flat();
+        }
+
+        function switchScreen(name) {
+            ['home-screen', 'quiz-screen', 'result-screen'].forEach(id => $(id).classList.add('hidden'));
+            $(name + '-screen').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderHome() {
+            const list = $('chapter-list');
+            list.innerHTML = '';
+            subject.chapters.forEach((ch, i) => {
+                const figs = ch.data.filter(q => q.image || (q.group && GROUPS[q.group].img)).length;
+                const groups = new Set(ch.data.filter(q => q.group).map(q => q.group)).size;
+                const [no, ...rest] = ch.name.split(' ');
+                const btn = document.createElement('button');
+                btn.className = 'group text-left p-6 border-2 border-emerald-100 rounded-2xl hover:border-emerald-500 hover:bg-emerald-50 transition-all shadow-sm bg-white';
+                btn.innerHTML = `
+                    <div class="text-sm font-black text-emerald-600 mb-1">${no}</div>
+                    <div class="text-xl font-bold text-gray-800 mb-3">${rest.join(' ')}</div>
+                    <div class="flex flex-wrap gap-2 text-xs font-bold">
+                        <span class="px-2 py-1 rounded bg-gray-100 text-gray-600">${ch.data.length} 題</span>
+                        <span class="px-2 py-1 rounded bg-orange-100 text-orange-700">附圖表 ${figs} 題</span>
+                        <span class="px-2 py-1 rounded bg-amber-100 text-amber-700">題組 ${groups} 組</span>
+                    </div>`;
+                btn.onclick = () => startQuiz(i);
+                list.appendChild(btn);
+            });
+        }
+
+        function goHome() { switchScreen('home'); }
+
+        function startQuiz(chapterIndex, retryData = null) {
+            currentChapterIndex = chapterIndex;
+            const chapter = subject.chapters[chapterIndex];
+            const source = retryData ? retryData : chapter.data;
+            isRetryMode = !!retryData;
+            const loaded = JSON.parse(JSON.stringify(source));
+            $('quiz-header-title').innerHTML = `${subject.icon} ${chapter.name}` + (isRetryMode ? ' <span class="ml-2 px-2 py-0.5 bg-rose-100 text-rose-600 rounded text-xs">錯題重測</span>' : '');
+            currentQuestions = shuffleKeepGroups(loaded);
+            currentQuestionIndex = 0; score = 0; correctAnswersCount = 0; incorrectQuestions = [];
+            updateScoreDisplay();
+            loadQuestion();
+            switchScreen('quiz');
+        }
+
+        function restartChapter() { startQuiz(currentChapterIndex); }
+        function retryIncorrect() { startQuiz(currentChapterIndex, incorrectQuestions); }
+
+        function loadQuestion() {
+            hasAnsweredCurrent = false;
+            $('next-btn').classList.add('hidden');
+            $('explanation-container').classList.add('hidden');
+            const q = currentQuestions[currentQuestionIndex];
+
+            $('current-question-num').textContent = currentQuestionIndex + 1;
+            $('total-questions-num').textContent = currentQuestions.length;
+            $('progress-bar').style.width = `${currentQuestionIndex / currentQuestions.length * 100}%`;
+
+            // 題組情境
+            const ctxBox = $('context-box');
+            if (q.group) {
+                const g = GROUPS[q.group];
+                const members = currentQuestions.filter(x => x.group === q.group);
+                $('context-step').textContent = `第 ${members.indexOf(q) + 1} 題／共 ${members.length} 題`;
+                $('context-text').textContent = g.text;
+                $('context-fig').innerHTML = g.img ? FIG[g.img]() : '';
+                ctxBox.classList.remove('hidden');
+            } else ctxBox.classList.add('hidden');
+
+            $('question-text').textContent = q.question;
+            const qFig = $('question-fig');
+            if (q.image) { qFig.innerHTML = FIG[q.image](); qFig.classList.remove('hidden'); }
+            else { qFig.innerHTML = ''; qFig.classList.add('hidden'); }
+
+            const box = $('options-container');
+            box.innerHTML = '';
+            let opts = q.options.map((text, index) => ({ text, originalIndex: index }));
+            if (!q.fixed) shuffleArray(opts);
+            q.shuffledAnswer = opts.findIndex(o => o.originalIndex === q.answer);
+
+            opts.forEach((o, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn w-full text-left p-4 rounded-xl border-2 border-gray-100 bg-white hover:border-gray-300 text-gray-700 font-medium flex items-center group';
+                btn.innerHTML = `<span class="option-label flex-shrink-0 w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center mr-3 font-bold">${String.fromCharCode(65 + index)}</span><span class="leading-relaxed">${o.text}</span>`;
+                btn.onclick = () => selectOption(index, btn);
+                box.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedIndex, selectedBtn) {
+            if (hasAnsweredCurrent) return;
+            hasAnsweredCurrent = true;
+            const q = currentQuestions[currentQuestionIndex];
+            const isCorrect = selectedIndex === q.shuffledAnswer;
+            const all = $('options-container').querySelectorAll('button');
+            all.forEach(b => { b.disabled = true; b.classList.add('opacity-70', 'cursor-not-allowed'); });
+
+            if (isCorrect) {
+                selectedBtn.classList.add('correct'); selectedBtn.classList.remove('opacity-70');
+                score += 100 / currentQuestions.length; correctAnswersCount++;
+                updateScoreDisplay();
+            } else {
+                selectedBtn.classList.add('incorrect'); selectedBtn.classList.remove('opacity-70');
+                all[q.shuffledAnswer].classList.add('correct'); all[q.shuffledAnswer].classList.remove('opacity-70');
+                if (!incorrectQuestions.some(x => x.question === q.question)) incorrectQuestions.push(q);
+            }
+
+            const exp = $('explanation-container');
+            if (isCorrect) {
+                exp.className = 'mt-6 p-6 rounded-xl shadow-sm border border-emerald-100 bg-emerald-50 text-gray-800 fade-in';
+                $('explanation-title').className = 'font-bold mb-2 flex items-center text-lg text-emerald-700';
+                $('explanation-icon').textContent = '✅';
+                $('explanation-status-text').textContent = '答對了！解題剖析：';
+            } else {
+                exp.className = 'mt-6 p-6 rounded-xl shadow-sm border border-rose-100 bg-rose-50 text-gray-800 fade-in';
+                $('explanation-title').className = 'font-bold mb-2 flex items-center text-lg text-rose-700';
+                $('explanation-icon').textContent = '💡';
+                $('explanation-status-text').textContent = '再接再厲！解題剖析：';
+            }
+            $('explanation-text').textContent = q.explanation;
+            $('explanation-src').textContent = q.source ? `📖 課本出處：${q.source}` : '';
+            exp.classList.remove('hidden');
+            $('next-btn').classList.remove('hidden');
+            $('next-btn-text').textContent = currentQuestionIndex === currentQuestions.length - 1 ? '查看結果' : '下一題';
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                currentQuestionIndex++;
+                const s = $('quiz-screen');
+                s.classList.remove('fade-in'); void s.offsetWidth; s.classList.add('fade-in');
+                loadQuestion();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else showResult();
+        }
+
+        function updateScoreDisplay() { $('score-display').textContent = Math.round(score); }
+
+        function showResult() {
+            $('progress-bar').style.width = '100%';
+            let finalScore = Math.round(score);
+            if (finalScore > 100 || correctAnswersCount === currentQuestions.length) finalScore = 100;
+            $('result-subject').textContent = subject.chapters[currentChapterIndex].name + (isRetryMode ? '（錯題重測）' : '');
+            $('final-score').innerHTML = `${finalScore} <span class="text-2xl text-gray-400 font-medium">分</span>`;
+            $('correct-count').textContent = correctAnswersCount;
+            $('total-count').textContent = currentQuestions.length;
+            const icon = $('result-icon');
+            if (finalScore >= 90) {
+                $('result-message').textContent = '太厲害了！圖表判讀和觀念都很清楚！';
+                icon.textContent = '🏆'; icon.className = 'w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg bg-yellow-50 border-4 border-white';
+            } else if (finalScore >= 60) {
+                $('result-message').textContent = '表現不錯！把錯題的課本出處再讀一次會更棒。';
+                icon.textContent = '👍'; icon.className = 'w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg bg-blue-50 border-4 border-white';
+            } else {
+                $('result-message').textContent = '再接再厲！多利用錯題重測，仔細看題目給的圖表與線索。';
+                icon.textContent = '💪'; icon.className = 'w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg bg-gray-100 border-4 border-white';
+            }
+            const retryBtn = $('retry-incorrect-btn');
+            if (incorrectQuestions.length > 0) { retryBtn.classList.remove('hidden'); $('incorrect-badge').textContent = incorrectQuestions.length; }
+            else retryBtn.classList.add('hidden');
+            switchScreen('result');
+        }
+
+        renderHome();
+    </script>
+</body>
+</html>
