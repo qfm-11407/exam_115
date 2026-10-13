@@ -4,57 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>社會科互動式測驗系統｜一一五學年度上學期第一次段考</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --sea: #eff6ff; --land: #fef3c7; --border: #b45309; --land2: #e5e7eb; --border2: #9ca3af;
+            --accent: #ea580c; --bar: #60a5fa; --grid: #e5e7eb; --river: #2563eb; --dust: #a16207; --ink: #1f2937;
+        }
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #f3f4f6; }
         .fade-in { animation: fadeIn 0.4s ease-in-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .option-btn { transition: all 0.2s; }
         .option-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
         .option-btn.correct { background-color: #ecfdf5 !important; border-color: #10b981 !important; }
         .option-btn.correct .option-label { background-color: #10b981 !important; color: white !important; }
         .option-btn.incorrect { background-color: #fef2f2 !important; border-color: #ef4444 !important; }
         .option-btn.incorrect .option-label { background-color: #ef4444 !important; color: white !important; }
+        .fig-wrap { margin-top: 1rem; }
+        .fig-svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; border-radius: 12px; }
+        .fig-svg .map-label { font-size: 17px; font-weight: 900; fill: var(--ink); paint-order: stroke; stroke: #fff; stroke-width: 4px; }
+        .fig-svg .map-label.sm { font-size: 13px; font-weight: 700; }
+        .fig-svg .map-note { font-size: 11px; fill: #6b7280; }
+        .fig-svg .axis { font-size: 12px; fill: #4b5563; }
+        .fig-svg .val { font-size: 12px; font-weight: 700; fill: var(--ink); }
+        .fig-svg .val.sm { font-size: 10px; }
+        .fig-svg .axis.lg { font-size: 14px; fill: #374151; }
+        .fig-svg .val.lg { font-size: 13px; }
+        .fig-table { width: 100%; max-width: 560px; margin: 0 auto; border-collapse: collapse; font-size: 0.95rem; }
+        .fig-table th, .fig-table td { border: 1px solid #d1d5db; padding: 0.5rem 0.65rem; text-align: center; }
+        .fig-table thead th { background: #f3f4f6; font-weight: 700; }
+        .fig-table thead th:first-child { white-space: nowrap; }
+        .fig-table tbody th { background: #fafafa; font-weight: 700; white-space: nowrap; }
+        .fig-cap { text-align: center; font-size: 0.8rem; color: #6b7280; margin: 0.4rem 0 0.8rem; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 py-10">
 
     <div id="app" class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden relative">
-        <div id="header-bar" class="h-2 bg-indigo-500 w-full absolute top-0 left-0 transition-colors duration-300"></div>
+        <div id="header-bar" class="h-2 bg-emerald-500 w-full absolute top-0 left-0"></div>
 
-        <div class="p-6 md:p-10">
-            
+        <div class="p-5 md:p-10">
+
             <div id="home-screen" class="text-center fade-in">
-                <div class="inline-block p-4 bg-indigo-50 rounded-full mb-4">
-                    <svg class="w-12 h-12 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                </div>
+                <div class="inline-block p-4 bg-emerald-50 rounded-full mb-4 text-5xl">🌏</div>
                 <h1 class="text-3xl md:text-4xl font-black text-gray-800 mb-2">社會科互動式測驗系統</h1>
-                <p class="text-lg md:text-xl font-bold text-indigo-600 tracking-wide mb-4">一一五學年度上學期第一次段考</p>
-                <p class="text-gray-500 mb-10 max-w-lg mx-auto leading-relaxed">精選歷史、地理、公民素養題<br>請先選擇要測驗的科目，接著選擇章節單元。</p>
+                <p class="text-lg md:text-xl font-bold text-indigo-600 tracking-wide mb-2">一一五學年度上學期第一次段考</p>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <button onclick="showChapters('civics')" class="group flex flex-col items-center justify-center p-8 border-2 border-blue-100 rounded-2xl hover:border-blue-500 hover:bg-blue-50 transition-all shadow-sm">
-                        <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-4xl shadow-inner">⚖️</div>
-                        <span class="text-2xl font-bold text-gray-800 mb-1">公民</span>
-                        <span class="text-sm text-gray-500 font-medium mt-2">共 2 個章節</span>
-                    </button>
-                    
-                    <button onclick="showChapters('history')" class="group flex flex-col items-center justify-center p-8 border-2 border-amber-100 rounded-2xl hover:border-amber-500 hover:bg-amber-50 transition-all shadow-sm">
-                        <div class="w-20 h-20 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-4xl shadow-inner">📜</div>
-                        <span class="text-2xl font-bold text-gray-800 mb-1">歷史</span>
-                        <span class="text-sm text-gray-500 font-medium mt-2">共 2 個章節</span>
-                    </button>
-                    
-                    <button onclick="showChapters('geography')" class="group flex flex-col items-center justify-center p-8 border-2 border-emerald-100 rounded-2xl hover:border-emerald-500 hover:bg-emerald-50 transition-all shadow-sm">
-                        <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-4xl shadow-inner">🌍</div>
-                        <span class="text-2xl font-bold text-gray-800 mb-1">地理</span>
-                        <span class="text-sm text-gray-500 font-medium mt-2">共 2 個章節</span>
-                    </button>
-                </div>
+                <p class="text-gray-500 mb-8 mt-4 max-w-lg mx-auto leading-relaxed">精選歷史、地理、公民素養題；地理科含地圖、圖表判讀與題組題。<br>請先選擇科目，再選擇章節單元。</p>
+                <div id="subject-list" class="grid grid-cols-1 md:grid-cols-3 gap-5"></div>
             </div>
 
             <div id="chapter-screen" class="hidden fade-in">
@@ -62,64 +59,64 @@
                     <div class="flex items-center">
                         <span id="chapter-icon" class="text-3xl mr-3"></span>
                         <div>
-                            <h2 id="chapter-subject-title" class="text-2xl font-black text-gray-800">科目名稱</h2>
-                            <p class="text-sm text-gray-500 mt-1">請選擇欲測驗的章節</p>
+                            <h2 id="chapter-subject-title" class="text-2xl font-black text-gray-800"></h2>
+                            <p class="text-sm text-gray-500 mt-1">請選擇要練習的課次</p>
                         </div>
                     </div>
-                    <button onclick="goHome()" class="text-gray-500 hover:text-gray-800 flex items-center text-sm font-medium transition-colors bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl">
+                    <button onclick="goHome()" class="text-gray-500 hover:text-gray-800 flex items-center text-sm font-medium bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl transition-colors">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                         返回主選單
                     </button>
                 </div>
-                
-                <div id="chapter-list" class="grid grid-cols-1 gap-4 max-w-2xl mx-auto py-4">
-                    <!-- 動態生成章節 -->
-                </div>
+                <div id="chapter-list" class="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto"></div>
             </div>
 
             <div id="quiz-screen" class="hidden fade-in">
                 <div class="flex justify-between items-center mb-6">
                     <button onclick="goBackToChapters()" class="text-gray-400 hover:text-gray-700 flex items-center text-sm font-medium transition-colors">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                        返回章節
+                        返回課次
                     </button>
                     <div class="text-sm font-bold bg-gray-50 border border-gray-200 px-4 py-1.5 rounded-full text-gray-700 flex items-center shadow-sm">
-                        <svg class="w-4 h-4 mr-1.5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        得分: <span id="score-display" class="ml-1 text-lg">0</span>
+                        ⭐ 得分：<span id="score-display" class="ml-1 text-lg">0</span>
                     </div>
                 </div>
 
                 <div class="w-full bg-gray-100 rounded-full h-2.5 mb-2 shadow-inner overflow-hidden">
-                    <div id="progress-bar" class="h-full rounded-full transition-all duration-500 relative" style="width: 0%">
-                        <div class="absolute inset-0 bg-white/20" style="background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent); background-size: 1rem 1rem;"></div>
-                    </div>
+                    <div id="progress-bar" class="h-full rounded-full transition-all duration-500 bg-emerald-500" style="width: 0%"></div>
                 </div>
-                
-                <div class="flex justify-between text-xs md:text-sm text-gray-500 mb-8 font-medium">
+                <div class="flex justify-between text-xs md:text-sm text-gray-500 mb-6 font-medium">
                     <span id="quiz-header-title" class="font-bold text-gray-700"></span>
                     <span>進度 <span id="current-question-num" class="text-gray-900 font-bold text-base">1</span> / <span id="total-questions-num">?</span></span>
                 </div>
 
-                <div class="bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm mb-6">
-                    <h2 id="question-text" class="text-lg md:text-xl font-bold text-gray-800 leading-relaxed text-justify">
-                        載入題目中...
-                    </h2>
+                <div id="context-box" class="hidden mb-4 p-5 rounded-2xl border-2 border-amber-200 bg-amber-50">
+                    <div class="flex items-center mb-2">
+                        <span class="px-2 py-0.5 rounded bg-amber-500 text-white text-xs font-bold mr-2">題組</span>
+                        <span id="context-step" class="text-xs font-bold text-amber-700"></span>
+                    </div>
+                    <p id="context-text" class="text-gray-800 leading-relaxed text-justify"></p>
+                    <div id="context-fig" class="fig-wrap"></div>
                 </div>
 
-                <div id="options-container" class="space-y-3">
-                    <!-- 動態生成選項 -->
+                <div class="bg-white p-5 md:p-8 rounded-2xl border border-gray-100 shadow-sm mb-6">
+                    <h2 id="question-text" class="text-lg md:text-xl font-bold text-gray-800 leading-relaxed text-justify">載入題目中...</h2>
+                    <div id="question-fig" class="fig-wrap hidden"></div>
                 </div>
 
-                <div id="explanation-container" class="hidden mt-6 p-6 rounded-xl shadow-sm transition-all duration-300">
+                <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+
+                <div id="explanation-container" class="hidden mt-6 p-6 rounded-xl shadow-sm">
                     <h3 id="explanation-title" class="font-bold mb-3 flex items-center text-lg">
                         <span id="explanation-icon" class="mr-2 text-2xl"></span>
                         <span id="explanation-status-text">解題剖析</span>
                     </h3>
-                    <p id="explanation-text" class="text-sm md:text-base leading-relaxed whitespace-pre-line font-medium"></p>
+                    <p id="explanation-text" class="text-sm md:text-base leading-relaxed font-medium"></p>
+                    <p id="explanation-src" class="mt-3 text-xs md:text-sm text-gray-500"></p>
                 </div>
 
                 <div class="mt-8 flex justify-end">
-                    <button id="next-btn" onclick="nextQuestion()" class="hidden px-8 py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-xl transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 flex items-center">
+                    <button id="next-btn" onclick="nextQuestion()" class="hidden px-8 py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-xl transition-all shadow-md flex items-center">
                         <span id="next-btn-text">下一題</span>
                         <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </button>
@@ -127,285 +124,1189 @@
             </div>
 
             <div id="result-screen" class="hidden text-center fade-in py-10">
-                <div id="result-icon" class="w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg relative">
-                    <div class="absolute inset-0 rounded-full animate-ping opacity-20"></div>
-                    🏆
-                </div>
+                <div id="result-icon" class="w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg relative">🏆</div>
                 <h2 class="text-3xl md:text-4xl font-black text-gray-800 mb-3">測驗完成！</h2>
-                <p id="result-message" class="text-gray-500 mb-8 text-lg">您在 <span id="result-subject" class="font-bold text-gray-700"></span> 的表現：</p>
-                
-                <div class="bg-gray-50 rounded-3xl p-8 mb-10 inline-block border border-gray-100 shadow-sm relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gray-200 via-gray-400 to-gray-200"></div>
-                    <div class="text-6xl font-black text-gray-800 mb-3" id="final-score">
-                        0 <span class="text-2xl text-gray-400 font-medium">分</span>
-                    </div>
+                <p class="text-gray-500 mb-2 text-lg">您在 <span id="result-subject" class="font-bold text-gray-700"></span> 的表現：</p>
+                <p id="result-message" class="text-gray-600 mb-8"></p>
+                <div class="bg-gray-50 rounded-3xl p-8 mb-10 inline-block border border-gray-100 shadow-sm">
+                    <div class="text-6xl font-black text-gray-800 mb-3" id="final-score">0</div>
                     <div class="text-base text-gray-500 flex items-center justify-center space-x-6">
-                        <div class="flex flex-col items-center"><span class="text-xs uppercase tracking-wider text-gray-400 mb-1">答對</span><span id="correct-count" class="font-black text-emerald-500 text-2xl">0</span></div>
+                        <div class="flex flex-col items-center"><span class="text-xs text-gray-400 mb-1">答對</span><span id="correct-count" class="font-black text-emerald-500 text-2xl">0</span></div>
                         <div class="w-px h-8 bg-gray-200"></div>
-                        <div class="flex flex-col items-center"><span class="text-xs uppercase tracking-wider text-gray-400 mb-1">總題數</span><span id="total-count" class="font-black text-gray-700 text-2xl">0</span></div>
+                        <div class="flex flex-col items-center"><span class="text-xs text-gray-400 mb-1">總題數</span><span id="total-count" class="font-black text-gray-700 text-2xl">0</span></div>
                     </div>
                 </div>
-
-                <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
-                    <button id="retry-incorrect-btn" onclick="retryIncorrect()" class="hidden px-8 py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-medium rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        錯題重測 <span id="incorrect-badge" class="bg-white text-rose-500 rounded-full px-2 py-0.5 ml-2 text-xs font-black shadow-sm">0</span>
+                <div class="flex flex-col sm:flex-row justify-center gap-3">
+                    <button id="retry-incorrect-btn" onclick="retryIncorrect()" class="hidden px-8 py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-medium rounded-xl transition-all shadow-md">
+                        錯題重測 <span id="incorrect-badge" class="bg-white text-rose-500 rounded-full px-2 py-0.5 ml-2 text-xs font-black">0</span>
                     </button>
-                    <button onclick="restartChapter()" class="px-8 py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-xl transition-all shadow-md">
-                        再測一次本章節
-                    </button>
-                    <button onclick="goHome()" class="px-8 py-3.5 border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white hover:bg-gray-50 font-medium rounded-xl transition-all">
-                        回主選單
-                    </button>
+                    <button onclick="restartChapter()" class="px-8 py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-xl transition-all shadow-md">再測一次本課</button>
+                    <button onclick="goBackToChapters()" class="px-8 py-3.5 border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white font-medium rounded-xl transition-all">選其他課次</button>
+                    <button onclick="goHome()" class="px-8 py-3.5 border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white font-medium rounded-xl transition-all">回主選單</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 選項長度優化版題庫
+        // ===== 附圖（SVG 與表格）=====
+        // 中國輪廓為示意簡圖（經緯度近似值），僅供判讀位置使用
+        const CN_OUTLINE = [[134.7,48.3],[133.1,45.1],[131.3,44.9],[131.1,42.9],[130.6,42.4],[128.0,41.5],[126.0,40.9],[124.4,40.0],[121.3,38.8],[121.9,40.8],[120.0,40.2],[118.0,39.2],[117.7,38.9],[118.9,37.5],[120.7,37.8],[122.6,37.4],[121.5,36.8],[120.3,36.0],[119.2,35.0],[120.3,34.3],[121.0,32.5],[121.9,31.7],[121.9,30.8],[122.1,29.9],[121.4,28.3],[120.5,27.2],[119.6,26.0],[118.6,24.6],[117.2,23.6],[116.5,22.9],[114.3,22.3],[113.5,22.2],[112.0,21.7],[110.4,21.2],[110.2,20.3],[109.7,21.4],[108.5,21.6],[107.9,21.6],[106.7,22.0],[106.5,22.9],[105.4,23.3],[103.9,22.5],[102.2,22.4],[101.6,21.2],[100.1,21.7],[99.2,22.1],[99.5,22.9],[98.7,23.9],[97.6,24.0],[97.7,25.0],[98.7,25.9],[98.7,27.5],[97.4,28.3],[95.4,29.0],[94.0,27.6],[92.0,27.8],[89.2,27.5],[88.8,28.2],[88.0,27.9],[86.0,27.9],[84.0,28.6],[81.3,30.0],[79.0,30.9],[78.4,32.5],[78.9,34.3],[78.0,35.5],[76.0,35.8],[75.0,36.8],[74.6,37.7],[73.6,39.4],[75.6,40.6],[77.2,41.0],[80.2,42.1],[80.8,43.2],[80.4,45.0],[82.5,45.2],[83.0,47.2],[85.5,47.1],[85.9,48.1],[87.3,49.2],[88.3,48.4],[90.0,47.9],[90.9,46.6],[90.9,45.3],[93.5,44.9],[95.4,44.3],[96.4,42.7],[100.8,42.6],[105.0,41.6],[107.0,42.4],[110.4,42.8],[111.9,43.7],[111.4,44.6],[113.6,44.8],[116.7,46.4],[117.4,46.6],[119.9,46.7],[119.7,47.6],[118.5,47.9],[115.9,47.7],[116.2,49.0],[117.8,49.5],[119.3,50.2],[120.1,51.7],[121.0,53.0],[122.4,53.4],[124.8,53.1],[126.0,52.8],[127.5,50.0],[130.0,49.0],[131.0,47.7],[132.6,47.7]];
+        const HAINAN = [[108.6,19.2],[109.4,18.2],[110.5,18.4],[111.0,19.6],[110.3,20.1],[109.1,19.9]];
+        const TAIWAN = [[121.0,25.3],[121.9,25.0],[121.6,24.0],[121.0,22.6],[120.8,21.9],[120.3,22.5],[120.1,23.3],[120.6,24.5]];
+        const KOREA = [[124.4,40.0],[126.0,40.9],[128.0,41.5],[130.6,42.4],[129.7,40.8],[128.4,38.6],[129.4,36.6],[129.3,35.3],[127.7,34.7],[126.3,34.5],[126.5,36.0],[126.1,36.8],[126.7,37.8],[125.1,37.7],[125.3,38.6],[124.7,39.6]];
+        const JAPAN = [
+            [[129.7,33.4],[130.2,31.3],[131.3,31.4],[131.9,33.4],[130.9,34.0]],
+            [[131.0,34.4],[132.5,35.5],[135.5,35.6],[136.8,37.3],[139.0,38.0],[140.0,40.2],[140.9,41.4],[141.5,40.5],[141.9,39.0],[141.0,37.3],[140.6,36.0],[139.8,35.0],[138.8,34.6],[137.0,34.6],[135.2,33.7],[134.0,34.5],[132.0,33.9]],
+            [[140.0,41.5],[141.0,43.2],[141.7,45.4],[143.3,44.2],[145.5,43.3],[143.3,42.0],[141.3,42.4]]
+        ];
+
+        function makeProj(lonMin, latMax, k) {
+            return (lon, lat) => [((lon - lonMin) * k * 0.86).toFixed(1), ((latMax - lat) * k).toFixed(1)];
+        }
+        function poly(pts, P) { return pts.map(p => P(p[0], p[1]).join(',')).join(' '); }
+
+        function chinaMap({ markers = [], wide = false, extra = '', note = '' }) {
+            const lonMin = 71, latMax = 55, k = 8.4;
+            const P = makeProj(lonMin, latMax, k);
+            const lonMax = wide ? 147 : 136;
+            const W = ((lonMax - lonMin) * k * 0.86).toFixed(0), H = ((latMax - 17) * k).toFixed(0);
+            let s = `<svg viewBox="0 0 ${W} ${H}" class="fig-svg" role="img" aria-label="中國示意地圖">`;
+            s += `<rect x="0" y="0" width="${W}" height="${H}" fill="var(--sea)"/>`;
+            s += `<polygon points="${poly(CN_OUTLINE, P)}" fill="var(--land)" stroke="var(--border)" stroke-width="1.5" stroke-linejoin="round"/>`;
+            s += `<polygon points="${poly(HAINAN, P)}" fill="var(--land)" stroke="var(--border)" stroke-width="1.2"/>`;
+            s += `<polygon points="${poly(TAIWAN, P)}" fill="var(--land2)" stroke="var(--border2)" stroke-width="1.2"/>`;
+            if (wide) {
+                s += `<polygon points="${poly(KOREA, P)}" fill="var(--land2)" stroke="var(--border2)" stroke-width="1.2"/>`;
+                JAPAN.forEach(j => s += `<polygon points="${poly(j, P)}" fill="var(--land2)" stroke="var(--border2)" stroke-width="1.2"/>`);
+            }
+            s += extra.replace(/\{P:([\d.]+),([\d.]+)\}/g, (m, a, b) => P(+a, +b).join(','))
+                      .replace(/\{X:([\d.]+),([\d.]+)\}/g, (m, a, b) => P(+a, +b)[0])
+                      .replace(/\{Y:([\d.]+),([\d.]+)\}/g, (m, a, b) => P(+a, +b)[1]);
+            markers.forEach(m => {
+                const [x, y] = P(m.lon, m.lat);
+                s += `<circle cx="${x}" cy="${y}" r="6" fill="var(--accent)" stroke="#fff" stroke-width="2"/>`;
+                s += `<text x="${(+x + (m.dx ?? 9))}" y="${(+y + (m.dy ?? 6))}" class="map-label" text-anchor="${m.anchor || 'start'}">${m.label}</text>`;
+            });
+            s += `<text x="${W - 8}" y="${H - 10}" class="map-note" text-anchor="end">${note || '示意圖，非正確比例'}</text>`;
+            s += `</svg>`;
+            return s;
+        }
+
+        // 橫條圖：在手機上字體縮放較少
+        function hbar({ items, unit, max, fmt = v => v.toLocaleString() }) {
+            const w = 420, padL = 78, padR = 58, rowH = 30, h = items.length * rowH + 30;
+            const innerW = w - padL - padR;
+            let s = `<svg viewBox="0 0 ${w} ${h}" class="fig-svg" style="max-width:520px" role="img">`;
+            s += `<text x="${w - 4}" y="16" class="axis" text-anchor="end">單位：${unit}</text>`;
+            items.forEach((it, i) => {
+                const y = 26 + i * rowH, bw = Math.max(innerW * it[1] / max, 2);
+                s += `<text x="${padL - 8}" y="${y + 15}" class="axis lg" text-anchor="end">${it[0]}</text>`;
+                s += `<rect x="${padL}" y="${y + 2}" width="${bw}" height="${rowH - 10}" rx="3" fill="${it[2] ? 'var(--accent)' : 'var(--bar)'}"/>`;
+                s += `<text x="${padL + bw + 6}" y="${y + 16}" class="val lg">${it[3] || fmt(it[1])}</text>`;
+            });
+            return s + `</svg>`;
+        }
+
+        function table(head, rows, caption) {
+            return `<div class="overflow-x-auto"><table class="fig-table"><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr>${r.map((c, i) => i === 0 ? `<th>${c}</th>` : `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>${caption ? `<p class="fig-cap">${caption}</p>` : ''}</div>`;
+        }
+
+        const FIG = {
+            f1_steps: () => `<svg viewBox="0 0 440 230" class="fig-svg" style="max-width:520px" role="img" aria-label="三級階梯示意圖">
+                <rect width="440" height="230" fill="var(--sea)"/>
+                <path d="M20,200 L20,60 L40,48 L60,58 L80,40 L100,55 L120,45 L140,60 L155,58 L160,120 L180,112 L200,125 L220,110 L240,122 L265,118 L270,170 L300,166 L330,172 L360,168 L390,175 L420,178 L420,200 Z" fill="var(--land)" stroke="var(--border)" stroke-width="2" stroke-linejoin="round"/>
+                <text x="85" y="30" class="map-label">甲</text><text x="205" y="100" class="map-label">乙</text><text x="340" y="155" class="map-label">丙</text>
+                <line x1="20" y1="212" x2="420" y2="212" stroke="#6b7280" marker-end="url(#ar1)"/>
+                <defs><marker id="ar1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker></defs>
+                <text x="20" y="226" class="axis">西</text><text x="404" y="226" class="axis">東</text>
+                <text x="430" y="16" class="map-note" text-anchor="end">示意圖</text></svg>`,
+            f1_contour: () => `<svg viewBox="0 0 320 220" class="fig-svg" style="max-width:400px" role="img" aria-label="等高線示意圖">
+                <rect width="320" height="220" fill="#fff" stroke="#e5e7eb"/>
+                <ellipse cx="160" cy="112" rx="140" ry="92" fill="none" stroke="var(--border)" stroke-width="1.6"/>
+                <ellipse cx="160" cy="112" rx="100" ry="64" fill="none" stroke="var(--border)" stroke-width="1.6"/>
+                <ellipse cx="160" cy="112" rx="58" ry="36" fill="none" stroke="var(--border)" stroke-width="1.6"/>
+                <text x="160" y="27" class="axis" text-anchor="middle" style="paint-order:stroke;stroke:#fff;stroke-width:6px">3,000</text>
+                <text x="160" y="55" class="axis" text-anchor="middle" style="paint-order:stroke;stroke:#fff;stroke-width:6px">2,000</text>
+                <text x="160" y="83" class="axis" text-anchor="middle" style="paint-order:stroke;stroke:#fff;stroke-width:6px">1,000</text>
+                <text x="312" y="212" class="map-note" text-anchor="end">等高線單位：公尺</text></svg>`,
+            f1_monsoon: () => `<svg viewBox="0 0 440 210" class="fig-svg" style="max-width:520px" role="img" aria-label="海陸氣壓示意圖">
+                <defs><marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--river)"/></marker></defs>
+                <rect width="440" height="210" fill="#f8fafc"/>
+                <rect x="0" y="160" width="230" height="50" fill="var(--land)" stroke="var(--border)"/>
+                <rect x="230" y="168" width="210" height="42" fill="#bfdbfe"/>
+                <text x="115" y="192" class="map-label sm" text-anchor="middle">陸地</text>
+                <text x="335" y="196" class="map-label sm" text-anchor="middle">海洋</text>
+                <text x="115" y="40" class="map-label" text-anchor="middle">H 高氣壓</text>
+                <text x="335" y="40" class="map-label" text-anchor="middle">L 低氣壓</text>
+                <path d="M115,58 L115,140" stroke="var(--river)" stroke-width="3" marker-end="url(#ar2)"/>
+                <text x="125" y="105" class="axis">氣流下沉</text>
+                <path d="M140,150 L320,150" stroke="var(--river)" stroke-width="3" marker-end="url(#ar2)"/>
+                <path d="M335,140 L335,62" stroke="var(--river)" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#ar2)"/>
+                <text x="345" y="105" class="axis">氣流上升</text>
+                <text x="430" y="16" class="map-note" text-anchor="end">示意圖</text></svg>`,
+            f1_landmap: () => chinaMap({ markers: [
+                { lon: 125.5, lat: 46, label: '甲' }, { lon: 116, lat: 30.6, label: '乙' },
+                { lon: 104, lat: 25.6, label: '丙' }, { lon: 83, lat: 39.2, label: '丁' }] }),
+            f1_admin: () => chinaMap({ markers: [
+                { lon: 116.4, lat: 39.9, label: '甲', dx: -10, dy: -4, anchor: 'end' }, { lon: 117.4, lat: 39.0, label: '乙', dx: 9, dy: 12 },
+                { lon: 121.4, lat: 31.2, label: '丙', dx: -10, anchor: 'end' }, { lon: 106.5, lat: 29.6, label: '丁' }] }),
+            f1_cities: () => table(['都市', '1月月均溫', '7月月均溫'], [
+                ['哈爾濱', '−17℃', '23℃'], ['上海', '5℃', '29℃'], ['廣州', '14℃', '29℃'], ['拉薩', '−1℃', '16℃']], '數值為約略值'),
+            f1_climate: () => table(['地點', '最暖月月均溫', '最冷月月均溫', '年降水量'], [
+                ['甲', '29℃', '21℃', '1,600 mm'], ['乙', '14℃', '−6℃', '420 mm']], '自編資料'),
+            f2_growth: () => table(['西元年', '1700', '1794', '1950', '1990', '2023'], [
+                ['人口總數（億人）', '1.5', '3.13', '5.5', '11.4', '14.1']], '依課本圖1-2-8'),
+            f2_lines: () => chinaMap({ markers: [],
+                extra: `<path d="M{P:127.5,50.2} L{P:98.5,25.0}" stroke="var(--accent)" stroke-width="3" stroke-dasharray="8 5" fill="none"/>
+                <path d="M{P:103.5,34.0} Q{P:111,33.0} {P:119.6,33.4}" stroke="var(--accent)" stroke-width="3" stroke-dasharray="8 5" fill="none"/>
+                <path d="M{P:96.5,23.4} L{P:118.5,23.4}" stroke="var(--accent)" stroke-width="3" stroke-dasharray="8 5" fill="none"/>
+                <path d="M{P:123.5,52} L{P:119.5,45} L{P:116,41} L{P:113.5,38} L{P:111,34.5} L{P:110,31} L{P:110.5,27} L{P:109.5,24.6}" stroke="var(--accent)" stroke-width="3" stroke-dasharray="8 5" fill="none"/>
+                <text x="{X:128.6,50.6}" y="{Y:128.6,50.6}" class="map-label">甲</text>
+                <text x="{X:120.2,33.6}" y="{Y:120.2,33.6}" class="map-label">乙</text>
+                <text x="{X:93.4,22.4}" y="{Y:93.4,22.4}" class="map-label">丙</text>
+                <text x="{X:111.2,29.2}" y="{Y:111.2,29.2}" class="map-label">丁</text>` }),
+            f2_density: () => table(['地區', '土地面積', '人口'], [
+                ['黑河—騰衝線以東', '43%', '94%'], ['黑河—騰衝線以西', '57%', '6%']], '占全國比例（依課本圖1-2-4）'),
+            f2_scale: () => {
+                const dots = [[40, 45], [95, 30], [70, 90], [130, 75], [40, 130], [115, 135]];
+                const box = (x0, label, scale) => `<rect x="${x0}" y="20" width="170" height="160" fill="#fff" stroke="#9ca3af" stroke-width="1.5"/>` +
+                    dots.map(d => `<circle cx="${x0 + d[0] + 10}" cy="${20 + d[1]}" r="6" fill="var(--accent)"/>`).join('') +
+                    `<text x="${x0 + 85}" y="205" class="map-label" text-anchor="middle">${label}</text><text x="${x0 + 85}" y="225" class="axis lg" text-anchor="middle">比例尺 ${scale}</text>`;
+                return `<svg viewBox="0 0 420 240" class="fig-svg" style="max-width:480px" role="img">${box(20, '甲', '1：10,000')}${box(230, '乙', '1：20,000')}</svg><p class="fig-cap">每點代表100人；兩圖紙上面積相同</p>`;
+            },
+            f2_stats: () => table(['年(西元)', '2010', '2020', '2023'], [
+                ['人口總數（億人）', '13.4', '14.1', '14.1'], ['出生率（‰）', '11.9', '8.5', '6.4'], ['死亡率（‰）', '7.1', '7.0', '7.9']], '依課本學習會考第2題'),
+            f2_pyramid: () => table(['年齡層', '1970年', '2023年'], [
+                ['幼年人口（0～14歲）', '40.3%', '16.3%'], ['壯年人口（15～64歲）', '55.7%', '68.3%'], ['老年人口（65歲以上）', '4.0%', '15.4%']], '依課本中國人口金字塔圖'),
+            // ===== 公民 =====
+            c1_territory: () => `<svg viewBox="0 0 460 250" class="fig-svg" style="max-width:540px" role="img" aria-label="領土範圍示意圖">
+                <rect width="460" height="250" fill="#f0f9ff"/>
+                <rect x="0" y="0" width="200" height="150" fill="#dbeafe"/>
+                <text x="100" y="70" class="map-label" text-anchor="middle">甲</text>
+                <path d="M0,150 L110,150 L120,160 L120,250 L0,250 Z" fill="var(--land)" stroke="var(--border)"/>
+                <rect x="120" y="160" width="460" height="90" fill="#bfdbfe"/>
+                <text x="45" y="205" class="map-label">丙</text>
+                <line x1="200" y1="0" x2="200" y2="250" stroke="#1e3a8a" stroke-dasharray="5 4"/>
+                                <line x1="430" y1="150" x2="430" y2="250" stroke="#1e3a8a" stroke-dasharray="5 4"/>
+                <text x="160" y="205" class="map-label">乙</text>
+                <text x="365" y="205" class="map-label">丁</text>
+                <text x="445" y="200" class="axis" text-anchor="middle" style="writing-mode:vertical-rl">公海</text>
+                <text x="200" y="244" class="axis" text-anchor="middle">12浬</text>
+                <text x="430" y="244" class="axis" text-anchor="middle">200浬</text>
+                <text x="125" y="244" class="axis">基線</text>
+                <text x="452" y="16" class="map-note" text-anchor="end">示意圖</text></svg>`,
+            c1_purpose: () => table(['代號', '措施'], [
+                ['甲', '國軍定期執行海空巡邏，維護領土完整'], ['乙', '立法保障婦女在公共場所哺育母乳的權利'],
+                ['丙', '警察加強取締詐騙集團，讓人民安居樂業'], ['丁', '成立多語服務平臺，協助新住民克服語言障礙']]),
+            c1_compare: () => table(['項目', '國家', '政府'], [
+                ['範圍', '較廣', '是國家的要素之一'], ['權力', '主權', '統治權'], ['持續性', '永久', '？']], '依課本觀念釐清「國家與政府」'),
+            c1_resp: () => table(['事件', '內容'], [
+                ['甲', '食安危機引發強烈民怨，主管部長在立法院坦承督導不周，隨後宣布辭職下臺'],
+                ['乙', '某市官員在公共工程中收受賄賂，經檢察官起訴後，被法院判處有期徒刑']]),
+            c1_news: () => table(['代號', '新聞標題'], [
+                ['甲', '幸福國修法，縮短外國人歸化取得國籍的年限'], ['乙', '快樂國與健康國的邊界爭議持續多年'],
+                ['丙', '平安國舉行總統大選，希望黨勝選組織新政府'], ['丁', '和平國政局動盪，多國宣布與其斷交']]),
+            c1_vote: () => hbar({ unit: '%', max: 50, items: [['民進黨', 40.05, 1, '40.05%'], ['國民黨', 33.49, 0, '33.49%'], ['民眾黨', 26.46, 0, '26.46%']] }) + '<p class="fig-cap">西元2024年總統、副總統選舉得票率（依課本第143頁）</p>',
+            c2_platform: () => table(['代號', '階段'], [
+                ['甲', '政府召開公聽會，擬定政策以符合多數民眾需求'], ['乙', '民眾上網提議：國高中上課時間應縮短'],
+                ['丙', '附議人數達到成案門檻'], ['丁', '網友在平臺上反覆討論']], '依課本圖3-2-1整理'),
+            c2_groups: () => table(['項目', '利益團體', '政黨'], [
+                ['目的', '影響政府政策', '取得執政權'], ['關注面向', '與團體目標相關的特定議題', '多面向的議題'], ['舉例', '台灣環境保護聯盟', '國民黨、民進黨']], '依課本充電站'),
+            c2_lunch: () => table(['民眾', '對免費營養午餐的意見'], [
+                ['A', '支持，可以減輕家長負擔'], ['B', '支持，可以顧及學童營養'], ['C', '支持，但要排富才公平'], ['D', '反對，認為浪費公帑']], '依課本圖3-2-4整理'),
+            c2_poll: () => hbar({ unit: '%', max: 50, items: [['支持', 42, 1, '42%'], ['反對', 35, 0, '35%'], ['沒有意見', 23, 0, '23%']] }) + '<p class="fig-cap">「延長公車行駛時間」政策民調（自編）</p>',
+            c2_parking: () => table(['時間', '發展'], [
+                ['甲　1月', '新聞報導此計畫，地方臉書社團湧入上百則討論'],
+                ['乙　2月', '支持者有人主張蓋地下停車場、有人主張平面停車場；反對者主張保留綠地'],
+                ['丙　4月', '民調支持率由60%下降到38%'], ['丁　5月', '市府召開公聽會後，決定縮小停車場規模']]),
+            c2_media: () => table(['代號', '報導內容'], [
+                ['甲', '某網紅宣稱「喝檸檬水可治百病」，媒體沒有查證就大幅報導'],
+                ['乙', '某電視臺報導勞資爭議，只訪問公司主管，沒有訪問員工'],
+                ['丙', '新聞標題：「女司機又肇事！」']]),
+            c2_check: () => table(['訣竅', '檢查重點'], [
+                ['權威性—確認來源', '注意訊息來源及發布者的資訊'], ['客觀性—查查資料', '是否客觀能被證實；匿名專家背書卻無證據要小心'],
+                ['準確性—看看標題', '標題與內容是否一致、是否過於聳動'], ['涵蓋性—確認排版', '排版奇怪或拼寫錯誤可能是拼湊的'], ['時效性—檢視時間', '訊息時間是否合理、是否被竄改']]),
+            // ===== 歷史 =====
+            h1_events: () => table(['代號', '事件'], [['甲', '周王室東遷'], ['乙', '秦統一天下'], ['丙', '秦國任用商鞅變法'], ['丁', '周人滅商']]),
+            h1_class: () => `<svg viewBox="0 0 420 250" class="fig-svg" style="max-width:480px" role="img" aria-label="西周社會階層關係圖">
+                <defs><marker id="ar5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker></defs>
+                ${[['周王', 210, 30, '#fde68a'], ['諸侯', 120, 95, '#fef3c7'], ['下級貴族', 300, 95, '#fef3c7'], ['下級貴族', 120, 160, '#fef3c7'], ['平民', 210, 215, '#e5e7eb']].map(b => `<rect x="${b[1] - 48}" y="${b[2] - 18}" width="96" height="34" rx="8" fill="${b[3]}" stroke="#b45309"/><text x="${b[1]}" y="${b[2] + 5}" class="map-label sm" text-anchor="middle">${b[0]}</text>`).join('')}
+                <path d="M190,48 L135,77" stroke="#6b7280" marker-end="url(#ar5)"/><path d="M230,48 L285,77" stroke="#6b7280" marker-end="url(#ar5)"/>
+                <path d="M120,113 L120,142" stroke="#6b7280" marker-end="url(#ar5)"/>
+                <text x="140" y="135" class="axis">分封</text><text x="255" y="58" class="axis">分封</text><text x="135" y="58" class="axis">分封</text>
+                <text x="330" y="235" class="map-note">示意圖（依課本圖2-1-2）</text></svg>`,
+            h1_move: () => chinaMap({ markers: [{ lon: 108.9, lat: 34.3, label: '甲', dx: -10, anchor: 'end' }, { lon: 112.45, lat: 34.62, label: '乙', dy: -6 }] }),
+            h1_feudal: () => table(['代號', '敘述'], [
+                ['甲', '透過分封親戚和功臣以保衛王室，並以禮樂規範政治活動和生活方式'],
+                ['乙', '地方行政長官由皇帝直接任免，加強了中央集權'],
+                ['丙', '藉著對外征伐建立封國，隨著不斷分封，領土也不斷擴大'],
+                ['丁', '加強中央對地方的管理，防止地方割據分裂']], '改寫自課本「想一想」'),
+            h1_coins: () => table(['國家', '戰國時期的貨幣'], [['齊、燕', '刀幣'], ['韓、趙、魏', '布錢'], ['楚', '蟻鼻錢'], ['秦', '圓錢'], ['秦統一後', '半兩錢']], '戰國時期各國的主要貨幣（簡化整理，參考課本圖2-1-5）'),
+            h1_clan: () => table(['時期', '發展', '說明'], [
+                ['東漢', '世族形成', '察舉、太學的實施，促使經學傳家、累世當官的家族逐漸形成'],
+                ['魏晉南北朝', '世族鼎盛', '上品無寒門，下品無世族'], ['隋～唐末年', '世族沒落', '？']]),
+            h1_select: () => table(['資料', '內容（改寫）'], [
+                ['甲', '由地方長官推舉孝子、廉吏，經過考核與試用後任官'],
+                ['乙', '士人自行報名參加考試，不論出身，考取者即可任官'],
+                ['丙', '由中央派官員到各地，依家世、才能、品德評定九個等第，再依等第任官']]),
+            h1_split: () => table(['代號', '政局'], [['甲', '南北分裂兩百多年'], ['乙', '曹魏、蜀漢、孫吳三國鼎立'], ['丙', '西晉短暫統一']]),
+            h2_silk: () => `<svg viewBox="0 0 480 200" class="fig-svg" style="max-width:560px" role="img" aria-label="漢代絲路示意圖">
+                <rect width="480" height="200" fill="#fffbeb"/>
+                <path d="M40,120 Q120,70 180,105 T300,95 Q350,90 380,110 T450,95" fill="none" stroke="var(--accent)" stroke-width="4" stroke-dasharray="10 6"/>
+                ${[[40, 120, '丁'], [180, 105, '安息'], [300, 95, '丙'], [380, 110, '乙'], [450, 95, '甲']].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="${p[2].length > 1 ? '#9ca3af' : 'var(--accent)'}" stroke="#fff" stroke-width="2"/><text x="${p[0]}" y="${p[1] - 14}" class="${p[2].length > 1 ? 'axis lg' : 'map-label'}" text-anchor="middle">${p[2]}</text>`).join('')}
+                <text x="40" y="150" class="axis" text-anchor="middle">（羅馬帝國）</text>
+                <text x="300" y="125" class="axis" text-anchor="middle">西域</text>
+                <text x="355" y="140" class="axis" text-anchor="middle">玉門關</text>
+                <text x="60" y="185" class="axis">← 西</text><text x="420" y="185" class="axis">東 →</text>
+                <text x="472" y="16" class="map-note" text-anchor="end">示意圖，非正確比例</text></svg>`,
+            h2_capitals: () => chinaMap({ markers: [
+                { lon: 113.3, lat: 40.1, label: '甲' }, { lon: 112.45, lat: 34.62, label: '乙', dy: -4 },
+                { lon: 108.9, lat: 34.3, label: '丙', dx: -10, anchor: 'end' }, { lon: 118.8, lat: 32.05, label: '丁' }] }),
+            h2_surname: () => table(['鮮卑姓', '改成的漢姓'], [['拓跋', '元'], ['獨孤', '劉'], ['步六孤', '陸'], ['丘穆陵', '穆'], ['紇豆陵', '竇']], '依課本圖2-2-3'),
+            h2_caves: () => table(['石窟', '位置'], [['莫高窟', '甘肅 敦煌'], ['雲岡石窟', '山西 大同'], ['龍門石窟', '河南 洛陽']], '中國三大石窟（依課本圖2-2-4）'),
+            h2_poems: () => table(['詩作', '節錄'], [
+                ['李白〈少年行〉', '落花踏盡遊何處，笑入胡姬酒肆中。'],
+                ['白居易〈胡旋女〉', '中有太真外祿山，二人最道能胡旋。'],
+                ['白居易〈寄胡餅與楊萬州〉', '胡麻餅樣學京都，麵脆油香新出爐。']], '依課本探究活動資料一'),
+            h2_neighbors: () => table(['代號', '國家（地區）'], [['甲', '新羅'], ['乙', '日本'], ['丙', '吐蕃'], ['丁', '大食']]),
+            h2_kana: () => table(['漢字', '平假名', '漢字', '片假名'], [['安', 'あ', '阿', 'ア'], ['以', 'い', '伊', 'イ'], ['宇', 'う', '宇', 'ウ'], ['衣', 'え', '江', 'エ'], ['於', 'お', '於', 'オ']], '日文假名與漢字的關係'),
+            h2_events: () => table(['代號', '事件'], [['甲', '北魏孝文帝遷都洛陽'], ['乙', '張騫出使西域'], ['丙', '唐軍在怛羅斯戰敗'], ['丁', '永嘉之禍']]),
+        };
+
+
+        // ===== 題庫 =====
+        // 欄位：question 題幹｜options 選項｜answer 正確選項索引｜explanation 解析
+        //       source 課本出處｜pattern 命題模式｜image 附圖代號｜fixed 選項不打亂｜group 題組代號
+        const GROUPS = {
+ "G1A": {
+  "text": "附圖甲～丁為中國四個地形區的位置。",
+  "img": "f1_landmap"
+ },
+ "G1B": {
+  "text": "中國有4個直轄市。附圖甲～丁分別標出這4個直轄市的位置。",
+  "img": "f1_admin"
+ },
+ "G1C": {
+  "text": "附表為中國四個都市的1月與7月月均溫（約略值）。其中拉薩與上海的緯度相近，都在北緯30°附近。",
+  "img": "f1_cities"
+ },
+ "G1D": {
+  "text": "附表為中國甲、乙兩地的氣候資料（自編）。請依課本「地理工具箱」的中國氣候判讀方法作答。",
+  "img": "f1_climate"
+ },
+ "G2A": {
+  "text": "附圖為中國簡圖，畫有甲～丁四條界線。",
+  "img": "f2_lines"
+ },
+ "G2B": {
+  "text": "附表為中國西元1970年與2023年的人口結構（依課本人口金字塔圖整理）。",
+  "img": "f2_pyramid"
+ },
+ "C1A": {
+  "text": "附表為某國政府推動的四項措施。",
+  "img": "c1_purpose"
+ },
+ "C1B": {
+  "text": "附表比較「國家」與「政府」的區別，其中一格以「？」表示。",
+  "img": "c1_compare"
+ },
+ "C1C": {
+  "text": "附表為兩則新聞事件。",
+  "img": "c1_resp"
+ },
+ "C1D": {
+  "text": "附表為四則國際新聞標題（自編）。",
+  "img": "c1_news"
+ },
+ "C2A": {
+  "text": "附表比較利益團體與政黨。",
+  "img": "c2_groups"
+ },
+ "C2B": {
+  "text": "大康市計畫在河濱公園興建停車場，附表依時間記錄了這項議題的發展（自編）。",
+  "img": "c2_parking"
+ },
+ "C2C": {
+  "text": "附表為三則媒體報導的例子（自編）。",
+  "img": "c2_media"
+ },
+ "C2D": {
+  "text": "附表為辨識假訊息的5個訣竅（依課本課後閱讀整理）。",
+  "img": "c2_check"
+ },
+ "H1A": {
+  "text": "附表為四則關於地方統治方式的敘述。",
+  "img": "h1_feudal"
+ },
+ "H1B": {
+  "text": "附表為世族興衰趨勢（依課本圖2-1-9整理），其中一格以「？」表示。",
+  "img": "h1_clan"
+ },
+ "H2A": {
+  "text": "附圖為漢代絲路路線示意圖，甲～丁為路線上的四個地點。",
+  "img": "h2_silk"
+ },
+ "H2B": {
+  "text": "附圖甲～丁為魏晉南北朝時期四座重要城市的位置（標在今日中國地圖上）。",
+  "img": "h2_capitals"
+ },
+ "H2C": {
+  "text": "附表為三首唐詩的節錄。",
+  "img": "h2_poems"
+ },
+ "H2D": {
+  "text": "附表為隋唐時期中國與周邊四個國家（或地區）的交流。",
+  "img": "h2_neighbors"
+ }
+};
+        // 公民、歷史先保留入口；之後把章節加入 chapters 即可開放
         const quizData = {
-            'civics': {
-                id: 'civics', name: '公民', icon: '⚖️', bg: 'bg-blue-500', text: 'text-blue-700', bgLight: 'bg-blue-100', border: 'border-blue-500',
-                hoverBorder: 'hover:border-blue-500', hoverBg: 'hover:bg-blue-50', themeBorder: 'border-blue-100',
-                chapters: [
-                    {
-                        name: '01_國家與民主政治',
-                        data: [
-                            { question: "某新興獨立區域宣布成立新政府並獲周邊國家承認，但其內部卻因長期內戰導致幾乎沒有穩定的居住群眾。從國家構成要素評估，該區域最缺乏下列何項基本條件？", options: ["維持穩固且不受侵犯的領土範圍", "建立常態性且公平的政黨輪替", "擁有穩定且具持續性的人民組成", "建立完善且透明的政府組織架構"], answer: 2, explanation: "國家構成四要素為人民、領土、政府、主權。情境中「缺乏穩定的居住群眾」即缺乏「人民」要素。" },
-                            { question: "國際海洋法規定，沿海國家對於海岸線向外延伸的特定海域，擁有探勘與開發經濟資源的權利。此一被稱為專屬經濟海域的範圍，通常自領海基線向外延伸多少海里？", options: ["距離海岸線 12 海里", "距離海岸線 50 海里", "距離海岸線 100 海里", "距離海岸線 200 海里"], answer: 3, explanation: "根據國際海洋法，專屬經濟海域（EEZ）的範圍是由領海基線向外延伸至 200 海里。" },
-                            { question: "某國政府在推動高度爭議的草案前，依法於各縣市舉辦了數十場公聽會。反對派批評這只是走過場，但在民主法治的設計上，政府舉辦此類程序的主要法理目的為何？", options: ["直接讓政府代表投票通過草案", "取代立法院原有的正式立法權", "廣泛收集各界意見供決策參考", "藉繁瑣程序剝奪反對派發言權"], answer: 2, explanation: "公聽會是行政或立法機關在決策前，為聽取學者、民眾與利害關係人意見而舉辦的制度化程序。" },
-                            { question: "某國爆發重大食安危機，主管機關部長在立法院備詢時坦承督導不周，為平息社會強烈民怨，隨後宣布辭去部長職務。該部長的辭職行為，是為了承擔下列哪一種責任？", options: ["面對法院審判的法定法律責任", "賠償廠商損失的金錢民事責任", "僅受個人良心譴責的道德責任", "為施政失當下臺負責的政治責任"], answer: 3, explanation: "政務官因政策失敗引發民怨而辭職下臺，是民主國家落實「責任政治」中「政治責任」的表現。" },
-                            { question: "在成熟的民主國家中，執政黨若施政成效不佳，民眾可在下次大選中將選票投給其他政黨使其成為新執政者。這種機制最能突顯民主政治的哪一項核心特色？", options: ["由少數菁英進行終身統治決策", "行政機關不需對立法機關負責", "透過定期選舉實現政黨輪替制", "法律制定完全依照領導人意志"], answer: 2, explanation: "選民透過定期選舉檢驗執政黨，做不好就換人（政黨輪替），確保政府順應民意，是民主政治特色。" },
-                            { question: "某市市長遭指控在公共工程中收受鉅額賄賂，經檢察官調查起訴後，法院最終判處其有期徒刑並褫奪公權。該市長受到的法院處罰，顯示他必須承擔何種責任？", options: ["因施政不當下臺的政治責任", "僅受社會輿論批評的道德責任", "因違反國家刑法受罰的法律責任", "受到內部行政懲處的行政責任"], answer: 2, explanation: "收受賄賂違反國家刑法，經司法機關審判並判處徒刑，這是具體的違法後果，屬於「法律責任」。" },
-                            { question: "許多民眾在選舉期間積極參與造勢晚會，並在網路上對政見發表評論。下列何者「不是」民主國家保障公民參與政治的常見方式與目的？", options: ["透過公平選舉投票選出民意代表", "參與政策公聽會對建設表達意見", "立法嚴格禁止異議份子表達言論", "自由加入合法政黨推動政治理念"], answer: 2, explanation: "民主政治建立在多元參與基礎上。「禁止異議份子表達言論」屬於威權專制作法，違背民主精神。" },
-                            { question: "國際關係學者指出，當一個國家失去正式的邦交國時，根據國際實務運作，最直接可能對該國國民造成下列何種負面影響？", options: ["國內所有民代選舉將被強制取消", "國內民生製造產業鏈將瞬間崩潰", "全體國民將自動喪失原有的國籍", "國際承認降低並影響護照便利性"], answer: 3, explanation: "邦交國減少會削弱國家在國際的法理承認，實務上也可能影響國民護照在部分地區的簽證便利性。" },
-                            { question: "學者在探討國家與政府的關係時指出：「它的成員會隨選舉結果而頻繁更替，但其所代表的政治實體卻相對恆久。」這段話中的「它」與「政治實體」分別是指什麼？", options: ["它指的是國家，政治實體指政府", "它指的是政府，政治實體指國家", "兩者皆指代擁有主權的中央政府", "兩者皆指代參與選舉的合法政黨"], answer: 1, explanation: "政府是行使國家主權的機關，會隨選舉更替而具變動性；而國家作為一個政治實體，具延續與永久性。" },
-                            { question: "民主政治的核心理念為「主權在民」。下列哪一種政府的運作現象，最能具體且直接地實踐並說明國家最高權力的最終歸屬？", options: ["政府首長由軍事將領閉門推舉", "全體國民透過選舉決定公共事務", "執政政黨永久取消在野黨參政權", "司法機關拒絕受理民眾行政訴訟"], answer: 1, explanation: "主權在民意味國家最高權力屬於國民。透過定期選舉或公投讓人民實質參與決策，是其最具體展現。" },
-                            { question: "國際海洋法賦予沿海國家對周邊海域的主權。某國巡視海疆時，以「侵犯國家主權」為由驅離距離海岸 10 海里的外國漁船。該海域在法理上應屬於下列何種範圍？", options: ["各國可自由航行的公海", "國家享有完全主權的領海", "僅能開發資源的經濟海域", "具有部分管轄權的鄰接區"], answer: 1, explanation: "國際法指出領海通常以 12 海里為基準，國家在領海內享有完全主權。10 海里位於領海範圍內。" },
-                            { question: "政府為了因應高齡化與少子化危機，編列預算廣設公立托嬰中心並發放育兒津貼。上述政策的推行，最能體現現代國家存在的哪一項主要目的？", options: ["維護國防與提升軍事安全", "由政黨決定私人財產分配", "保障基本人權與社會福利", "維持國內的基礎治安秩序"], answer: 2, explanation: "廣設托嬰中心與發放津貼屬於社會福利政策，旨在減輕民眾負擔，體現國家保障人權與發展福利的目的。" },
-                            { question: "法治政治（Rule of Law）與人治政治最大的區別在於法律的地位。下列哪一項敘述最符合法治政治的核心精神與運作原則？", options: ["人民與掌握公權力的政府皆須受法律約束", "政府首長擁有凌駕於國家憲法之上的特權", "法律內容應隨執政者的個人好惡隨時修改", "法律只用來約束平民不適用於高階公務員"], answer: 0, explanation: "法治政治強調「法律優位」。不論統治者或被統治者，權力行使與行為都必須在法律的框架內進行。" },
-                            { question: "波多黎各是美國的自由邦，相關法規指出，其居民雖擁有美國公民身分，但在政治權利的行使上，卻受到下列哪一項具體的嚴格限制？", options: ["被嚴格禁止遷徙並居住在美國本土", "無法取得美國國務院核發的美國護照", "被剝奪在波多黎各當地擔任公職權利", "不具備參與投票選舉美國總統的權利"], answer: 3, explanation: "波多黎各居民雖為美國公民，但因其特殊政治地位（未成為正式的州），他們沒有權利參與美國總統大選投票。" },
-                            { question: "在全球化的經濟體系中，我國之所以能成為許多先進國家極度重視的戰略夥伴，除了共享民主價值外，最關鍵的「硬實力」因素為何？", options: ["擁有全球面積最廣大的可耕地資源", "擁有世界第一龐大的勞動人口紅利", "在聯合國中擁有最多的邦交國支持", "擁有全球供應鏈不可或缺的半導體"], answer: 3, explanation: "我國在先進半導體製程上具全球統治地位，這種科技實力使我國成為各國爭相合作的戰略夥伴。" },
-                            { question: "警察在街頭執行勤務時，要求疑似違規的駕駛人接受酒精濃度測試。若駕駛人拒絕，警察可依法開出高額罰單。警察此一強制行為的正當性基礎來自於何者？", options: ["警察首長為了提升績效下達的命令", "國家為維持秩序而依法賦予的公權力", "當地多數居民透過口頭表決的同意", "為宣佈地區進入緊急狀態的軍事行動"], answer: 1, explanation: "警察執行臨檢並開罰，是國家為「維持社會秩序」，依據法律（如道路交通處罰條例）賦予的合法公權力。" },
-                            { question: "為精準掌握大眾對「延長義務役」政策的接受度，政府委託學術單位進行調查。下列哪一項方法「不屬於」現代常見且具系統性的民意蒐集方式？", options: ["發放標準化的線上問卷系統", "以隨機抽樣進行電話語音訪問", "官員私下聽取親友的個人意見", "委託專業機構進行街頭隨機面訪"], answer: 2, explanation: "民意調查需透過系統科學化方式進行。官員私下聽取親友意見缺乏代表性與客觀性，不屬正規民調。" },
-                            { question: "在民主社會的政治運作中，「非政府組織（NGO）」與「利益團體」經常針對特定議題發表聲明。這些組織的存在對於民主政治具備何種重要意義？", options: ["直接取代政府機關制定國家法律", "壟斷國家的經濟資源與商業利益", "提供多元管道匯集並表達公共意見", "強迫所有民眾接受單一的政治信仰"], answer: 2, explanation: "NGO與利益團體能匯集特定群體意見並向政府施壓，提供多元的民意表達管道，是公民社會的重要基石。" },
-                            { question: "面對網路上流傳「政府將全面沒收存款」的恐慌謠言，行政院設立了「即時澄清專區」。政府採取此作法的主要目的是為了因應公共意見形成中的何種挑戰？", options: ["防止假訊息破壞社會信任與理性討論", "全面監控並禁用所有的民間社群平台", "防堵民眾過度參與國家公共政策討論", "限制在野黨對執政黨施政的合法監督"], answer: 0, explanation: "假訊息會誤導認知並破壞理性討論。澄清專區目的在於即時闢謠，維護公共意見形成的健康環境。" },
-                            { question: "政府在制定重大公共政策時，若未能妥善與民眾溝通，常會引發激烈的社會抗爭。這說明了民主國家的政府在施政時應堅守下列哪一項核心原則？", options: ["政策保密與資訊封鎖原則", "施政必須以廣大民意為依歸", "文官體系利益優先保障原則", "行政程序極簡化與效率至上"], answer: 1, explanation: "民主政治是民意政治。若忽視與民眾溝通，政策將面臨巨大阻力，故施政必須以民意為後盾與依歸。" },
-                            { question: "「國家必須具備一定的地理空間，才能對該範圍內的人事物行使排他性的管轄權。」這句法理學的描述，主要在強調國家構成要素中的哪一項？", options: ["具備穩定向心力的人民", "擁有明確邊界的領土", "負責行使公權力的政府", "對內對外最高的主權"], answer: 1, explanation: "「一定的地理空間」指的是國家的領土，國家必須在其領土範圍內才能有效行使排他性的管轄權。" },
-                            { question: "在民主社會的運作機制中，下列哪一種公民行為最能具體體現公民實踐「責任政治」中對政府的「監督」角色？", options: ["按時向國庫繳交個人綜合所得稅", "嚴格遵守交通規則不闖紅燈號誌", "投書媒體嚴厲批評政府的能源政策", "熱心參與社區舉辦的資源回收活動"], answer: 2, explanation: "投書媒體批評政策，是公民行使言論自由，針對公共事務檢視與批判政府施政，屬於監督政府的表現。" },
-                            { question: "某國實施一黨專政，雖有舉辦選舉，但參選人皆由該黨審查提名，民眾沒有其他政黨可選擇。該國的政治體制最不符合現代民主政治的哪一項特徵？", options: ["定期舉辦全國性選舉制度", "允許不同政黨公平競爭輪替", "依法設置政府行政與立法機關", "追求政策執行的最高行政效率"], answer: 1, explanation: "民主政治關鍵在於允許不同政黨公平競爭以實現「政黨輪替」。一黨專政缺乏讓在野黨取得執政權的機制。" },
-                            { question: "觀察國際情勢，當我國面臨邦交國數量減少的外交困境時，國家仍會採取務實策略。下列何者是我國與無邦交國家維持實質關係的常見方式？", options: ["單方面宣布停止與該國的經貿交流", "發動匿名的國家級網路駭客攻擊", "全面取消該國人士來台的簽證發放", "透過互設代表處維持非官方實質交流"], answer: 3, explanation: "在無正式邦交下，我國常透過互設代表處（如駐美代表處），維持緊密的經貿、文化與非官方實質互動。" },
-                            { question: "「它是國家的代理人，國家的意志必須透過它來執行與落實。」這句話在政治學理上，最主要說明了「政府」在國家組織中扮演的何種功能？", options: ["作為國家永久存在的神聖象徵", "行使統治權以管理社會公共事務", "代表全體人民百分之百的所有意見", "決定國家領土與主權的最終範圍"], answer: 1, explanation: "政府是國家的機關，負責具體行使國家的統治權（如行政、立法），以管理社會秩序與推動公共事務。" },
-                            { question: "近年來部分政治人物利用激化社會對立與散播仇恨來獲取選票。政治學者警告，這種極端現象可能對民主政治的根基造成何種嚴重負面影響？", options: ["促進社會底層階級的快速向上流動", "增加公共政策在國會的理性討論空間", "破壞社會互信基礎與民主法治精神", "大幅提高政府機關政策推動的效能"], answer: 2, explanation: "透過情緒動員與對立來撕裂社會，會破壞公民社會的理性對話基礎與社會信任，進而威脅民主法治運作。" },
-                            { question: "政治學理將「主權」分為對內與對外兩個層面。下列哪一項法理敘述，最能精準說明「主權」在對內層面所具備的最高權威性？", options: ["國家有權與他國簽訂雙邊貿易協定", "國家在國際組織中享有平等的投票權", "政府擁有在國內制定與執行法律最高權力", "政府必須無條件接受國際法庭的所有判決"], answer: 2, explanation: "主權對內最高是指國家在其領土範圍內，擁有排他性的最高統治權力，如制定法律、維持內部秩序等。" },
-                            { question: "在某次大選中，長期執政的政黨因爆發嚴重貪腐醜聞而大敗，失去了執政地位。這項選舉結果顯示出民主制度具備下列哪一種重要的自我修正機制？", options: ["透過法律訴訟直接推翻現任政府", "透過選舉追究施政不當的政治責任", "透過軍事政變奪取國家最高政權", "透過公聽會撤銷政府所有施政計畫"], answer: 1, explanation: "選民用選票將做不好的執政黨下架，這是讓執政者承擔「政治責任」的最直接方式，體現選舉的糾錯機制。" },
-                            { question: "某利益團體為推動「安樂死合法化」，積極拜會各黨派立法委員並發起萬人連署。該團體的這些行動，在公共意見的運作機制中屬於哪一個階段？", options: ["行政機關的政策執行與後續評估", "匯集社會意見並向政府進行政策倡議", "司法機關針對爭議法條的違憲審查", "總統正式將新法案公告並實施的程序"], answer: 1, explanation: "利益團體透過連署與遊說立委，是為了將特定議題推上政治議程，這屬於匯集公共意見並向政府進行倡議的階段。" },
-                            { question: "「國家為保護人民免於遭受外來武力威脅，必須建立軍隊並參與國際組織。」這項憲法層級的描述，對應了現代國家存在的哪一項主要目的？", options: ["維持國內社會內部的基礎治安秩序", "保障弱勢群體基本人權與社會福利", "維護國防軍事安全與推動外交事務", "促進國家內部整體商業與經濟繁榮"], answer: 2, explanation: "建立軍隊抵禦外敵，以及參與國際組織爭取支持，都是為了保護國家領土與主權完整，屬於維護國防與外交的目的。" }
-                        ]
-                    },
-                    {
-                        name: '02_民主國家中的公共意見',
-                        data: [
-                            { question: "某社區民眾發現住家附近空地將被改建為垃圾掩埋場，於是在網路上成立自救會並發起實體抗議。從社會科學角度來看，民眾的行為最符合下列哪個概念的展現？", options: ["政府官員在法律授權下的行政裁量", "不同政黨之間為了選票的政治協商", "針對公共事務匯集並表達的公共意見", "跨國企業為降低成本的內部危機處理"], answer: 2, explanation: "民眾針對公共事務（垃圾掩埋場）匯集意見，並透過網路與行動向社會發聲，是標準的公共意見形成與表達過程。" },
-                            { question: "在民主國家中，民眾有權針對施政表達建議。下列哪一種情境，在性質上最「不屬於」公民向社會或政府表達公共意見的常見與合法途徑？", options: ["勞工團體在勞動節發起爭取權益的街頭遊行", "民眾在公共政策網路參與平臺提出連署附議", "企業董事會為提升利潤所召開的產品定價會議", "學者受邀出席立法院針對法案修改舉辦的公聽會"], answer: 2, explanation: "企業內部的產品定價會議屬於私人企業的商業決策，並不涉及社會大眾的公共事務，因此不是公共意見的表達途徑。" },
-                            { question: "在傳播過程中，媒體常透過版面編排或選擇性報導，讓閱聽人將注意力集中在特定的社會議題上。這顯示現代新聞媒體在公共意見形成中扮演了什麼關鍵角色？", options: ["擁有超越憲法的權力完全替代政府決策", "透過議題設定影響認知並引導意見發展", "功能僅限於報導娛樂新聞不涉及嚴肅政治", "負責配合政府審查以強制壓制不同反對意見"], answer: 1, explanation: "媒體透過報導框架與選擇，能決定民眾關注的焦點，進而影響認知並引導公共意見方向，這被稱為「議題設定」。" },
-                            { question: "關於免費營養午餐政策，有家長支持全面免費，有人認為排富條款更公平，也有營養師關注菜色品質。這種社會討論的縮影，顯示公共意見通常具備哪項特徵？", options: ["社會各界最終總能達成百分之百的絕對共識", "公共意見一旦形成便不受時空影響具永恆性", "針對單一議題常出現基於不同立場的複雜差異", "意見討論僅限於少數政治菁英參與的封閉性"], answer: 2, explanation: "同一個公共議題牽涉多方價值觀與利益，因此公共意見常呈現出分歧、複雜且具差異性的特徵，難以形成單一共識。" },
-                            { question: "某網紅原本強烈支持某開發案，但在聽取環保團體專業簡報並實地走訪後，公開發文道歉並轉而反對該案。這位意見領袖的立場轉換，體現了公共意見的哪種特性？", options: ["會隨新資訊或他人說服而改變的變動性", "不同立場之間絕對無法對話的不可溝通性", "完全不受任何情緒干擾的絕對客觀理性", "只會聚焦在單一社會新聞事件的議題性"], answer: 0, explanation: "公共意見並非一成不變，它具有「變動性」，會因為民眾接收到新資訊、發生重大事件或受他人說服而改變原有立場。" },
-                            { question: "政府為了修訂《動物保護法》，不僅在網路上預告草案，還邀請了動保團體、寵物業者與獸醫師公會共同開會討論。在民主程序中，政府此舉最主要的法理目的為何？", options: ["將立法失敗的政治責任推卸給民間團體", "刻意延宕修法進度以節省行政單位的經費", "廣泛匯集各方利害關係人意見以研擬妥善政策", "私下與特定商業業者進行不透明的利益交換"], answer: 2, explanation: "修法牽涉多方利益，邀請各方開會（如公聽會）是為了廣泛聽取元聲音，使制定的政策更加周延、降低阻力。" },
-                            { question: "在民主政治中，「利益團體」的存在扮演著不可或缺的角色。根據社會科學的定義，下列哪一項敘述最能精確指出利益團體的核心功能與組織特質？", options: ["其唯一目標是透過參與全國選舉取得國家執政權", "由具備共同理念或特定利益的人組成以影響政策", "依法只能由政府高階公務人員發起設立的附屬機構", "其運作方式僅限於發動暴力抗爭與非法的全國罷工"], answer: 1, explanation: "利益團體（如工會、環團）由具共同利益或理念者組成，其目標是「影響政策」以達成訴求，而非如政黨般「取得執政權」。" },
-                            { question: "我國設立「公共政策網路參與平臺」讓民眾能對施政提出建議。當提案在期限內獲得足夠人數「附議」成案後，政府必須依法給予具體回應。這套機制的建立帶來何種影響？", options: ["導致政府官員的行政效率與決策速度大幅降低", "提供民眾一個透明且制度化的公共政策參與管道", "在法理上完全取代了立法院原有的法案三讀功能", "嚴重限制了沒有智慧型手機或網路設備者的言論自由"], answer: 1, explanation: "該平臺提供了一個正式、透明且具備約束力的機制，讓民眾的意見能被政府聽見並處理，屬於制度化的政策參與管道。" },
-                            { question: "近年「內容農場」常以聳動標題吸引點擊，但內文卻常與標題不符或缺乏實質證據。當現代公民面對這類劣質資訊時，最應該發揮哪一種媒體識讀能力？", options: ["基於信任直接相信標題指控並迅速轉傳給親朋好友", "在毫無證據下直接在留言區與其他網友進行人身攻擊", "保持批判懷疑態度主動比對標題與內文並查證來源", "封鎖所有新聞網站並拒絕接收任何外界的公共訊息"], answer: 2, explanation: "良好的媒體識讀能力要求閱聽人保持批判性思考，不被情緒性標題綁架，主動比對內文並利用查核工具驗證資訊來源。" },
-                            { question: "政府在推動某項交通新制前，遭遇職業駕駛工會的強烈抗議，認為該制度將嚴重影響生計。最終政府決定暫緩實施並重新協商。這個案例最能具體說明公共意見具有哪一項特性？", options: ["公共意見完全不受任何特定利益團體的情緒影響", "匯集後的強大公共意見具有影響政府施政決策的力量", "公共意見的形成過程非常短暫且絕對不會發生改變", "強大的公共意見總是能完美符合全國所有國民的利益"], answer: 1, explanation: "駕駛工會的強烈抗議（公共意見）成功迫使政府暫緩政策，直接證明了公共意見對政府施政與決策具備實質的「影響力」。" },
-                            { question: "在傳播學中，「閱聽人」在現代環境下已不再只是單純的訊息接收者。下列哪一種行為，最能展現閱聽人轉變為「訊息產製者」或「意見發布者」的積極角色？", options: ["每天晚上準時坐在客廳收看晚間電視新聞聯播節目", "訂閱多份不同立場的實體報紙以獨自比較分析各種觀點", "將他人的長篇分析文章原封不動地存入個人電腦硬碟中", "在社群平台上親自拍攝影片評論時事並引發廣大網友討論"], answer: 3, explanation: "透過自媒體（如拍攝影片評論時事），閱聽人主動創造內容並傳播意見，這是從單向接收者轉變為產製者與發布者的典型表現。" },
-                            { question: "許多民間組織（如台灣事實查核中心）致力於破解網路謠言。教育專家提倡民眾若養成使用這類查核工具的習慣，最主要是為了協助公民提升下列哪一種核心能力？", options: ["熟練掌握高階影像編輯與深度偽造修圖的數位科技技術", "具備辨識訊息真偽與客觀性以防範假新聞的媒體識讀能力", "學習快速撰寫聳動新聞標題以吸引大量點擊的商業行銷能力", "獲得能夠輕易癱瘓境外假新聞網站伺服器的國家級網路攻擊能力"], answer: 1, explanation: "事實查核工具的核心功能是驗證資訊真實性。使用這些工具是實踐媒體識讀、主動查證以防範假訊息的具體方法。" },
-                            { question: "媒體識讀專家建議，在判斷一則網路訊息是否可信時，可仔細檢查文章的「排版與拼寫」。為什麼這個看似微小的排版細節會被視為判斷真假的重要線索之一？", options: ["因為國家法律嚴格規定所有正式的新聞報導絕對不能有任何錯字", "排版混亂與簡繁混雜常暗示該訊息是機器翻譯或粗製濫造的假訊息", "刻意的拼寫錯誤代表作者具備高度創新文學素養與後現代解構思維", "這可以準確判斷該篇文章發布前是否受到政府機關嚴厲的言論審查"], answer: 1, explanation: "具公信力的機構通常有嚴謹編審流程；排版奇特、錯字連篇或簡繁混雜，往往是內容農場或機器拼湊假訊息的明顯特徵。" },
-                            { question: "當某新聞臺在長達一個月的選舉期間，大幅增加特定政黨候選人的正面報導，並刻意放大競爭對手的微小失言。閱聽人若發現此現象，應警覺該媒體可能存在下列何種潛在問題？", options: ["該媒體過度遵守了新聞學理上要求的絕對中立客觀原則", "該媒體在新聞編輯與報導框架上帶有特定的政治立場與偏見", "該媒體的新聞資金來源完全透明公開且不受任何財團控制", "該媒體僅提供冰冷的客觀數據事實而缺乏任何主觀的深度評論"], answer: 1, explanation: "選擇性地放大正負面資訊且資源分配極度不均，強烈顯示該媒體在報導上帶有明顯的政治立場與偏見框架。" },
-                            { question: "在某次關於「是否應興建第三天然氣接收站」的爭論中，支持方強調經濟發展與供電穩定，反對方則強調藻礁生態保育。這種僵持的情況反映了民主社會中公共意見的哪一種常態？", options: ["所有高度爭議的公共議題最終都能在無政府介入下達成百分百共識", "重大的公共議題常牽涉多元價值觀與利害關係人的利益衝突", "政府機關有權利且應該直接立法禁止所有具爭議性議題的公開討論", "主流商業媒體在面對這類環保議題時總是能保持絕對中立不帶立場"], answer: 1, explanation: "重大公共議題往往牽涉不同的價值觀（經濟 vs 環保）與利害關係，因此公共意見常呈現出分歧與衝突，這是民主社會常態。" },
-                            { question: "某國會議員為推動「同性婚姻合法化」，舉辦多場記者會並邀請相關家庭現身說法，成功引起社會廣泛關注與熱烈討論。該議員的行動在公共意見運作上主要達成了下列哪一種效果？", options: ["跨越立法程序直接完成了該爭議法案的國會三讀程序", "利用媒體優勢徹底剝奪了社會上反對該法案者的發言權利", "將原本小眾的特定理念成功轉化為受大眾關注討論的公共議題", "透過行政命令實質限制了最高法院對該社會議題的最終審判權"], answer: 2, explanation: "透過記者會與現身說法，議員成功吸引媒體報導與公眾關注，將特定訴求推進為社會大眾廣泛討論的「公共議題」。" },
-                            { question: "某跨國企業被指控生產過程嚴重污染環境，當地居民在網路上發起抵制購買運動並獲數十萬人響應，最終迫使該企業公開道歉承諾改善。這個事件最能突顯下列哪一種力量的強大？", options: ["國家最高司法機關不容挑戰的強制執行力", "政府環保部門祭出嚴厲行政命令的威嚇力", "由下而上匯集形成的強大公共意見社會壓力", "國際貿易組織為懲罰惡劣企業發動的經濟制裁"], answer: 2, explanation: "數十萬人的抵制行動是由下而上自發匯集的強大公共意見，這種社會壓力成功迫使龐大的跨國企業妥協改善。" },
-                            { question: "在資訊爆炸時代，網路演算法常會根據使用者喜好推薦相似內容，導致人們容易陷入「同溫層」或「過濾氣泡」中。為了避免這種現象造成觀點狹隘，現代公民最應該採取何種具體作法？", options: ["為了防止遭到洗腦而全面徹底放棄使用任何網路社群媒體工具", "保持開放心態主動搜尋並接觸與自己原本立場不同的多元觀點資訊", "放棄自我思考只盲目相信擁有百萬粉絲訂閱的知名網紅所說的話", "發起萬人連署強烈要求政府立刻立法禁止所有商業演算法的運作"], answer: 1, explanation: "打破同溫層最好的方法，就是公民具備意識，主動去接觸、閱讀與自己立場不同、具有多元觀點的媒體與資訊來源。" },
-                            { question: "當地方政府計畫在某社區興建大型社會住宅時，遭到部分居民以「影響房價與治安」為由強烈拉布條反對。若政府欲遵循民主法治原則化解僵局，下列哪一項作法最為適當且合法？", options: ["以妨礙公務為由動用大批優勢警力強制驅離所有反對的當地居民", "為了平息短暫的民怨立刻宣布永久取消該社會住宅的興建計畫", "舉辦公開說明會與居民面對面理性溝通並提出完善的治安交通配套", "動用政府預備金私下給予反對抗議的意見領袖高額金錢補償以求封口"], answer: 2, explanation: "民主程序的精神在於溝通與協商。舉辦說明會能讓政府澄清疑慮、聽取民意並提出配套措施，是化解衝突的正當途徑。" },
-                            { question: "培養媒體識讀能力的第一步是區分資訊的性質。下列哪一項閱聽人的行為，最精確地展現了判斷網路訊息是否為「客觀事實」或「主觀意見」的適當舉動？", options: ["看到標題寫著『震驚！某官員居然說出這種話』，就立刻認定該官員有罪", "敏銳地區分新聞報導中引用的『政府統計數據』與政論名嘴的『個人評論』", "深信只要文章有附上看似真實的照片，其內容就絕對是無庸置疑的客觀事實", "不加思索地完全相信匿名家族群組中長輩頻繁傳遞的任何未經科學證實健康偏方"], answer: 1, explanation: "媒體識讀的基礎是區分「事實」（如統計數據、法條）與「意見」（如名嘴的解讀、社論的主觀看法）。" },
-                            { question: "政治學理強調「政府的施政必須以民意為依歸」。這句民主政治的核心準則在實務操作上，最主要且強烈地要求行政機關應履行下列哪一項程序與義務？", options: ["國家所有的日常行政決策都必須耗費鉅資交由全民公投來做最終決定", "政府在研擬決策的過程中必須保持絕對的機密以防止外國勢力干預", "在政策推動前應建立透明機制，主動與社會溝通並虛心聽取各界多元意見", "首長施政時只需嚴格聽從執政黨內部黨員的意見而無須理會在野黨的抗議"], answer: 2, explanation: "以民意為依歸並非事事公投，而是要求政府在決策時必須具備開放態度，透過公聽會、預告期等機制主動聽取並回應民意。" },
-                            { question: "某環保團體為促使政府重視減碳政策，除了號召群眾在立法院外靜坐抗議，也發布了詳細的碳排放調查報告供各大新聞媒體引用。該團體同時使用了哪些合法途徑來表達公共意見？", options: ["僅使用了遊走法律邊緣的暴力脅迫與恐嚇手段", "綜合使用了體制外的集會遊行與大眾傳播媒體途徑", "僅透過政黨內部的密室政治協商來達成倡議目標", "使用了嚴肅的司法訴訟與非法的網路駭客攻擊途徑"], answer: 1, explanation: "靜坐抗議屬於「集會遊行」；發布報告供媒體引用屬於利用「傳播媒體」擴大影響力，兩者皆為合法的意見表達途徑。" },
-                            { question: "當遇到親友在通訊軟體中轉發一則宣稱「某種常見市售食物會嚴重致癌」的農場文章時，具備良好媒體識讀素養的現代公民，最適合且理性的回應方式為何？", options: ["基於對親友的信任與保護心態，立刻將該驚悚文章再轉發給其他數十個群組", "為了捍衛科學真理嚴厲斥責該親友散播謠言，並憤怒地將其強制退出群組", "先至事實查核網站確認真偽，若為假訊息則委婉附上官方澄清連結提醒親友", "陷入極度恐慌並立刻丟棄家中所有該種類食物，同時打電話向衛生局投訴"], answer: 2, explanation: "面對親友傳播假訊息，不應盲目轉傳或引發強烈衝突。最佳作法是主動查證，並以溫和方式提供正確資訊以遏止謠言。" },
-                            { question: "關於民主社會中「公共意見」的形成與發展，下列哪一項社會學理的敘述最能精確反映其真實且複雜的動態運作過程？", options: ["它總是能自動且迅速地在全體國民心中產生，不需要任何傳播媒介的推動", "它通常是少數政治權力者在密室中私下決定的結果，與一般社會大眾完全無關", "它常透過媒體的廣泛報導、意見領袖的倡議發聲以及公眾反覆討論的互動而逐漸形成", "它在初次形成並發表後就具有絕對權威，絕對不會再因為任何新出現的資訊而發生改變"], answer: 2, explanation: "公共意見並非憑空產生，它需要透過媒體傳播、利益團體倡議、意見領袖帶動，並經社會大眾討論與激盪才能成形。" },
-                            { question: "某網路新聞報導大量引用了一位「不願具名的前國家級權威專家」的說法，以此來嚴厲批評政府的防疫政策。閱聽人在解讀這篇極具爭議的報導時，最應該具備下列哪一種媒體識讀警覺？", options: ["深信匿名專家的內部爆料批評絕對比公開具名的官方學者更加公正且貼近真實", "意識到缺乏具體來源的專家背書，可能無法核實其專業性與真實性而應持保留態度", "堅信該報導一定是政府為了測試社會民意風向而故意透過公關公司發布的假消息", "認為只要是嚴厲批評現任政府施政的報導，就完全符合新聞自由而不需要懷疑其真實性"], answer: 1, explanation: "對於來源不明、匿名背書的資訊，應保持高度懷疑。因為無法查證其身分與專業背景，其言論的公信力與客觀性將大打折扣。" },
-                            { question: "在民主政治的運作中，「請願」是憲法保障人民的基本權利之一。當人民依法向政府機關提出正式請願時，這項公民行為在公共意見表達的層次上具有何種重要的制度性意義？", options: ["它賦予了基層人民能夠不經投票直接罷免失職公務員的無上權力", "它是人民透過合法且正式的書面管道，要求政府正視並處理特定公共事務", "它是一種強迫政府行政機關必須在三天內完全照辦的緊急行政命令", "它只能被用來解決私人企業與勞工之間關於薪資發放的金錢民事糾紛"], answer: 1, explanation: "請願是憲法權利，是人民就國家政策或權益受損時，向職權所屬機關透過正式書面途徑表達意見與訴求的合法管道。" },
-                            { question: "某電視新聞台的老闆同時經營大型房地產建設公司。在該新聞台的財經報導中，經常大幅美化該公司即將推案的重劃區，並刻意忽略當地的交通隱憂。此現象突顯了媒體運作中的哪一種潛在危機？", options: ["媒體的產製過程與客觀性可能受到媒體擁有者背後龐大商業利益的嚴重干預", "主流媒體為了迎合大眾口味過度重視環保生態議題而刻意忽略國家的經濟發展", "媒體從業人員的薪資過高導致其報導視角嚴重脫離了一般平民百姓的真實生活", "政府利用公權力對新聞自由進行了過度箝制導致電視台只能報導無害的房地產新聞"], answer: 0, explanation: "媒體老闆利用旗下新聞台為自己其他事業護航，強烈顯示媒體報導的客觀性受到了經營者背後商業利益與立場的干預。" },
-                            { question: "為了避免單一龐大媒體集團壟斷輿論市場，許多民主國家會制定相關法規，嚴格限制廣電媒體的跨業經營或市占率上限。這類防制壟斷的法規背後最主要欲維護的民主核心價值是什麼？", options: ["確保政府在發生戰爭時能隨時且無阻礙地徵用全國所有的民間新聞媒體", "保障言論市場的多元性，確保社會上各種不同的弱勢公共意見都能被聽見", "強制提高整體媒體產業的廣告商業收益以促進國家整體 GDP 的快速經濟成長", "透過統一的新聞播報標準來有效統整全國民眾的思想與價值觀以提升國家向心力"], answer: 1, explanation: "防止媒體壟斷是為了避免少數財團控制社會輿論，確保言論市場中能有各種不同聲音與觀點，維護公共意見多元性。" },
-                            { question: "當我們在公民課堂上探討「公共意見」時，其中的「公共」二字，最主要是在強調這類社會意見必須具備下列哪一項嚴格的先決條件？", options: ["必須是由擁有實權的高階政府官員在正式記者會上親自發表的官方意見", "其討論的內容客體必須是廣泛涉及社會大眾共同利益或普遍關切的事務", "必須是經過精確的科學民調證實百分之百全體國民都完全同意的完美看法", "必須是民眾親自走到戶外公共場所（如公園、車站廣場）大聲疾呼講出來的話"], answer: 1, explanation: "「公共意見」的關鍵在於其討論的客體是「公共事務」，也就是涉及大眾利益、社會發展或政府政策的議題，而非私人領域。" },
-                            { question: "現代網路社群平臺上的「按讚」、「分享」與「留言」等互動演算法功能，對當代民主社會中公共意見的發展軌跡帶來了何種最具革命性的顯著影響？", options: ["使公共意見的傳播速度變得極度緩慢，且意見交流完全被侷限於極少數的菁英小眾", "大幅降低了普通民眾參與議題討論的門檻，以前所未有的速度加速了意見匯集與擴散", "透過精密的 AI 審查徹底且永久地消滅了不實訊息與假新聞在網路上的所有生存空間", "龐大的數據雜訊使得政府機關從此完全無法透過任何管道掌握社會底層的真實民意"], answer: 1, explanation: "社群互動機制極大地便利了資訊傳播，讓一般民眾能輕易表達立場，降低參與門檻，從而加速了公共意見的匯集與擴散。" }
-                        ]
-                    }
-                ]
+            civics: {
+                name: '公民', icon: '⚖️', color: 'blue',
+                chapters: [{"name": "第1課 國家與民主政治", "data": [{"question": "現代國家的組成要素「不包括」下列哪一項？", "options": ["領土", "人民", "宗教", "主權"], "answer": 2, "explanation": "課本：國家的組成應具備人民、領土、政府、主權四個要素，缺一不可。宗教不是國家的組成要素。", "source": "1-1 國家是如何形成的｜課本第138頁", "pattern": "覺察說明｜文字題"}, {"question": "安琪出生在庫頁島，多年前結婚來臺，已經拿到中華民國身分證。從國家的組成要素來看，安琪取得我國國籍，代表她成為我國哪一要素的一分子？", "options": ["政府", "領土", "人民", "主權"], "answer": 2, "explanation": "人民是國家的組成分子，一個人若具有一國的國籍，就是該國的國民，能享有國家賦予的權利，也須負擔義務。", "source": "1-1｜課本第137～138頁 課文情境、內文", "pattern": "分析詮釋｜文字題（生活情境）"}, {"question": "附圖為國家領土範圍示意圖。圖中甲～丁哪些屬於國家的「領土」？", "options": ["甲乙丙", "甲乙丁", "甲丙丁", "乙丙丁"], "answer": 0, "explanation": "領土是一國政府統治權所及的地理區域，包括領陸（丙）、領海（乙，12浬以內）與領空（甲）。丁是專屬經濟海域，國家可以探勘、開發其中的經濟資源，但不屬於領土。", "source": "1-1｜課本第138頁 圖3-1-2 領土範圍示意圖", "pattern": "資料蒐整與應用｜附圖題", "image": "c1_territory", "fixed": true}, {"question": "新聞標題：「行政院宣布推出新的育兒補助政策」。這裡的「政府」是採用哪一種意義？", "options": ["專指中央的立法機關", "廣義，包括行政、立法、司法機關", "專指地方政府", "狹義，專指行政機關"], "answer": 3, "explanation": "政府是國家統治機關的總稱：狹義專指行政機關（例如行政院）；廣義則包括行政、立法、司法等機關。", "source": "1-1｜課本第138頁 內文、圖3-1-3", "pattern": "分析詮釋｜文字題"}, {"question": "某國自行決定是否調高進口商品的關稅，不受其他國家或國際組織干涉。這最能說明主權的哪一項特性？", "options": ["國家具有持續性", "對內具有最高性", "政府具有統治權", "對外具有獨立性"], "answer": 3, "explanation": "主權是國家最高的權力：對內具有最高性，能決定與執行政策；對外具有獨立性，不受任何國家或國際組織干涉，並能與他國建立平等的外交關係。", "source": "1-1｜課本第139頁 內文", "pattern": "分析詮釋｜文字題"}, {"question": "某地長年內戰，各派勢力互相爭奪，沒有任何組織能夠有效管理當地的公共事務。從國家組成要素來看，當地最缺乏哪一項？", "options": ["政府", "人民", "領土", "國籍"], "answer": 0, "explanation": "政府負責處理國家公共事務。當地雖然有人民和土地，但沒有能有效管理公共事務的組織，最缺乏的是政府。", "source": "1-1｜課本第138頁 內文", "pattern": "判斷創新｜文字題（情境）"}, {"question": "課本指出，現代民主國家存在的「最大目的」是什麼？", "options": ["擴大國家的領土面積", "謀求人民的生活福祉", "增加邦交國的數量", "確保執政黨長期執政"], "answer": 1, "explanation": "課本：現代民主國家強調人民是國家的主體，國家應制訂推動適當的政策，謀求人民的生活福祉，這是國家存在的最大目的。", "source": "1-1｜課本第139頁 內文", "pattern": "覺察說明｜文字題"}, {"question": "表中哪一項措施，最能說明國家存在的目的是「保障基本人權」？", "options": ["甲", "乙", "丙", "丁"], "answer": 1, "explanation": "乙：立法保障婦女在公共場所哺乳的權利，屬於保障基本人權。甲是保衛國家安全，丙是維持社會秩序，丁是發展社會福利。", "source": "1-1｜課本第139頁 圖3-1-5 國家存在的目的示例", "pattern": "分析詮釋｜附表題", "fixed": true, "group": "C1A"}, {"question": "表中哪一項措施，最能說明國家存在的目的是「發展社會福利」？", "options": ["甲", "乙", "丙", "丁"], "answer": 3, "explanation": "丁：成立多語服務平臺，協助新住民克服語言障礙，屬於發展社會福利。", "source": "1-1｜課本第139頁 圖3-1-5", "pattern": "分析詮釋｜附表題", "fixed": true, "group": "C1A"}, {"question": "民國113年，諾魯宣布與我國斷交。從國家的組成要素來看，邦交國減少的問題主要和哪一項要素有關？", "options": ["領土", "人民", "主權", "政府"], "answer": 2, "explanation": "主權對外具有獨立性，能與他國建立平等的外交關係。他國與我國斷交，代表不再以正式外交關係承認我國的主權。", "source": "1-1 課後閱讀「友邦再減一」｜課本第144頁", "pattern": "分析詮釋｜文字題（時事）"}, {"question": "依課本課後閱讀，下列何者最能說明「我國的國際影響力不完全取決於邦交國數量」？", "options": ["斷交後就無法和其他國家往來", "邦交國減少一定會讓護照失效", "非官方往來對我國安全沒有幫助", "半導體技術使我國成為各國重要貿易夥伴"], "answer": 3, "explanation": "課後閱讀：我國與世界各國的非官方往來仍密切；我國的半導體產業擁有全球最先進的技術，成為許多民主國家的重要貿易夥伴，增強了國際影響力。", "source": "1-1 課後閱讀｜課本第144頁", "pattern": "判斷創新｜閱讀理解題"}, {"question": "西周的諸侯在封國內有很大的自主性，但「對外仍須遵從周王的命令」。和現代國家相比，西周的封國最缺乏哪一項國家組成要素？", "options": ["主權", "人民", "領土", "政府"], "answer": 0, "explanation": "現代國家擁有主權，對外具獨立性，不受其他國家干涉。西周的封國對外必須服從周王，不具有獨立的主權，所以和現代國家不同。課本也提到，歷史上的部落、封建國家可能自稱「國家」，但與現代國家有所不同。", "source": "公民 1-1｜課本第138～139頁；歷史 1-1 充電站「西周的封建」", "pattern": "分析詮釋｜文字題｜跨子科（歷史×公民）"}, {"question": "附表中「？」應填入哪一項？", "options": ["永久且持續", "短暫且可改變", "擁有主權", "範圍較廣"], "answer": 1, "explanation": "國家是一個永久且持續發展的整體，而政府則是短暫且可改變的組織，可能因選舉或革命等因素而更替。", "source": "1-2 國家與政府的區別｜課本第140頁 觀念釐清", "pattern": "覺察說明｜附表題", "group": "C1B"}, {"question": "「國家的範圍較廣，政府只是國家的要素之一。」這是附表中哪一個項目的說明？", "options": ["持續性", "權力", "範圍", "目的"], "answer": 2, "explanation": "範圍：國家的範圍較廣，而政府只是國家的要素之一，所以「國家」的概念包含「政府」。", "source": "1-2｜課本第140頁 內文", "pattern": "覺察說明｜附表題", "group": "C1B"}, {"question": "西元2024年英國由選舉獲勝的政黨組織新政府，但英國的國家地位並沒有改變。這最能說明下列哪一項觀念？", "options": ["國家的範圍比政府小", "國家會隨政府更替而改變", "政府擁有國家的主權", "政府更替不代表國家滅亡"], "answer": 3, "explanation": "課本圖3-1-6：政府可能因選舉或革命而更替，但政府更替不代表國家滅亡，也不影響該國的國際地位。", "source": "1-2｜課本第140頁 圖3-1-6 圖說", "pattern": "分析詮釋｜文字題（時事）"}, {"question": "關於國家與政府的權力，下列敘述何者正確？", "options": ["國家擁有主權，政府擁有統治權", "國家擁有統治權，政府擁有主權", "國家與政府都只擁有統治權", "政府的權力不需要人民授權"], "answer": 0, "explanation": "國家擁有主權，而政府擁有統治權；國家的主權藉由政府行使統治權而得以彰顯。民主國家政府的權力須由人民授權才具正當性。", "source": "1-2｜課本第140頁 內文", "pattern": "覺察說明｜文字題"}, {"question": "秦代的郡縣長官由皇帝直接任免；我國的縣市長則由縣市民投票選出。依公民課所學，民主國家政府首長的權力，正當性主要來自哪裡？", "options": ["皇帝或君主的任命", "人民透過選舉授權", "家族世代的繼承", "軍隊武力的支持"], "answer": 1, "explanation": "民主國家的主權屬於國民全體，政府的權力須由人民授權才具正當性，人民透過定期選舉賦予執政者處理公共事務的權力。秦代郡縣長官則是中央派任。", "source": "公民 1-2｜課本第140頁；歷史 1-1 三 秦代", "pattern": "分析詮釋｜文字題｜跨子科（歷史×公民）"}, {"question": "政府在推動重大政策前，先舉辦公聽會聽取各界人士的意見。這最能展現民主政治的哪一項特色？", "options": ["政黨政治", "法治政治", "民意政治", "責任政治"], "answer": 2, "explanation": "民意政治：基於主權在民，政府制訂政策前，應透過民意調查、公聽會或公民投票等管道，讓人民表達意見，作為施政的依據。", "source": "1-3 民主政治的特色｜課本第142頁 內文、圖3-1-8", "pattern": "覺察說明｜文字題"}, {"question": "警察依照法律規定攔停車輛，並對駕駛人實施酒測。這最能展現民主政治的哪一項特色？", "options": ["責任政治", "民意政治", "政黨政治", "法治政治"], "answer": 3, "explanation": "法治政治：民主國家的法律由民意代表依法定程序制定，政府與人民都有遵守的義務。政府必須依法行政，避免違法濫權。", "source": "1-3｜課本第142頁 圖3-1-9", "pattern": "覺察說明｜文字題"}, {"question": "附圖為西元2024年我國總統、副總統選舉的各政黨得票率。選舉後，負責「監督政府」的是哪些政黨？", "options": ["國民黨、民眾黨", "民進黨", "三個政黨都是", "都不是，由中選會監督"], "answer": 0, "explanation": "選舉獲勝的政黨（民進黨）稱為執政黨，負責組織政府；敗選的政黨（國民黨、民眾黨）稱為在野黨，負責監督政府。", "source": "1-3｜課本第143頁 政黨政治、得票率圖", "pattern": "資料蒐整與應用｜附圖題", "image": "c1_vote"}, {"question": "甲黨連續執政八年後，在這次大選中敗給乙黨，由乙黨組織新政府。這種情形稱為什麼？", "options": ["政治責任", "政黨輪替", "公民投票", "依法行政"], "answer": 1, "explanation": "在野黨透過選舉取得執政權，就會形成政黨輪替，這是政黨政治的表現。", "source": "1-3｜課本第143頁 圖3-1-11 政黨輪替示意圖", "pattern": "覺察說明｜文字題"}, {"question": "事件甲中，部長辭職下臺，是負起哪一種責任？", "options": ["道德責任", "法律責任", "政治責任", "民事責任"], "answer": 2, "explanation": "政府施政若違背民意引起民怨，相關官員必要時應辭職下臺，負起政治責任。", "source": "1-3｜課本第143頁 圖3-1-12", "pattern": "分析詮釋｜附表題", "group": "C1C"}, {"question": "事件乙中，官員被法院判刑，是負起哪一種責任？", "options": ["沒有責任", "政治責任", "道德責任", "法律責任"], "answer": 3, "explanation": "政府官員若違法失職，必須依法接受處罰，負起法律責任。收受賄賂違反法律，所以是法律責任。", "source": "1-3｜課本第143頁 圖3-1-13", "pattern": "分析詮釋｜附表題", "group": "C1C"}, {"question": "「具有相同政治理念的人們，透過提名候選人參與選舉，以期取得執政權，進而實現主張與理想的團體。」這段話是在說明什麼？", "options": ["政黨", "利益團體", "民意調查", "公聽會"], "answer": 0, "explanation": "這是課本充電站對「政黨」的說明。第2課的利益團體也會影響政府政策，但目的不是取得執政權。", "source": "1-3 充電站「政黨」｜課本第143頁", "pattern": "覺察說明｜文字題"}, {"question": "市政府委託民調公司，以電話訪問一千多位市民對公車路線調整的滿意度。這種了解民意的方式稱為什麼？", "options": ["公聽會", "民意調查", "公民投票", "集會遊行"], "answer": 1, "explanation": "民意調查：用問卷、電話訪問等方式，蒐集民眾對特定公共議題的態度與意見。公聽會則是邀請民意代表、學者專家、相關人員或社會大眾座談。", "source": "1-3 充電站「民意調查」｜課本第143頁", "pattern": "分析詮釋｜文字題（生活情境）"}, {"question": "下列哪一種做法最「不符合」民主政治的精神？", "options": ["在野黨監督執政黨的施政", "人民定期投票選出民意代表", "政府立法禁止人民批評政策", "政府依民調結果修正政策"], "answer": 2, "explanation": "民主政治尊重人權、由人民當家作主。禁止人民批評政策，剝奪人民表達意見的權利，違反民主精神。其他三項分別展現民意政治、政黨政治的特色。", "source": "1-3｜課本第142～143頁", "pattern": "判斷創新｜文字題"}, {"question": "東周時秦國任用商鞅變法，「厲行法治」，但法律由國君決定。和民主國家的法治政治相比，兩者最大的不同在哪裡？", "options": ["民主國家的法律由執政黨主席決定", "民主國家的法律只約束人民", "民主國家不需要警察執法", "民主國家的法律由民意代表依法定程序制定"], "answer": 3, "explanation": "民主國家的法律是由民意代表依據法定程序所制定，政府與人民都有遵守的義務。古代國君制定的法律，反映的是統治者的意志，不是民意。", "source": "公民 1-3｜課本第142頁；歷史 1-1 二 東周", "pattern": "判斷創新｜文字題｜跨子科（歷史×公民）"}, {"question": "某國由單一政黨長期執政，並立法禁止其他政黨提名候選人參加選舉。這種做法最違背民主政治的哪一項特色？", "options": ["政黨政治", "法治政治", "民意政治", "責任政治"], "answer": 0, "explanation": "政黨政治：民主國家通常有兩個以上的政黨公平競爭，透過定期選舉爭取執政機會；在野黨負責監督政府，並可能形成政黨輪替。禁止其他政黨參選，就沒有公平競爭。", "source": "1-3 政黨政治｜課本第143頁", "pattern": "判斷創新｜文字題"}, {"question": "表中哪一則新聞主要涉及國家組成要素中的「人民」？", "options": ["甲", "乙", "丙", "丁"], "answer": 0, "explanation": "甲：修法縮短外國人歸化取得國籍的年限，和誰能成為該國國民有關，涉及「人民」。乙是邊界爭議，涉及領土；丙是選舉取得統治權，涉及政府；丁是斷交，涉及主權。", "source": "1-1 學習會考「波多黎各」｜課本第141頁", "pattern": "資料蒐整與應用｜附表題", "fixed": true, "group": "C1D"}, {"question": "表中哪一則新聞主要涉及國家組成要素中的「領土」？", "options": ["甲", "乙", "丙", "丁"], "answer": 1, "explanation": "乙：兩國之間的邊界爭議，和國家統治權所及的地理區域有關，涉及「領土」。", "source": "1-1 學習會考｜課本第141頁", "pattern": "資料蒐整與應用｜附表題", "fixed": true, "group": "C1D"}]}, {"name": "第2課 民主國家中的公共意見", "data": [{"question": "下列哪一項最可能形成「公共意見」？", "options": ["小明和家人討論今晚的晚餐要吃什麼", "許多民眾在網路討論是否延後國高中上課時間", "阿美在日記裡寫下對考試的煩惱", "同學私下比較誰的手機比較新"], "answer": 1, "explanation": "公共意見（民意）是指一群民眾在某段時間內，針對公共事務、政府政策或政治人物等議題，公開表達的集體意見。其他選項都是私人事務或沒有公開表達。", "source": "2-1 公共意見的形成｜課本第148頁 內文", "pattern": "分析詮釋｜文字題（生活情境）"}, {"question": "附表為民眾透過「公共政策網路參與平臺」提出建議的四個階段。依照發生的先後，正確的順序為何？", "options": ["乙→丁→丙→甲", "乙→丙→丁→甲", "丁→乙→甲→丙", "甲→乙→丁→丙"], "answer": 0, "explanation": "民眾先上網提議（乙），經過網友反覆討論（丁），附議人數達到成案門檻（丙），政府再召開公聽會並擬定政策（甲）。", "source": "2-1｜課本第148頁 圖3-2-1", "pattern": "資料蒐整與應用｜附表題", "image": "c2_platform", "fixed": true}, {"question": "小玲接到電話，對方請她用1～10分評價住家附近的交通安全滿意度。小玲是透過哪一種方式表達公共意見？", "options": ["參與集會遊行", "參與公聽會", "接受民意調查", "透過利益團體發聲"], "answer": 2, "explanation": "課本圖3-2-2列出表達公共意見的方式：參與集會遊行、參與公聽會、接受民意調查、透過利益團體或政黨發聲。電話詢問滿意度屬於民意調查。", "source": "2-1｜課本第149頁 圖3-2-2", "pattern": "分析詮釋｜文字題（生活情境）"}, {"question": "為什麼民眾透過利益團體或政黨表達意見時，更能發揮公共意見的影響力？", "options": ["它們能決定選舉的結果", "它們可以直接制定法律", "它們不必遵守法律規定", "它們本身就代表某些群體"], "answer": 3, "explanation": "課本：由於利益團體與政黨本身就代表某些群體，所以民眾透過它們表達意見時，更能發揮公共意見的影響力。", "source": "2-1｜課本第149頁 內文", "pattern": "覺察說明｜文字題"}, {"question": "「台灣環境保護聯盟」關注環保議題，希望影響政府的環境政策。依附表，它屬於哪一種團體？", "options": ["媒體", "政黨", "政府機關", "利益團體"], "answer": 3, "explanation": "利益團體是具有共同理想或利益的人們，為了達成特定目標而組成的團體，目的是影響政府政策，關注與團體目標相關的特定議題。", "source": "2-1 充電站「利益團體」｜課本第149頁", "pattern": "分析詮釋｜附表題", "group": "C2A"}, {"question": "依附表，政黨和利益團體最主要的差別在哪裡？", "options": ["政黨以取得執政權為目的", "政黨只關注單一議題", "利益團體會提名候選人", "利益團體負責組織政府"], "answer": 0, "explanation": "政黨的目的是取得執政權，關注多面向的議題；利益團體的目的是影響政府政策，關注與團體目標相關的特定議題。", "source": "2-1 充電站｜課本第149頁", "pattern": "分析詮釋｜附表題", "group": "C2A"}, {"question": "民眾發起「還路於民」遊行、召開記者會，要求改善「行人地獄」的交通環境，政府隨後召開《道路交通安全基本法》公聽會，研擬制定專法。這個例子最能說明公共意見的哪一項特性？", "options": ["議題性", "影響性", "變動性", "複雜性"], "answer": 1, "explanation": "影響性：公共意見通常會影響政治人物或政黨對公共事務的主張、政策的研擬，甚至是政府的施政。", "source": "2-1 圖3-2-2；2-2 公共意見的特性｜課本第149～150頁", "pattern": "分析詮釋｜文字題（時事）"}, {"question": "秦始皇實施「焚書坑儒」來控制文化思想。從公民課的角度來看，這種做法最違背民主國家形成公共意見的哪一項條件？", "options": ["政黨須公平競爭", "政府須依法行政", "保障民眾自由公開討論的機會", "官員須負起政治責任"], "answer": 2, "explanation": "課本：在民主國家，政府除了主動探求公共意見，更應保障民眾自由公開討論以形成公共意見的機會。焚書坑儒限制思想與言論，剛好相反。", "source": "公民 2-2｜課本第150頁；歷史 1-1 三 秦代", "pattern": "判斷創新｜文字題｜跨子科（歷史×公民）"}, {"question": "環保、經濟、教育等公共事務，只要受到民眾的關注與討論，就能形成公共意見。這是公共意見的哪一項特性？", "options": ["複雜性", "影響性", "變動性", "議題性"], "answer": 3, "explanation": "議題性：公共事務的種類繁多，受到民眾關注與討論的議題，就能形成公共意見。", "source": "2-2 一 議題性｜課本第150頁", "pattern": "覺察說明｜文字題"}, {"question": "附表為民眾對免費營養午餐政策的不同意見。主張「要排富才公平」的民眾，最可能支持哪一種做法？", "options": ["依家庭收入決定是否免費", "全體學生一律免費", "全面取消營養午餐", "改由學生自備午餐"], "answer": 0, "explanation": "「排富」是指排除家境富裕的人，讓有需要的家庭優先得到補助。主張排富的民眾，會支持依家庭收入決定是否免費。這也顯示：連支持者之間也有不同看法（複雜性）。", "source": "2-2｜課本第150頁 圖3-2-3～3-2-6", "pattern": "判斷創新｜附表題", "image": "c2_lunch"}, {"question": "附圖為某市民調中心公布的「延長公車行駛時間」政策民調結果（自編）。依圖，下列推論何者最合理？", "options": ["反對者已超過半數", "支持者最多，但未超過半數", "多數民眾沒有意見", "民眾意見完全一致"], "answer": 1, "explanation": "支持42%最多，但未超過50%；反對35%；沒有意見23%。民調顯示意見分歧，政府仍需持續溝通。", "source": "2-2 公共意見的特性｜課本第150頁；1-3 民意調查", "pattern": "資料蒐整與應用｜附圖題", "image": "c2_poll"}, {"question": "面對公共意見「有人支持、有人反對，支持者之間也有不同看法」的情形，政府最適當的做法為何？", "options": ["禁止反對者公開表達意見", "只採納執政黨支持者的意見", "透過溝通討論，尋求多數共識", "等意見完全一致才做決定"], "answer": 2, "explanation": "課本：政府在制訂與推動政策前，應主動與民眾溝通，透過充分的對話與討論，確認多數民意所向，讓政策的實施有公共意見作為後盾。", "source": "2 課首；1-3 民意政治｜課本第142、147頁", "pattern": "判斷創新｜文字題"}, {"question": "附表乙的情形，最能說明公共意見的哪一項特性？", "options": ["影響性", "議題性", "變動性", "複雜性"], "answer": 3, "explanation": "支持者有人主張地下停車場、有人主張平面停車場，反對者也有自己的理由：不只有支持與反對，同一方之間也有不同看法，這是複雜性（差異性）。", "source": "2-2 二 複雜性｜課本第150頁", "pattern": "分析詮釋｜附表題", "group": "C2B"}, {"question": "附表丙的情形，最能說明公共意見的哪一項特性？", "options": ["變動性", "複雜性", "議題性", "影響性"], "answer": 0, "explanation": "民調支持率三個月內由60%降到38%，表示民眾的看法會隨時空改變，這是變動性（不穩定性），也就是俗語說的「民意如流水」。", "source": "2-2 四 變動性｜課本第150頁", "pattern": "分析詮釋｜附表題", "group": "C2B"}, {"question": "附表丁的情形，最能說明公共意見的哪一項特性？", "options": ["變動性", "影響性", "複雜性", "議題性"], "answer": 1, "explanation": "市府在公聽會後縮小停車場規模，表示公共意見影響了政府的施政，這是影響性。", "source": "2-2 三 影響性｜課本第150頁", "pattern": "分析詮釋｜附表題", "group": "C2B"}, {"question": "關於公共意見的敘述，下列何者正確？", "options": ["內容通常只有支持與反對兩種", "只要形成就會穩定不變", "形成後可能因時空不同而改變", "只有政府才能形成公共意見"], "answer": 2, "explanation": "公共意見具有變動性，形成後並非穩定不變；也具有複雜性，支持者或反對者之間也可能有不同看法；公共意見是民眾的集體意見，不是由政府形成。", "source": "2-2 公共意見的特性｜課本第150頁", "pattern": "覺察說明｜文字題"}, {"question": "許多民眾在臉書討論流浪動物被安樂死的問題，並向立委陳情，最後政府通過《動物保護法》修正案。從第1課來看，政府回應民眾的意見而修法，展現了民主政治的哪一項特色？", "options": ["責任政治", "法治政治", "政黨政治", "民意政治"], "answer": 3, "explanation": "民意政治強調政府施政須以民意為依歸。政府回應公共意見修法，就是民意政治的表現。", "source": "2 課首情境｜課本第146～147頁；1-3 民意政治", "pattern": "分析詮釋｜文字題（跨課）"}, {"question": "政府在制訂與推動政策前，主動與民眾溝通、引導公共意見形成，最主要的目的是什麼？", "options": ["讓政策有公共意見作為後盾", "讓政策不必經過立法程序", "讓反對意見不再出現", "讓媒體不能報導政策"], "answer": 0, "explanation": "課本：政府在制訂與推動政策前，應主動與民眾溝通，進而引導公共意見的形成，讓政策的實施有公共意見作為後盾。", "source": "2 課首｜課本第147頁", "pattern": "覺察說明｜文字題"}, {"question": "下列何者「不屬於」課本所說的媒體？", "options": ["報紙", "公聽會", "廣播", "社群網路"], "answer": 1, "explanation": "媒體是傳播資訊的媒介，包含報紙、雜誌、電視、廣播和社群網路等。公聽會是政府聽取意見的座談，不是媒體。", "source": "2-1 充電站「媒體」｜課本第148頁", "pattern": "覺察說明｜文字題"}, {"question": "附表甲的報導，最可能反映媒體的哪一種現象？", "options": ["內容隱含偏見或歧視", "報導有特定的立場", "報導未必反映事實", "善盡查證的責任"], "answer": 2, "explanation": "媒體為求快速或點閱率，沒有查證訊息真假，就可能形成錯誤報導，這是「報導未必反映事實」。", "source": "2-3 一 媒體可能存在的現象｜課本第152頁", "pattern": "分析詮釋｜附表題", "group": "C2C"}, {"question": "附表丙的新聞標題，最可能反映媒體的哪一種現象？", "options": ["使用媒體表達意見", "報導未必反映事實", "報導有特定的立場", "內容隱含偏見或歧視"], "answer": 3, "explanation": "標題「女司機又肇事」暗示女性開車技術較差，會強化對性別的刻板印象與偏見，這是「內容隱含偏見或歧視」。", "source": "2-3 一｜課本第152頁 圖3-2-7", "pattern": "分析詮釋｜附表題", "group": "C2C"}, {"question": "某電視臺連續一週只報導某位候選人的負面新聞，對其他候選人的爭議卻很少報導。這最可能是哪一種媒體現象？", "options": ["報導有特定的立場", "內容隱含偏見或歧視", "報導未必反映事實", "議題性"], "answer": 0, "explanation": "由於某些特定立場或商業考量，媒體可能透過議題設定或內容的選擇，刻意「帶風向」引導輿論，這是「報導有特定的立場」。", "source": "2-3 一｜課本第152頁 內文", "pattern": "分析詮釋｜文字題（生活情境）"}, {"question": "下列新聞報導中的句子，何者屬於「意見」而不是「事實」？", "options": ["颱風造成三人輕傷", "政府的防災準備明顯不夠周全", "昨天累積雨量達300毫米", "氣象署發布陸上颱風警報"], "answer": 1, "explanation": "事實是客觀、可以驗證的內容；意見則加入了個人的主觀判斷。「防災準備明顯不夠周全」是主觀評價，屬於意見。", "source": "2-3 二 媒體識讀能力｜課本第153頁 圖3-2-8", "pattern": "分析詮釋｜文字題"}, {"question": "小美收到一則訊息：「爆料！某品牌飲料含有毒物質，一位不願具名的專家已證實」。依附表，她應優先用哪一個訣竅檢查？", "options": ["涵蓋性—確認排版", "時效性—檢視時間", "客觀性—查查資料", "準確性—看看標題"], "answer": 2, "explanation": "客觀性：檢查訊息是否客觀、能被證實；若只有匿名專家背書卻沒有證據，就可能是假訊息。", "source": "2 課後閱讀「不怕假訊息，破解5訣竅」｜課本第154頁", "pattern": "資料蒐整與應用｜附表題", "group": "C2D"}, {"question": "一則三年前的地震新聞，被人改成「今天」再轉傳到群組。依附表，最適合用哪一個訣竅識破？", "options": ["涵蓋性—確認排版", "權威性—確認來源", "準確性—看看標題", "時效性—檢視時間"], "answer": 3, "explanation": "時效性：檢視訊息是否及時更新，若訊息時間不合理或被竄改過，就需要注意。", "source": "2 課後閱讀｜課本第154頁", "pattern": "資料蒐整與應用｜附表題", "group": "C2D"}, {"question": "閱聽人如果懷疑電視新聞的報導與事實不符，除了查閱民間的事實查核報告，還可以向哪一個機關提出申訴？", "options": ["國家通訊傳播委員會", "中央選舉委員會", "教育部", "衛生福利部"], "answer": 0, "explanation": "課本：閱聽人若懷疑媒體訊息與事實不符或意見偏頗，可以查閱民間團體提供的事實查核報告，或向國家通訊傳播委員會（NCC）提出申訴。", "source": "2-3 二 主動思辨與查證｜課本第153頁", "pattern": "覺察說明｜文字題"}, {"question": "爸爸收到「某國罐頭被滴入毒血」的訊息，正想轉傳，兒子找出台灣事實查核中心的報告，證實那是假訊息。兒子展現了哪一項媒體識讀能力？", "options": ["使用媒體表達意見", "主動思辨與查證", "製作新聞訊息", "設定新聞議題"], "answer": 1, "explanation": "閱聽人懷疑訊息真假時，可以查閱民間團體提供的事實查核報告，這是「主動思辨與查證」。", "source": "2-3 二｜課本第135、153頁", "pattern": "分析詮釋｜文字題（生活情境）"}, {"question": "同學們發現社區河川汙染嚴重，於是拍照、寫文章投稿到報社，希望引起大家關注。這展現了哪一項媒體識讀能力？", "options": ["主動思辨與查證", "辨識訊息是事實或意見", "使用媒體表達意見", "向NCC提出申訴"], "answer": 2, "explanation": "閱聽人不只能透過媒體接受資訊，也能主動發表意見，例如自行製作訊息、透過媒體與他人分享。", "source": "2-3 二｜課本第153頁 圖3-2-10", "pattern": "問題發現｜文字題（生活情境）"}, {"question": "歷史課提到，漢代以來胡人「長期受到漢人的歧視」，造成胡漢衝突不斷。如果今天的媒體在報導中，也習慣用帶有貶意的稱呼描述某個族群，最可能造成什麼影響？", "options": ["讓報導更反映事實", "讓報導更客觀中立", "提升閱聽人的媒體識讀能力", "強化閱聽人的刻板印象與歧視"], "answer": 3, "explanation": "媒體可能在報導中不自覺加入主觀想法，進而強化閱聽人對性別、族群或階級的刻板印象、偏見與歧視。", "source": "公民 2-3 一｜課本第152頁；歷史 2-1 二 魏晉至隋唐的民族互動", "pattern": "判斷創新｜文字題｜跨子科（歷史×公民）"}, {"question": "民眾具備媒體識讀能力，對民主社會最主要的幫助是什麼？", "options": ["防止公共意見受到有心人士操弄", "讓政府可以管控媒體內容", "讓民眾不必再接觸媒體", "讓媒體只報導政府的政策"], "answer": 0, "explanation": "課本：民眾具備媒體識讀能力，能善用媒體獲取正確訊息，防止公共意見受到有心人士操弄，也有助於督促媒體遵守職業倫理。", "source": "2-3 二｜課本第153頁", "pattern": "覺察說明｜文字題"}]}]
             },
-            'history': {
-                id: 'history', name: '歷史', icon: '📜', bg: 'bg-amber-500', text: 'text-amber-700', bgLight: 'bg-amber-100', border: 'border-amber-500',
-                hoverBorder: 'hover:border-amber-500', hoverBg: 'hover:bg-amber-50', themeBorder: 'border-amber-100',
-                chapters: [
-                    {
-                        name: '01_商周至隋唐的國家與社會',
-                        data: [
-                            { question: "考古學家在秦始皇陵附近挖掘出數以千計、真人大小且裝備齊全的兵馬俑。若從國家制度發展的角度分析，這項龐大工程的完成，最能證明秦代具備下列哪一種能力？", options: ["推廣宗教信仰與教化百姓的文化能力", "地方豪族完全自治與武裝防衛的能力", "中央集權下動員龐大人力物力的能力", "與西方國家進行頻繁跨國貿易的實力"], answer: 2, explanation: "秦始皇陵與兵馬俑規模極其宏大，需要耗費驚人的人力、物力，這反映了秦代建立的中央集權體制，具備強大地將全國資源集中動員的能力。" },
-                            { question: "西周建立後，為了有效控制廣大的東方領土，將宗室親戚與功臣分派到各地建立武裝據點。這種將土地與人民分賜給諸侯，由其在地方享有部分自治權的政治制度稱為什麼？", options: ["由中央直接派任官員治理的郡縣制度", "以土地與血緣為基礎分封的封建制度", "以考試成績作為選才標準的科舉制度", "由地方長官推薦品德人才的察舉制度"], answer: 1, explanation: "西周透過「武裝殖民」將親族與功臣分封到各地建立諸侯國，這種以分封土地與人民為基礎，由諸侯間接管理地方的制度即為封建制度。" },
-                            { question: "西周初期制訂了詳盡的「禮樂制度」，規定了不同身分階級在祭祀、宴會等場合應使用的鼎簋數量與樂舞規模。推行此套繁縟制度最主要的政治目的是什麼？", options: ["為了推動跨國商品經濟的自由交換", "為了促進民間農業生產技術的普及", "為了規範貴族生活並維持階級秩序", "為了取代舊有城牆的軍事防禦體系"], answer: 2, explanation: "禮樂制度的核心在於「明尊卑、別貴賤」，透過規範日常生活與儀式，來鞏固宗法封建制度下的階級秩序，防止僭越。" },
-                            { question: "東周時期，隨著周天子共主地位衰微，社會經歷劇烈變動。此時許多學者針對如何重建社會秩序與國家富強，紛紛提出各自的政治主張。歷史上將這個思想活躍的時期稱為什麼？", options: ["以復興古典文化為核心的文藝復興", "各派學說並起且互相辯難的百家爭鳴", "罷黜百家並確立儒家正統的獨尊儒術", "崇尚老莊思想與清談玄理的魏晉玄學"], answer: 1, explanation: "東周（春秋戰國）時期，社會動盪促使知識份子活躍，儒、道、墨、法等各派學說並起，互相辯難，史稱「百家爭鳴」。" },
-                            { question: "戰國時期，秦國商鞅推行了一系列變法，其中包含將人民編入戶籍，並實施「什伍連坐法」。這項將人民嚴格編列戶籍的措施，對於秦國的發展有何重要作用？", options: ["促進了世族階層世襲官職的專屬權利", "有助於精確掌握人口以徵集兵員租稅", "放寬了對平民的管制並促成地方自治", "建立了以考試選拔底層官員的科舉制"], answer: 1, explanation: "編列戶籍是古代國家控制人民的基礎。透過戶籍，國家能確切掌握壯丁與人口數量，從而確保兵源充足與稅收穩定，是富國強兵的關鍵。" },
-                            { question: "秦始皇統一六國後，下令以首都為中心向全國各地修築寬闊平坦的道路，並規定車輛兩輪間的距離必須一致。這項被稱為「馳道」的巨大工程，其最主要的戰略目的為何？", options: ["為了推廣全國普及的常態性科舉考試", "為了方便皇帝前往各地名山尋仙求藥", "為了加速軍隊調動與政令傳遞的效率", "為了作為對抗北方遊牧民族的防禦線"], answer: 2, explanation: "馳道與車同軌的設計大幅提升了交通效率，讓中央軍隊能迅速調動平亂，政令能快速下達地方，從而強化了中央對地方的控制。" },
-                            { question: "秦始皇在政治體制上廢除了西周以來的舊制，改採將全國劃分為三十六個行政區，且地方長官皆由中央政府直接派任。這項奠定中國兩千多年地方行政骨幹的制度是？", options: ["以嫡長子繼承為核心的宗法制度", "由皇帝直接任免長官的郡縣制度", "以家世背景為評鑑的九品中正制", "專門管理西域藩屬國的都護府制"], answer: 1, explanation: "秦始皇全面推行「郡縣制」，廢除諸侯，將地方行政權收歸中央，由皇帝直接任免郡守與縣令，是從間接統治走向直接統治的變革。" },
-                            { question: "為了消除過去各國分立造成的交流障礙，秦始皇強勢推動了「書同文」的政策。這項統一文字的歷史性措施，對於中國歷史發展產生了什麼深遠影響？", options: ["徹底且永久地消滅了所有地方方言的存在", "使中國分裂為多個語言不通的獨立小國家", "促進了政令傳達並凝聚了國家的文化認同", "導致中國古代文學的創作與發展完全停滯"], answer: 2, explanation: "雖然各地口語方言不同，但統一的漢字讓政令得以在全國準確傳達，也讓不同地域人民共享文字系統，極大地凝聚了文化認同。" },
-                            { question: "歷史學者分析某個時期：「此時中央政權衰微，地方軍閥割據，隨後外族紛紛進入中原建立政權，導致長期處於南北分裂對峙。」這段話最可能是描述哪一個歷史階段？", options: ["周天子權威穩固的西周至春秋時期", "建立強大中央集權的秦至西漢時期", "政權頻繁更迭的東漢末年與魏晉南北朝", "國家再度統一且國力強盛的隋唐時期"], answer: 2, explanation: "東漢末年群雄割據，隨後進入三國、兩晉（包含五胡亂華），最終形成南北朝長期分裂對峙的局面，是胡漢文化交融的重要時期。" },
-                            { question: "漢武帝時期，為了解決官吏來源問題，規定地方官員必須定期向中央推薦「孝子」與「廉吏」來任官。這種由下而上推薦人才的選官制度稱為什麼？", options: ["依據家世門第定品級的九品官人之法", "以客觀筆試成績決定錄取的科舉制度", "保障貴族子弟直接做官的世族世襲制", "由地方長官考察品德後推薦的察舉制"], answer: 3, explanation: "漢代的「察舉制」強調品德（如孝廉），由地方長官考察當地人才的德行與才能後，推薦給中央任用，是漢代最主要的選官途徑。" },
-                            { question: "魏晉時期實施「九品官人之法」，原本用意是透過中央指派的中正官來評定地方人才。但在實際運作後，卻演變成「上品無寒門，下品無世族」的現象。造成此結果的主要原因為何？", options: ["評定標準過於看重候選人軍事作戰的功績", "中正官多由世族把持且評定偏重家世背景", "平民百姓集體拒絕參與任何官方政治評鑑", "考試題目過於艱澀導致僅世族子弟能通過"], answer: 1, explanation: "九品中正制實施後，由於負責評鑑的中正官皆由世族把持，他們在評定品第時逐漸忽略才能，單憑家世門第定品，導致世族壟斷高官。" },
-                            { question: "隋唐時期開始全面推行以「考試成績」作為選拔官員主要標準的制度。這項制度的實施，對當時的社會結構與政治生態產生了什麼重大的深遠影響？", options: ["使得世族階層對朝廷的權力控制更加穩固", "導致所有平民都被徹底剝奪了受教育權利", "打破了世族長期壟斷並促進社會階層流動", "促成了中國歷史上首次大規模的封建割據"], answer: 2, explanation: "「科舉制度」不問家世背景，純以考試成績定取捨，讓寒門子弟有了透過讀書晉身官僚階層的機會，打破了世族壟斷，促進社會流動。" },
-                            { question: "秦代雖然完成了許多有助於國家統一的壯舉，但其國祚卻十分短暫。下列哪一項措施「不是」秦始皇為了鞏固帝國統一所採取的政策？", options: ["統一全國的貨幣形制以利商業交易", "統一度量衡的標準以利稅收與測量", "修築長城以防禦北方遊牧民族侵擾", "推行科舉制度以拔擢底層優秀平民"], answer: 3, explanation: "秦代統一了文字、貨幣、度量衡，並修築長城、馳道。但「科舉制度」是隋代才創立、唐代才完善的制度，並非秦代的措施。" },
-                            { question: "西周的「宗法制度」規定，只有正妻所生的長子擁有繼承大宗爵位與財產的優先權。這項看似不公平的規定，在當時的政治運作上有何重要功能？", options: ["為了鼓勵貴族多納妾以快速增加國家人口", "避免貴族內部因爭奪繼承權引發流血內亂", "為了確保能選拔出最聰明的人來擔任國君", "為了讓平民百姓也有機會繼承貴族的財產"], answer: 1, explanation: "宗法制核心為「嫡長子繼承制」，其目的在於確立明確唯一的繼承規則，從源頭杜絕了庶子與兄弟之間為爭權而引發的動亂。" },
-                            { question: "孔子曾說：「自行束脩（微薄的見面禮）以上，吾未嘗無誨焉。」這句話反映了他「有教無類」的理念。這種理念在當時帶來了什麼重要的社會變革？", options: ["教育機會從貴族專利向下普及促成平民崛起", "導致貴族階級完全放棄了對自身子弟的教育", "促成了國家太學的建立與官方察舉制的實施", "使軍事戰鬥訓練成為各國學校唯一的教育內容"], answer: 0, explanation: "西周時期「學在官府」，僅貴族能受教育。孔子開創私人講學，主張不分貴賤皆可受教，打破了貴族對知識的壟斷，帶動平民士人崛起。" },
-                            { question: "歷史文獻中常以「累世公卿」來形容魏晉南北朝時期的大家族。這些家族（世族）能夠長期維持其顯赫的政治地位，最主要仰賴哪一項制度的保障？", options: ["完全以客觀筆試成績為準的科舉考試制度", "極度看重候選人家世背景的九品官人之法", "實施嚴密的人口戶籍編列與什伍連坐制度", "以戰場殺敵數量來決定官職的二十等爵制"], answer: 1, explanation: "魏晉南北朝實施九品中正制，選官極度看重家世門第。這使得出身高門大族的子弟不需努力即可獲取高官，形成「累世公卿」的世族。" },
-                            { question: "漢武帝為了推廣特定學說，在首都設立了「太學」，並設置五經博士教授學生，成績優異者可直接派任官職。漢武帝此舉最主要是為了推廣哪一家的學說？", options: ["主張順應自然與無為而治的道家", "強調嚴刑峻法與君主權威的法家", "重視倫理道德與君臣綱常的儒家", "提倡兼愛非攻與節儉度日的墨家"], answer: 2, explanation: "漢武帝接受「罷黜百家，獨尊儒術」的建議，設立太學教授儒家五經，將儒家學說與做官結合，確立了儒家思想的正統地位。" },
-                            { question: "比較西周的「封建制」與秦代的「郡縣制」，兩者在地方治理的權力結構上，最根本的差異在於何處？", options: ["封建制地方官可世襲，郡縣制由中央任免", "封建制由平民治理，郡縣制由皇族貴族治理", "封建制僅靠法律維持，郡縣制僅靠道德維持", "封建制劃分三十六郡，郡縣制分封數百諸侯"], answer: 0, explanation: "兩者最大差異在「中央對地方控制力」。封建諸侯世襲罔替具極大自主權；郡縣長官由皇帝隨時調動任免，無世襲權。" },
-                            { question: "西晉末年發生「永嘉之禍」，大批北方世族與百姓為逃避戰火而紛紛南遷至長江流域。這場大規模的人口遷移，對中國歷史發展產生了什麼重要影響？", options: ["導致南方經濟徹底崩潰並退回原始社會狀態", "促成了北方遊牧民族完全放棄對中原的統治", "為南方帶來勞動力與技術大幅促進江南開發", "使得中國的政治中心永久轉移至西域與中亞"], answer: 2, explanation: "北方人口南遷，不僅避開戰亂，更將中原先進的農業技術與豐富的勞動力帶到了相對落後的江南，奠定了日後南方經濟超越北方的基礎。" },
-                            { question: "北魏孝文帝下令鮮卑貴族必須改穿漢服、說漢語、改漢姓，甚至鼓勵與漢族世家大族通婚。孝文帝推行這些「漢化政策」最核心的戰略考量為何？", options: ["為了徹底消滅鮮卑族自身所有的文化與傳統", "為了解決國內嚴重的通貨膨脹與經濟大危機", "為了消除胡漢隔閡爭取漢族士人支持以穩固統治", "為了積極準備向西方擴張並學習歐洲宮廷禮儀"], answer: 2, explanation: "北魏以少數民族統治廣大漢人，孝文帝推動漢化，目的是為了消除胡漢界線，吸收漢族先進制度，並拉攏漢族世族以穩固統治。" },
-                            { question: "秦代統一度量衡的政策中，古籍所記載的「度」、「量」、「衡」三個字，分別代表統一什麼樣的物理測量標準？", options: ["測量長度、測量重量、測量體積", "測量體積、測量重量、測量長度", "測量長度、測量體積、測量重量", "測量重量、測量長度、測量體積"], answer: 2, explanation: "在古代計量單位中，「度」指測量長度，「量」指測量體積或容量（如升斗），「衡」指測量重量。統一方面標準有助於全國交易與徵稅。" },
-                            { question: "隋唐時期建立的科舉制度，被後世許多學者認為是古代一項相對公平的制度。其被認為「公平」的最主要理由是什麼？", options: ["它明文保障了皇室宗親與貴族必定能被錄取", "它以客觀的考試成績選才並向所有平民開放", "它強制規定錄取名額必須由各郡縣平均分配", "它允許所有考生在考場中公開互相討論答案"], answer: 1, explanation: "相較於九品中正制看重出身，科舉制「投牒自進」，任何人原則上都能報名，以考試卷面成績定高下，提供相對客觀的競爭管道。" },
-                            { question: "春秋戰國時期，孔孟等思想家帶著弟子周遊列國遊說理念，同時廣收門徒講學。這種「私人講學」的興盛，最直接打破了西周以來的哪一種社會現象？", options: ["打破了學在官府，貴族獨佔教育知識的局面", "打破了重農抑商，商人社會地位低下的局面", "打破了嫡長子繼承，庶子無法繼位稱王的局面", "打破了郡縣制度，地方官由中央直接派任的局面"], answer: 0, explanation: "西周時期教育與典籍皆掌握在官府（貴族）手中。私人講學興起後，平民也有機會獲取知識，直接打破了貴族對教育的壟斷。" },
-                            { question: "西周實施封建制度時，為了確保各地諸侯國不會輕易背叛周天子，中央政權主要依賴哪一種制度來維繫彼此之間的親疏與從屬關係？", options: ["頒布極度嚴厲的成文法典與殘酷刑罰", "建立以血緣親疏關係為基礎的宗法制度", "由中央國庫定期發放極為豐厚的金錢俸祿", "定期舉辦考核諸侯忠誠度的全國武術競賽"], answer: 1, explanation: "西周的封建是建立在宗族血緣之上的。周天子是「大宗」，諸侯是「小宗」。這種以宗法血緣編織的倫理網絡，是維繫從屬關係的核心。" },
-                            { question: "歷史劇中常出現官員清查戶口的情節。自商鞅變法以來，歷代朝廷皆十分重視「編列戶籍」。國家耗費龐大資源清查戶籍，最主要且直接的目的是什麼？", options: ["為了核算全國國民所得以平均發放社會福利金", "為了確實掌握壯丁人口以確保兵源與賦稅徵收", "為了進行嚴密監控以防止外國間諜的滲透破壞", "為了精確統計考生人數以利科舉准考證的發放"], answer: 1, explanation: "在農業社會，土地與人口是國家兩大資源。確實編列戶籍，政府才能知道有多少男丁可以徵兵、徵調勞役，以及有多少戶口可以徵收賦稅。" },
-                            { question: "《世說新語》記載了許多魏晉時期南方士族的軼事，其中不乏他們在動亂時聚會感嘆國家衰亡而流淚，但也常有清談玄學、生活奢靡的描述。這反映了當時世族的何種特質？", options: ["積極推動科舉考試以選拔底層被埋沒的人才", "長期在民間暗中領導廣大農民起義推翻暴政", "擁有高度社會特權但也面臨動盪時局的情感挑戰", "完全放棄了政治參與並轉而全心投入商業貿易"], answer: 2, explanation: "《世說新語》描繪了世族在保有特權（生活優渥、崇尚清談）的同時，面對五胡亂華偏安江南的時局，所展現出的複雜情感與社會樣貌。" },
-                            { question: "魏晉南北朝長達數百年的時間裡，雖然政權更迭頻繁，但世家大族卻能始終維持其強大的政治影響力。他們維持這種影響力最主要的制度憑藉是什麼？", options: ["發明並壟斷了當時最先進的火器與軍事技術", "透過九品中正制互相標榜以累世壟斷高級官位", "掌握了全國所有的遠洋商業航線與跨國貿易權", "長期贏得所有平民百姓的民主選舉與絕對支持"], answer: 1, explanation: "世族之所以能跨越朝代更迭，關鍵在於他們利用九品中正制互相標榜，把持了入仕的管道，世代佔據高官要職，形成強大的政治利益集團。" },
-                            { question: "秦始皇陵、阿房宮、萬里長城等巨大工程，在秦代短短十幾年的統治期間被同時推動。這些工程的存在，在政治制度上最能象徵什麼意義？", options: ["象徵秦代已具備了極度成熟的民主投票決策機制", "象徵中央集權體制下國家能以絕對權力徵調勞役", "象徵秦代完全放棄農業生產而成功轉型為工業國", "象徵地方諸侯擁有極大財力與地方建設的自主權"], answer: 1, explanation: "能在短時間內完成如此多規模宏大、耗費驚人的工程，必須仰賴極度強勢的中央集權統治，強制徵調全國百萬計的民夫與物力才能達成。" },
-                            { question: "若要撰寫一篇關於「中國古代選才制度演進」的報告，並以時間先後順序排列，下列哪一個標題順序最符合歷史發展的真實脈絡？", options: ["漢代察舉制 → 魏晉九品中正制 → 隋唐科舉制", "隋唐科舉制 → 漢代察舉制 → 魏晉九品中正制", "魏晉九品中正制 → 隋唐科舉制 → 漢代察舉制", "漢代察舉制 → 隋唐科舉制 → 魏晉九品中正制"], answer: 0, explanation: "歷史發展脈絡為：漢武帝建立以推薦為主的察舉制；魏晉時期演變為看重家世的九品中正制；隋唐時期創立並確立了以考試為主的科舉制。" },
-                            { question: "唐代畫作《觀榜圖》生動描繪了科舉考試放榜時，眾多士人擁擠在榜單前狂喜或懊喪的場景。這幅畫作最能印證當時社會的哪一種核心價值觀？", options: ["科舉考試已經被傳統世族完全抵制與全面廢除", "考中科舉與否直接決定了士人晉身官僚的命運", "馳道等交通建設帶動了全國各地的觀光旅遊熱潮", "嚴格的戶籍制度徹底限制了平民離開家鄉的自由"], answer: 1, explanation: "《觀榜圖》中士人對榜單的極度重視與情緒反應，真實反映了科舉制度下「萬般皆下品，惟有讀書高」的氛圍，科舉成為改變命運的關鍵。" }
-                        ]
-                    },
-                    {
-                        name: '02_商周至隋唐的民族與文化',
-                        data: [
-                            { question: "歷史文獻記載，古代中原政權耗費龐大民力將早期各國的防禦工事連接起來形成萬里長城。這項浩大工程的大規模修築，最早完成於哪一個朝代？", options: ["實施封建制度的西周", "建立中央集權的秦朝", "開通西域貿易的漢朝", "兼容並蓄外國的唐朝"], answer: 1, explanation: "秦始皇統一六國後，為防禦北方匈奴，派遣蒙恬北擊匈奴，並將戰國時期各國的長城連接延伸，是歷史上首次完成萬里長城的大規模修築。" },
-                            { question: "古代中原政權在農牧交界地帶修築了綿延千里的長城。除了劃定統治邊界外，長城系統在當時最核心的軍事與戰略意義是什麼？", options: ["作為中原與遊牧民族進行和平貿易的專用安全通道", "防禦並遲滯北方遊牧民族機動騎兵南下侵擾農業區", "作為絲綢之路向西方延伸以保護商隊安全的走廊", "防止中原百姓為了逃避沉重賦稅而大量逃亡至北方"], answer: 1, explanation: "長城的高牆與烽火台系統能有效遲滯、阻擋北方遊牧民族（如匈奴）機動性極強的騎兵南下劫掠，保護中原農業社會的安全。" },
-                            { question: "漢武帝派遣張騫出使西域，原意是為了尋找軍事盟友對抗匈奴。雖然軍事同盟未成，但張騫的足跡卻意外開啟了後世著名的「絲路」。這對漢代有何深遠影響？", options: ["導致漢朝最終被強大的羅馬帝國跨越沙漠征服", "使印度半島與中亞完全且直接成為漢朝的領土", "增進對西域認識並促成東西方商品與文化的交流", "促成了指南針的發明並引發了西方的地理大發現"], answer: 2, explanation: "張騫通西域（鑿空）打通了連接長安與中亞的交通要道。這不僅帶回西域情報，更促成絲綢、汗血馬與音樂、宗教等物資文化的跨國交流。" },
-                            { question: "唐代首都長安是當時世界上最繁華的城市之一。如果我們穿越回唐代長安城，下列哪一個場景最能說明它是一座具備高度包容性的「國際大都會」？", options: ["城內居民清一色是漢人且嚴格禁止穿著任何外國服飾", "城市僅允許皇室居住且完全禁止任何民間的商業活動", "街頭可見波斯商人與遣唐使並能找到外國宗教禮拜所", "城市完全被高牆封閉且沒有任何通往外國的聯外道路"], answer: 2, explanation: "唐代長安包容開放，吸引各國使節、商人與留學生（如遣唐使、粟特人），同時接納景教、伊斯蘭教等外來宗教，展現高度國際化多元風貌。" },
-                            { question: "歷史上著名的「永嘉之禍」，是指北方外族攻破首都洛陽，俘虜皇帝並導致西晉滅亡的重大事件。發動這場攻擊，直接導致晉室南渡的遊牧民族是？", options: ["建立北魏政權的鮮卑", "長期威脅北疆的匈奴", "活躍於唐代北方的突厥", "建立橫跨歐亞帝國的蒙古"], answer: 1, explanation: "西元311年（西晉永嘉五年），匈奴軍隊攻陷洛陽，燒殺擄掠並俘虜晉懷帝，史稱永嘉之禍，這是五胡亂華高潮，直接導致西晉滅亡與晉室南渡。" },
-                            { question: "唐太宗在擊敗北方的東突厥後，西北各遊牧部族的君長齊聚長安，共同尊奉唐太宗為「天可汗」。這個尊號在當時的政治語境中代表什麼實質意義？", options: ["唐太宗成為了西亞伊斯蘭教世界的最高宗教領袖", "唐太宗獲得超越漢族皇帝成為各民族共同君長的地位", "唐太宗正式宣布退位並將皇位禪讓給突厥的部族首領", "唐太宗向遊牧民族妥協並承諾完全放棄對西域的管轄"], answer: 1, explanation: "「天可汗」是遊牧民族對最高統治者的尊稱。唐太宗獲此尊號，象徵他不只是中原漢人皇帝，也是廣大西北遊牧民族共同臣服的國際共主。" },
-                            { question: "北魏孝文帝不顧保守貴族反對，堅決推動改穿漢服、說漢語等一系列漢化政策。從國家長治久安的角度來看，孝文帝此舉最深層的政治考量為何？", options: ["為了徹底消滅中原漢族流傳千年的所有文化與傳統", "為了引進西方的基督教信仰以取代傳統的佛教信仰", "為了消除胡漢隔閡加速鮮卑族融入以鞏固其統治根基", "為了準備將國都永久遷往長城以北的極寒草原地帶"], answer: 2, explanation: "北魏以少數民族統治多數漢人，孝文帝體認到只有全面學習漢族政治文化制度，消除民族界線，才能獲得漢族士人支持，確立政權穩定性。" },
-                            { question: "若你是一位置身於唐代長安城的旅人，觀察這座經過嚴密規劃的都城，你「不可能」在城市空間中看到下列哪一種景象？", options: ["城市最外圍有高大堅固的城牆與寬闊的護城壕溝圍繞", "城內主要街道如棋盤般筆直，東西向與南北向整齊交錯", "城內分為皇宮、政府機構皇城與一般平民居住的里坊", "平民的房屋可以不受管制地隨意搭建在主要街道正中央"], answer: 3, explanation: "唐代長安城是經過嚴格規劃的典型里坊制城市，形制方正，街道如棋盤整齊，且實施嚴格的分區管制（市坊分離），不可能允許隨意違建。" },
-                            { question: "唐代長安城在當時的世界貿易網絡中具有舉足輕重的地位，常被歷史學家稱為「絲路的東方起點」。這稱號主要是基於長安的何種地理與經濟特徵？", options: ["它是中國歷史上第一個建立且擁有最龐大人口的首都", "它是海上絲綢之路唯一允許外國商船停泊的對外港口", "它是陸上絲路向西通往中亞與歐洲的商品與文化集散地", "當時全世界只有長安城掌握了養蠶繅絲與生產絲綢的技術"], answer: 2, explanation: "長安不僅是政治中心，也是東西方貿易的總樞紐。各國商隊在長安匯集，再沿著絲路將東方的絲綢、瓷器運往西方，故被稱為絲路起點。" },
-                            { question: "在唐代的文獻與壁畫中，常出現被稱為「粟特人」（昭武九姓）的身影。他們在當時中西交流網絡中，最活躍也最著名的職業身分是什麼？", options: ["擔任唐朝禁軍的精銳騎兵將領", "四處弘揚佛法教義的虔誠高僧", "穿梭於絲路擅長經商的貿易中介", "主管全國科舉考試的朝廷文官"], answer: 2, explanation: "粟特人是來自中亞的商業民族，他們善於經商，壟斷了絲路上的許多貿易，是唐代長安城中最活躍的外國商人團體，促進了東西文化傳播。" },
-                            { question: "唐代對於外來宗教採取相對包容的態度，當時長安城內流傳著被合稱為「三夷教」的外來宗教。這三個曾在長安建立寺廟的宗教指的是？", options: ["源自印度的佛教、本土道教與儒教", "源自阿拉伯的伊斯蘭教、印度教與基督教", "源自波斯的祆教、基督教分支景教與摩尼教", "源自歐洲的天主教、東正教與西方新教"], answer: 2, explanation: "唐代將來自西亞、中亞的祆教（流行於波斯）、景教（基督教聶斯脫里派）以及摩尼教，統稱為「三夷教」，它們在長安都有自己的寺廟。" },
-                            { question: "中國古代有許多開鑿於懸崖壁上的石窟寺。其中位於甘肅省絲路要衝，內部擁有大量精美壁畫與泥塑，被譽為「沙漠中的美術館」的是哪一個石窟？", options: ["位於山西大同的雲岡石窟", "位於河南洛陽的龍門石窟", "位於甘肅河西走廊的敦煌莫高窟", "位於四川省江邊的樂山大佛石窟"], answer: 2, explanation: "敦煌莫高窟位於河西走廊西端，是絲路上的重鎮。商旅與僧侶在此祈求平安，開鑿了大量石窟，留下了極為豐富的佛教壁畫與雕塑。" },
-                            { question: "考古學家在唐代貴族墓葬中挖掘出許多造型生動的「胡人樂舞陶俑」，陶俑上的外國人正在演奏琵琶等西域樂器。這些文物最能印證唐代的何種社會現象？", options: ["唐代帝國的常備軍隊完全由外國傭兵所組成", "西域音樂舞蹈已深入傳入並融入唐代日常娛樂", "唐代政府頒布嚴格法令禁止漢人學習外國音樂", "西域各國的政治勢力已經完全取代了唐朝中央"], answer: 1, explanation: "胡人樂舞陶俑的大量出土，證明了來自西域的「胡樂」、「胡舞」在唐代極度流行，深受貴族與平民喜愛，是文化融合與日常生活交流的鐵證。" },
-                            { question: "日本的文字系統深受中國漢字影響。其中，「片假名」的發明，在字體形態上主要是模仿了中國漢字的哪一種書體特徵？", options: ["取漢字楷書的偏旁或部首簡化而成", "模仿漢字草書的流暢連綿線條演變", "直接拷貝漢字篆書繁複且對稱的筆畫", "完全與漢字無關而是拼音字母的變形"], answer: 0, explanation: "日本遣唐使與留學生將漢字帶回後，為標音方便，利用漢字「楷書」的偏旁部首創造了「片假名」；而「平假名」則源自漢字「草書」。" },
-                            { question: "隨著絲路貿易的繁榮，西方的事物大量傳入唐朝。在飲食與休閒生活方面，中亞商人（如粟特人）為長安帶來了哪些新奇的流行風尚？", options: ["教導漢人如何撰寫科舉考試所需的八股文", "傳入了打馬球運動以及新奇的音樂舞蹈胡服", "引進了能在水田中大量種植水稻的先進技術", "帶來了改變世界歷史的造紙術與火藥的配方"], answer: 1, explanation: "外國商人與使節不僅帶來商品，也帶來了西域的生活方式，如打馬球（波斯傳入）、穿著胡服、欣賞胡旋舞與胡樂，成為唐代的流行風尚。" },
-                            { question: "唐代長安城內匯聚了來自世界各地的人群。根據當時的世界地理認知與交通能力，下列哪個地區的人「最不可能」出現在長安的外來人口群體中？", options: ["來自北方草原從事貿易的突厥人", "來自朝鮮半島求學為官的新羅人", "來自中南美洲叢林地帶的馬雅人", "來自西域高昌綠洲的粟特籍商人"], answer: 2, explanation: "唐代的對外交往範圍主要涵蓋亞洲、部分歐洲與非洲。當時美洲（馬雅人所在）與歐亞大陸尚未有任何接觸，不可能出現在長安。" },
-                            { question: "漢武帝對外擴張的過程中，數次派兵深入西域，甚至設立了西域都護府。漢武帝積極經營西域政策，其背後最主要的國家戰略目的是什麼？", options: ["為了與西域國家結盟實施斷匈奴右臂戰略", "為了將西域的當地居民全部強制遷徙到中原", "為了在西域的仙山尋找傳說中的長生不老藥", "為了設立關卡嚴格阻止中國的絲綢流出國外"], answer: 0, explanation: "漢武帝經略西域的核心動機是軍事與外交上的。他希望聯合西域各國（如大月氏）從西方牽制匈奴，即「斷匈奴右臂」，以解除北疆威脅。" },
-                            { question: "「絲路」不僅是一條貿易路線，更是文明交流的動脈。下列哪一項歷史事件「不是」絲路開通後所帶來的實質歷史結果？", options: ["促進了中國絲綢與羅馬玻璃器皿等精美商品的交換", "帶動了佛教、伊斯蘭教等宗教在歐亞大陸的廣泛傳播", "促使中國發明的造紙術向西方輸出並改變了歐洲歷史", "導致羅馬帝國的龐大軍隊直接跨越絲路成功征服漢朝"], answer: 3, explanation: "絲路促進了物資（絲綢）、技術（造紙）與思想（佛教）交流。但羅馬帝國從未派兵跨越絲路征服漢朝，兩國僅有間接的商業與使節接觸。" },
-                            { question: "在西安碑林博物館中，保存著一塊名為《大秦景教流行中國碑》的著名石碑。這塊石碑文物的發現，證實了哪一個宗教在唐代曾傳入中國並一度流行？", options: ["由達摩祖師傳入並發源於印度的傳統佛教", "強調善惡二元對立並發源於波斯的拜火教", "源自基督教聶斯脫里派並被稱為大秦景教", "由阿拉伯商人透過海路傳入的伊斯蘭教"], answer: 2, explanation: "「大秦」是古代中國對羅馬帝國或近東地區的稱呼，「景教」即為基督教的聶斯脫里派。這塊石碑詳細記載了景教在唐代傳入的歷史。" },
-                            { question: "對於唐代首都長安城的城市定位，歷史學家在綜合考量其政治地位、經濟活動與文化多樣性後，最常給予下列哪一種綜合性的評價？", options: ["它只是一個單純的軍事防禦堡壘而完全沒有平民居民", "它是具有強大輻射力的政治中心與國際商貿文化樞紐", "它是一個完全自給自足且拒絕與外界交流的封閉村落", "它是專供皇帝與少數貴族進行春季狩獵的封閉皇家園林"], answer: 1, explanation: "長安既是唐朝的政治心臟，其東西兩市又匯集了天下與各國商品，加上各國使節與宗教的匯聚，使其成為典型的政治與國際商貿雙中心。" },
-                            { question: "自東漢末年以來的長期動亂，到「永嘉之禍」後達到了政治格局的大洗牌。這場變故後，中國的政治版圖在往後數百年間呈現何種狀態？", options: ["全國立刻再度統一於一個強大且穩定的漢族政權之下", "漢族退守江南建立東晉而北方陷入多個胡人政權割據", "北方重新由漢人統治而南方則完全被少數民族所佔據", "中國的政治與經濟中心永久轉移到了青藏高原與西域"], answer: 1, explanation: "永嘉之禍導致西晉滅亡，晉室與中原士族南渡建立東晉。北方則迎來了「五胡十六國」的混戰時期，形成南北對峙的歷史大格局。" },
-                            { question: "在唐代的太子墓（如章懷太子墓）中，發現了繪有各國使節手捧貢品、由唐朝官員引導的《客使圖》（禮賓圖）。這類壁畫最能反映唐代的何種政治現象？", options: ["唐朝對所有外國使節皆採取嚴厲的敵視與囚禁政策", "唐朝擁有完善的對外接待體系且在國際上享有威望", "唐朝僅願與亞洲國家交往而完全拒絕與歐洲人接觸", "唐朝皇帝經常拋下政務親自出國訪問周邊各個國家"], answer: 1, explanation: "《禮賓圖》描繪了鴻臚寺（外交機構）官員有條不紊地接待各國使節的場景，反映唐代強大的國力吸引萬邦來朝，且具備成熟的外交制度。" },
-                            { question: "日文的書寫系統包含了漢字、平假名與片假名。其中，「平假名」的字體圓潤流暢，它主要是模仿了中國漢字的哪一種書寫體裁發展而來的？", options: ["講求剛健方正且一筆一畫端正的楷書", "筆畫繁複且常用於官方印章的小篆", "線條連綿流暢且適合快速書寫的草書", "字形扁平且帶有波磔筆畫特徵的隸書"], answer: 2, explanation: "日本的「平假名」是為了書寫和歌等文學作品，取漢字「草書」流暢、連綿的線條特徵簡化而來（如：安→あ），字體較為圓潤。" },
-                            { question: "在研究唐代社會生活時，學者常將史料分為不同類型。唐代墓葬中出土的「壁畫」與「陶俑」屬於哪一種史料？其主要的歷史研究價值為何？", options: ["屬第二手史料；僅能用來研究古代文人的虛構文學創作", "屬第一手史料；能直觀還原當時人的服飾娛樂與社會風俗", "屬第一手史料；但它們全都是工匠偽造的而沒有研究價值", "屬第二手史料；主要用來證明外星人曾經造訪過唐代長安"], answer: 1, explanation: "出土文物（壁畫、陶俑）是當時人留下的直接產物，屬第一手史料（物質史料）。它們能提供文字難以描述的視覺圖像，是還原社會生活的鐵證。" },
-                            { question: "學者在研究唐代文獻與墓誌銘時發現，唐代婦女參與打馬球、騎馬出遊的比例甚高，且主動提出離婚改嫁的案例屢見不鮮。這些現象顯示唐代社會具有何種特質？", options: ["對女性的禮教束縛極其嚴格導致女性毫無任何人身自由", "社會風氣相對開放使女性在生活婚姻上享有較高自主性", "國家完全廢除了傳統家庭制度導致社會道德的全面崩壞", "只有極少數的貴族女性才能外出而平民女性被嚴格禁足"], answer: 1, explanation: "相較於後世對女性的嚴格束縛，唐代社會深受遊牧民族風氣與開放文化的影響，女性在著裝、社交與婚姻上擁有相對較大的自由與自主權。" },
-                            { question: "唐詩中常讀到「胡姬貌如花，當壚笑春風」，畫作中也常看到貴族女子穿著翻領的胡服騎馬。這些文藝作品捕捉到的現象，屬於歷史研究中的哪一個層面？", options: ["探討國家嚴格法律條文與刑罰制度的法制史研究", "分析統治階級宮廷政治鬥爭與權力更迭的政治史", "反映市民生活審美觀與中外文化交流的社會文化史", "單純記錄農業生產技術與農具改良過程的農業史"], answer: 2, explanation: "詩人描繪胡人酒家女，畫家描繪穿著胡服的女性，這些都是當時社會日常生活中真實存在的流行風尚與審美趨勢，屬於社會文化史的範疇。" },
-                            { question: "「絲綢之路」得名於其運輸的代表性商品。在古代這條漫長的貿易路線上，由中國大量「輸出」至中亞與歐洲的最主要、最具代表性的商品組合是什麼？", options: ["作為主要交易媒介與儲備財富的黃金與白銀", "來自熱帶地區的珍貴香料與色彩絢麗的寶石", "展現東方精湛工藝技術的精美絲綢與瓷器", "由西方工匠精心吹製的玻璃器皿與優良馬匹"], answer: 2, explanation: "中國古代壟斷了絲綢與瓷器的生產技術。這兩項商品質地精美，在西方備受貴族追捧，是絲路上由東向西輸出的最主要大宗商品。" },
-                            { question: "唐代長安城的住宅區實施嚴格的「里坊制」。城內規劃了一百多個整齊的「里坊」，這些里坊在城市的功能分區中主要扮演什麼角色？", options: ["作為皇帝與后妃專屬居住且嚴格禁閉的皇家禁苑區域", "作為集中處理全國政務與接待外國使節的中央辦公區", "作為以高牆封閉管理並供一般平民與百官居住的社區", "作為專門用來關押政治犯與處決死刑犯的軍事化刑場"], answer: 2, explanation: "長安城內的「坊」是四周有圍牆、定時啟閉坊門的封閉式住宅區，一般平民與官員都居住在這些里坊之內，便於政府的治安與戶籍管理。" },
-                            { question: "在唐代的文學筆記與唐三彩陶俑中，常將來自西域的商人描繪成「深目高鼻、濃鬚大眼、頭戴尖頂帽」。這種典型的外貌描述，最可能是指當時活躍於長安的哪個族群？", options: ["來自漠北草原並長期對抗中原的匈奴族群", "來自朝鮮半島並深受漢文化影響的新羅人", "來自中亞且極度擅長跨國商業貿易的粟特人", "來自南方炎熱地帶並從事熱帶農業的百越人"], answer: 2, explanation: "「深目高鼻、多鬚」是典型高加索人種的特徵。在唐代，這主要是指來自中亞、西亞一帶，操伊朗語族並極度活躍於絲路貿易的粟特商人。" },
-                            { question: "廣州的「懷聖寺」有一座造型獨特的宣禮塔，它是中國境內現存最古老的清真寺之一。這座寺廟的存在，見證了哪一個外來宗教在唐代藉由「海上絲路」傳入中國？", options: ["由達摩祖師傳入並深植於民間社會的印度佛教", "由阿拉伯商人帶來並崇拜真主阿拉的伊斯蘭教", "由歐洲傳教士帶來並以羅馬教宗為首的天主教", "由波斯人帶來並強調光明與黑暗對立的摩尼教"], answer: 1, explanation: "伊斯蘭教發源於阿拉伯，唐代時阿拉伯商人（大食人）透過海上絲路來到廣州等地貿易，並建立了懷聖寺等清真寺，見證了伊斯蘭教的傳入。" }
-                        ]
-                    }
-                ]
+            history: {
+                name: '歷史', icon: '📜', color: 'amber',
+                chapters: [{"name": "第1課 商周至隋唐的國家與社會", "data": [{"question": "附表列出四件歷史事件。依發生的先後，正確的順序為何？", "options": ["丁→甲→丙→乙", "丁→丙→甲→乙", "甲→丁→丙→乙", "丁→甲→乙→丙"], "answer": 0, "explanation": "丁 周人滅商、建立西周 → 甲 周王室東遷（西元前770年）→ 丙 秦國商鞅變法（西元前356年）→ 乙 秦統一天下（西元前221年）。", "source": "1-1 從封建到帝國｜課本第74～78頁 時間軸、內文", "pattern": "分析詮釋｜附表題（年代時序）", "image": "h1_events", "fixed": true}, {"question": "西周為什麼要施行封建，分封親戚和功臣為諸侯？", "options": ["讓平民有機會參與政治", "加強對新征服地的控制，保衛王室", "削弱世族的勢力", "選拔有才能的士人任官"], "answer": 1, "explanation": "課本：西周為加強對新征服地的控制，施行封建，分封親戚和功臣為諸侯，駐守重要地點以保衛王室。", "source": "1-1 一 商與西周：封建的形成｜課本第76頁", "pattern": "覺察說明｜文字題"}, {"question": "附圖為西周社會階層關係示意圖。西周利用「宗法」確立貴族之間的尊卑關係，主要的依據是什麼？", "options": ["考試的成績", "財富的多寡", "血緣的親疏", "戰功的大小"], "answer": 2, "explanation": "西周利用宗法，透過血緣的親疏，確立貴族間的尊卑關係；貴族的身分世代相襲。", "source": "1-1 一｜課本第76頁 圖2-1-2", "pattern": "覺察說明｜附圖題", "image": "h1_class"}, {"question": "西周貴族在祭祀、宴飲、喪葬時，要依身分使用不同的禮儀與音樂、舞蹈。這種「禮樂」制度的主要目的是什麼？", "options": ["促進各民族的文化交流", "增加平民受教育的機會", "統一全國的文字與貨幣", "規範貴族行為，穩定封建秩序"], "answer": 3, "explanation": "充電站「禮樂」：藉由制定祭祀、宴飲、喪葬等禮儀，配合對應的音樂、舞蹈，規範貴族的政治活動與生活方式，以穩定封建秩序。", "source": "1-1 一 充電站「禮樂」｜課本第76頁", "pattern": "分析詮釋｜文字題"}, {"question": "附圖甲是西周都城鎬京（今西安附近），乙是東周都城雒邑（今洛陽）。「東周」這個名稱，和周王室遷都的方向有關。周王室是往哪個方向遷都？", "options": ["由南向北", "由東向西", "由北向南", "由西向東"], "answer": 3, "explanation": "西周末年，諸侯聯合犬戎攻入首都，迫使周王室由鎬京東遷到雒邑，史稱東周。從地圖可以看到，雒邑在鎬京的東方。", "source": "1-1 二 東周：封建的衰微｜課本第77頁 圖2-1-3", "pattern": "資料蒐整與應用｜附圖題｜跨子科（地理×歷史）", "image": "h1_move"}, {"question": "東周以後，封建秩序逐漸瓦解。課本提到的原因是什麼？", "options": ["秦始皇廢除了封建", "分封已久，諸侯間血緣關係漸疏遠", "科舉制度取代了封建", "胡人大量遷入中原"], "answer": 1, "explanation": "隨著周王室分封已久，諸侯間的血緣關係漸疏遠，封建秩序逐漸鬆動；加上周王破壞宗法，導致王室東遷，諸侯勢力坐大。", "source": "1-1 二｜課本第77頁 內文", "pattern": "覺察說明｜文字題"}, {"question": "東周時，秦國任用商鞅變法，「按軍功授爵位」。這項改革最可能帶來什麼影響？", "options": ["國家不再需要軍隊", "貴族的身分更加穩固", "平民可因戰功升遷，打破貴族世襲", "士人只能透過考試任官"], "answer": 2, "explanation": "按軍功授爵，代表爵位不再只靠貴族血緣世襲，平民立下戰功也能升遷。這是秦國富國強兵的改革，也為統一天下奠定基礎。", "source": "1-1 二｜課本第77頁 內文", "pattern": "判斷創新｜文字題"}, {"question": "今天的戶政事務所負責戶籍登記。東周各國開始以家戶為單位「編列戶籍」，最主要的目的是什麼？", "options": ["選拔孝子和廉吏", "讓人民可以自由遷徙", "有效徵集租稅、兵員和勞役", "推廣儒家思想"], "answer": 2, "explanation": "充電站：由於戰爭頻繁，國家為有效徵集租稅、兵員和勞役，以家戶為單位，將人民編入戶籍以便掌握人口。", "source": "1-1 二 充電站「編列戶籍」｜課本第77頁", "pattern": "分析詮釋｜文字題（生活連結）"}, {"question": "孔子秉持「有教無類」的理念，私人講學。這最能說明東周時期的哪一項變化？", "options": ["科舉考試開始實施", "只有貴族才能受教育", "國家設立太學教授經典", "平民受教育的機會增加"], "answer": 3, "explanation": "西周時期僅貴族才能接受教育；東周以後部分貴族流落民間，以辦學宣講謀生，私人講學風氣盛行，增加平民受教育的機會。", "source": "1-1 二｜課本第77頁 圖2-1-4", "pattern": "分析詮釋｜文字題"}, {"question": "秦始皇全面推行郡縣制度。郡縣的地方長官是如何產生的？", "options": ["由諸侯世襲", "由中央直接任免", "由人民選舉產生", "由世族推舉"], "answer": 1, "explanation": "秦始皇施行中央集權，不再實施封建，全面推行郡縣，郡縣長官由中央直接任免。", "source": "1-1 三 秦代：中央集權的建立｜課本第78頁", "pattern": "覺察說明｜文字題"}, {"question": "附表甲～丁中，屬於「郡縣」制度的敘述有哪些？", "options": ["乙丁", "甲丙", "甲丁", "乙丙"], "answer": 0, "explanation": "乙（中央直接任免地方長官，加強中央集權）、丁（加強中央對地方的管理，防止割據分裂）屬於郡縣。甲（分封親戚功臣保衛王室）、丙（隨不斷分封而擴大領土）屬於封建。", "source": "1-1 觀念釐清「封建與郡縣」｜課本第79頁", "pattern": "分析詮釋｜附表題", "fixed": true, "group": "H1A"}, {"question": "關於封建和郡縣的比較，下列敘述何者正確？", "options": ["封建的官吏由中央派任", "封建是間接管理，郡縣是直接管理", "郡縣的官吏由分封世襲", "兩者都由皇帝分封諸侯"], "answer": 1, "explanation": "封建：周王分封諸侯，間接管理地方，官吏來源是分封、世襲。郡縣：皇帝派任郡縣長官，直接管理地方，官吏由中央派任。", "source": "1-1 觀念釐清｜課本第79頁", "pattern": "覺察說明｜附表題", "group": "H1A"}, {"question": "附表為戰國時期各國使用的貨幣。秦統一天下後，把貨幣統一為「半兩錢」。這項措施最主要的好處是什麼？", "options": ["增加諸侯國的自主性", "讓各國保留自己的特色", "有助於各地的經濟交流", "方便控制人民的思想"], "answer": 2, "explanation": "戰國各國貨幣形狀、單位不同，交易很不方便。秦始皇統一文字、貨幣、車軌、度量衡，有助於各地經濟與文化交流。", "source": "1-1 三｜課本第78頁 圖2-1-5", "pattern": "分析詮釋｜附表題", "image": "h1_coins"}, {"question": "秦始皇修築以咸陽為中心、通往各地的「馳道」。這項建設主要的作用是什麼？", "options": ["作為東西貿易的絲路", "抵禦北方匈奴南下", "方便諸侯朝見周王", "強化中央集權，促進各地交流"], "answer": 3, "explanation": "課本圖2-1-6：秦始皇修築以咸陽為中心的馳道，藉以強化中央集權，也促進帝國境內各地的互動與交流。抵禦匈奴的是長城。", "source": "1-1 三｜課本第78頁 圖2-1-6", "pattern": "覺察說明｜文字題"}, {"question": "秦朝很快就滅亡。下列何者「不是」秦大失民心的原因？", "options": ["統一文字與度量衡", "實施焚書坑儒", "統治嚴苛、刑罰殘酷", "修築長城、馳道勞民傷財"], "answer": 0, "explanation": "課本：秦始皇實施焚書坑儒，統治嚴苛、刑罰殘酷，又修築長城、馳道等建設，勞民傷財而大失民心。統一文字與度量衡則有助於經濟與文化交流，不是失去民心的原因。", "source": "1-1 三｜課本第78頁", "pattern": "判斷創新｜文字題"}, {"question": "秦始皇陵的兵馬俑數量龐大，當時建造皇陵動員了七十萬的人力。這最能反映秦代的哪一項特色？", "options": ["封建諸侯的勢力強大", "國家控制人民的力量強大", "世族享有免勞役的特權", "平民可自由選擇職業"], "answer": 1, "explanation": "單元扉頁說明：建造皇陵動員七十萬人力，可見當時國家控制的力量相當強大，這和秦的中央集權體制有關。", "source": "第二單元 扉頁學習圖解｜課本第74～75頁", "pattern": "分析詮釋｜文字題（文物）"}, {"question": "東周時以孔子為代表的儒家思想，後來不只影響中國，隋唐時期也傳到日本、朝鮮，成為哪一個文化圈的共同元素？", "options": ["歐洲文化圈", "伊斯蘭文化圈", "東亞文化圈", "草原文化圈"], "answer": 2, "explanation": "東周充電站：儒家思想對中國各朝代，乃至於東亞的政治、社會都有極大的影響力。第2課會學到，隋唐時日本、朝鮮廣受中國文化影響，形成「東亞文化圈」。", "source": "1-1 二 充電站「東周時期的學術發展」；2-2 二", "pattern": "分析詮釋｜文字題（跨課）"}, {"question": "漢武帝實施「察舉」，選拔人才的方式是什麼？", "options": ["依軍功高低授予爵位", "士人報名參加考試", "中央派官員依九品評選士人", "地方長官定期向政府推舉孝子和廉吏"], "answer": 3, "explanation": "漢武帝時實施察舉，要求地方長官定期向政府推舉「孝子」和「廉吏」；又成立太學，教授儒家經典。", "source": "1-2 一 漢代：察舉、太學｜課本第80頁", "pattern": "覺察說明｜文字題"}, {"question": "漢代熟讀儒家經典成為任官的重要途徑，士人往往把經書的見解傳授給家族子弟。長期下來，形成了什麼現象？", "options": ["經學傳家、累世當官的世家大族", "平民大量考取官職", "諸侯割據地方", "胡人擔任政府官員"], "answer": 0, "explanation": "課本：由於熟讀儒家經典成為任官選拔的重要途徑，士人往往將經書的見解傳授給家族子弟，逐漸形成以經學傳家、累世當官的世家大族。", "source": "1-2 一｜課本第80頁", "pattern": "分析詮釋｜文字題"}, {"question": "曹魏以後改採「九品官人之法」，主要是因為什麼背景？", "options": ["國家統一後要削弱世族", "東漢末年社會動盪，地方官無法順利推舉人才", "科舉制度出現弊端", "秦朝的郡縣制度被廢除"], "answer": 1, "explanation": "東漢末年社會動盪，戶口破壞，地方官員已無法順利推舉人才。曹魏以後為了直接掌握人才的選拔與任用，改由中央派官員到各地，以九品的等第評選士人。", "source": "1-2 二 魏晉南北朝：九品官人之法｜課本第80頁", "pattern": "分析詮釋｜文字題"}, {"question": "魏晉南北朝時出現「上品無寒門，下品無世族」的現象。這說明九品官人之法在實際評選時，最看重什麼？", "options": ["士人的戰功", "士人的考試成績", "士人的家世背景", "士人的品德"], "answer": 2, "explanation": "負責評選的官員多由世族出任，實際評選時多看重士人的家世背景，所以高品第都是世族，出身寒門的人很難得到好品第。", "source": "1-2 二｜課本第80頁", "pattern": "分析詮釋｜文字題"}, {"question": "依附表，魏晉南北朝時期世族鼎盛，享有哪些特權？", "options": ["不能擁有土地", "只能從事商業活動", "必須參加科舉考試", "掌握政治權力，免賦稅、免勞役"], "answer": 3, "explanation": "魏晉南北朝時期，世族勢力龐大，不僅掌控政治權力，擁有眾多土地，且享有免賦稅、免勞役的經濟特權，甚至連皇帝也要向世族妥協。", "source": "1-2 二｜課本第80頁 內文、圖2-1-9", "pattern": "覺察說明｜附表題", "group": "H1B"}, {"question": "附表中的「？」，最適合填入下列哪一項？", "options": ["科舉的實施等因素使世族日漸沒落", "察舉的實施使世族逐漸形成", "九品官人之法使世族勢力鼎盛", "封建制度使世族世代相襲"], "answer": 0, "explanation": "隋唐以後，科舉的實施等因素使世族日漸沒落，世族逐漸退出政治舞臺。", "source": "1-2 三 隋代以後：科舉制度｜課本第81頁 圖2-1-9", "pattern": "分析詮釋｜附表題", "group": "H1B"}, {"question": "隋代廢除九品官人之法、改採科舉，最主要的目的是什麼？", "options": ["讓世族更容易任官", "削弱世族的勢力，維繫政權", "恢復西周的封建制度", "選拔擅長軍事的人才"], "answer": 1, "explanation": "課本：隋代結束魏晉南北朝的分裂局面，為了維繫政權、削弱世族的勢力，廢除九品官人之法，改採科舉。", "source": "1-2 三｜課本第81頁", "pattern": "覺察說明｜文字題"}, {"question": "科舉制度從隋代沿用到清末。它對中國社會最主要的影響是什麼？", "options": ["讓官位只能由貴族世襲", "使世族的勢力更加龐大", "提升平民任官機會，促進社會階層流動", "使人民不再重視讀書"], "answer": 2, "explanation": "科舉提升平民任官的機會，不但促進社會階層的流動，也逐漸形成讀書的風氣。", "source": "1-2 三｜課本第81頁", "pattern": "覺察說明｜文字題"}, {"question": "附表為三則關於選才制度的資料（改寫）。依制度出現的先後，正確的順序為何？", "options": ["甲→丙→乙", "甲→乙→丙", "丙→甲→乙", "乙→丙→甲"], "answer": 0, "explanation": "甲是地方長官推舉孝廉（漢代察舉）→ 丙是依家世、才能、品德評定九品（魏晉南北朝九品官人之法）→ 乙是報名考試、考取任官（隋代以後科舉）。", "source": "1-2 學習會考「選才任官制度」｜課本第82頁；圖2-1-11", "pattern": "分析詮釋｜附表題（年代時序）", "image": "h1_select", "fixed": true}, {"question": "今天我國以「公務人員考試」選拔政府官員，不論出身，只要考試及格就有機會任職。這個做法的精神，最接近歷史上的哪一種選才制度？", "options": ["分封世襲", "察舉", "九品官人之法", "科舉"], "answer": 3, "explanation": "科舉由士人報名參加考試，考取者得任官職，不論出身貧富，和今天的國家考試精神最接近。", "source": "1-2 三｜課本第81頁", "pattern": "判斷創新｜文字題｜跨子科（歷史×公民）"}, {"question": "東晉時流傳「王與馬，共天下」的說法（王指世族琅琊王氏，馬指皇室司馬家族）。這句話最能說明什麼現象？", "options": ["皇帝須與世族合作才能統治", "皇帝的權力完全不受限制", "平民透過科舉掌握政權", "胡人掌握南方政權"], "answer": 0, "explanation": "課後閱讀：東晉皇帝司馬睿十分倚賴出身世族的王導謀畫，表示司馬家族要跟王家攜手才能有效統治，反映魏晉南北朝世族勢力龐大。", "source": "1 課後閱讀「魏晉南北朝的世家大族」｜課本第83頁", "pattern": "分析詮釋｜閱讀理解題"}, {"question": "唐代詩人劉禹錫寫道：「舊時王謝堂前燕，飛入尋常百姓家。」詩句描寫的是哪一種歷史變化？", "options": ["平民受教育機會減少", "世族門第的破敗", "佛教的盛行", "胡風的流行"], "answer": 1, "explanation": "王、謝是東晉南朝最大的世族。燕子從世族的大宅飛到一般百姓家，象徵世族門第破敗。唐代以後，世族的影響力逐漸走向衰微。", "source": "1 課後閱讀｜課本第83頁", "pattern": "問題發現｜文字題（跨科：國文）"}, {"question": "附表為東漢滅亡後的政局發展。依發生的先後，正確的順序為何？", "options": ["乙→丙→甲", "甲→乙→丙", "丙→乙→甲", "乙→甲→丙"], "answer": 0, "explanation": "東漢滅亡後，先是曹魏、蜀漢、孫吳三國鼎立（乙），後由西晉短暫統一（丙），西晉滅亡後中國進入兩百多年的南北分裂（甲），最後由隋統一。", "source": "1-2 充電站「魏晉南北朝」｜課本第80頁 圖2-1-8", "pattern": "分析詮釋｜附表題（年代時序）", "image": "h1_split", "fixed": true}]}, {"name": "第2課 商周至隋唐的民族與文化", "data": [{"question": "秦統一天下後，把秦代以前修築的城牆連結成長城。長城在民族關係上有什麼意義？", "options": ["成為東西貿易的主要通道", "成為農業民族與草原民族的分界線", "成為佛教傳入的路線", "成為南北朝的分界"], "answer": 1, "explanation": "課本：秦統一後將城牆連結成長城，作為北方抵禦匈奴的防線，長城自此成為農業民族與草原民族的分界線。", "source": "2-1 一 商周至秦漢的民族互動｜課本第84頁", "pattern": "覺察說明｜文字題"}, {"question": "漢武帝派遣張騫出使西域，最初的目的是什麼？", "options": ["引進佛教經典", "聯絡西域國家打擊匈奴", "開闢海上貿易路線", "與羅馬帝國建立邦交"], "answer": 1, "explanation": "漢武帝為了聯絡西域國家打擊匈奴，派張騫出使西域，結果強化了與西域各國的往來，使東西商路更加活絡。", "source": "2-1 一｜課本第84頁", "pattern": "覺察說明｜文字題"}, {"question": "附圖中，絲路的東方起點是哪一處？", "options": ["甲", "乙", "丙", "丁"], "answer": 0, "explanation": "甲是長安，是漢代的都城，也是絲路的東方起點。丁是大秦（羅馬帝國）。", "source": "2-1 一｜課本第84頁 圖2-2-1；課後閱讀「國際城市長安城」", "pattern": "資料蒐整與應用｜附圖題", "fixed": true, "group": "H2A"}, {"question": "中國產的絲綢經由絲路向西傳播，最遠可以到達圖中哪一處？", "options": ["甲", "乙", "丙", "丁"], "answer": 3, "explanation": "課本圖說：中國產的絲綢向西傳播，最遠可達大秦（羅馬帝國），也就是圖中的丁。", "source": "2-1 一｜課本第84頁 圖2-2-1 圖說", "pattern": "資料蒐整與應用｜附圖題", "fixed": true, "group": "H2A"}, {"question": "圖中的乙是位在今甘肅的敦煌。這裡有中國三大石窟中的哪一座？", "options": ["龍門石窟", "雲岡石窟", "莫高窟", "懷聖寺"], "answer": 2, "explanation": "課本圖2-2-4：莫高窟在甘肅敦煌，雲岡石窟在山西大同，龍門石窟在河南洛陽。懷聖寺是廣州的清真寺。", "source": "2-2 一 宗教｜課本第86頁 圖2-2-4", "pattern": "資料蒐整與應用｜附圖題（跨課）", "group": "H2A"}, {"question": "絲路經過的西域地區氣候乾燥，沿線的城市與商隊歇腳處大多位在哪裡？（提示：地理第2課提到乾燥地區居民多集中的地方）", "options": ["高山山頂", "綠洲", "沙漠中央", "冰川附近"], "answer": 1, "explanation": "地理第2課：黑河—騰衝線以西氣候乾燥少雨，居民多集中在河谷與綠洲。絲路沿線的城市也多依靠綠洲的水源發展。", "source": "歷史 2-1 一 圖2-2-1；地理 第2課 2-1 三", "pattern": "分析詮釋｜文字題｜跨子科（地理×歷史）"}, {"question": "西元311年，匈奴攻進西晉首都洛陽，皇帝被俘，西晉不久滅亡，晉人南遷建立東晉。這個事件稱為什麼？", "options": ["怛羅斯之戰", "安史之亂", "永嘉之禍", "孝文帝遷都"], "answer": 2, "explanation": "充電站：西元311年匈奴攻進洛陽，皇帝被俘，是為「永嘉之禍」。不久西晉滅亡，北方成為胡人的天下，晉人南遷長江流域，史稱東晉。", "source": "2-1 二 充電站「永嘉之禍」｜課本第85頁", "pattern": "覺察說明｜文字題"}, {"question": "永嘉之禍後，大批北方人士避難南遷。這對中國經濟發展有什麼影響？", "options": ["北方經濟更加繁榮", "加速南方開發，經濟重心逐漸南移", "絲路從此中斷", "海上貿易完全停止"], "answer": 1, "explanation": "課本：永嘉之禍爆發後，大批北方人士避難南遷，加速南方經濟的開發，也促使中國經濟重心逐漸南移。", "source": "2-1 二｜課本第85頁", "pattern": "分析詮釋｜文字題"}, {"question": "附表是某位皇帝推行政策後，部分鮮卑姓氏改成的漢姓。推行這項政策的是哪一位皇帝？", "options": ["漢武帝", "秦始皇", "北魏孝文帝", "唐太宗"], "answer": 2, "explanation": "北魏孝文帝積極推行漢化，規定鮮卑人改用漢姓（例如拓跋改為元）、穿漢服、鼓勵與漢人通婚，並把首都從平城遷到洛陽。", "source": "2-1 二｜課本第85頁 圖2-2-3", "pattern": "資料蒐整與應用｜附表題", "image": "h2_surname"}, {"question": "北魏孝文帝推行改漢姓、穿漢服、鼓勵胡漢通婚等措施，最主要的影響是什麼？", "options": ["使佛教失去影響力", "使胡漢衝突更加嚴重", "使北魏退出中原", "促進胡漢融合，奠定隋唐盛世基礎"], "answer": 3, "explanation": "課本：孝文帝的漢化措施促進胡漢融合，奠定日後隋唐盛世的基礎。", "source": "2-1 二｜課本第85頁", "pattern": "分析詮釋｜文字題"}, {"question": "北魏孝文帝遷都前的舊都「平城」（今山西大同），是圖中哪一處？", "options": ["甲", "乙", "丙", "丁"], "answer": 0, "explanation": "甲是平城（今山西大同），乙是洛陽，丙是長安，丁是建康（今南京）。孝文帝由平城往南遷都到洛陽。", "source": "2-1 二｜課本第85頁 圖2-2-2", "pattern": "資料蒐整與應用｜附圖題｜跨子科（地理×歷史）", "fixed": true, "group": "H2B"}, {"question": "永嘉之禍後南遷的東晉，以及之後的南朝，都城設在圖中哪一處？", "options": ["甲", "乙", "丙", "丁"], "answer": 3, "explanation": "東晉與南朝的都城是建康（今南京），也就是丁，位在長江下游。", "source": "2-1 二｜課本第85頁 圖2-2-2", "pattern": "資料蒐整與應用｜附圖題", "fixed": true, "group": "H2B"}, {"question": "唐太宗滅了北方草原的強權東突厥之後，被各族尊為「天可汗」。這個稱號代表什麼意義？", "options": ["唐太宗出身草原民族", "唐太宗是各族共同的君長", "唐太宗信仰伊斯蘭教", "唐太宗把首都遷到草原"], "answer": 1, "explanation": "充電站：「可汗」原是草原民族領袖的稱呼。唐太宗被尊為「天可汗」，代表其地位高於西北各民族領袖，是各族的共同君長，亦即東亞國際盟主。", "source": "2-1 二 充電站「天可汗」｜課本第85頁", "pattern": "覺察說明｜文字題"}, {"question": "唐朝前期的社會風氣「兼容並蓄、胡漢融合」。下列何者是形成這種風氣的原因？", "options": ["唐朝恢復西周的封建制度", "唐朝禁止外國人入境", "魏晉以來民族融合，加上外族來唐經商留學", "唐朝只信奉單一宗教"], "answer": 2, "explanation": "唐初唐太宗聲威遠播，許多外族來到中國經商、留學與傳教，甚至擔任政府官員；再加上魏晉以來民族融合的結果，使唐朝前期社會兼容並蓄。", "source": "2-1 二｜課本第85頁", "pattern": "分析詮釋｜文字題"}, {"question": "源自印度的佛教在西漢末年傳入中國，到了魏晉南北朝才開始盛行。主要原因為何？", "options": ["佛教是由唐太宗傳入", "政府規定人民一律信佛", "科舉考試以佛經為考題", "政權更迭頻繁，人心尋求宗教慰藉"], "answer": 3, "explanation": "課本：魏晉南北朝政權更迭頻繁，社會動盪，人心尋求宗教的慰藉，佛教乃開始盛行，與佛教有關的建築和藝術隨之興起。", "source": "2-2 一 外來文化的傳入｜課本第86頁", "pattern": "分析詮釋｜文字題"}, {"question": "附表為中國三大石窟的位置。北魏孝文帝遷都前、後的都城附近，各有一座大型石窟。這兩座石窟依序是哪兩座？", "options": ["雲岡石窟、龍門石窟", "龍門石窟、雲岡石窟", "莫高窟、雲岡石窟", "莫高窟、龍門石窟"], "answer": 0, "explanation": "遷都前的都城平城在今山西大同，附近是雲岡石窟；遷都後的洛陽附近是龍門石窟。把石窟的位置和北魏遷都連起來，就能判斷。", "source": "2-2 一｜課本第86頁 圖2-2-4；2-1 二 孝文帝遷都", "pattern": "分析詮釋｜附表題（跨節整合）", "image": "h2_caves", "fixed": true}, {"question": "唐太宗時，玄奘前往印度取經，回國後翻譯大量佛經。這對佛教發展有什麼影響？", "options": ["使佛教傳入羅馬帝國", "使佛教從中國消失", "使伊斯蘭教傳入中國", "促進佛教的中國化"], "answer": 3, "explanation": "課本：唐朝是中國佛教的鼎盛時期。玄奘前往印度取經，回國後翻譯大量佛經，進一步促進佛教的中國化。", "source": "2-2 一｜課本第86頁", "pattern": "覺察說明｜文字題"}, {"question": "附表中的三首唐詩，最能反映唐代社會的哪一種現象？", "options": ["胡風盛行", "佛教衰微", "科舉廢除", "封建復興"], "answer": 0, "explanation": "詩中出現胡姬酒肆、胡旋舞、胡麻餅，顯示胡人的飲食、音樂、舞蹈在唐代很流行，「胡風」成為當時的流行時尚。", "source": "2 探究活動「穿越時空到唐代」資料一｜課本第90頁", "pattern": "資料蒐整與應用｜附表題（史料判讀）", "group": "H2C"}, {"question": "〈胡旋女〉提到胡人將領安祿山也擅長胡旋舞。由此可以推論唐代的哪一項特色？", "options": ["胡人不能進入長安城", "外族人也能在唐朝擔任官員或將領", "唐朝禁止胡人表演舞蹈", "唐朝只任用漢人官員"], "answer": 1, "explanation": "課本：唐初許多外族來到中國經商、留學與傳教，甚至擔任政府官員。安祿山是胡人卻擔任將領，反映唐代兼容並蓄的特色。", "source": "2-1 二；2 探究活動｜課本第85、90頁", "pattern": "分析詮釋｜附表題（史料判讀）", "group": "H2C"}, {"question": "今天常吃的胡瓜、胡椒、胡麻（芝麻），名稱裡都有「胡」字。這最可能反映什麼歷史背景？", "options": ["都是秦始皇下令種植", "都是由胡人在中國本地發明", "與西域、外族交流時傳入中國", "都是從日本傳入中國"], "answer": 2, "explanation": "古代常把西北方的外族稱為「胡」。這些名稱有「胡」字的食物，多是在與西域、外族交流的過程中傳入中國，就像唐代流行的胡麻餅一樣。", "source": "2-2 一 2.日常生活｜課本第86頁", "pattern": "問題發現｜文字題（生活情境）"}, {"question": "依課後閱讀，下列何者「不能」用來說明唐代長安是一座國際城市？", "options": ["粟特商人帶來西域商品與音樂", "日本僧侶到長安學習佛法", "城內有祆教、景教、摩尼教", "皇帝居住在城北的宮城"], "answer": 3, "explanation": "皇帝住在宮城，說明的是長安的城市規畫，不能說明它的國際色彩。其他三項都說明長安有許多外國人與外來宗教、文化。", "source": "2 課後閱讀「國際城市長安城」｜課本第89頁", "pattern": "判斷創新｜閱讀理解題"}, {"question": "「仿效唐的衣冠、曆法、律令、漢字，文風非常興盛，號稱『君子國』。」這是表中哪一處？", "options": ["甲", "乙", "丙", "丁"], "answer": 0, "explanation": "這是朝鮮半島的新羅（甲）。隋唐時期，朝鮮半島各國中以新羅最仰慕中國文化。", "source": "2-2 二 中國文化的外傳｜課本第87頁", "pattern": "分析詮釋｜附表題", "fixed": true, "group": "H2D"}, {"question": "「唐軍在怛羅斯戰敗，不少造紙匠被俘虜，中國的造紙術因而西傳。」這是唐朝與表中哪一處的交流？", "options": ["甲", "乙", "丙", "丁"], "answer": 3, "explanation": "八世紀中葉，唐軍與大食（阿拉伯帝國，丁）在怛羅斯交戰戰敗，造紙術因而西傳。", "source": "2-2 二｜課本第87頁", "pattern": "分析詮釋｜附表題", "fixed": true, "group": "H2D"}, {"question": "唐太宗以文成公主和親，公主帶著穀物種子、藥材、茶葉和書籍前往。她嫁到表中哪一處？", "options": ["甲", "乙", "丙", "丁"], "answer": 2, "explanation": "唐初吐蕃（今西藏，丙）國勢大盛，遣使向唐朝求婚，唐太宗以文成公主和親，加強了漢藏之間的經濟文化交流。", "source": "2-2 二｜課本第87頁", "pattern": "分析詮釋｜附表題", "fixed": true, "group": "H2D"}, {"question": "附表為日文假名與漢字的關係。依課本，日文的「平假名」是模仿漢字的哪一種字體而成？", "options": ["草書", "楷書的偏旁", "篆書", "隸書"], "answer": 0, "explanation": "課本圖2-2-9：日文的片假名採取漢字楷書偏旁簡化而成，平假名則是模仿漢字草書所作。兩者容易混淆。", "source": "2-2 二｜課本第87頁 圖2-2-9", "pattern": "覺察說明｜附表題", "image": "h2_kana"}, {"question": "七世紀中葉，日本推動「大化革新」。這項改革的藍本是什麼？", "options": ["印度的佛教經典", "唐代的律令、制度", "阿拉伯的造紙技術", "羅馬帝國的法律"], "answer": 1, "explanation": "課本：七世紀中葉日本推動的大化革新，是以唐代的律令、制度為藍本的「唐化運動」。", "source": "2-2 二｜課本第87頁", "pattern": "覺察說明｜文字題"}, {"question": "隋唐時期，日本、朝鮮等地廣受中國文化影響，形成「東亞文化圈」。下列何者「不是」東亞文化圈的共同元素？", "options": ["儒學", "漢字", "伊斯蘭教", "佛教"], "answer": 2, "explanation": "東亞文化圈的共同元素包括漢字、儒學、佛教、律令制度等。伊斯蘭教雖在唐代傳入中國，但不是東亞文化圈的共同元素。", "source": "2-2 二｜課本第87頁", "pattern": "判斷創新｜文字題"}, {"question": "附表列出四件歷史事件。依發生的先後，正確的順序為何？", "options": ["乙→丁→甲→丙", "丁→乙→甲→丙", "乙→甲→丁→丙", "乙→丁→丙→甲"], "answer": 0, "explanation": "乙 張騫出使西域（西元前139年）→ 丁 永嘉之禍（西元311年）→ 甲 北魏孝文帝遷都洛陽（西元493年）→ 丙 唐軍在怛羅斯戰敗（八世紀中葉）。", "source": "第二單元 時間軸｜課本第75頁；2-1、2-2", "pattern": "分析詮釋｜附表題（年代時序）", "image": "h2_events", "fixed": true}, {"question": "依探究活動資料，唐代可以協議離婚，公主再嫁的情形也很多。和以往的朝代相比，唐代婦女在婚姻上的自主性較高，最可能的原因是什麼？", "options": ["受到焚書坑儒的影響", "受到科舉制度的影響", "受到封建宗法的影響", "受到胡人文化的影響"], "answer": 3, "explanation": "探究活動資料二提到，北方胡人的習俗在魏晉南北朝時已影響北方，唐代皇室的行為也和鮮卑、突厥的習俗類似；加上唐代胡風盛行，所以禮教束縛較小。", "source": "2 探究活動 資料二｜課本第90～91頁", "pattern": "判斷創新｜閱讀理解題（史料）"}, {"question": "唐代的〈虢國夫人遊春圖〉畫出女性騎馬出遊，「馬球仕女俑」呈現女性打馬球。對研究唐代女性生活的人來說，這兩件文物屬於什麼資料？", "options": ["第一手史料", "後人的研究文章", "民間傳說故事", "現代小說創作"], "answer": 0, "explanation": "探究活動：唐代留下的繪畫與陶俑，都可作為我們了解唐代社會的第一手史料，也能和研究文章互相印證。", "source": "2 探究活動 資料三、四｜課本第91頁", "pattern": "判斷創新｜文字題（史料性質）"}]}]
             },
-            'geography': {
-                id: 'geography', name: '地理', icon: '🌍', bg: 'bg-emerald-500', text: 'text-emerald-700', bgLight: 'bg-emerald-100', border: 'border-emerald-500',
-                hoverBorder: 'hover:border-emerald-500', hoverBg: 'hover:bg-emerald-50', themeBorder: 'border-emerald-100',
+            geography: {
+                name: '地理', icon: '🌏', color: 'emerald',
                 chapters: [
-                    {
-                        name: '01_中國的自然環境',
-                        data: [
-                            { question: "某探險隊從中國東部沿海出發向西行至青藏高原，發現沿途地勢呈現明顯的階梯狀抬升。根據地形學說，這種「三級階梯」的劃分，主要是依據下列哪一項自然地理特徵？", options: ["各地區地表的海拔高度差異", "各地區距離海洋的遠近程度", "各地區山脈與地勢坡度大小", "各地區所處的緯度高低變化"], answer: 0, explanation: "中國地勢西高東低，呈現三級階梯，這三級階梯主要是以地面的「海拔高度」分層來劃分的（第一級最高，第三級最低）。" },
-                            { question: "農業專家考察中國各大農業區時，記錄了一處位於較高緯度、面積廣大且土壤極為肥沃的平原，該地被譽為國家的重要糧倉。此平原最可能是下列何者？", options: ["水網密布的長江中下游平原", "面積廣大且土壤肥沃的東北平原", "地勢低平開發甚早的華北平原", "氣候溫暖工商業發達的珠江三角洲"], answer: 1, explanation: "地理觀測指出，東北平原是中國面積最大的平原，且擁有極為肥沃的黑土，是重要的農業糧倉。" },
-                            { question: "中國西部廣布著高原與高大山地。地理學者在分析地形對氣候的影響時指出，這種高海拔的地形最主要會對當地氣候造成何種顯著特徵？", options: ["阻擋季風深入使夏季更為炎熱", "迎風坡效應大幅增加降水頻率", "氣溫較同緯度低且日夜溫差大", "深居內陸使得冬季氣溫更溫暖"], answer: 2, explanation: "高海拔地區（如青藏高原）氣溫會隨高度遞減，導致氣溫較同緯度平地低；且因空氣稀薄，保溫效果差，造成日夜溫差極大。" },
-                            { question: "氣象局在繪製中國的「年降水量分布圖」時，發現等雨量線的分布呈現特定的空間規律。根據觀測，中國整體降水分布的宏觀趨勢最接近下列何者？", options: ["由西北內陸向東南沿海逐漸遞增", "由東南沿海向西北內陸逐漸遞減", "呈現全國各區域完全均勻的分布", "呈現中部降水最多東西兩端稀少"], answer: 1, explanation: "受夏季來自海洋的東南季風及距海遠近的影響，水氣越往西北內陸越少，降水量呈現「由東南沿海向西北內陸遞減」的趨勢。" },
-                            { question: "地理筆記中整理了中國的主要氣候類型，但其中一項抄寫錯誤。根據氣候區劃，下列哪一項「不屬於」中國宏觀地理上的三大氣候類型之一？", options: ["涵蓋東半部的季風氣候", "涵蓋西北部的乾燥氣候", "涵蓋青藏地區的高地氣候", "涵蓋華南的溫帶海洋氣候"], answer: 3, explanation: "中國因幅員廣大、地形複雜，氣候主要分為東半部的季風氣候、西北部的乾燥氣候與青藏地區的高地氣候。並無溫帶海洋性氣候。" },
-                            { question: "古詩云「一江春水向東流」。若請地理老師從自然地理的角度來解釋這句俗諺背後的原因，下列哪一項地形特徵的解釋最為精確合理？", options: ["河流普遍受到強勁夏季季風吹拂而改變流向", "整體地勢呈現明顯的東高西低導致水往低流", "整體地勢呈現明顯的西高東低引導大河東流入海", "歷代政府進行了大規模人為河道改建以利漕運"], answer: 2, explanation: "水往低處流。中國地勢西高東低，導致主要大河（如長江、黃河）大多發源於西部的高原山地，順著地勢向東流入太平洋。" },
-                            { question: "某本旅遊手冊上描述著一個地區：「這裡平均海拔極高，空氣稀薄但陽光充足，廣闊無垠的高原景觀讓人驚嘆，因此被世人譽為『世界屋脊』。」該地區指的是何處？", options: ["雪峰連綿的青藏高原", "千溝萬壑的黃土高原", "地勢平坦的內蒙古高原", "盆底肥沃的四川盆地"], answer: 0, explanation: "青藏高原平均海拔在4000公尺以上，是世界上海拔最高、面積最廣的高原之一，因此享有「世界屋脊」的稱號。" },
-                            { question: "一部紀錄片拍攝到一處因強風長期搬運沙塵並堆積而成的廣大區域。當地土質鬆軟，極易受夏季暴雨流水侵蝕，最終形成了深溝陡坡交錯的「千溝萬壑」景觀。此處最可能是？", options: ["地勢崎嶇破碎的東南丘陵", "風力堆積侵蝕的黃土高原", "四周高山環繞的四川盆地", "冰川廣布缺氧的青藏高原"], answer: 1, explanation: "黃土高原是由強風將內陸沙塵吹送至此堆積而成，土質疏鬆，極易受流水侵蝕而形成深溝與陡坡交錯的「千溝萬壑」獨特景觀。" },
-                            { question: "居住在中國東部沿海的居民在生活中會發現，當地的降雨多集中在特定的季節。這種由「季風氣候」所帶來的季節性降水特徵，最精確的描述為何？", options: ["全年各月份皆有豐富且極為穩定的降水", "冬季降雨極其豐沛而夏季氣候極度乾燥", "夏季多雨潮濕而冬季相對乾燥（夏雨冬乾）", "主要的雨季皆集中在氣候溫和的春季與秋季"], answer: 2, explanation: "中國東半部屬季風氣候，夏季吹來自海洋的濕潤季風帶來降雨，冬季吹來自內陸的乾冷季風，因此呈現「夏雨冬乾」的顯著特徵。" },
-                            { question: "氣象實作課上，學生獲得一份測站數據：「最冷月月均溫低於 0℃，且年降水量大於 500mm。」若根據氣候判讀原則，該測站最可能屬於下列哪一種氣候類型？", options: ["全年高溫多雨的熱帶季風氣候", "氣溫隨高度遞減的高地氣候", "降水極度稀少的溫帶沙漠氣候", "夏雨冬乾且冬寒的溫帶季風氣候"], answer: 3, explanation: "根據氣候判讀標準：年降水量>500mm為季風氣候（濕潤）；最冷月均溫<0℃則為「溫帶」季風氣候。" },
-                            { question: "從衛星雲圖看，中國東部呈現農業發達的廣大綠意，西北部則多為荒涼的沙漠與草原。造成這種東西部氣候與景觀出現顯著巨大差異的最主要自然原因為何？", options: ["經度跨度差異所造成的嚴重時差影響植物生長", "城市化與工業發展程度的極大落差所直接導致", "緯度高低不同所帶來的日照時數顯著差異影響", "距海遠近以及沿途地形高山阻擋水氣的綜合影響"], answer: 3, explanation: "東西部景觀差異主要來自降水量不同。西部深居內陸（距海遠），且受高山阻擋，海洋水氣難以到達，導致氣候乾燥形成荒漠。" },
-                            { question: "地理學家在劃分中國東半部的氣候區時，常用一條虛擬的界線來區分南、北方的氣候與農業景觀。這條大致與 750mm 等雨量線以及一月 0℃ 等溫線重疊的重要界線為何？", options: ["作為地勢階梯分界的太行山脈線", "區分副熱帶與溫帶的秦嶺—淮河線", "經濟極度發達的長江三角洲線", "劃分農牧交界地帶的黃土高原線"], answer: 1, explanation: "「秦嶺—淮河」是中國最重要的南北地理分界線，它大致區分了副熱帶與溫帶季風氣候、水田與旱田農業等自然與人文景觀。" },
-                            { question: "某研究機構統計了中國各類地形（山地、高原、盆地、平原、丘陵）的面積比例，並繪製成圓餅圖。在這張圖表中，佔據全國面積比例最大（約佔 33%）的地形種類為何？", options: ["地勢崎嶇起伏劇烈的山地", "海拔較高頂部平坦的高原", "四周高山環繞的封閉盆地", "地勢低平土壤肥沃的平原"], answer: 0, explanation: "根據地形統計數據，中國地形以山地（33%）和高原（26%）為主，其中山地面積比例最大，平原僅佔 12%，凸顯平地稀少。" },
-                            { question: "探險家計畫穿越中國西北部一個地形封閉的巨大盆地，該盆地內部因四周高山環繞導致水氣難以進入，氣候極度乾燥，且內部擁有中國面積最大的沙漠。這個盆地最可能是？", options: ["氣候溫和農業發達的四川盆地", "擁有豐富鹽湖資源的柴達木盆地", "水網密布湖泊眾多的鄱陽盆地", "廣布塔克拉瑪干沙漠的塔里木盆地"], answer: 3, explanation: "塔里木盆地位於新疆西北部，四周被天山、崑崙山等高山環繞，水氣難入，氣候極乾，內部形成了中國最大的塔克拉瑪干沙漠。" },
-                            { question: "分析中國全國各地氣溫的季節變化圖可以發現，冬、夏兩季的氣溫空間分布呈現截然不同的特徵。下列關於中國氣溫特徵的客觀敘述，何者最符合觀測現象？", options: ["冬季全國普遍呈現高溫，而夏季各地皆極為寒冷", "夏季因日照時間長全國普遍高溫且南北溫差較小", "無論冬夏全國各地的溫差皆甚小且氣候極為宜人", "受季風吹拂影響，北方全年永遠比南方更為溫暖"], answer: 1, explanation: "夏季時太陽直射北半球，中國大部分地區（除青藏高原外）日照時間長且太陽輻射強，因此全國普遍高溫，南北溫差顯著縮小。" },
-                            { question: "為了適應青藏地區極端的高地氣候環境，當地居民在食衣住行上發展出獨特的智慧。下列哪一項是他們最常見、也最能直接應付當地氣候特徵的生活方式？", options: ["夏季時常進行大規模遷徙至平地海邊避暑", "高度依賴密集的渠道進行水稻作物的灌溉", "家家戶戶使用傳統火炕來度過漫長嚴寒冬季", "穿著設計獨特且便於應付劇烈日夜溫差的藏袍"], answer: 3, explanation: "青藏高原日夜溫差極大。居民穿著藏袍，白天氣溫高時可脫下一邊袖子散熱，夜間寒冷時再穿上保暖，是適應大溫差氣候的智慧。" },
-                            { question: "中國北方的傳統民居中，經常可以見到一種名為「火炕」的室內設施。根據傳統建築學與氣候適應的說明，這種特殊的設施主要是為了解決當地居民面臨的哪一種環境挑戰？", options: ["為了提高傳統爐灶烹飪的燃料整體使用效率", "為了有效改善夏季室內悶熱難耐的通風問題", "為了提供農作物在室內免受雨淋的乾燥空間", "為了利用煮飯餘熱提供漫長嚴寒冬季的夜間保暖"], answer: 3, explanation: "北方冬季漫長嚴寒，火炕是與灶台相連的磚石床，利用煮飯的餘熱烘暖床鋪，以解決夜間睡眠時極度低溫的保暖問題。" },
-                            { question: "某個氣候觀測站記錄到當地的年降水量僅約 44mm，周遭地表呈現寸草不生的荒漠景觀。這個測站最可能位於下列哪個城市，且常被地理學作為「溫帶沙漠氣候」的典型範例？", options: ["位於長江出海口氣候濕潤的上海", "位於新疆塔里木盆地邊緣的和田", "位於東南沿海氣候溫和的杭州", "位於珠江三角洲終年溫暖的廣州"], answer: 1, explanation: "新疆的「和田」深居西北內陸、遠離海洋水氣，降水極度稀少（年降水遠小於250mm），屬於典型的溫帶沙漠氣候。" },
-                            { question: "中國東南部的丘陵地區地勢起伏崎嶇，廣大平坦的耕地極稀少。為了在有限土地上解決人口的糧食需求，並同時減緩水土流失，當地農民最常見的土地利用方式為何？", options: ["發展大規模且高度機械化的現代化平地農業", "順應山勢等高線開闢階梯狀的梯田種植農作", "將丘陵全面剷平並改造成沙漠化的放牧草地", "持續大規模砍伐原始森林以發展游牧畜牧業"], answer: 1, explanation: "東南丘陵缺乏大片平原，農民為了增加耕地面積並防止坡地水土流失，順著山勢等高線開闢階梯狀的「梯田」來種植水稻。" },
-                            { question: "水利署在規畫大型水庫的蓄水與洩洪週期時，必須考量中國整體的降水時間分布特徵。若依據季風氣候特徵，下列哪個選項最能準確描述此規律並作為水庫操作依據？", options: ["降水高度集中於夏季而冬季極度乾燥（夏雨冬乾）", "冬季的降雨總量遠遠多於夏季的降雨總量（冬雨夏乾）", "全年各個月份的降水量皆十分均勻穩定（全年有雨）", "每年的降水量最高峰必定出現在氣候溫和的春季"], answer: 0, explanation: "中國降水主要仰賴夏季來自海洋的季風帶來水氣，因此降水時間極不平均，呈現「夏雨集中、冬乾」的特徵，水庫需配合此週期操作。" },
-                            { question: "某條亞洲大河孕育了豐富的農業資源與深厚的歷史文化。它發源於西部的高原，向東流經了地勢低平、水網密布的中下游平原，最終注入了東海。這條河流指的是下列何者？", options: ["含沙量極高且多次改道的黃河", "流量最大且流域面積最廣的長江", "位於東北地區氣候嚴寒的黑龍江", "屬於內流河且流量極不穩的塔里木河"], answer: 1, explanation: "長江發源於青藏高原，向東流經四川盆地與長江中下游平原，是中國南方水量最豐、流域最廣的重要水系，最終注入東海。" },
-                            { question: "中國官方統計提供了一份關於五大地形的面積比例數據，凸顯了中國「平地稀少、山地廣大」的特徵。下列哪一組數據的配對最符合實際的客觀比例分布？", options: ["山地10%、高原33%、盆地26%、平原19%", "山地26%、高原19%、盆地33%、平原12%", "山地33%、高原26%、盆地19%、平原12%", "山地19%、高原12%、盆地26%、平原33%"], answer: 2, explanation: "根據官方地形數據，中國以山地(33%)和高原(26%)為主，兩者合計近六成；其次為盆地(19%)、平原僅佔(12%)，丘陵最小(10%)。" },
-                            { question: "氣候學家在分析中國各地的降水數據時，歸納出影響水氣多寡的幾個主要自然因素。在下列選項中，何者「不屬於」影響中國降水空間分布的自然地理因素？", options: ["各地區經濟發展與工業化碳排放的程度", "夏季季風吹拂的方向與水氣輸送的路徑", "地形的高低起伏與山脈迎風背風的效應", "所在地區距離廣大海洋水氣源頭的遠近"], answer: 0, explanation: "影響降水宏觀分布的自然因素包括季風、地形（迎風坡多雨）與距海遠近（沿海多雨內陸少雨）。經濟發展程度是人文因素。" },
-                            { question: "歷史文獻中記載某個地區的地形特徵為：「周圍群山環繞，進出極為不易，古人為了克服地形障礙，常沿著河谷修築險峻的棧道（如蜀道）以利通行」。這個地形封閉的地區最可能是？", options: ["土壤肥沃且氣候溫和的四川盆地", "擁有廣大黑土與平坦地勢的東北平原", "開發極早且地勢低平開闊的華北平原", "工商業發達且交通極度便利的長江三角洲"], answer: 0, explanation: "四川盆地四周被高山（如秦嶺、大巴山）環繞，內部平坦但對外交通極不便，古詩云「蜀道之難，難於上青天」，完全符合該描述。" },
-                            { question: "學生在進行氣候分類練習時，發現某個測站的數據具有極為特殊的特徵：「一年之中最暖月的月均溫低於 20℃，且該地海拔高度超過 3000 公尺」。這應被歸類為下列哪一種氣候？", options: ["終年高溫多雨的熱帶季風氣候", "夏雨冬乾且四季分明的溫帶季風氣候", "降水稀少且適合放牧的溫帶草原氣候", "受地形高度影響氣溫偏低的高地氣候"], answer: 3, explanation: "海拔極高（大於3000公尺）會導致氣溫隨高度顯著下降，即使是夏季（最暖月）均溫也不到20℃，這是典型的「高地氣候」特徵。" },
-                            { question: "中國的行政區劃中，存在一種為了保障特定族群的文化特色與部分自治權利，而專門在少數民族聚居地區設立的特定行政層級。這種與「省」同級的行政區劃類型稱為什麼？", options: ["由中央政府直接管轄的直轄市", "賦予少數民族部分自治權的自治區", "作為國家最主要一級行政單位的省", "實施高度自治與特殊制度的特別行政區"], answer: 1, explanation: "為了尊重少數民族文化與生活習慣，中國在少數民族聚居的廣大地區（如西藏、新疆、內蒙古）設立了與「省」同級的「自治區」。" },
-                            { question: "某座龐大的山脈與高原系統，因其高海拔孕育了廣大冰川。這些冰川融水成為亞洲多條重要大河（如長江、黃河等）的源頭，為廣大下游提供生命泉源，常被譽為「亞洲水塔」。這最可能位於何處？", options: ["以風力堆積與水土流失聞名的黃土高原", "海拔極高且冰川廣布的青藏與喜馬拉雅", "氣候極端乾燥且地勢平坦的內蒙古高原", "板塊擠壓形成且植被茂密的臺灣中央山脈"], answer: 1, explanation: "青藏高原與喜馬拉雅山脈的高山冰川雪水，是亞洲眾多大河（長江、黃河、湄公河等）的發源地，因此享有大地之母或亞洲水塔之美譽。" },
-                            { question: "學生在學習「氣候圖判讀三步驟」時，拿到一張完全未標示氣候類型的圖表。根據氣候圖的標準判讀邏輯，他進行科學判讀的「第一步」通常是檢視下列哪一項指標以初步區分氣候大類？", options: ["年降水量的多寡以判斷乾燥或濕潤", "平均風向的季節性變化與風力大小", "當地土壤類型的分布特徵與肥沃度", "該地區人口密度的高低與經濟活動"], answer: 0, explanation: "氣候圖判讀首步通常是看「年降水量」，以此初步區分該地是屬於降水稀少的「乾燥氣候」還是降水豐沛的「濕潤（季風）氣候」。" },
-                            { question: "某個旅遊網站在介紹中國一個度假勝地時寫道：「這裡年均溫高達 26.9℃，年降水量豐富，四季充滿濃厚的熱帶風情，完全沒有明顯的冬季寒冷感覺。」這段文案最可能是形容哪個地區？", options: ["位於青藏高原氣候高寒缺氧的拉薩", "位於海南島南端終年高溫多雨的三亞", "位於西北內陸氣候極度乾燥的蘭州", "位於東北平原冬季漫長嚴寒的哈爾濱"], answer: 1, explanation: "三亞位於海南島最南端，緯度極低，屬於熱帶季風氣候，終年高溫多雨，完全符合「熱帶風情且無明顯冬季」的氣候描述。" },
-                            { question: "若一名旅客從新疆搭乘飛機，一路向東飛行至上海。沿途中他若俯瞰地表，可觀察到中國整體地勢的海拔起伏發生了顯著變化。下列哪一項描述最符合他這趟飛行所觀察到的地勢宏觀變化？", options: ["地勢由西向東呈現出逐級下降的階梯狀", "地勢由東向西呈現出逐級上升的階梯狀", "地勢由北向南呈現出遞增高度的斜坡狀", "全境海拔高度極為相近幾乎無明顯起伏"], answer: 0, explanation: "中國地勢呈現「西高東低」的三級階梯狀。從西部的高原盆地向東飛往沿海平原，地勢會呈現出明顯的逐級下降趨勢。" }
-                        ]
-                    },
-                    {
-                        name: '02_中國的人口成長與文化遷移',
-                        data: [
-                            { question: "歷史學者統計了中國自西元 1700 年（清代前期）以來的各時期人口數據，並繪製成折線圖。若根據歷史人口數據進行長期趨勢分析，這三百多年來近代中國人口成長呈現何種顯著特徵？", options: ["人口總數呈現長期且非常快速的增加", "人口總數長期保持絕對穩定完全不變", "人口總數呈現長期且不可逆的持續減少", "人口總數隨著朝代更迭呈現週期性的劇烈波動"], answer: 0, explanation: "自清代 1700 年以來，隨著農業技術進步、版圖擴大與社會相對穩定，中國人口總數經歷了長期的快速增加，至今已突破十四億大關。" },
-                            { question: "從清代到現代，中國社會面臨著越來越龐大的人口壓力。根據歷史統計圖表顯示，從 1700 年（當時約一億多人）到現代（超過十四億人），這三百多年間中國的人口總數大約成長了多少倍？", options: ["大約成長了微幅的二倍", "大約成長了驚人的十倍", "大約成長了極端的五十倍", "大約成長了不合理的一百倍"], answer: 1, explanation: "根據歷史數據對比，中國人口從三百多年前的約 1.5 億，成長至現今的 14 億多，整體的成長幅度大約為十倍左右。" },
-                            { question: "社會學家在分析中國的人口組成時特別指出，雖然漢族在總人口中佔據了絕對多數，但官方仍承認並登記了高達五十五個其他的少數民族。這項事實最能具體說明中國人口組成的哪一項特徵？", options: ["人口結構呈現完全的同質化而缺乏文化多樣性", "具有族系眾多且文化語言豐富多元的人口特徵", "境內只有少數民族存在而完全缺乏主體民族", "國家僅由單一特定族群進行具排他性的統治"], answer: 1, explanation: "中國由 56 個民族組成，雖然漢族佔絕大多數，但少數民族數量眾多且各有其語言、風俗與文化特色，呈現「族系眾多」的多元特徵。" },
-                            { question: "政府在評估某一地區是否適合建立大型新市鎮或接納大量移民時，必須審慎考量當地的「環境負載力」（環境承載力）。在地理學與生態學的定義中，這個關鍵概念主要指的是什麼？", options: ["政府分配經濟資源與向人民徵收稅款的最大行政能力", "人口移入城市的速度與當地交通流量擁擠的統計指標", "國家整體經濟成長的速度與每年國內生產毛額的上限", "自然環境能提供生物生存資源及涵容廢棄物的極限能力"], answer: 3, explanation: "環境負載力是指一個地區的自然環境（如水資源、土地）所能提供給生物生存的物資，以及涵容、分解廢棄物的最大生態極限。" },
-                            { question: "在地圖上觀察中國的人口分布時，若畫出一條連接黑龍江黑河與雲南騰衝的無形界線，會發現線的兩側人口密度差異極度懸殊。整體而言，受氣候與地形影響，中國的人口分布呈現何種空間型態？", options: ["極為均勻地平均分布在全國各個大小省分與城鎮", "呈現北部極度稠密而南部極度荒涼的明顯對比格局", "呈現東南部極度密集而西北部廣大地區人口稀疏的特徵", "沿海地區人口極度稀少而內陸深處人口卻極度密集"], answer: 2, explanation: "受氣候（東濕西乾）與地形（東平原西高山）影響，中國東南半部環境負載力高，人口極度密集；西北半部則稀疏，呈現「東密西疏」。" },
-                            { question: "為了因應國家有限資源無法負荷龐大人口快速增加的嚴重危機，中國政府在 1979 年推行了一項極為嚴格的「一胎化」政策。實施這項極端且具爭議性政策的『最主要、最直接目的』為何？", options: ["刻意促進社會人口結構的快速老化以減少社會福利支出", "透過強制限制家庭生育數量來煞住人口過快成長的趨勢", "大幅增加出生率以解決未來工廠勞動力嚴重不足的問題", "鼓勵偏遠鄉村居民大量放棄農業並移民進入沿海大城市"], answer: 1, explanation: "一胎化政策是極端的人口控制手段，其核心目的就是透過強制限制每個家庭的生育額度，來強力煞住當時人口總數過快增長的趨勢。" },
-                            { question: "長期實施計畫生育（一胎化）政策雖然達成了抑制人口總數暴增的初步目標，但隨之而來卻衍生了許多嚴重的社會結構隱憂。下列何者「不是」人口學家指出該政策所直接造成的嚴重後遺症？", options: ["人口總數不受控制地持續發生急遽且爆炸性的暴增", "人口結構面臨勞動力減少與快速且嚴重的高齡化危機", "因傳統重男輕女觀念影響導致新生兒性別結構嚴重失衡", "幼年人口比例大幅下降並帶來影響深遠的少子化現象"], answer: 0, explanation: "一胎化成功阻止了人口急遽增加（這正是其目的）。但隨之而來的是少子化、高齡化，以及因傳統觀念導致的性別比失衡（男多女少）。" },
-                            { question: "在地理資訊系統（GIS）中，若將「人口密度圖」與「環境負載力圖」疊加分析，通常會發現兩者呈現高度的正相關。根據環境評估指標，哪一類地區的環境負載力通常較高，進而吸引大量人口聚集？", options: ["自然環境優越（氣候溫和地形平坦）且農業生產技術發達的地區", "地勢崎嶇險峻且礦產資源極度貧乏的偏遠高山與深谷地區", "遠離河川水源且氣候極端乾燥、降水稀少的荒漠與戈壁地區", "地勢高寒、氧氣極度稀薄且長年積雪無法耕作的高原冰川地帶"], answer: 0, explanation: "氣候溫和濕潤、地形低平且農業技術發達的地方，能產出更多糧食並提供良好居住條件（環境負載力高），自然成為人口稠密區。" },
-                            { question: "統計學家在分析 1970 年至 2023 年的中國人口數據趨勢時，發現某項關鍵指標呈現出明顯且持續的下滑趨勢，這引發了政府對未來勞動力短缺與經濟衰退的強烈擔憂。這項持續下降的指標為何？", options: ["65歲以上需要照護的老年人口總佔比", "每年新生兒數量的整體出生率與生育率", "全國十四億人加總的絕對總人口數目", "男女性別在醫學統計上的預期壽命差距"], answer: 1, explanation: "受到一胎化政策以及後來社會經濟發展、育兒成本增加的雙重影響，中國的出生率自 1970 年代以來呈現明顯且持續的下降趨勢。" },
-                            { question: "面對日益嚴重的人口結構變化，許多大城市開始廣設社區老齡餐廳、日間長照中心，並要求公共空間全面增設無障礙設施。社會學家提到，政府推動這些政策方向，主要是為了因應何種人口問題？", options: ["為了全面禁止並取消現有且將破產的國民退休金制度", "為了推動完善的老年福利制度以因應人口快速高齡化的挑戰", "為了強制提高所有勞工的法定退休年齡至八十歲以補充勞動力", "為了大幅度且永久地減少政府在公共醫療與健保上的預算支出"], answer: 1, explanation: "隨著預期壽命延長與長期少子化，老年人口比例快速上升（高齡化）。廣設高齡友善設施與長照，是推動老年福利制度的具體作為。" },
-                            { question: "社會福利機構在調查與統計新生兒數據時，發現某一特定性別的比例異常偏高，偏離了自然的生物學常態。人口學者指出，中國新生兒性別比面臨的主要問題且亟需解決的社會現象是？", options: ["性別比過低，導致女嬰出生的數量遠遠多於男嬰的數量", "性別比極度穩定，完全符合世界衛生組織公布的平均標準", "性別比嚴重失衡，男嬰出生的比例明顯且不正常地高於女嬰", "性別比波動過大，導致統計學家完全無法進行未來的精確預測"], answer: 2, explanation: "受傳統宗法觀念（重男輕女）及一胎化限制生育額度的雙重影響，許多家庭偏好生男孩，導致新生兒性別比嚴重失衡（男遠大於女）。" },
-                            { question: "隨著社會經濟環境的改變，勞動力短缺與扶養負擔加重的危機浮現，中國政府的生育政策也必須隨之調整。在 2016 年，中國針對長期的計畫生育政策做出了哪一項歷史性的重大改變？", options: ["重新實施比以往更為嚴格且帶有高額罰款的一胎化懲罰規定", "直接宣布開放完全無限制且提供全額補助的自由生育權利", "正式結束長達數十年的一胎化政策並全面開放家庭生育第二胎", "完全取消戶口登記與人口數量統計制度以掩蓋真實的生育數據"], answer: 2, explanation: "為緩解少子化與高齡化帶來的勞動力與扶養壓力，中國於 2016 年正式結束了一胎化政策，實施全面二孩政策以期提升生育率。" },
-                            { question: "為了進一步緩解人口老化的危機，並試圖提升因育兒成本高昂而持續低迷的生育率，中國政府在 2021 年又推出了新的生育政策。這項最新的政策變動為何？", options: ["全面禁止家庭生育第二胎以減輕父母負擔", "進一步放寬限制，開放家庭可以合法生育第三胎", "承認先前的政策失敗，全面恢復早期的一胎化規定", "強制實施依照家庭平均收入來配給育兒數量的補助"], answer: 1, explanation: "由於開放二胎後生育率提升不如預期，中國在 2021 年進一步放寬生育限制，實施允許一對夫妻生育三個子女的政策。" },
-                            { question: "若我們觀察 2023 年中國的「人口金字塔圖」，會發現其圖形特徵呈現「底部（代表幼年人口）逐漸縮窄，而頂端（代表老年人口）逐漸變寬」。這種圖形特徵，強烈反映出當前中國面臨的哪兩種主要人口結構問題？", options: ["高出生率帶來的人口爆炸與人口極度年輕化趨勢", "年輕勞動力佔比極高且老年依賴人口極少的優勢", "出生率低迷的少子化現象與人口快速的高齡化危機", "大量外來移民湧入造成的男女性別結構嚴重倒置現象"], answer: 2, explanation: "金字塔底部縮窄代表新生兒減少（少子化）；頂部變寬代表老年人口活得更久且比例增加（高齡化），兩者是中國當前最大的人口挑戰。" },
-                            { question: "中國東南部與西北部的人口密度差異懸殊，主要是受到當地自然環境條件的限制。在探討人口分布不均的原因時，下列選項中何者「不屬於」造成這種現象的『自然地理』因素？", options: ["大型河流的流向與廣大平原的地表分布狀況", "氣候溫和程度與降雨豐沛條件的顯著空間差異", "政府嚴格的戶籍管制與計畫生育政策法令限制", "地形高低起伏與極端海拔高度對居住環境的限制"], answer: 2, explanation: "題目問的是「自然因素」。地形（平原/高山）、氣候（降水多寡）、水文（河流分布）都是自然因素；政策法令與戶籍制度則是人文因素。" },
-                            { question: "在人口專題報告中，講者展示了一張中國人口分布的「點子圖」。若在圖中某個區域（如長江三角洲），代表人口的點子分佈極為密集，幾乎疊加在一起，這在地理學的地圖判讀上代表該區域具有何種特徵？", options: ["該區域的行政土地總面積非常廣大且遼闊", "該區域自然資源極度豐富但實際居住人口稀少", "該區域的人口集中程度與人口密度相當高", "該區域的行政區域劃分極為細碎且地形複雜"], answer: 2, explanation: "點子圖是利用點的密集或稀疏來呈現現象的空間分布狀態。點子越密集，代表該區域的人口越集中、人口密度越高。" },
-                            { question: "歷史上，許多中國東南沿海（如福建、廣東）的居民選擇離鄉背井，搭船冒險前往海外。歷史與人口學者指出，近代華人大量遷移到東南亞與臺灣的最主要「推力」為何？", options: ["為了配合朝廷建立強大海外軍事殖民政府的政治擴張任務", "為了配合政府進行大規模宗教傳播與文化輸出的國家戰略", "因家鄉山多田少、人口壓力大且謀生不易而被迫尋找生計遷徙", "為了逃避與來華外國商人的任何文化交流與接觸的鎖國心態"], answer: 2, explanation: "東南沿海山多田少，隨著人口增長，土地不敷使用（環境負載力超載）。為了謀求生計，大量居民選擇遷移至氣候相近的臺灣或東南亞。" },
-                            { question: "導遊在介紹新加坡的歷史文化景點時，特別帶領遊客參觀名為「牛車水」的街區，這裡充滿了傳統中式建築、廟宇與餐館。在地理與歷史學上，這個著名的地點是何種空間現象的代表？", options: ["東南亞現代重工業與高科技發展的絕對核心重鎮", "東南亞在地原住民被殖民政府隔離保護的保留地", "完全沒有任何歷史淵源的現代純商業大型購物區", "早期華人移民在海外基於地緣血緣建立的同鄉聚居地"], answer: 3, explanation: "華人移民到海外後，常基於地緣或血緣關係群聚而居以互相照應，形成唐人街（中國城）。新加坡的「牛車水」就是最著名的華人聚落代表。" },
-                            { question: "探險隊來到中國西北的青藏高原與塔里木盆地，發現車輛行駛了數百公里，沿途幾乎沒有看見任何大型城鎮或密集村落。地理學指出，這類環境負載力極低的地區，通常必然會出現哪種人口分布現象？", options: ["人口極度密集且高度集中於少數現代化都會區", "經濟活動極度繁榮並吸引大量外籍勞工瘋狂湧入", "農業技術創新機構高度集中且糧食產量極為驚人", "因為資源無法養活大量人口導致人口分布相當稀疏"], answer: 3, explanation: "環境負載力低（如高寒、極乾）的地區，無法提供足夠的糧食與水資源來養活大量人口，因此其人口密度必然極低、分布相當稀疏。" },
-                            { question: "在中國官方承認的五十六個民族中，有一個民族的人口數量佔據了全國總人口的九成以上，其文化、文字與語言在各地都有最廣泛的分布與影響力。這個在比例上佔絕對多數的族群是？", options: ["自古以農耕為主且人口最為龐大的漢族", "曾建立橫跨歐亞龐大帝國的游牧蒙古族", "主要分布於西北地區且信仰伊斯蘭教的維吾爾族", "居住於世界屋脊且擁有獨特宗教文化的藏族"], answer: 0, explanation: "根據官方人口普查統計，漢族人口佔中國總人口的 91% 以上，是絕對的多數族群，其餘 55 個民族因人數較少而統稱為少數民族。" },
-                            { question: "為了在地圖上直觀地呈現全國各省份的人口多寡與空間集中程度，地理學家最常使用「點子圖」這種主題地圖。在製圖學中，這種圖表的主要優勢與設計目的是用來表示什麼資訊？", options: ["特定主題（如人口）的絕對數量多寡與空間分布的疏密情形", "單一變數隨著長時間發展的時間序列變化（如歷年人口折線圖）", "不同區域間環境品質指標的精確數值比較與排行榜", "各級地方政府極度嚴格的行政界線畫分與司法管轄範圍"], answer: 0, explanation: "點子圖的特性在於能同時表達「數量」（點的個數總和）與「空間分布」（點的位置與疏密），非常適合用來展示人口分布的空間不均現象。" },
-                            { question: "隨著時代演進與社會經濟發展，中國的人口問題已從早期的「數量過多」轉變為複雜的「結構性問題」。下列哪一項「不是」當前中國政府與社會所面臨的主要人口挑戰？", options: ["早期人口總數龐大所帶來的糧食、資源與就業競爭壓力", "傳統重男輕女觀念與政策疊加導致的新生兒性別結構嚴重失衡", "預期壽命延長與長期少子化共同帶來的人口快速老化危機", "跨國界的外來難民大量且不受控地湧入所造成的邊境社會動盪"], answer: 3, explanation: "中國的人口問題聚焦於內部結構（總數多、高齡化、少子化、性別比失衡）。外來難民湧入並非探討中國人口變遷時的主要問題。" },
-                            { question: "翻閱歷史人口統計表可發現，近代中國人口在 1950 年到 1990 年這短短 40 年間，總數就增加了近一倍。這相比於清代以前需耗時數百年才能翻倍，在人口學上代表了哪種趨勢變化？", options: ["人口增加的速度明顯變快，整體成長曲線變得極為陡峭", "人口增加的速度明顯變慢，整體成長趨勢出現嚴重停滯", "人口總數始終保持恆定不變，提前達到了完美的零成長", "人口總數開始立即減少，呈現出無法挽回的嚴重負成長"], answer: 0, explanation: "人口倍增時間從數百年急遽縮短到短短 40 年，意味著這段時期的人口年增長率極高，呈現出爆炸性的快速成長與陡峭的增長曲線。" },
-                            { question: "在探討社會性別議題時，學者常使用特定的數據指標來佐證。人口學中提到，評估一個國家的新生兒是否出現「性別比失衡」，最標準且常用的統計指標是如何計算出來的？", options: ["精確計算男女平均預期壽命的差異年數與健康指標", "詳細計算男女勞動參與率的百分比差異幅度與薪資落差", "統計計算每 100 名女性（或女嬰）所對應的男性（或男嬰）數量", "綜合計算男女國民平均受教育年限與取得學位的比值"], answer: 2, explanation: "性別比的標準定義是「每 100 名女性對應的男性人數」。正常新生兒性別比約在 103-107 之間，若大幅超過此數值即判定為失衡。" },
-                            { question: "在分析人口金字塔圖時，底層（通常代表 0-14 歲）寬度的變化可以直接反映該國近年的生育狀況。下列哪一項金字塔特徵的變化，最符合「少子化」現象的具體圖形表現？", options: ["金字塔頂端代表老年人口的比例急遽下降並逐漸消失", "金字塔底部的生育率呈現大幅上升使形狀變得極為寬闊", "金字塔中段代表壯年勞動人口的佔比嚴重萎縮趨近為零", "金字塔底層代表幼年人口的比例明顯縮小並呈現向內退縮"], answer: 3, explanation: "少子化指的是生育率長期低迷，反映在人口金字塔圖形上，就是代表新出生的底部區塊（幼年人口）越來越窄小、向內退縮。" },
-                            { question: "檢視一份官方發布的 2023 年「中國人口分布點子圖」，為了在有限的地圖版面上適切呈現十四億龐大人口的分布，又不至於讓整個版面被黑點填滿而無法判讀，圖例規定圖面上的「每一點」代表多少人口？", options: ["每一個黑點代表 5,000 人", "每一個黑點代表 10,000 人", "每一個黑點代表 50,000 人", "每一個黑點代表 100,000 人"], answer: 2, explanation: "根據常見的中國全國人口點子圖的圖例說明，為了在全國尺度的地圖上合理呈現疏密，通常設定每一個點代表 50,000 人。" },
-                            { question: "雖然中國境內的少數民族多達五十五個，且廣泛分布在邊疆與內陸廣大地區，但他們在全國總人口中所佔的絕對比例並不高。根據全國人口普查的統計，少數民族合計大約佔全國總人口的多少？", options: ["大約佔全國人口的 8.9%", "大約佔全國人口的 25%", "大約佔全國人口的 50%", "大約佔全國人口的 75%"], answer: 0, explanation: "漢族佔比約 91.1%，其餘 55 個少數民族雖然分布廣泛，但加總起來大約僅佔全國總人口的 8.9%。" },
-                            { question: "都市計畫專家在評估城鎮發展潛力時指出，人口的聚集與當地的自然承載力息息相關。在地理學理上，人口空間分布疏密與環境負載力高低的關聯性，下列敘述何者最為正確？", options: ["環境負載力高的地方，因為過度開發導致人口通常較為稀疏", "環境負載力高的地方（能提供較多資源），人口通常較為密集", "環境負載力的高低與人口分布的疏密完全沒有任何關聯性", "環境負載力極低的地方，因為未經開發通常會吸引最多人口移入"], answer: 1, explanation: "環境負載力高代表能提供豐富的水源、糧食與居住空間，自然能支撐並吸引大量人口聚集定居，形成人口密集區（兩者呈正相關）。" },
-                            { question: "早期華南沿海（如福建、廣東）居民為了謀求更好的生活，常選擇離鄉背井。若我們檢視「歷史移民路線圖」，可發現其主要的跨海遷徙方向與目的地為何？", options: ["向北越過長城，遷往寒冷的蒙古高原地帶從事游牧生活", "順應季風與洋流，向南遷徙至東南亞各國以及臺灣開墾謀生", "向西越過高山與沙漠，跋涉千里遷往歐洲內陸國家從事貿易", "向南進行長途遠洋航行，跨越重洋遷往南極洲建立新的定居點"], answer: 1, explanation: "早期受限於航海技術與地理距離，華南移民主要選擇距離較近、氣候相似且可順應季風航行的臺灣以及東南亞（南洋）地區作為遷徙目的地。" },
-                            { question: "學者比較不同歷史時期中國人口倍增所需的時間，藉此來觀察人口成長的速度變化。根據歷史文獻數據，在西元 1700 年至 1794 年間（清代前期），中國人口從一億增加到兩億（增加一倍），大約花費了多少時間？", options: ["大約花費了極短的 10 年時間", "大約花費了相對較短的 40 年時間", "大約花費了將近一世紀的 90 年時間", "大約花費了極度漫長的 300 年時間"], answer: 2, explanation: "根據歷史數據，1700年到1794年，經過了約 90 年的時間，中國人口完成了一次翻倍（相較於現代只需 40 年，當時的成長速度相對較緩）。" }
-                        ]
-                    }
+                    { name: '第1課 中國的自然環境', data: [
+ {
+  "question": "中國的地形中，山地和高原約占總面積的59%。這說明中國地形的哪一項特徵？",
+  "options": [
+   "山多平原少",
+   "平原面積廣大",
+   "地形種類單調",
+   "以低海拔為主"
+  ],
+  "answer": 0,
+  "explanation": "課本：中國地形大致分為山地、高原、盆地、平原和丘陵五大類型，其中山地和高原約占總面積的59%，整體呈現「山多平原少」的特徵。",
+  "source": "1-1 一 地形種類複雜｜課本第13頁 內文、圖1-1-2",
+  "pattern": "模式1 內文關鍵句"
+ },
+ {
+  "question": "附圖為中國地勢三級階梯示意圖。「平均高度約1,500公尺，多山地、高原和盆地分布」是指圖中哪一級階梯？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "三級都是"
+  ],
+  "answer": 1,
+  "explanation": "中國地勢由西向東分成三級：甲為最高階梯，平均約4,000公尺，以山地和高原為主；乙為次高階梯，平均約1,500公尺，多山地、高原和盆地；丙為最低階梯，平均約1,000公尺以下，以平原和丘陵為主。",
+  "source": "1-1 二 地勢西高東低，呈三級階梯｜課本第14頁 內文、圖1-1-4",
+  "pattern": "模式3 課本圖表改製",
+  "image": "f1_steps",
+  "fixed": true
+ },
+ {
+  "question": "中國的最低階梯平均高度約1,000公尺以下。這一級階梯主要的地形為何？",
+  "options": [
+   "山地和高原",
+   "平原和丘陵",
+   "山地、高原和盆地",
+   "高原和盆地"
+  ],
+  "answer": 1,
+  "explanation": "最低階梯以平原和丘陵為主。另外幾個選項是其他階梯的地形：最高階梯以山地和高原為主；次高階梯多山地、高原和盆地。三級階梯的地形很容易互相混淆。",
+  "source": "1-1 二 地勢西高東低，呈三級階梯｜課本第14頁 內文",
+  "pattern": "模式4 同段其他概念當誘答"
+ },
+ {
+  "question": "中國「西高東低」的地勢，對中國的氣候帶來哪一項有利的影響？",
+  "options": [
+   "西部地區降水最多",
+   "冬季寒風無法南下",
+   "夏季暖溼氣流深入內陸",
+   "河川多由東向西流"
+  ],
+  "answer": 2,
+  "explanation": "課本：西高東低的地勢，一方面有利於夏季海洋暖溼氣流深入內陸；另一方面也造成中國主要河川多向東流。",
+  "source": "1-1 二 地勢西高東低，呈三級階梯｜課本第14頁 內文",
+  "pattern": "模式1 內文關鍵句＋模式7 地形與氣候串連"
+ },
+ {
+  "question": "李白〈早發白帝城〉：「朝辭白帝彩雲間，千里江陵一日還。」詩中描寫船從長江上游順流而下，一天就走了很遠。這與課本所說河川上游的哪一項特徵最有關？",
+  "options": [
+   "結冰期長",
+   "河面寬廣",
+   "流勢平緩",
+   "水流湍急"
+  ],
+  "answer": 3,
+  "explanation": "課本：西高東低的地勢使河川上游水流湍急，多富水力資源；下游則流勢平緩、河面寬廣。船在上游順流而下，速度就很快。",
+  "source": "1-1 二 地勢西高東低，呈三級階梯｜課本第14頁 內文",
+  "pattern": "模式9 跨科（國文）情境"
+ },
+ {
+  "question": "中國河川的下游「流勢平緩、河面寬廣」。這個特徵最有利於發展下列哪一項？",
+  "options": [
+   "東西向水路運輸",
+   "水力發電",
+   "高山放牧",
+   "梯田耕作"
+  ],
+  "answer": 0,
+  "explanation": "課本：河川下游流勢平緩、河面寬廣，利於東西向水路運輸的發展。「水力發電」是上游水流湍急、多富水力資源的特點，是同一句話裡的另一半，不要混淆。",
+  "source": "1-1 二 地勢西高東低，呈三級階梯｜課本第14頁 內文",
+  "pattern": "模式4 同一句的另一半當誘答"
+ },
+ {
+  "question": "「世界最高的山脈，也是亞洲許多大河的源頭，被譽為『大地之母』。」這段圖說描寫的是哪一座山脈？",
+  "options": [
+   "天山",
+   "喜馬拉雅山",
+   "秦嶺",
+   "大興安嶺"
+  ],
+  "answer": 1,
+  "explanation": "課本圖說：喜馬拉雅山是世界最高的山脈，也是亞洲許多大河的源頭，被譽為「大地之母」。位在它北側的青藏高原則有「世界屋脊」之稱。",
+  "source": "1-1 二｜課本第14頁 圖1-1-4 圖說",
+  "pattern": "模式2 圖說轉題"
+ },
+ {
+  "question": "「中國面積最大的平原，土地肥沃，是重要的糧倉。」這個地形區位在附圖中哪一處？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 0,
+  "explanation": "這是東北平原（甲）。乙是長江中下游平原，丙是雲貴高原，丁是塔里木盆地。",
+  "source": "1-1 二｜課本第15頁 東北平原圖說",
+  "pattern": "模式2 圖說轉題＋模式3 地圖代號",
+  "fixed": true,
+  "group": "G1A"
+ },
+ {
+  "question": "「多石灰岩地形分布，易受流水侵蝕，地表高低起伏不平。」這個地形區位在附圖中哪一處？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 2,
+  "explanation": "這是雲貴高原（丙）的特色。石灰岩容易被流水溶蝕，地表崎嶇不平。",
+  "source": "1-1 二｜課本第15頁 雲貴高原圖說",
+  "pattern": "模式2 圖說轉題＋模式3 地圖代號",
+  "fixed": true,
+  "group": "G1A"
+ },
+ {
+  "question": "「中國面積最大的盆地，盆地內大部分為塔克拉瑪干沙漠所據。」這個地形區位在附圖中哪一處？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 3,
+  "explanation": "這是新疆南部的塔里木盆地（丁）。要分清楚：中國面積最大的平原是東北平原，面積最大的盆地是塔里木盆地。",
+  "source": "1-1 二｜課本第15頁 塔里木盆地圖說",
+  "pattern": "模式2 圖說轉題＋模式3 地圖代號",
+  "fixed": true,
+  "group": "G1A"
+ },
+ {
+  "question": "「因地勢平坦、水源匯聚，是人口密集與經濟發達的精華區。」這段圖說描寫的是哪一個地形區？",
+  "options": [
+   "內蒙古高原",
+   "東北平原",
+   "長江中下游平原",
+   "東南丘陵"
+  ],
+  "answer": 2,
+  "explanation": "課本圖說：長江中下游平原地勢平坦、水源匯聚，是人口密集與經濟發達的精華區。第2課學到的黑河—騰衝線以東人口稠密，這裡就是代表。",
+  "source": "1-1 二｜課本第15頁 長江中下游平原圖說",
+  "pattern": "模式2 圖說轉題"
+ },
+ {
+  "question": "黃土高原地表「千溝萬壑、地表破碎」。請問：構成黃土高原的黃土，是怎麼形成的？",
+  "options": [
+   "海浪堆積",
+   "流水侵蝕",
+   "冰河侵蝕",
+   "風力堆積"
+  ],
+  "answer": 3,
+  "explanation": "課本圖說：黃土由「風力堆積」而成，因質地鬆散，易受「流水侵蝕」，導致表面千溝萬壑。問黃土怎麼來的是風力堆積；問地表為什麼破碎則是流水侵蝕。兩者要分清楚。",
+  "source": "1-1 二｜課本第15頁 黃土高原圖說",
+  "pattern": "模式4 同一句的另一半當誘答"
+ },
+ {
+  "question": "「為平坦遼闊的荒漠和草原，乾燥少雨，年、日溫差皆大。」這段圖說描寫的是哪一個地形區？",
+  "options": [
+   "內蒙古高原",
+   "青藏高原",
+   "雲貴高原",
+   "黃土高原"
+  ],
+  "answer": 0,
+  "explanation": "這是內蒙古高原的特色。四大高原各有特徵：青藏高原地勢最高（世界屋脊）；黃土高原地表破碎；雲貴高原多石灰岩地形；內蒙古高原平坦遼闊。",
+  "source": "1-1 二｜課本第15頁 內蒙古高原圖說",
+  "pattern": "模式2 圖說轉題"
+ },
+ {
+  "question": "「這裡丘陵地勢崎嶇，為了養活眾多人口，居民常把山坡開闢成梯田。」這段敘述描寫的是哪一個地形區？",
+  "options": [
+   "華北平原",
+   "東南丘陵",
+   "塔里木盆地",
+   "青藏高原"
+  ],
+  "answer": 1,
+  "explanation": "課本圖說：東南丘陵地勢崎嶇，為養活眾多人口，常被開闢成梯田。第2課也會學到，東南沿海丘陵廣布、山多田少，是人口外移的重要原因。",
+  "source": "1-1 二｜課本第15頁 東南丘陵圖說",
+  "pattern": "模式2 圖說轉題"
+ },
+ {
+  "question": "李白〈蜀道難〉：「蜀道之難，難於上青天。」詩中的「蜀」是今天的四川一帶。進出這裡很困難，主要是因為哪一項地形特色？",
+  "options": [
+   "沙漠廣布缺水",
+   "地勢低平易淹水",
+   "周圍群山環繞",
+   "冬季冰雪封路"
+  ],
+  "answer": 2,
+  "explanation": "課本圖說：四川盆地周圍群山環繞，進出不易，古代沿河修築棧道，以便於出入。",
+  "source": "1-1 二｜課本第15頁 四川盆地圖說",
+  "pattern": "模式9 跨科（國文）情境＋模式2 圖說"
+ },
+ {
+  "question": "附圖為中國某地形區的等高線示意圖。此地形區最可能是下列何者？",
+  "options": [
+   "黃土高原",
+   "東北平原",
+   "雲貴高原",
+   "塔里木盆地"
+  ],
+  "answer": 3,
+  "explanation": "等高線由外向內遞減（外高內低），是四周高、中間低的盆地地形（七年級學過的等高線判讀）。選項中只有塔里木盆地是盆地。",
+  "source": "1-1 一 地形種類複雜｜課本第13頁 圖1-1-3；七年級等高線判讀",
+  "pattern": "模式8 舊課技能整合",
+  "image": "f1_contour"
+ },
+ {
+  "question": "位於長江上游、四川盆地東部的直轄市是附圖中哪一處？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 3,
+  "explanation": "丁是重慶市，位於四川盆地東部。中國的4個直轄市是北京（甲）、天津（乙）、上海（丙）、重慶（丁）。",
+  "source": "1-1｜課本第12頁 圖1-1-1 中國行政區圖",
+  "pattern": "模式3 地圖代號＋行政區細節",
+  "fixed": true,
+  "group": "G1B"
+ },
+ {
+  "question": "位於長江出海口、長江三角洲上的直轄市是附圖中哪一處？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 2,
+  "explanation": "丙是上海市，位在長江出海口的長江三角洲。北京（甲）、天津（乙）位在華北平原北部。",
+  "source": "1-1｜課本第12頁 圖1-1-1；課本第13頁 圖1-1-3",
+  "pattern": "模式3 兩張圖疊合",
+  "fixed": true,
+  "group": "G1B"
+ },
+ {
+  "question": "中國在新疆、西藏、廣西、寧夏、內蒙古設立「自治區」，主要原因為何？",
+  "options": [
+   "少數民族聚居",
+   "曾受外國殖民",
+   "經濟最為發達",
+   "人口最為稠密"
+  ],
+  "answer": 0,
+  "explanation": "行政區圖註：自治區是少數民族聚居的地方。「曾受外國殖民」是特別行政區（香港曾受英國殖民、澳門曾受葡萄牙殖民）的設立背景，兩者不要混淆。第2課會再學到少數民族的分布。",
+  "source": "1-1｜課本第12頁 圖1-1-1 註；第2課 2-1",
+  "pattern": "模式2 註腳轉題＋模式7 跨課"
+ },
+ {
+  "question": "「中國的經度約在東經73°～135°之間，緯度約在北緯18°～53°之間。」這段敘述是用哪一種方式描述中國的位置？",
+  "options": [
+   "相對位置",
+   "絕對位置",
+   "行政位置",
+   "交通位置"
+  ],
+  "answer": 1,
+  "explanation": "用經緯度描述的位置是「絕對位置」（七年級學過）。如果用周圍的海陸或國家描述，例如「位於歐亞大陸東南側、太平洋西側」，則是相對位置。",
+  "source": "1-1｜課本第13頁 圖1-1-3 經緯線；七年級地理",
+  "pattern": "模式8 舊課技能整合"
+ },
+ {
+  "question": "夏季時，中國各地普遍高溫，南、北溫差小。主要原因為何？",
+  "options": [
+   "地勢西高東低",
+   "受冬季季風影響",
+   "太陽直射北半球",
+   "距海遠近不同"
+  ],
+  "answer": 2,
+  "explanation": "觀念釐清表：夏季因太陽直射北半球，各地普遍高溫、南北溫差小；只有西部山地、高原受地形影響，相對涼爽。",
+  "source": "1-2 一 夏季普遍高溫，冬季南暖北冷｜課本第16頁 觀念釐清",
+  "pattern": "模式1 表格關鍵句"
+ },
+ {
+  "question": "中國北方有些居民會把廚房爐灶的排煙通道連結到臥房，引灶火的熱氣保暖，稱為「火炕」。這種設施最能反映北方的哪一項氣候特徵？",
+  "options": [
+   "冬季溫暖少雨",
+   "夏季高溫多雨",
+   "全年溫暖潮溼",
+   "冬季嚴寒且漫長"
+  ],
+  "answer": 3,
+  "explanation": "課本圖1-1-7：中國北方因冬季嚴寒且漫長，居民為了在夜間有溫暖的床舖而設置火炕。",
+  "source": "1-2 一｜課本第17頁 圖1-1-7 圖說",
+  "pattern": "模式2 圖說轉題"
+ },
+ {
+  "question": "依附表，哈爾濱、上海、廣州三地的1月月均溫由北向南逐漸升高。造成這個差異的主要因素為何？",
+  "options": [
+   "緯度",
+   "地形",
+   "距海遠近",
+   "洋流"
+  ],
+  "answer": 0,
+  "explanation": "冬季時，各地氣溫隨緯度增加而下降，所以南暖北冷、南北溫差大。哈爾濱緯度最高，1月最冷；廣州緯度最低，1月最暖。",
+  "source": "1-2 一｜課本第16頁 觀念釐清、圖1-1-9",
+  "pattern": "模式3 自編資料表＋模式5 判讀",
+  "group": "G1C"
+ },
+ {
+  "question": "拉薩與上海緯度相近，但拉薩7月月均溫比上海低很多。主要原因為何？",
+  "options": [
+   "緯度較高",
+   "地勢高聳",
+   "距海較近",
+   "受冬季季風影響"
+  ],
+  "answer": 1,
+  "explanation": "拉薩位在青藏高原，地勢高聳，所以夏季較涼爽。課本：部分地區受到地形的影響，夏季氣溫相對較低；西半部山地、高原冬季氣溫也比同緯度地區低。",
+  "source": "1-2 一｜課本第16頁 圖1-1-6 圖說",
+  "pattern": "模式3 自編資料表＋模式10 排除緯度的推論",
+  "group": "G1C"
+ },
+ {
+  "question": "附圖為某季節的海陸氣壓與氣流示意圖。這張圖表示的是中國的哪一種季風？",
+  "options": [
+   "颱風",
+   "夏季季風",
+   "冬季季風",
+   "海陸風"
+  ],
+  "answer": 2,
+  "explanation": "圖中陸地為高氣壓、氣流下沉，風由陸地吹向海洋，帶來寒冷乾燥的氣流，這是冬季季風。冬季太陽直射南半球，歐亞大陸降溫比海洋快，在蒙古一帶形成高氣壓。",
+  "source": "1-2 二 降水時空分布不均｜課本第18頁 圖1-1-12",
+  "pattern": "模式3 課本示意圖",
+  "image": "f1_monsoon"
+ },
+ {
+  "question": "冬季時，從蒙古高氣壓吹出的季風到了華南沿海與臺灣附近，主要吹哪一種風向？",
+  "options": [
+   "東南風",
+   "西北風",
+   "西南風",
+   "東北風"
+  ],
+  "answer": 3,
+  "explanation": "課本圖1-1-13：冬季季風在華北多吹西北風，到了華南沿海與臺灣附近轉為東北風。所以臺灣冬季吹東北季風。西南風、東南風則是夏季季風的風向。",
+  "source": "1-2 二｜課本第18頁 圖1-1-13 冬季季風風向示意圖",
+  "pattern": "模式4 相近風向辨析＋模式9 臺灣在地"
+ },
+ {
+  "question": "中國西北部內陸地區，年、日溫差都很大。主要原因為何？",
+  "options": [
+   "氣候乾燥，缺少水氣調節",
+   "受海洋影響，水氣充足",
+   "緯度低，終年受太陽直射",
+   "地勢低平，熱氣不易散失"
+  ],
+  "answer": 0,
+  "explanation": "課本：西北部地區位居內陸、距海遙遠，年降水量不足500毫米。由於氣候乾燥、缺少水氣調節，使得年、日溫差均大。",
+  "source": "1-2 三 氣候多樣，分屬三大類型｜課本第20頁 內文",
+  "pattern": "模式1 內文關鍵句"
+ },
+ {
+  "question": "中國年降水量由東南向西北遞減。下列何者「不是」課本所說造成這種空間分布的因素？",
+  "options": [
+   "季風",
+   "緯度",
+   "地形",
+   "距海遠近"
+  ],
+  "answer": 1,
+  "explanation": "觀念釐清表：降水的空間分布受季風、地形、距海遠近影響；時間分布（夏雨冬乾）則受季風影響。緯度是影響「冬季氣溫」的因素，不是降水空間分布的因素。",
+  "source": "1-2 二 2.東溼西乾｜課本第19頁 觀念釐清",
+  "pattern": "模式4 不同表格的因素混淆"
+ },
+ {
+  "question": "依地理工具箱的判讀方法，甲地屬於哪一種氣候類型？",
+  "options": [
+   "溫帶季風氣候",
+   "副熱帶季風氣候",
+   "熱帶季風氣候",
+   "草原氣候"
+  ],
+  "answer": 2,
+  "explanation": "判讀步驟：①最暖月月均溫29℃，不低於20℃，不是高地氣候；②最冷月月均溫21℃，高於18℃，屬熱帶；③年降水量1,600mm，超過500mm，屬季風氣候。所以是熱帶季風氣候，例如課本的三亞。",
+  "source": "1-2 地理工具箱｜課本第21頁 中國氣候判讀方法",
+  "pattern": "模式5 專欄判讀＋自編數據",
+  "group": "G1D"
+ },
+ {
+  "question": "乙地年降水量420mm，介於250～500mm之間。依地理工具箱的判讀方法，乙地屬於哪一種氣候類型？",
+  "options": [
+   "溫帶季風氣候",
+   "草原氣候",
+   "溫帶沙漠氣候",
+   "高地氣候"
+  ],
+  "answer": 3,
+  "explanation": "判讀方法的第1步是先看最暖月月均溫：乙地最暖月只有14℃，低於20℃，屬於高地氣候。雖然年降水量在250～500mm之間，但不能直接判斷成草原氣候，判讀順序很重要。",
+  "source": "1-2 地理工具箱｜課本第21頁 中國氣候判讀方法（1看最暖月→2看最冷月→3看年降水量）",
+  "pattern": "模式5 專欄判讀＋模式4 判讀順序陷阱",
+  "group": "G1D"
+ }
+] },
+                    { name: '第2課 中國的人口成長與文化遷移', data: [
+ {
+  "question": "依課本的中國民族比例圖，在少數民族當中，人口比例最高的是哪一族？",
+  "options": [
+   "藏族",
+   "壯族",
+   "蒙古族",
+   "維吾爾族"
+  ],
+  "answer": 1,
+  "explanation": "中國的居民以漢族最多（91.1%），其餘民族稱為少數民族（8.9%）。少數民族中以壯族比例最高（約15.6%），廣西也因此設立「廣西壯族自治區」。",
+  "source": "2-1 一 族系眾多的人口組成｜課本第24頁 圖1-2-1",
+  "pattern": "模式3 課本圖表"
+ },
+ {
+  "question": "下列哪一個民族的主要聚居地，所在的地勢最高？",
+  "options": [
+   "苗族",
+   "壯族",
+   "滿族",
+   "藏族"
+  ],
+  "answer": 3,
+  "explanation": "藏族主要聚居在青藏高原（西藏自治區），位在最高階梯，平均海拔約4,000公尺。扉頁學習圖解：青藏地區—藏族；東北地區—滿族；雲貴高原—苗族；東南丘陵一帶—壯族。",
+  "source": "2-1 一｜扉頁學習圖解；第1課 三級階梯",
+  "pattern": "模式7 民族×地形跨課"
+ },
+ {
+  "question": "課本指出，歷代以來中國人口的增減多與哪些因素有關？　(甲)政治局勢　(乙)糧食供應　(丙)醫療衛生　(丁)板塊擠壓",
+  "options": [
+   "甲乙丙",
+   "甲乙丁",
+   "甲丙丁",
+   "乙丙丁"
+  ],
+  "answer": 0,
+  "explanation": "課本：歷代以來，中國人口的增減多與政治局勢、糧食供應、醫療衛生等原因有關。板塊擠壓是第1課造成地形差異大的原因。",
+  "source": "2-1 二 快速增加的人口數量｜課本第24頁 內文",
+  "pattern": "模式1 原因列舉句（組合題）",
+  "fixed": true
+ },
+ {
+  "question": "附表為近代中國的人口總數。比較1700～1794年與1950～1990年兩段時期，中國人口增加一倍所需的時間有何變化？這代表什麼？",
+  "options": [
+   "時間相同，速度不變",
+   "時間變長，成長變慢",
+   "時間變短，成長變快",
+   "人口持續負成長"
+  ],
+  "answer": 2,
+  "explanation": "1700年1.5億→1794年約3.13億，增加一倍約需90年；1950年5.5億→1990年11.4億，增加一倍約只需40年。倍增時間變短，代表人口成長愈來愈快。",
+  "source": "2-1 學習會考「認識中國人口成長的變化」｜課本第29頁 圖1-2-8",
+  "pattern": "模式3 課本圖表＋模式8 數學計算",
+  "image": "f2_growth"
+ },
+ {
+  "question": "一九五○年代以前中國人口成長緩慢，之後卻迅速成長。若從「醫療衛生改善」來解釋，最合理的推論是哪一項？",
+  "options": [
+   "糧食大量減產",
+   "出生率下降",
+   "大量外國人移入",
+   "死亡率下降"
+  ],
+  "answer": 3,
+  "explanation": "醫療衛生改善使死亡的人變少（死亡率下降），出生的人數還很多，自然增加就變快，人口迅速成長。",
+  "source": "2-1 二 快速增加的人口數量｜課本第24頁 內文",
+  "pattern": "模式10 由原因推結果"
+ },
+ {
+  "question": "中國人口分布「東密西疏」，分界線是圖中哪一條？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 0,
+  "explanation": "甲是黑河—騰衝線。線以東土地占43%，卻住了94%的人口；線以西土地占57%，人口只占6%。",
+  "source": "2-1 三 東密西疏的人口分布｜課本第25頁 內文、圖1-2-4",
+  "pattern": "模式1 內文關鍵句＋模式3 地圖",
+  "fixed": true,
+  "group": "G2A"
+ },
+ {
+  "question": "第1課學過，1月月均溫0℃等溫線和年降水量750mm等雨量線大致重疊。這條線是圖中哪一條？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 1,
+  "explanation": "乙是秦嶺—淮河一線，是中國南北氣候的重要分界。丙是北回歸線，丁是第二、三級階梯的分界（大興安嶺、太行山、巫山一帶）。",
+  "source": "第1課 1-2｜課本第17、19頁 圖1-1-9、圖1-1-14",
+  "pattern": "模式7 跨課整合",
+  "fixed": true,
+  "group": "G2A"
+ },
+ {
+  "question": "圖中哪一條線大致是第二級與第三級階梯的分界？",
+  "options": [
+   "甲",
+   "乙",
+   "丙",
+   "丁"
+  ],
+  "answer": 3,
+  "explanation": "丁線沿大興安嶺、太行山、巫山一帶，是次高階梯與最低階梯的分界。線以東是平原和丘陵為主的最低階梯，人口也大多集中在這裡。",
+  "source": "第1課 1-1｜課本第14頁 圖1-1-4",
+  "pattern": "模式7 跨課整合",
+  "fixed": true,
+  "group": "G2A"
+ },
+ {
+  "question": "黑河—騰衝線以東的地區人口眾多。下列何者「不是」課本所說的原因？",
+  "options": [
+   "地形平坦",
+   "氣候乾燥少雨",
+   "氣候溫暖溼潤",
+   "交通便利"
+  ],
+  "answer": 1,
+  "explanation": "課本：連線以東因地形平坦，氣候溫暖溼潤，地理位置優越、交通便利，農、工商業發達，因而人口眾多。「氣候乾燥少雨」是連線以西人口稀少的原因，是同段落另一半的內容。",
+  "source": "2-1 三 東密西疏的人口分布｜課本第25頁 內文",
+  "pattern": "模式4 同段另一半當誘答"
+ },
+ {
+  "question": "依附表計算，黑河—騰衝線以東地區的人口密度，大約是以西地區的幾倍？",
+  "options": [
+   "約2倍",
+   "約7倍",
+   "約20倍",
+   "約50倍"
+  ],
+  "answer": 2,
+  "explanation": "人口密度＝人口÷面積。東半部：94÷43≒2.19；西半部：6÷57≒0.105。2.19÷0.105≒20.8，所以東半部人口密度約是西半部的20倍。",
+  "source": "2-1 三｜課本第25頁 圖1-2-4 人口與土地面積比例圖",
+  "pattern": "模式8 數學計算",
+  "image": "f2_density",
+  "fixed": true
+ },
+ {
+  "question": "「環境負載力的高低，通常與當地的自然環境與生產技術的發展有關。」依此判斷，下列哪一項變化最可能使一個地區的環境負載力提高？",
+  "options": [
+   "土地逐漸沙漠化",
+   "生產技術進步",
+   "降水量大幅減少",
+   "地表更加崎嶇"
+  ],
+  "answer": 1,
+  "explanation": "充電站：環境負載力指某地區能提供生物所需資源及承受其廢棄物的能力，與自然環境和生產技術有關。生產技術進步（例如改良農業技術）可以提高環境負載力；其他三項都是自然環境變差，會降低環境負載力。",
+  "source": "2-1 三 充電站「環境負載力」｜課本第25頁",
+  "pattern": "模式6 題幹給原則→套用"
+ },
+ {
+  "question": "附圖甲、乙兩張點子圖的紙上面積相同，點數也相同，但比例尺不同。哪一地的實際人口密度較高？",
+  "options": [
+   "甲地較高",
+   "乙地較高",
+   "兩地相同",
+   "無法判斷"
+  ],
+  "answer": 0,
+  "explanation": "比例尺1:10,000比1:20,000大，同樣大小的圖，代表的實際面積較小（只有乙地的1/4）。人口數相同、面積較小，所以甲地人口密度較高。",
+  "source": "2-1 學習會考第3題「點子圖」｜課本第29頁；七年級比例尺",
+  "pattern": "模式8 舊課技能（比例尺）＋數學",
+  "image": "f2_scale",
+  "fixed": true
+ },
+ {
+  "question": "中國人口數量龐大，雖然帶來許多壓力，但也有利於經濟發展。下列哪些是龐大人口對經濟發展的好處？　(甲)勞動力充足　(乙)消費市場廣大　(丙)糧食供應壓力大　(丁)環境壓力大",
+  "options": [
+   "甲乙",
+   "甲丙",
+   "乙丁",
+   "丙丁"
+  ],
+  "answer": 0,
+  "explanation": "課本2-2：快速增加的人口雖有利於經濟發展，卻也造成糧食供應、社會與環境的極大壓力。人口多代表勞動力充足、消費市場廣大，這是有利之處；糧食與環境壓力則是不利之處。",
+  "source": "2-2 引言｜課本第26頁 內文",
+  "pattern": "模式10 反向推論（組合題）",
+  "fixed": true
+ },
+ {
+  "question": "塔里木盆地位在黑河—騰衝線以西，盆地內大部分為沙漠。當地的居民最可能集中在哪裡？",
+  "options": [
+   "高山山頂",
+   "沙漠中央",
+   "河谷與綠洲",
+   "冰川附近"
+  ],
+  "answer": 2,
+  "explanation": "課本：連線以西深入內陸，氣候乾燥少雨，居民維生不易，多集中在河谷與綠洲之處。",
+  "source": "2-1 三｜課本第25頁 內文；第1課 塔里木盆地圖說",
+  "pattern": "模式1 內文關鍵句＋模式7 跨課"
+ },
+ {
+  "question": "黑河—騰衝線以東、人口稠密的地區，大致屬於第1課學過的哪一種氣候類型區？",
+  "options": [
+   "寒帶氣候",
+   "乾燥氣候",
+   "高地氣候",
+   "季風氣候"
+  ],
+  "answer": 3,
+  "explanation": "中國東半部受季風影響顯著，氣候溫和溼潤，降水較豐，適合農作物生長，所以人口稠密。西北部是乾燥氣候，青藏高原是高地氣候，人口都很稀少。",
+  "source": "第1課 1-2 三｜課本第20頁；2-1 三",
+  "pattern": "模式7 跨課整合"
+ },
+ {
+  "question": "近數十年來，中國快速增加的人口造成許多壓力。下列何者「不是」課本提到的壓力？",
+  "options": [
+   "勞動力不足",
+   "糧食供應",
+   "社會",
+   "環境"
+  ],
+  "answer": 0,
+  "explanation": "課本：中國快速增加的人口雖有利於經濟發展，卻也造成糧食供應、社會與環境的極大壓力。人口多代表勞動力充足，不是勞動力不足。",
+  "source": "2-2 引言｜課本第26頁 內文",
+  "pattern": "模式1 原因列舉句＋模式4 反向誘答"
+ },
+ {
+  "question": "「自然增加率＝出生率－死亡率」。依附表計算，西元2023年中國的自然增加率約為多少？",
+  "options": [
+   "約＋1.5‰",
+   "約0‰",
+   "約－1.5‰",
+   "約＋14.3‰"
+  ],
+  "answer": 2,
+  "explanation": "6.4‰－7.9‰＝－1.5‰。自然增加率為負數，代表出生人數少於死亡人數，人口出現負成長；表中2020年到2023年人口總數也停在14.1億。",
+  "source": "2-1 學習會考第2題｜課本第29頁；2-2 一｜課本第26頁",
+  "pattern": "模式6 題幹給公式＋模式8 數學",
+  "image": "f2_stats",
+  "fixed": true
+ },
+ {
+  "question": "依附表，1970年到2023年，哪一個年齡層的人口比例變化最大？",
+  "options": [
+   "壯年人口",
+   "幼年人口",
+   "老年人口",
+   "三者變化相同"
+  ],
+  "answer": 1,
+  "explanation": "幼年人口由40.3%降到16.3%，減少24個百分點；壯年人口增加12.6個百分點；老年人口增加11.4個百分點。變化最大的是幼年人口。",
+  "source": "2-2 二｜課本第27頁 人口金字塔圖",
+  "pattern": "模式3 圖轉表",
+  "group": "G2B"
+ },
+ {
+  "question": "幼年人口比例大幅下降，主要原因為何？",
+  "options": [
+   "大量人口移出",
+   "發生大規模戰亂",
+   "推行計畫生育政策",
+   "發生嚴重饑荒"
+  ],
+  "answer": 2,
+  "explanation": "中國自1979年提出一胎化政策，嚴格限制生育，出生率大幅降低，使幼年人口比例下降，也導致老年人口比例持續增加。",
+  "source": "2-2 一、二｜課本第26～27頁 內文",
+  "pattern": "模式1 內文關鍵句",
+  "group": "G2B"
+ },
+ {
+  "question": "中國街頭曾出現「只生一個好」之類的宣導標語。這類標語是為了推行哪一項政策？",
+  "options": [
+   "老年福利制度",
+   "開放生育三胎",
+   "鼓勵移民海外",
+   "一胎化政策"
+  ],
+  "answer": 3,
+  "explanation": "課本圖1-2-5是中國推行一胎化政策的告示看板。一胎化政策規定一對夫妻只能生育一胎，以限制生育來控制人口的快速成長。",
+  "source": "2-2 一｜課本第26頁 圖1-2-5 圖說",
+  "pattern": "模式2 照片轉生活素材"
+ },
+ {
+  "question": "西元2023年中國新生兒性別比約為111。這個數字代表什麼意思？",
+  "options": [
+   "每100個女嬰約有111個男嬰",
+   "每100個男嬰約有111個女嬰",
+   "每111個新生兒中有100個男嬰",
+   "男嬰比女嬰多111人"
+  ],
+  "answer": 0,
+  "explanation": "性別比是「每100個女性所對應的男性人數」。性別比111，代表每100個女嬰約有111個男嬰，男多於女的情形比世界平均嚴重。",
+  "source": "2-2 二 2.性別結構失衡｜課本第27頁 新生兒性別比圖",
+  "pattern": "模式3 課本圖表＋模式8 比的概念"
+ },
+ {
+  "question": "一九九○年代以後，中國新生兒男多於女的失衡現象遠高於其他國家。除了生育率下降，課本還指出受到哪一項因素影響？",
+  "options": [
+   "醫療衛生的改善",
+   "重男輕女的傳統觀念",
+   "人口大量外移",
+   "環境負載力提高"
+  ],
+  "answer": 1,
+  "explanation": "課本：隨著生育率下降與重男輕女的傳統觀念影響，一九九○年代以後，中國新生兒性別男多於女的失衡現象，遠高於世界其他國家。中國的對策是加強宣導性別平等的重要性。",
+  "source": "2-2 二 2.性別結構失衡｜課本第27頁 內文",
+  "pattern": "模式1 原因列舉句"
+ },
+ {
+  "question": "中國在西元2016年全面開放生育第二胎，2021年又開放第三胎。政府調整生育政策，主要是為了因應什麼問題？",
+  "options": [
+   "人口東密西疏",
+   "人口總數持續暴增",
+   "人口老化與少子化",
+   "少數民族人口減少"
+  ],
+  "answer": 2,
+  "explanation": "一胎化政策衍生人口快速老化、少子化與性別失衡等問題，中國因此陸續開放生育第二胎、第三胎，但短時間內成效尚不顯著。",
+  "source": "2-2 二 計畫生育政策的衍生問題與對策調整｜課本第27頁",
+  "pattern": "模式10 由對策推回問題"
+ },
+ {
+  "question": "聯合國的標準：65歲以上老年人口比例超過7%為高齡化社會，超過14%為高齡社會，超過20%為超高齡社會。臺灣的老年人口比例在2018年超過14%，近年又超過20%。依此標準，臺灣現在屬於哪一種社會？",
+  "options": [
+   "年輕型社會",
+   "高齡社會",
+   "高齡化社會",
+   "超高齡社會"
+  ],
+  "answer": 3,
+  "explanation": "老年人口比例超過20%就是超高齡社會。中國在2023年老年人口占15.4%，超過14%，邁入高齡社會；臺灣老化得更快，已是超高齡社會。",
+  "source": "2-2 二 1.人口快速老化｜課本第27頁（聯合國14%標準）",
+  "pattern": "模式9 臺灣在地＋模式6 給標準→套用"
+ },
+ {
+  "question": "第1課提到東南丘陵常被開闢成梯田，以養活眾多人口。依第2課，中國東南沿海形成人口外移推力的主要原因為何？",
+  "options": [
+   "丘陵廣布，山多田少",
+   "沙漠廣布，缺乏水源",
+   "地勢高聳，氣候嚴寒",
+   "地形平坦，工商發達"
+  ],
+  "answer": 0,
+  "explanation": "課本：中國東南沿海地區因丘陵廣布、山多田少，隨著人口逐漸增加，形成人口外移的巨大推力。",
+  "source": "2-3｜課本第28頁 內文；第1課 東南丘陵圖說",
+  "pattern": "模式1 原因句＋模式7 跨課"
+ },
+ {
+  "question": "近代中國東南沿海的居民向外移民。早先的移民以遷往哪裡的人數最多？",
+  "options": [
+   "美國與澳洲",
+   "東南亞與臺灣",
+   "歐洲與非洲",
+   "日本與韓國"
+  ],
+  "answer": 1,
+  "explanation": "課本：早先移民以遷往鄰近的東南亞與臺灣人數最多。十九世紀以後，才有數以百萬計的華工前往美國、澳洲等地，兩個時期不要混淆。",
+  "source": "2-3｜課本第28頁 內文、圖1-2-7",
+  "pattern": "模式4 同段另一時期當誘答"
+ },
+ {
+  "question": "十九世紀以後，數以百萬計的華工前往美國、澳洲等地。他們主要從事哪些工作維生？",
+  "options": [
+   "游牧、放牧",
+   "種植水稻",
+   "採礦、築路",
+   "經營電子業"
+  ],
+  "answer": 2,
+  "explanation": "課本：十九世紀以後，有數以百萬計的華工前往美國、澳洲等地，以採礦、築路等工作維生。",
+  "source": "2-3｜課本第28頁 內文",
+  "pattern": "模式1 內文關鍵句"
+ },
+ {
+  "question": "臺北的艋舺龍山寺建於清代，是福建泉州移民從原鄉的龍山寺分靈而來，至今仍是重要的信仰中心。這最能說明下列哪一個概念？",
+  "options": [
+   "環境負載力",
+   "文化消失",
+   "人口老化",
+   "文化擴散"
+  ],
+  "answer": 3,
+  "explanation": "課本：移民在海外各地重建或複製原鄉的生活方式，將飲食、衣著、住宅、習俗等文化移到新居地，使華人文化擴散。課本的例子是新北市泰山區的頂泰山巖，艋舺龍山寺也是同樣的情形。",
+  "source": "2-3｜課本第28頁 內文、頂泰山巖圖說",
+  "pattern": "模式9 臺灣在地類比"
+ },
+ {
+  "question": "「新加坡著名的中國城，為早期華人移民的聚居地之一，現今仍保留許多傳統建築及特色美食。」這個地方叫做什麼？",
+  "options": [
+   "牛車水",
+   "頂泰山巖",
+   "胡同巷弄",
+   "福建土樓"
+  ],
+  "answer": 0,
+  "explanation": "課本圖說：牛車水是新加坡著名的中國城，為早期華人移民的聚居地之一。頂泰山巖在新北市泰山區；胡同、土樓是中國本地的傳統聚落與建築。",
+  "source": "2-3｜課本第28頁 牛車水圖說",
+  "pattern": "模式2 圖說轉題"
+ },
+ {
+  "question": "清代從福建乘帆船前往東南亞的移民，多選在冬季出發。這主要是利用哪一種風？",
+  "options": [
+   "夏季西南季風",
+   "冬季東北季風",
+   "夏季東南季風",
+   "颱風環流"
+  ],
+  "answer": 1,
+  "explanation": "帆船靠風力航行。冬季華南沿海吹東北季風（第1課），可以順風向西南航行到東南亞；回程則多利用夏季的西南季風。",
+  "source": "2-3 圖1-2-7｜課本第28頁；第1課 1-2 冬季季風",
+  "pattern": "模式7 跨課＋模式9 歷史情境"
+ }
+] }
                 ]
             }
         };
+        const THEME = {
+            blue:    { card: 'border-blue-100 hover:border-blue-500 hover:bg-blue-50', icon: 'bg-blue-100', text: 'text-blue-600', bar: 'bg-blue-500' },
+            amber:   { card: 'border-amber-100 hover:border-amber-500 hover:bg-amber-50', icon: 'bg-amber-100', text: 'text-amber-600', bar: 'bg-amber-500' },
+            emerald: { card: 'border-emerald-100 hover:border-emerald-500 hover:bg-emerald-50', icon: 'bg-emerald-100', text: 'text-emerald-600', bar: 'bg-emerald-500' }
+        };
 
-        let currentSubjectId = '';
-        let currentChapterIndex = 0;
-        let currentQuestions = [];
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let correctAnswersCount = 0;
-        let hasAnsweredCurrent = false;
-        let incorrectQuestions = [];
-        let isRetryMode = false;
+        let currentChapterIndex = 0, currentQuestions = [], currentQuestionIndex = 0;
+        let score = 0, correctAnswersCount = 0, hasAnsweredCurrent = false, incorrectQuestions = [], isRetryMode = false;
+        let currentSubjectId = 'geography';
+        let subject = quizData.geography;
+        const $ = id => document.getElementById(id);
 
-        // Fisher-Yates 洗牌演算法
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -414,290 +1315,212 @@
             return array;
         }
 
-        const screens = {
-            home: document.getElementById('home-screen'),
-            chapter: document.getElementById('chapter-screen'),
-            quiz: document.getElementById('quiz-screen'),
-            result: document.getElementById('result-screen')
-        };
-        
-        const uiElements = {
-            headerBar: document.getElementById('header-bar'),
-            chapterSubjectTitle: document.getElementById('chapter-subject-title'),
-            chapterIcon: document.getElementById('chapter-icon'),
-            chapterList: document.getElementById('chapter-list'),
-            quizHeaderTitle: document.getElementById('quiz-header-title'),
-            questionText: document.getElementById('question-text'),
-            optionsContainer: document.getElementById('options-container'),
-            nextBtn: document.getElementById('next-btn'),
-            nextBtnText: document.getElementById('next-btn-text'),
-            scoreDisplay: document.getElementById('score-display'),
-            progressBar: document.getElementById('progress-bar'),
-            currentNumDisplay: document.getElementById('current-question-num'),
-            totalNumDisplay: document.getElementById('total-questions-num'),
-            expContainer: document.getElementById('explanation-container'),
-            expTitle: document.getElementById('explanation-title'),
-            expIcon: document.getElementById('explanation-icon'),
-            expStatusText: document.getElementById('explanation-status-text'),
-            expText: document.getElementById('explanation-text')
-        };
-
-        function switchScreen(screenName) {
-            Object.values(screens).forEach(screen => screen.classList.add('hidden'));
-            screens[screenName].classList.remove('hidden');
+        // 打亂題目，但同一題組的題目保持相鄰且依原順序
+        function shuffleKeepGroups(list) {
+            const units = [], seen = {};
+            list.forEach(q => {
+                if (q.group) {
+                    if (!seen[q.group]) { seen[q.group] = []; units.push(seen[q.group]); }
+                    seen[q.group].push(q);
+                } else units.push([q]);
+            });
+            return shuffleArray(units).flat();
         }
 
-        function goHome() {
-            uiElements.headerBar.className = `h-2 bg-indigo-500 w-full absolute top-0 left-0 transition-colors duration-300`;
-            switchScreen('home');
+        function switchScreen(name) {
+            ['home-screen', 'chapter-screen', 'quiz-screen', 'result-screen'].forEach(id => $(id).classList.add('hidden'));
+            $(name + '-screen').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderHome() {
+            const list = $('subject-list');
+            list.innerHTML = '';
+            Object.entries(quizData).forEach(([id, sub]) => {
+                const t = THEME[sub.color], n = sub.chapters.length;
+                const btn = document.createElement('button');
+                btn.className = `group flex flex-col items-center justify-center p-8 border-2 rounded-2xl transition-all shadow-sm bg-white ${t.card}`;
+                btn.innerHTML = `
+                    <div class="w-20 h-20 ${t.icon} rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-4xl shadow-inner">${sub.icon}</div>
+                    <span class="text-2xl font-bold text-gray-800 mb-1">${sub.name}</span>
+                    <span class="text-sm font-medium mt-2 ${n ? 'text-gray-500' : 'text-gray-400'}">${n ? `共 ${n} 個課次` : '題庫準備中'}</span>`;
+                btn.onclick = () => showChapters(id);
+                list.appendChild(btn);
+            });
         }
 
         function showChapters(subjectId) {
             currentSubjectId = subjectId;
-            const subject = quizData[subjectId];
-            
-            uiElements.headerBar.className = `h-2 w-full absolute top-0 left-0 transition-colors duration-300 ${subject.bg}`;
-            uiElements.chapterSubjectTitle.textContent = subject.name;
-            uiElements.chapterSubjectTitle.className = `text-2xl font-black ${subject.text}`;
-            uiElements.chapterIcon.textContent = subject.icon;
-            
-            uiElements.chapterList.innerHTML = '';
-            subject.chapters.forEach((chapter, index) => {
+            subject = quizData[subjectId];
+            const t = THEME[subject.color];
+            $('header-bar').className = `h-2 w-full absolute top-0 left-0 ${t.bar}`;
+            $('progress-bar').className = `h-full rounded-full transition-all duration-500 ${t.bar}`;
+            $('chapter-icon').textContent = subject.icon;
+            $('chapter-subject-title').textContent = subject.name;
+            $('chapter-subject-title').className = `text-2xl font-black ${t.text}`;
+            const list = $('chapter-list');
+            list.innerHTML = '';
+            if (!subject.chapters.length) {
+                list.innerHTML = `<div class="md:col-span-2 text-center py-14 text-gray-500"><div class="text-5xl mb-4">🚧</div><p class="text-lg font-bold text-gray-700 mb-1">${subject.name}題庫準備中</p><p>目前開放地理科練習，敬請期待！</p></div>`;
+            }
+            subject.chapters.forEach((ch, i) => {
+                const figs = ch.data.filter(q => q.image || (q.group && GROUPS[q.group].img)).length;
+                const groups = new Set(ch.data.filter(q => q.group).map(q => q.group)).size;
+                let [no, ...rest] = ch.name.split(' ');
+                if (!rest.length) { rest = [ch.name.replace(/^\d+_/, '')]; no = `第 ${i + 1} 單元`; }
                 const btn = document.createElement('button');
-                btn.className = `group flex items-center p-6 border-2 rounded-2xl transition-all shadow-sm bg-white text-left ${subject.themeBorder} ${subject.hoverBorder} ${subject.hoverBg}`;
+                btn.className = `group text-left p-6 border-2 rounded-2xl transition-all shadow-sm bg-white ${t.card}`;
                 btn.innerHTML = `
-                    <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-black text-xl mr-5 shadow-inner ${subject.bgLight} ${subject.text}">${index + 1}</div>
-                    <div>
-                        <h3 class="text-xl font-bold text-gray-800 group-hover:${subject.text} transition-colors">${chapter.name}</h3>
-                        <p class="text-sm text-gray-500 mt-1">包含 ${chapter.data.length} 題素養題</p>
-                    </div>
-                `;
-                btn.onclick = () => startQuiz(subjectId, index);
-                uiElements.chapterList.appendChild(btn);
+                    <div class="text-sm font-black ${t.text} mb-1">${no}</div>
+                    <div class="text-xl font-bold text-gray-800 mb-3">${rest.join(' ')}</div>
+                    <div class="flex flex-wrap gap-2 text-xs font-bold">
+                        <span class="px-2 py-1 rounded bg-gray-100 text-gray-600">${ch.data.length} 題</span>
+                        ${figs ? `<span class="px-2 py-1 rounded bg-orange-100 text-orange-700">附圖表 ${figs} 題</span>` : ''}
+                        ${groups ? `<span class="px-2 py-1 rounded bg-amber-100 text-amber-700">題組 ${groups} 組</span>` : ''}
+                    </div>`;
+                btn.onclick = () => startQuiz(i);
+                list.appendChild(btn);
             });
-
             switchScreen('chapter');
         }
 
-        function goBackToChapters() {
-            showChapters(currentSubjectId);
-        }
+        function goBackToChapters() { showChapters(currentSubjectId); }
 
-        function startQuiz(subjectId, chapterIndex, retryData = null) {
-            currentSubjectId = subjectId;
+        function goHome() { $('header-bar').className = 'h-2 bg-emerald-500 w-full absolute top-0 left-0'; switchScreen('home'); }
+
+        function startQuiz(chapterIndex, retryData = null) {
             currentChapterIndex = chapterIndex;
-            const subject = quizData[subjectId];
             const chapter = subject.chapters[chapterIndex];
-            
-            // 複製並打亂題目
-            let questionsToLoad = [];
-            if (retryData) {
-                questionsToLoad = JSON.parse(JSON.stringify(retryData)); // 深拷貝以避免影響原始錯題資料
-                isRetryMode = true;
-                uiElements.quizHeaderTitle.innerHTML = `<span class="${subject.text}">${subject.icon} ${subject.name}</span> <span class="mx-1 text-gray-300">/</span> ${chapter.name} <span class="ml-2 px-2 py-0.5 bg-rose-100 text-rose-600 rounded text-xs">錯題重測</span>`;
-            } else {
-                questionsToLoad = JSON.parse(JSON.stringify(chapter.data)); // 深拷貝
-                isRetryMode = false;
-                uiElements.quizHeaderTitle.innerHTML = `<span class="${subject.text}">${subject.icon} ${subject.name}</span> <span class="mx-1 text-gray-300">/</span> ${chapter.name}`;
-            }
-
-            if (questionsToLoad.length === 0) {
-                alert("此章節暫無題目。");
-                return;
-            }
-
-            // 打亂題目順序
-            currentQuestions = shuffleArray(questionsToLoad);
-
-            // 狀態重置
-            currentQuestionIndex = 0;
-            score = 0;
-            correctAnswersCount = 0;
-            incorrectQuestions = [];
-            
+            const source = retryData ? retryData : chapter.data;
+            isRetryMode = !!retryData;
+            const loaded = JSON.parse(JSON.stringify(source));
+            $('quiz-header-title').innerHTML = `${subject.icon} ${chapter.name}` + (isRetryMode ? ' <span class="ml-2 px-2 py-0.5 bg-rose-100 text-rose-600 rounded text-xs">錯題重測</span>' : '');
+            currentQuestions = shuffleKeepGroups(loaded);
+            currentQuestionIndex = 0; score = 0; correctAnswersCount = 0; incorrectQuestions = [];
             updateScoreDisplay();
             loadQuestion();
             switchScreen('quiz');
         }
 
-        function restartChapter() {
-            startQuiz(currentSubjectId, currentChapterIndex);
-        }
-
-        function retryIncorrect() {
-            startQuiz(currentSubjectId, currentChapterIndex, incorrectQuestions);
-        }
+        function restartChapter() { startQuiz(currentChapterIndex); }
+        function retryIncorrect() { startQuiz(currentChapterIndex, incorrectQuestions); }
 
         function loadQuestion() {
             hasAnsweredCurrent = false;
-            uiElements.nextBtn.classList.add('hidden');
-            uiElements.expContainer.classList.add('hidden');
-            
+            $('next-btn').classList.add('hidden');
+            $('explanation-container').classList.add('hidden');
             const q = currentQuestions[currentQuestionIndex];
-            const subject = quizData[currentSubjectId];
-            
-            uiElements.currentNumDisplay.textContent = currentQuestionIndex + 1;
-            uiElements.totalNumDisplay.textContent = currentQuestions.length;
-            
-            // 進度條動畫
-            const progressPercentage = ((currentQuestionIndex) / currentQuestions.length) * 100;
-            uiElements.progressBar.style.width = `${progressPercentage}%`;
-            uiElements.progressBar.className = `h-full rounded-full transition-all duration-500 relative ${subject.bg}`;
 
-            uiElements.questionText.textContent = q.question;
-            uiElements.optionsContainer.innerHTML = '';
-            
-            // 建立包含原始索引的選項陣列，以便打亂後仍能知道哪個是正確答案
-            let optionsWithIndex = q.options.map((optionText, index) => {
-                return { text: optionText, originalIndex: index };
-            });
+            $('current-question-num').textContent = currentQuestionIndex + 1;
+            $('total-questions-num').textContent = currentQuestions.length;
+            $('progress-bar').style.width = `${currentQuestionIndex / currentQuestions.length * 100}%`;
 
-            // 打亂選項順序
-            shuffleArray(optionsWithIndex);
+            // 題組情境
+            const ctxBox = $('context-box');
+            if (q.group) {
+                const g = GROUPS[q.group];
+                const members = currentQuestions.filter(x => x.group === q.group);
+                $('context-step').textContent = `第 ${members.indexOf(q) + 1} 題／共 ${members.length} 題`;
+                $('context-text').textContent = g.text;
+                $('context-fig').innerHTML = g.img ? FIG[g.img]() : '';
+                ctxBox.classList.remove('hidden');
+            } else ctxBox.classList.add('hidden');
 
-            // 更新題目物件中的正確答案索引為打亂後的新位置
-            const newAnswerIndex = optionsWithIndex.findIndex(opt => opt.originalIndex === q.answer);
-            q.shuffledAnswer = newAnswerIndex;
+            $('question-text').textContent = q.question;
+            const qFig = $('question-fig');
+            if (q.image) { qFig.innerHTML = FIG[q.image](); qFig.classList.remove('hidden'); }
+            else { qFig.innerHTML = ''; qFig.classList.add('hidden'); }
 
+            const box = $('options-container');
+            box.innerHTML = '';
+            let opts = q.options.map((text, index) => ({ text, originalIndex: index }));
+            if (!q.fixed) shuffleArray(opts);
+            q.shuffledAnswer = opts.findIndex(o => o.originalIndex === q.answer);
 
-            optionsWithIndex.forEach((optionData, index) => {
+            opts.forEach((o, index) => {
                 const btn = document.createElement('button');
-                btn.className = 'option-btn w-full text-left p-4 md:p-5 rounded-xl border-2 border-gray-100 bg-white hover:border-gray-300 text-gray-700 font-medium flex items-start group';
-                
-                const label = String.fromCharCode(65 + index);
-                btn.innerHTML = `
-                    <span class="option-label flex-shrink-0 w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center mr-3 font-bold group-hover:bg-gray-200 transition-colors">${label}</span>
-                    <span class="mt-1 leading-relaxed">${optionData.text}</span>
-                `;
-                
-                // 傳入當前被打亂後的索引 (index)
+                btn.className = 'option-btn w-full text-left p-4 rounded-xl border-2 border-gray-100 bg-white hover:border-gray-300 text-gray-700 font-medium flex items-center group';
+                btn.innerHTML = `<span class="option-label flex-shrink-0 w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center mr-3 font-bold">${String.fromCharCode(65 + index)}</span><span class="leading-relaxed">${o.text}</span>`;
                 btn.onclick = () => selectOption(index, btn);
-                uiElements.optionsContainer.appendChild(btn);
+                box.appendChild(btn);
             });
         }
 
         function selectOption(selectedIndex, selectedBtn) {
             if (hasAnsweredCurrent) return;
             hasAnsweredCurrent = true;
-
             const q = currentQuestions[currentQuestionIndex];
-            // 檢查被選中的索引是否等於打亂後儲存的正確答案索引
-            const isCorrect = (selectedIndex === q.shuffledAnswer);
-            const allButtons = uiElements.optionsContainer.querySelectorAll('button');
+            const isCorrect = selectedIndex === q.shuffledAnswer;
+            const all = $('options-container').querySelectorAll('button');
+            all.forEach(b => { b.disabled = true; b.classList.add('opacity-70', 'cursor-not-allowed'); });
 
-            // 鎖定所有選項
-            allButtons.forEach(btn => {
-                btn.disabled = true;
-                btn.classList.add('opacity-70', 'cursor-not-allowed');
-                btn.classList.remove('hover:border-gray-300', 'hover:shadow-md', 'group');
-            });
-
-            // 標示正確與錯誤
             if (isCorrect) {
-                selectedBtn.classList.add('correct');
-                selectedBtn.classList.remove('opacity-70');
-                
-                const pointsPerQuestion = 100 / currentQuestions.length;
-                score += pointsPerQuestion;
-                correctAnswersCount++;
+                selectedBtn.classList.add('correct'); selectedBtn.classList.remove('opacity-70');
+                score += 100 / currentQuestions.length; correctAnswersCount++;
                 updateScoreDisplay();
-
-                const idx = incorrectQuestions.findIndex(item => item.question === q.question);
-                if (idx > -1) incorrectQuestions.splice(idx, 1);
             } else {
-                selectedBtn.classList.add('incorrect');
-                selectedBtn.classList.remove('opacity-70');
-                // 顯示正確答案
-                allButtons[q.shuffledAnswer].classList.add('correct');
-                allButtons[q.shuffledAnswer].classList.remove('opacity-70');
-
-                // 檢查是否已在錯題簿中，用題目文字來比對避免深拷貝產生的參照問題
-                const isAlreadyInIncorrect = incorrectQuestions.some(item => item.question === q.question);
-                if (!isAlreadyInIncorrect) {
-                     incorrectQuestions.push(q);
-                }
+                selectedBtn.classList.add('incorrect'); selectedBtn.classList.remove('opacity-70');
+                all[q.shuffledAnswer].classList.add('correct'); all[q.shuffledAnswer].classList.remove('opacity-70');
+                if (!incorrectQuestions.some(x => x.question === q.question)) incorrectQuestions.push(q);
             }
 
-            // 顯示解答區塊
+            const exp = $('explanation-container');
             if (isCorrect) {
-                uiElements.expContainer.className = 'mt-6 p-6 rounded-xl shadow-sm border border-emerald-100 bg-emerald-50 text-gray-800 fade-in';
-                uiElements.expTitle.className = 'font-bold mb-2 flex items-center text-lg text-emerald-700';
-                uiElements.expIcon.textContent = '✅';
-                uiElements.expStatusText.textContent = '答對了！解題剖析：';
+                exp.className = 'mt-6 p-6 rounded-xl shadow-sm border border-emerald-100 bg-emerald-50 text-gray-800 fade-in';
+                $('explanation-title').className = 'font-bold mb-2 flex items-center text-lg text-emerald-700';
+                $('explanation-icon').textContent = '✅';
+                $('explanation-status-text').textContent = '答對了！解題剖析：';
             } else {
-                uiElements.expContainer.className = 'mt-6 p-6 rounded-xl shadow-sm border border-rose-100 bg-rose-50 text-gray-800 fade-in';
-                uiElements.expTitle.className = 'font-bold mb-2 flex items-center text-lg text-rose-700';
-                uiElements.expIcon.textContent = '💡';
-                uiElements.expStatusText.textContent = '再接再厲！解題剖析：';
+                exp.className = 'mt-6 p-6 rounded-xl shadow-sm border border-rose-100 bg-rose-50 text-gray-800 fade-in';
+                $('explanation-title').className = 'font-bold mb-2 flex items-center text-lg text-rose-700';
+                $('explanation-icon').textContent = '💡';
+                $('explanation-status-text').textContent = '再接再厲！解題剖析：';
             }
-
-            uiElements.expText.textContent = q.explanation || "此題暫無詳細解答說明。";
-            uiElements.expContainer.classList.remove('hidden');
-
-            uiElements.nextBtn.classList.remove('hidden');
-            uiElements.nextBtnText.textContent = (currentQuestionIndex === currentQuestions.length - 1) ? '查看結果' : '下一題';
+            $('explanation-text').textContent = q.explanation;
+            $('explanation-src').textContent = q.source ? `📖 課本出處：${q.source}` : '';
+            exp.classList.remove('hidden');
+            $('next-btn').classList.remove('hidden');
+            $('next-btn-text').textContent = currentQuestionIndex === currentQuestions.length - 1 ? '查看結果' : '下一題';
         }
 
         function nextQuestion() {
             if (currentQuestionIndex < currentQuestions.length - 1) {
                 currentQuestionIndex++;
-                screens.quiz.classList.remove('fade-in');
-                void screens.quiz.offsetWidth; // 觸發重繪
-                screens.quiz.classList.add('fade-in');
+                const s = $('quiz-screen');
+                s.classList.remove('fade-in'); void s.offsetWidth; s.classList.add('fade-in');
                 loadQuestion();
-            } else {
-                showResult();
-            }
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else showResult();
         }
 
-        function updateScoreDisplay() {
-            uiElements.scoreDisplay.textContent = Math.round(score);
-        }
+        function updateScoreDisplay() { $('score-display').textContent = Math.round(score); }
 
         function showResult() {
-            uiElements.progressBar.style.width = '100%';
-            
+            $('progress-bar').style.width = '100%';
             let finalScore = Math.round(score);
-            if(finalScore > 100 || correctAnswersCount === currentQuestions.length) finalScore = 100;
-
-            const subject = quizData[currentSubjectId];
-            const chapter = subject.chapters[currentChapterIndex];
-            
-            let titleText = `${subject.name} - ${chapter.name}`;
-            if (isRetryMode) titleText += " (錯題重測)";
-            
-            document.getElementById('result-subject').textContent = titleText;
-            document.getElementById('final-score').innerHTML = `${finalScore} <span class="text-2xl text-gray-400 font-medium">分</span>`;
-            document.getElementById('correct-count').textContent = correctAnswersCount;
-            document.getElementById('total-count').textContent = currentQuestions.length;
-            
-            const resultMsg = document.getElementById('result-message');
-            const resultIcon = document.getElementById('result-icon');
-            
+            if (finalScore > 100 || correctAnswersCount === currentQuestions.length) finalScore = 100;
+            $('result-subject').textContent = subject.name + '｜' + subject.chapters[currentChapterIndex].name + (isRetryMode ? '（錯題重測）' : '');
+            $('final-score').innerHTML = `${finalScore} <span class="text-2xl text-gray-400 font-medium">分</span>`;
+            $('correct-count').textContent = correctAnswersCount;
+            $('total-count').textContent = currentQuestions.length;
+            const icon = $('result-icon');
             if (finalScore >= 90) {
-                resultMsg.textContent = "太厲害了！您具備極佳的學科素養，觀念非常清晰！";
-                resultIcon.innerHTML = '<div class="absolute inset-0 rounded-full animate-ping opacity-20 bg-yellow-400"></div>🏆';
-                resultIcon.className = "w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg relative bg-yellow-50 text-yellow-500 border-4 border-white";
+                $('result-message').textContent = '太厲害了！圖表判讀和觀念都很清楚！';
+                icon.innerHTML = '<div class="absolute inset-0 rounded-full animate-ping opacity-20 bg-yellow-400"></div>🏆'; icon.className = 'w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg relative bg-yellow-50 text-yellow-500 border-4 border-white';
             } else if (finalScore >= 60) {
-                resultMsg.textContent = "表現不錯！推論能力很好，再把細節釐清會更棒喔！";
-                resultIcon.innerHTML = '👍';
-                resultIcon.className = "w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg bg-blue-50 text-blue-500 border-4 border-white";
+                $('result-message').textContent = '表現不錯！把錯題的課本出處再讀一次會更棒。';
+                icon.textContent = '👍'; icon.className = 'w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg bg-blue-50 border-4 border-white';
             } else {
-                resultMsg.textContent = "再接再厲！請多利用錯題重測，仔細閱讀題目線索。";
-                resultIcon.innerHTML = '💪';
-                resultIcon.className = "w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg bg-gray-100 text-gray-500 border-4 border-white";
+                $('result-message').textContent = '再接再厲！多利用錯題重測，仔細看題目給的圖表與線索。';
+                icon.textContent = '💪'; icon.className = 'w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg bg-gray-100 border-4 border-white';
             }
-
-            const retryBtn = document.getElementById('retry-incorrect-btn');
-            if (incorrectQuestions.length > 0) {
-                retryBtn.classList.remove('hidden');
-                document.getElementById('incorrect-badge').textContent = incorrectQuestions.length;
-            } else {
-                retryBtn.classList.add('hidden');
-            }
-
+            const retryBtn = $('retry-incorrect-btn');
+            if (incorrectQuestions.length > 0) { retryBtn.classList.remove('hidden'); $('incorrect-badge').textContent = incorrectQuestions.length; }
+            else retryBtn.classList.add('hidden');
             switchScreen('result');
         }
+
+        renderHome();
     </script>
 </body>
 </html>
