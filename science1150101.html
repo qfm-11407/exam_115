@@ -1,0 +1,1287 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#082f49">
+  <meta name="description" content="第1章基本測量與第2章物質的世界互動習作練習，選項每次隨機排列。">
+  <title>115學年度第一學期第一次段考理化習作練習</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23082f49'/%3E%3Cpath d='M24 12h16M28 12v15L17 48a5 5 0 0 0 4 7h22a5 5 0 0 0 4-7L36 27V12' fill='none' stroke='%2367e8f9' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M22 44h20' stroke='%23fbbf24' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --ink: #082f49;
+      --muted: #52677a;
+      --paper: #f8fbfd;
+      --line: #cbdce7;
+      --cyan: #06b6d4;
+      --cyan-soft: #cffafe;
+      --amber: #fbbf24;
+      --amber-soft: #fef3c7;
+      --good: #087f5b;
+      --good-soft: #d1fae5;
+      --bad: #be123c;
+      --bad-soft: #ffe4e6;
+      --shadow: 0 20px 55px rgba(8, 47, 73, .13);
+    }
+    * { box-sizing: border-box; }
+    html { color-scheme: light; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(rgba(8,47,73,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(8,47,73,.035) 1px, transparent 1px),
+        #edf7fa;
+      background-size: 28px 28px;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+    button { font: inherit; }
+    button:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
+    .shell { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 56px; }
+    .masthead {
+      position: relative;
+      overflow: hidden;
+      padding: 24px 28px;
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 24px;
+      color: white;
+      background: var(--ink);
+      box-shadow: var(--shadow);
+    }
+    .masthead::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -80px;
+      top: -120px;
+      border: 42px solid rgba(103,232,249,.18);
+      border-radius: 50%;
+    }
+    .title-row { position: relative; z-index: 1; display: flex; gap: 18px; align-items: center; }
+    .mark {
+      display: grid;
+      place-items: center;
+      flex: 0 0 62px;
+      height: 62px;
+      border-radius: 18px;
+      background: var(--cyan);
+      color: var(--ink);
+      font-size: 30px;
+      font-weight: 900;
+    }
+    h1 { margin: 0; font-size: clamp(1.45rem, 3vw, 2.25rem); line-height: 1.25; letter-spacing: .02em; }
+    .meta { margin: 7px 0 0; color: #bfeaf2; }
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      margin: 20px 0;
+    }
+    .segments { display: flex; gap: 8px; flex-wrap: wrap; }
+    .segment, .ghost, .primary {
+      border: 0;
+      border-radius: 999px;
+      min-height: 44px;
+      padding: 9px 16px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform .15s ease, background .15s ease, color .15s ease;
+    }
+    .segment { color: var(--ink); background: white; border: 1px solid var(--line); }
+    .segment[aria-pressed="true"] { background: var(--ink); color: white; border-color: var(--ink); }
+    .ghost { color: var(--ink); background: var(--amber-soft); }
+    .primary { color: white; background: var(--ink); padding-inline: 22px; }
+    .segment:hover, .ghost:hover, .primary:hover { transform: translateY(-1px); }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 20px; align-items: start; }
+    .card, .stats-card {
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(151,183,201,.65);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+    .card { overflow: hidden; }
+    .progress-rail { height: 8px; background: #e7eef3; }
+    .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--amber)); transition: width .25s ease; }
+    .question-wrap { padding: clamp(22px, 4vw, 38px); }
+    .eyebrow { display: flex; justify-content: space-between; gap: 16px; color: var(--muted); font-size: .92rem; font-weight: 800; }
+    .tag { color: #0e7490; }
+    h2 { margin: 18px 0 22px; font-size: clamp(1.18rem, 2.5vw, 1.55rem); line-height: 1.55; }
+    .context {
+      margin: -6px 0 22px;
+      padding: 14px 16px;
+      border-left: 5px solid var(--amber);
+      border-radius: 0 12px 12px 0;
+      background: #fffaf0;
+      color: #334e61;
+    }
+    .figure { margin: -6px 0 22px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: white; }
+    .figure svg { display: block; width: 100%; height: auto; max-width: 560px; max-height: 440px; margin: 0 auto; }
+    .options { display: grid; gap: 12px; }
+    .option {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 12px;
+      align-items: center;
+      min-height: 60px;
+      padding: 11px 16px;
+      text-align: left;
+      color: var(--ink);
+      background: white;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      cursor: pointer;
+    }
+    .option:hover:not(:disabled) { border-color: var(--cyan); background: #f2fdff; }
+    .option.selected { border-color: var(--cyan); background: var(--cyan-soft); }
+    .option.correct { border-color: var(--good); background: var(--good-soft); }
+    .option.wrong { border-color: var(--bad); background: var(--bad-soft); }
+    .option:disabled { cursor: default; color: var(--ink); opacity: 1; }
+    .letter { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: #e8f1f5; font-weight: 900; }
+    .option.selected .letter { background: var(--cyan); }
+    .option.correct .letter { background: var(--good); color: white; }
+    .option.wrong .letter { background: var(--bad); color: white; }
+    .feedback { display: none; margin-top: 20px; padding: 18px; border-radius: 16px; }
+    .feedback.show { display: block; }
+    .feedback.good { background: var(--good-soft); border: 1px solid #6ee7b7; }
+    .feedback.bad { background: var(--bad-soft); border: 1px solid #fda4af; }
+    .feedback strong { display: block; margin-bottom: 5px; font-size: 1.08rem; }
+    .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+    .stats-card { padding: 20px; position: sticky; top: 18px; }
+    .stats-card h3 { margin: 0 0 14px; font-size: 1rem; }
+    .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .metric { padding: 13px; border-radius: 15px; background: var(--paper); border: 1px solid var(--line); }
+    .metric b { display: block; font-size: 1.55rem; line-height: 1.2; }
+    .metric span { color: var(--muted); font-size: .84rem; }
+    .tip { margin: 16px 0 0; color: var(--muted); font-size: .88rem; }
+    .finish { display: none; padding: clamp(28px, 5vw, 48px); text-align: center; }
+    .finish.show { display: block; }
+    .finish .result { font-size: clamp(3rem, 8vw, 5rem); font-weight: 900; color: #0e7490; line-height: 1; }
+    .review { margin-top: 24px; text-align: left; display: grid; gap: 12px; }
+    .review-item { padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); }
+    .review-item b { color: var(--bad); }
+    .learning-status { margin: 0 0 20px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 16px; background: white; }
+    .learning-status strong { color: #0e7490; margin-right: 16px; }
+    .learning-status p { margin: 6px 0 0; color: var(--muted); font-size: .92rem; }
+    [hidden] { display: none !important; }
+    .certificate {
+      margin-top: 28px; padding: clamp(22px, 4vw, 42px);
+      border: 3px double #a77816; outline: 1px solid #e4c779; outline-offset: -12px;
+      border-radius: 8px; color: var(--ink); background: #fffdf5;
+      text-align: center; overflow-wrap: anywhere;
+    }
+    .certificate-kicker { margin: 0; color: #846015; font-size: .9rem; font-weight: 800; letter-spacing: .18em; }
+    .certificate h2 { margin: 8px 0 18px; font-size: clamp(1.8rem, 5vw, 2.5rem); letter-spacing: .12em; }
+    .certificate-name { margin: 18px 0; font-size: clamp(1.6rem, 5vw, 2.2rem); font-weight: 900; line-height: 1.5; }
+    .certificate-course { margin: 12px 0; font-weight: 800; }
+    .certificate-range { display: inline-block; margin: 8px 0; padding: 6px 16px; border-radius: 999px; background: var(--cyan-soft); font-weight: 800; }
+    .certificate-result { color: #846015; font-size: 1.15rem; font-weight: 900; }
+    .certificate-date, .certificate-note { margin-bottom: 0; color: var(--muted); font-size: .9rem; }
+    .certificate-dialog {
+      width: min(440px, calc(100% - 32px)); max-height: calc(100dvh - 40px); overflow-y: auto;
+      padding: 28px; border: 1px solid var(--line); border-radius: 24px; color: var(--ink); box-shadow: var(--shadow);
+    }
+    .certificate-dialog::backdrop { background: rgba(8,47,73,.58); }
+    .certificate-dialog h2 { margin: 0 0 12px; }
+    .certificate-dialog label { display: block; margin: 18px 0 6px; font-weight: 800; }
+    .certificate-dialog input {
+      width: 100%; min-height: 48px; padding: 10px 12px; border: 2px solid var(--line); border-radius: 12px; font: inherit; color: var(--ink);
+    }
+    .certificate-dialog input:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+    .name-error { margin: 8px 0; color: var(--bad); font-size: .9rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+    @media (max-width: 800px) {
+      .shell { width: min(100% - 20px, 720px); padding-top: 10px; }
+      .masthead { border-radius: 18px; padding: 20px; }
+      .mark { flex-basis: 52px; height: 52px; }
+      .toolbar { grid-template-columns: 1fr; }
+      .toolbar .ghost { justify-self: start; }
+      .workspace { grid-template-columns: 1fr; }
+      .stats-card { position: static; order: -1; padding: 14px; }
+      .stats-card h3, .tip { display: none; }
+      .score-grid { grid-template-columns: repeat(4, 1fr); }
+      .metric { padding: 10px; text-align: center; }
+      .metric b { font-size: 1.18rem; }
+      .metric span { font-size: .72rem; }
+    }
+    @media (max-width: 520px) {
+      .title-row { align-items: flex-start; }
+      .meta { font-size: .88rem; }
+      .segments { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+      .segment { padding-inline: 8px; font-size: .88rem; }
+      .score-grid { grid-template-columns: repeat(2, 1fr); }
+      .question-wrap { padding: 20px 16px 24px; }
+      .option { grid-template-columns: 36px 1fr; padding: 10px 12px; }
+      .actions { flex-direction: column; }
+      .actions button { width: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div class="title-row">
+        <div class="mark" aria-hidden="true">⚗</div>
+        <div>
+          <h1>115學年度第一學期第一次段考理化習作練習</h1>
+          <p class="meta">第1章 基本測量・第2章 物質的世界</p>
+          <p class="meta">每次開啟、重新整理或重新開始，都會重排題目與選項。</p>
+        </div>
+      </div>
+    </header>
+
+    <section class="toolbar" aria-label="測驗範圍">
+      <div class="segments" id="segments">
+        <button class="segment" data-filter="all" aria-pressed="true">全部 <span id="allCount"></span></button>
+        <button class="segment" data-filter="ch1" aria-pressed="false">第1章 <span id="ch1Count"></span></button>
+        <button class="segment" data-filter="ch2" aria-pressed="false">第2章 <span id="ch2Count"></span></button>
+      </div>
+      <button class="ghost" id="reshuffle" title="清除本次進度，重新排列題目與選項">重新開始</button>
+    </section>
+
+    <section class="learning-status" aria-label="通關進度" aria-live="polite">
+      <strong id="modeLabel">正式測驗</strong><span id="streakStatus"></span>
+      <p id="learningHint"></p>
+      <p>所選範圍一次正式測驗全對即可通關領證；錯題複習完成後，請重新挑戰完整範圍。</p>
+    </section>
+
+    <section class="workspace">
+      <article class="card" aria-live="polite">
+        <div class="progress-rail"><div class="progress-bar" id="progressBar"></div></div>
+        <div id="quizArea" class="question-wrap">
+          <div class="eyebrow"><span class="tag" id="sectionTag"></span><span id="questionNo"></span></div>
+          <h2 id="questionText"></h2>
+          <div class="context" id="contextText" hidden></div>
+          <div class="figure" id="figureBox" hidden></div>
+          <div class="options" id="options"></div>
+          <div class="feedback" id="feedback"></div>
+          <div class="actions">
+            <button class="primary" id="checkAnswer" disabled>確認答案</button>
+            <button class="primary" id="nextQuestion" hidden>下一題</button>
+          </div>
+        </div>
+        <div class="finish" id="finishArea">
+          <p id="finishHeading">本次正式測驗完成</p>
+          <div class="result" id="finalScore"></div>
+          <p id="finalMessage"></p>
+          <button class="primary" id="restart">重新開始</button>
+          <button class="ghost" id="openCertificate" hidden>填寫座號與姓名，領取證書</button>
+          <section class="certificate" id="certificate" aria-labelledby="certificateTitle" hidden>
+            <p class="certificate-kicker">理化習作・全對通關</p>
+            <h2 id="certificateTitle">通關證書</h2>
+            <p>恭喜</p>
+            <p class="certificate-course"><span id="certificateClass">807 班</span>・<span id="certificateSeat"></span></p>
+            <p class="certificate-name" id="certificateName"></p>
+            <p>完成以下正式測驗，所有題目皆答對</p>
+            <p class="certificate-course">115學年度第一學期第一次段考理化習作練習</p>
+            <p class="certificate-range" id="certificateRange"></p>
+            <p class="certificate-result" id="certificateResult"></p>
+            <p class="certificate-date" id="certificateDate"></p>
+            <p class="certificate-note">自主練習通關紀念</p>
+          </section>
+          <div class="review" id="review"></div>
+        </div>
+      </article>
+
+      <aside class="stats-card" aria-label="作答統計">
+        <h3>本次進度</h3>
+        <div class="score-grid">
+          <div class="metric"><b id="doneStat">0</b><span id="doneLabel">已作答</span></div>
+          <div class="metric"><b id="totalStat">0</b><span>總題數</span></div>
+          <div class="metric"><b id="correctStat">0</b><span>答對</span></div>
+          <div class="metric"><b id="rateStat">—</b><span id="rateLabel">正確率</span></div>
+        </div>
+        <p class="tip">鍵盤可按 1～4 選答案，Enter 確認或前往下一題。</p>
+      </aside>
+    </section>
+  </main>
+
+  <dialog class="certificate-dialog" id="nameDialog" aria-labelledby="nameDialogTitle" aria-describedby="nameDialogDescription">
+    <form id="nameForm">
+      <h2 id="nameDialogTitle">全對通關！</h2>
+      <p id="nameDialogDescription"></p>
+      <label for="studentClass">班級（固定）</label>
+      <input id="studentClass" name="studentClass" type="text" value="807" readonly>
+      <label for="studentSeat">證書上的座號</label>
+      <input id="studentSeat" name="studentSeat" type="text" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" required autocomplete="off" autofocus aria-describedby="namePrivacy nameError" placeholder="例如：7">
+      <label for="studentName">證書上的姓名</label>
+      <input id="studentName" name="studentName" type="text" maxlength="40" required autocomplete="off" aria-describedby="namePrivacy nameError">
+      <p class="name-error" id="nameError" role="alert" hidden></p>
+      <p class="certificate-note" id="namePrivacy">座號與姓名只用於這次顯示證書，不會上傳或保存。座號請填 1～99。</p>
+      <div class="actions">
+        <button class="ghost" type="button" id="cancelCertificate">稍後填寫</button>
+        <button class="primary" type="submit">顯示通關證書</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+// 題目附圖（以程式繪製的 SVG 示意圖）
+const FIG = {
+  airPie: "<svg viewBox=\"0 0 400 222\" role=\"img\" aria-label=\"乾燥空氣的組成：氮氣約 78%、氧氣約 21%、氬氣約 0.9%、其他約 0.1%\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><path d=\"M110,110 L110.0,20.0 A90,90 0 1 1 21.6,93.1 Z\" fill=\"#86efac\" stroke=\"#fff\" stroke-width=\"1.5\"/><path d=\"M110,110 L21.6,93.1 A90,90 0 0 1 104.3,20.2 Z\" fill=\"#7dd3fc\" stroke=\"#fff\" stroke-width=\"1.5\"/><path d=\"M110,110 L104.3,20.2 A90,90 0 0 1 109.4,20.0 Z\" fill=\"#fdba74\" stroke=\"#fff\" stroke-width=\"1.5\"/><path d=\"M110,110 L109.4,20.0 A90,90 0 0 1 110.0,20.0 Z\" fill=\"#f472b6\" stroke=\"#fff\" stroke-width=\"1.5\"/><rect x=\"240\" y=\"46\" width=\"18\" height=\"18\" rx=\"3\" fill=\"#86efac\"/><text x=\"266\" y=\"61\" font-size=\"15\">氮氣 約 78%</text><rect x=\"240\" y=\"80\" width=\"18\" height=\"18\" rx=\"3\" fill=\"#7dd3fc\"/><text x=\"266\" y=\"95\" font-size=\"15\">氧氣 約 21%</text><rect x=\"240\" y=\"114\" width=\"18\" height=\"18\" rx=\"3\" fill=\"#fdba74\"/><text x=\"266\" y=\"129\" font-size=\"15\">氬氣 約 0.9%</text><rect x=\"240\" y=\"148\" width=\"18\" height=\"18\" rx=\"3\" fill=\"#f472b6\"/><text x=\"266\" y=\"163\" font-size=\"15\">其他 約 0.1%</text></svg>",
+  aqiScale: "<svg viewBox=\"0 0 420 240\" role=\"img\" aria-label=\"空氣品質指標 AQI 與對健康影響的等級表\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><text x=\"20\" y=\"22\" font-size=\"13\" font-weight=\"700\">對健康影響</text><text x=\"300\" y=\"22\" font-size=\"13\" font-weight=\"700\">AQI</text><rect x=\"14\" y=\"32\" width=\"392\" height=\"30\" rx=\"6\" fill=\"#22c55e\"/><text x=\"26\" y=\"52\" font-size=\"15\" font-weight=\"700\" fill=\"#0f172a\">良好</text><text x=\"300\" y=\"52\" font-size=\"15\" font-weight=\"700\" fill=\"#0f172a\">0～50</text><rect x=\"14\" y=\"66\" width=\"392\" height=\"30\" rx=\"6\" fill=\"#facc15\"/><text x=\"26\" y=\"86\" font-size=\"15\" font-weight=\"700\" fill=\"#0f172a\">普通</text><text x=\"300\" y=\"86\" font-size=\"15\" font-weight=\"700\" fill=\"#0f172a\">51～100</text><rect x=\"14\" y=\"100\" width=\"392\" height=\"30\" rx=\"6\" fill=\"#fb923c\"/><text x=\"26\" y=\"120\" font-size=\"15\" font-weight=\"700\" fill=\"#0f172a\">對敏感族群不健康</text><text x=\"300\" y=\"120\" font-size=\"15\" font-weight=\"700\" fill=\"#0f172a\">101～150</text><rect x=\"14\" y=\"134\" width=\"392\" height=\"30\" rx=\"6\" fill=\"#ef4444\"/><text x=\"26\" y=\"154\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">對所有族群不健康</text><text x=\"300\" y=\"154\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">151～200</text><rect x=\"14\" y=\"168\" width=\"392\" height=\"30\" rx=\"6\" fill=\"#7e22ce\"/><text x=\"26\" y=\"188\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">非常不健康</text><text x=\"300\" y=\"188\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">201～300</text><rect x=\"14\" y=\"202\" width=\"392\" height=\"30\" rx=\"6\" fill=\"#7f1d1d\"/><text x=\"26\" y=\"222\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">危害</text><text x=\"300\" y=\"222\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">301～500</text></svg>",
+  cylNut: "<svg viewBox=\"0 0 360 230\" role=\"img\" aria-label=\"量筒放入螺帽前後的水面刻度\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"50\" y=\"202\" width=\"66\" height=\"8\" rx=\"2\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"60\" y=\"90\" width=\"46\" height=\"110\" fill=\"#bae6fd\"/><line x1=\"60\" y1=\"90\" x2=\"106\" y2=\"90\" stroke=\"#0284c7\" stroke-width=\"2\"/><path d=\"M60,21 L60,200 L106,200 L106,21\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M56,18 Q60,21 63,21\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"60\" y1=\"194.5\" x2=\"67\" y2=\"194.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"189\" x2=\"67\" y2=\"189\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"183.5\" x2=\"67\" y2=\"183.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"178\" x2=\"67\" y2=\"178\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"172.5\" x2=\"67\" y2=\"172.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"167\" x2=\"67\" y2=\"167\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"161.5\" x2=\"67\" y2=\"161.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"156\" x2=\"67\" y2=\"156\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"150.5\" x2=\"67\" y2=\"150.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"145\" x2=\"74\" y2=\"145\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"77\" y=\"149\" font-size=\"10\" fill=\"#475569\">10</text><line x1=\"60\" y1=\"139.5\" x2=\"67\" y2=\"139.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"134\" x2=\"67\" y2=\"134\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"128.5\" x2=\"67\" y2=\"128.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"123\" x2=\"67\" y2=\"123\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"117.5\" x2=\"67\" y2=\"117.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"112\" x2=\"67\" y2=\"112\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"106.5\" x2=\"67\" y2=\"106.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"101\" x2=\"67\" y2=\"101\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"95.5\" x2=\"67\" y2=\"95.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"90\" x2=\"74\" y2=\"90\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"77\" y=\"94\" font-size=\"10\" fill=\"#475569\">20</text><line x1=\"60\" y1=\"84.5\" x2=\"67\" y2=\"84.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"79\" x2=\"67\" y2=\"79\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"73.5\" x2=\"67\" y2=\"73.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"68\" x2=\"67\" y2=\"68\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"62.5\" x2=\"67\" y2=\"62.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"57\" x2=\"67\" y2=\"57\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"51.5\" x2=\"67\" y2=\"51.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"46\" x2=\"67\" y2=\"46\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"40.5\" x2=\"67\" y2=\"40.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"60\" y1=\"35\" x2=\"74\" y2=\"35\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"77\" y=\"39\" font-size=\"10\" fill=\"#475569\">30</text><text x=\"83\" y=\"222\" text-anchor=\"middle\" font-size=\"13\">放入前</text><text x=\"150\" y=\"95\" font-size=\"14\" font-weight=\"700\" fill=\"#0284c7\">20.0 mL</text><line x1=\"150\" y1=\"99\" x2=\"120.8\" y2=\"92.1\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><polygon points=\"112,90 119.7,96.5 121.8,87.7\" fill=\"#0284c7\"/><line x1=\"165\" y1=\"130\" x2=\"196\" y2=\"130\" stroke=\"#d97706\" stroke-width=\"3\"/><polygon points=\"205,130 196,125.5 196,134.5\" fill=\"#d97706\"/><rect x=\"215\" y=\"202\" width=\"66\" height=\"8\" rx=\"2\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"225\" y=\"73.5\" width=\"46\" height=\"126.5\" fill=\"#bae6fd\"/><line x1=\"225\" y1=\"73.5\" x2=\"271\" y2=\"73.5\" stroke=\"#0284c7\" stroke-width=\"2\"/><polygon points=\"259,188 253.5,197.5 242.5,197.5 237,188 242.5,178.5 253.5,178.5\" fill=\"#d6a35c\" stroke=\"#92400e\" stroke-width=\"2\" stroke-linejoin=\"round\"/><circle cx=\"248\" cy=\"188\" r=\"4.5\" fill=\"#fff\" stroke=\"#92400e\" stroke-width=\"1.5\"/><path d=\"M225,21 L225,200 L271,200 L271,21\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M221,18 Q225,21 228,21\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"225\" y1=\"194.5\" x2=\"232\" y2=\"194.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"189\" x2=\"232\" y2=\"189\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"183.5\" x2=\"232\" y2=\"183.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"178\" x2=\"232\" y2=\"178\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"172.5\" x2=\"232\" y2=\"172.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"167\" x2=\"232\" y2=\"167\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"161.5\" x2=\"232\" y2=\"161.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"156\" x2=\"232\" y2=\"156\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"150.5\" x2=\"232\" y2=\"150.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"145\" x2=\"239\" y2=\"145\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"242\" y=\"149\" font-size=\"10\" fill=\"#475569\">10</text><line x1=\"225\" y1=\"139.5\" x2=\"232\" y2=\"139.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"134\" x2=\"232\" y2=\"134\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"128.5\" x2=\"232\" y2=\"128.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"123\" x2=\"232\" y2=\"123\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"117.5\" x2=\"232\" y2=\"117.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"112\" x2=\"232\" y2=\"112\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"106.5\" x2=\"232\" y2=\"106.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"101\" x2=\"232\" y2=\"101\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"95.5\" x2=\"232\" y2=\"95.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"90\" x2=\"239\" y2=\"90\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"242\" y=\"94\" font-size=\"10\" fill=\"#475569\">20</text><line x1=\"225\" y1=\"84.5\" x2=\"232\" y2=\"84.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"79\" x2=\"232\" y2=\"79\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"73.5\" x2=\"232\" y2=\"73.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"68\" x2=\"232\" y2=\"68\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"62.5\" x2=\"232\" y2=\"62.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"57\" x2=\"232\" y2=\"57\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"51.5\" x2=\"232\" y2=\"51.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"46\" x2=\"232\" y2=\"46\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"40.5\" x2=\"232\" y2=\"40.5\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"225\" y1=\"35\" x2=\"239\" y2=\"35\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"242\" y=\"39\" font-size=\"10\" fill=\"#475569\">30</text><text x=\"248\" y=\"222\" text-anchor=\"middle\" font-size=\"13\">螺帽完全沒入後</text><text x=\"290\" y=\"66\" font-size=\"14\" font-weight=\"700\" fill=\"#0284c7\">23.0 mL</text><line x1=\"298\" y1=\"70\" x2=\"286\" y2=\"71.1\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><polygon points=\"277,72 286.4,75.6 285.5,66.7\" fill=\"#0284c7\"/></svg>",
+  densityLines: "<svg viewBox=\"0 0 330 250\" role=\"img\" aria-label=\"質量與體積關係圖，甲線較陡、乙線較平\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"50\" y1=\"220\" x2=\"291\" y2=\"220\" stroke=\"#082f49\" stroke-width=\"2\"/><polygon points=\"300,220 291,215.5 291,224.5\" fill=\"#082f49\"/><line x1=\"50\" y1=\"220\" x2=\"50\" y2=\"29\" stroke=\"#082f49\" stroke-width=\"2\"/><polygon points=\"50,20 45.5,29 54.5,29\" fill=\"#082f49\"/><text x=\"300\" y=\"242\" text-anchor=\"end\" font-size=\"13\">體積（cm³）</text><text x=\"58\" y=\"26\" font-size=\"13\">質量（g）</text><line x1=\"50\" y1=\"220\" x2=\"120\" y2=\"31\" stroke=\"#2563eb\" stroke-width=\"3\"/><text x=\"126\" y=\"36\" font-size=\"17\" font-weight=\"700\" fill=\"#2563eb\">甲</text><line x1=\"50\" y1=\"220\" x2=\"280\" y2=\"131.7\" stroke=\"#16a34a\" stroke-width=\"3\"/><text x=\"286\" y=\"132\" font-size=\"17\" font-weight=\"700\" fill=\"#16a34a\">乙</text><text x=\"44\" y=\"234\" text-anchor=\"end\" font-size=\"12\">0</text></svg>",
+  diffusion: "<svg viewBox=\"0 0 420 170\" role=\"img\" aria-label=\"冬瓜茶磚放入水中逐漸擴散\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"15\" y=\"76\" width=\"90\" height=\"63\" fill=\"#bae6fd\"/><path d=\"M10,57 Q14,60 14,64 L14,140 L106,140 L106,60\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><rect x=\"46\" y=\"24\" width=\"26\" height=\"16\" rx=\"2\" fill=\"#7c2d12\"/><line x1=\"59\" y1=\"42\" x2=\"59\" y2=\"52\" stroke=\"#d97706\" stroke-width=\"2\"/><polygon points=\"59,58 62,52 56,52\" fill=\"#d97706\"/><line x1=\"118\" y1=\"100\" x2=\"137\" y2=\"100\" stroke=\"#d97706\" stroke-width=\"2.5\"/><polygon points=\"146,100 137,95.5 137,104.5\" fill=\"#d97706\"/><rect x=\"161\" y=\"76\" width=\"90\" height=\"63\" fill=\"#bae6fd\"/><path d=\"M156,57 Q160,60 160,64 L160,140 L252,140 L252,60\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><ellipse cx=\"206\" cy=\"128\" rx=\"36\" ry=\"18\" fill=\"#a16207\" opacity=\".45\"/><rect x=\"194\" y=\"124\" width=\"24\" height=\"12\" rx=\"2\" fill=\"#7c2d12\"/><line x1=\"264\" y1=\"100\" x2=\"283\" y2=\"100\" stroke=\"#d97706\" stroke-width=\"2.5\"/><polygon points=\"292,100 283,95.5 283,104.5\" fill=\"#d97706\"/><rect x=\"307\" y=\"76\" width=\"90\" height=\"63\" fill=\"#bae6fd\"/><path d=\"M302,57 Q306,60 306,64 L306,140 L398,140 L398,60\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><rect x=\"307\" y=\"77\" width=\"90\" height=\"62\" fill=\"#a16207\" fill-opacity=\".55\"/><text x=\"60\" y=\"162\" text-anchor=\"middle\" font-size=\"13\">放入茶磚</text><text x=\"206\" y=\"162\" text-anchor=\"middle\" font-size=\"13\">逐漸擴散</text><text x=\"352\" y=\"162\" text-anchor=\"middle\" font-size=\"13\">均勻分布</text></svg>",
+  evaporate: "<svg viewBox=\"0 0 300 214\" role=\"img\" aria-label=\"加熱蒸發皿中的濾液，蒸發皿上倒蓋漏斗\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"74\" y1=\"116\" x2=\"166\" y2=\"116\" stroke=\"#475569\" stroke-width=\"3\"/><line x1=\"80\" y1=\"116\" x2=\"74\" y2=\"190\" stroke=\"#475569\" stroke-width=\"3\"/><line x1=\"160\" y1=\"116\" x2=\"166\" y2=\"190\" stroke=\"#475569\" stroke-width=\"3\"/><rect x=\"70\" y=\"112\" width=\"100\" height=\"5\" fill=\"#e7e5e4\" stroke=\"#78716c\" stroke-width=\"1\"/><path d=\"M86,92 Q120,128 154,92\" fill=\"#fff\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M94,98 Q120,116 146,98 Z\" fill=\"#bae6fd\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M82,90 L115,56 L115,20 M158,90 L125,56 L125,20\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M94,190 Q90,162 112,156 L128,156 Q150,162 146,190 Z\" fill=\"#fce7f3\" stroke=\"#be185d\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><rect x=\"116\" y=\"144\" width=\"8\" height=\"12\" fill=\"#e2e8f0\" stroke=\"#475569\" stroke-width=\"1.5\"/><path d=\"M120,120 Q129,132 120,144 Q111,132 120,120 Z\" fill=\"#fbbf24\" stroke=\"#d97706\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"170\" y=\"40\" font-size=\"14\">倒蓋的漏斗</text><line x1=\"168\" y1=\"44\" x2=\"145.2\" y2=\"57\" stroke=\"#082f49\" stroke-width=\"1.5\"/><polygon points=\"140,60 146.7,59.6 143.7,54.4\" fill=\"#082f49\"/><text x=\"178\" y=\"98\" font-size=\"14\">蒸發皿（濾液）</text><line x1=\"176\" y1=\"102\" x2=\"156\" y2=\"102\" stroke=\"#082f49\" stroke-width=\"1.5\"/><polygon points=\"150,102 156,105 156,99\" fill=\"#082f49\"/><text x=\"178\" y=\"178\" font-size=\"14\">酒精燈</text><line x1=\"176\" y1=\"182\" x2=\"158\" y2=\"182\" stroke=\"#082f49\" stroke-width=\"1.5\"/><polygon points=\"152,182 158,185 158,179\" fill=\"#082f49\"/></svg>",
+  filterSetup: "<svg viewBox=\"0 0 330 280\" role=\"img\" aria-label=\"過濾裝置：漏斗、濾紙、玻璃棒與燒杯\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"20\" y=\"254\" width=\"170\" height=\"12\" rx=\"3\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"2\"/><line x1=\"40\" y1=\"254\" x2=\"40\" y2=\"30\" stroke=\"#64748b\" stroke-width=\"5\"/><line x1=\"40\" y1=\"92\" x2=\"130\" y2=\"92\" stroke=\"#64748b\" stroke-width=\"4\"/><polygon points=\"128,74 192,74 160,124\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/><path d=\"M122,70 L155,126 L155,196 M198,70 L165,126 L165,188\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><rect x=\"83\" y=\"224\" width=\"82\" height=\"29\" fill=\"#bae6fd\"/><path d=\"M78,165 Q82,168 82,172 L82,254 L166,254 L166,168\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"122\" y1=\"40\" x2=\"152\" y2=\"112\" stroke=\"#94a3b8\" stroke-width=\"4\" stroke-linecap=\"round\"/><text x=\"205\" y=\"76\" font-size=\"14\">濾紙</text><line x1=\"203\" y1=\"80\" x2=\"187.8\" y2=\"84.4\" stroke=\"#082f49\" stroke-width=\"1.5\"/><polygon points=\"182,86 188.6,87.2 186.9,81.5\" fill=\"#082f49\"/><text x=\"205\" y=\"46\" font-size=\"14\">玻璃棒</text><line x1=\"203\" y1=\"50\" x2=\"145.7\" y2=\"68.2\" stroke=\"#082f49\" stroke-width=\"1.5\"/><polygon points=\"140,70 146.6,71 144.8,65.3\" fill=\"#082f49\"/><text x=\"196\" y=\"172\" font-size=\"14\">漏斗頸下端</text><text x=\"196\" y=\"190\" font-size=\"14\">緊貼燒杯內壁</text><line x1=\"194\" y1=\"182\" x2=\"173.6\" y2=\"189.8\" stroke=\"#082f49\" stroke-width=\"1.5\"/><polygon points=\"168,192 174.7,192.6 172.5,187\" fill=\"#082f49\"/><text x=\"196\" y=\"238\" font-size=\"14\">濾液</text><line x1=\"194\" y1=\"236\" x2=\"160\" y2=\"239.4\" stroke=\"#082f49\" stroke-width=\"1.5\"/><polygon points=\"154,240 160.3,242.4 159.7,236.4\" fill=\"#082f49\"/><text x=\"46\" y=\"112\" font-size=\"13\" fill=\"#52677a\">鐵架</text></svg>",
+  floatSteps: "<svg viewBox=\"0 0 410 266\" role=\"img\" aria-label=\"排水法四個步驟的水面刻度 X1 到 X4\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"12\" y=\"202\" width=\"66\" height=\"8\" rx=\"2\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"22\" y=\"96\" width=\"46\" height=\"104\" fill=\"#bae6fd\"/><line x1=\"22\" y1=\"96\" x2=\"68\" y2=\"96\" stroke=\"#0284c7\" stroke-width=\"2\"/><path d=\"M22,26 L22,200 L68,200 L68,26\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M18,23 Q22,26 25,26\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"22\" y1=\"180\" x2=\"29\" y2=\"180\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"22\" y1=\"160\" x2=\"36\" y2=\"160\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"22\" y1=\"140\" x2=\"29\" y2=\"140\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"22\" y1=\"120\" x2=\"36\" y2=\"120\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"22\" y1=\"100\" x2=\"29\" y2=\"100\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"22\" y1=\"80\" x2=\"36\" y2=\"80\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"22\" y1=\"60\" x2=\"29\" y2=\"60\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"22\" y1=\"40\" x2=\"36\" y2=\"40\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"45\" y=\"228\" text-anchor=\"middle\" font-size=\"15\">步驟1</text><text x=\"74\" y=\"101\" font-size=\"17\" font-weight=\"700\" fill=\"#0284c7\">X₁</text><rect x=\"110\" y=\"202\" width=\"66\" height=\"8\" rx=\"2\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"120\" y=\"80\" width=\"46\" height=\"120\" fill=\"#bae6fd\"/><line x1=\"120\" y1=\"80\" x2=\"166\" y2=\"80\" stroke=\"#0284c7\" stroke-width=\"2\"/><circle cx=\"143\" cy=\"78\" r=\"12\" fill=\"#fff\" stroke=\"#475569\" stroke-width=\"2\"/><path d=\"M120,26 L120,200 L166,200 L166,26\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M116,23 Q120,26 123,26\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"120\" y1=\"180\" x2=\"127\" y2=\"180\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"120\" y1=\"160\" x2=\"134\" y2=\"160\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"120\" y1=\"140\" x2=\"127\" y2=\"140\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"120\" y1=\"120\" x2=\"134\" y2=\"120\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"120\" y1=\"100\" x2=\"127\" y2=\"100\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"120\" y1=\"80\" x2=\"134\" y2=\"80\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"120\" y1=\"60\" x2=\"127\" y2=\"60\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"120\" y1=\"40\" x2=\"134\" y2=\"40\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"143\" y=\"228\" text-anchor=\"middle\" font-size=\"15\">步驟2</text><text x=\"172\" y=\"85\" font-size=\"17\" font-weight=\"700\" fill=\"#0284c7\">X₂</text><rect x=\"208\" y=\"202\" width=\"66\" height=\"8\" rx=\"2\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"218\" y=\"56\" width=\"46\" height=\"144\" fill=\"#bae6fd\"/><line x1=\"218\" y1=\"56\" x2=\"264\" y2=\"56\" stroke=\"#0284c7\" stroke-width=\"2\"/><circle cx=\"241\" cy=\"148\" r=\"12\" fill=\"#fff\" stroke=\"#475569\" stroke-width=\"2\"/><line x1=\"241\" y1=\"160\" x2=\"241\" y2=\"174\" stroke=\"#d97706\" stroke-width=\"2\"/><circle cx=\"241\" cy=\"185\" r=\"11\" fill=\"#64748b\" stroke=\"#334155\" stroke-width=\"2\"/><path d=\"M218,26 L218,200 L264,200 L264,26\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M214,23 Q218,26 221,26\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"218\" y1=\"180\" x2=\"225\" y2=\"180\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"218\" y1=\"160\" x2=\"232\" y2=\"160\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"218\" y1=\"140\" x2=\"225\" y2=\"140\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"218\" y1=\"120\" x2=\"232\" y2=\"120\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"218\" y1=\"100\" x2=\"225\" y2=\"100\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"218\" y1=\"80\" x2=\"232\" y2=\"80\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"218\" y1=\"60\" x2=\"225\" y2=\"60\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"218\" y1=\"40\" x2=\"232\" y2=\"40\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"241\" y=\"228\" text-anchor=\"middle\" font-size=\"15\">步驟3</text><text x=\"270\" y=\"61\" font-size=\"17\" font-weight=\"700\" fill=\"#0284c7\">X₃</text><rect x=\"306\" y=\"202\" width=\"66\" height=\"8\" rx=\"2\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"316\" y=\"76\" width=\"46\" height=\"124\" fill=\"#bae6fd\"/><line x1=\"316\" y1=\"76\" x2=\"362\" y2=\"76\" stroke=\"#0284c7\" stroke-width=\"2\"/><line x1=\"339\" y1=\"160\" x2=\"339\" y2=\"174\" stroke=\"#d97706\" stroke-width=\"2\"/><circle cx=\"339\" cy=\"185\" r=\"11\" fill=\"#64748b\" stroke=\"#334155\" stroke-width=\"2\"/><path d=\"M316,26 L316,200 L362,200 L362,26\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M312,23 Q316,26 319,26\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"316\" y1=\"180\" x2=\"323\" y2=\"180\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"316\" y1=\"160\" x2=\"330\" y2=\"160\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"316\" y1=\"140\" x2=\"323\" y2=\"140\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"316\" y1=\"120\" x2=\"330\" y2=\"120\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"316\" y1=\"100\" x2=\"323\" y2=\"100\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"316\" y1=\"80\" x2=\"330\" y2=\"80\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"316\" y1=\"60\" x2=\"323\" y2=\"60\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"316\" y1=\"40\" x2=\"330\" y2=\"40\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"339\" y=\"228\" text-anchor=\"middle\" font-size=\"15\">步驟4</text><text x=\"368\" y=\"81\" font-size=\"17\" font-weight=\"700\" fill=\"#0284c7\">X₄</text><circle cx=\"150\" cy=\"250\" r=\"7\" fill=\"#fff\" stroke=\"#475569\" stroke-width=\"2\"/><text x=\"162\" y=\"255\" font-size=\"15\">塑膠球</text><circle cx=\"230\" cy=\"250\" r=\"7\" fill=\"#64748b\"/><text x=\"242\" y=\"255\" font-size=\"15\">金屬球</text></svg>",
+  gasCollect: "<svg viewBox=\"0 0 420 340\" role=\"img\" aria-label=\"四種收集氣體的方式\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><g transform=\"translate(0,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"162\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">甲</text><text x=\"52\" y=\"30\" font-size=\"13\">排水集氣法</text><rect x=\"30\" y=\"110\" width=\"150\" height=\"46\" fill=\"#bae6fd\"/><path d=\"M30,90 L30,156 L180,156 L180,90\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><rect x=\"92\" y=\"46\" width=\"56\" height=\"72\" fill=\"#bae6fd\"/><path d=\"M108,134 L108,120 Q90,116 90,100 L90,44 L150,44 L150,100 Q150,116 132,120 L132,134\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M20,64 L60,64 L60,140 L118,140 L118,130\" fill=\"none\" stroke=\"#d97706\" stroke-width=\"3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><g transform=\"translate(210,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"162\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">乙</text><text x=\"52\" y=\"30\" font-size=\"13\">瓶口向上排空氣</text><path d=\"M98,60 L98,74 Q80,78 80,94 L80,150 L140,150 L140,94 Q140,78 122,74 L122,60\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><rect x=\"92\" y=\"54\" width=\"36\" height=\"5\" fill=\"#cbd5e1\"/><path d=\"M40,46 L112,46 L112,140\" fill=\"none\" stroke=\"#d97706\" stroke-width=\"3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><g transform=\"translate(0,170)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"162\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丙</text><text x=\"52\" y=\"30\" font-size=\"13\">瓶口向下排空氣</text><path d=\"M98,130 L98,116 Q80,112 80,96 L80,40 L140,40 L140,96 Q140,112 122,116 L122,130\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M40,150 L112,150 L112,52\" fill=\"none\" stroke=\"#d97706\" stroke-width=\"3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><g transform=\"translate(210,170)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"162\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丁</text><text x=\"52\" y=\"30\" font-size=\"13\">瓶口向上裝水</text><rect x=\"82\" y=\"90\" width=\"56\" height=\"58\" fill=\"#bae6fd\"/><path d=\"M98,60 L98,74 Q80,78 80,94 L80,150 L140,150 L140,94 Q140,78 122,74 L122,60\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M40,46 L112,46 L112,140\" fill=\"none\" stroke=\"#d97706\" stroke-width=\"3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g></svg>",
+  oxygenSetup: "<svg viewBox=\"0 0 470 250\" role=\"img\" aria-label=\"製備氧氣的裝置與排水集氣法\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"20\" y=\"150\" width=\"150\" height=\"70\" fill=\"#bae6fd\"/><path d=\"M20,120 L20,220 L170,220 L170,120\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><rect x=\"62\" y=\"104\" width=\"56\" height=\"76\" fill=\"#bae6fd\"/><path d=\"M72,190 L72,180 Q60,176 60,164 L60,96 L120,96 L120,164 Q120,176 108,180 L108,190\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><rect x=\"64\" y=\"98\" width=\"52\" height=\"18\" fill=\"#fff\"/><circle cx=\"94\" cy=\"150\" r=\"3\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><circle cx=\"98\" cy=\"132\" r=\"3\" fill=\"none\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><path d=\"M306,146 C290,112 220,110 190,150 L150,206 L100,206 L100,196\" fill=\"none\" stroke=\"#d97706\" stroke-width=\"4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M300,236 L376,236 L350,150 L350,118 L326,118 L326,150 Z\" fill=\"#fff\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M304,232 L372,232 L362,200 L314,200 Z\" fill=\"#bae6fd\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><rect x=\"308\" y=\"226\" width=\"60\" height=\"6\" fill=\"#334155\"/><rect x=\"322\" y=\"108\" width=\"32\" height=\"14\" rx=\"3\" fill=\"#ea580c\"/><line x1=\"326\" y1=\"138\" x2=\"304\" y2=\"146\" stroke=\"#475569\" stroke-width=\"4\"/><line x1=\"338\" y1=\"40\" x2=\"338\" y2=\"222\" stroke=\"#475569\" stroke-width=\"3\"/><circle cx=\"338\" cy=\"32\" r=\"10\" fill=\"#fff\" stroke=\"#475569\" stroke-width=\"2\"/><path d=\"M326,22 L350,22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"356\" y=\"30\" font-size=\"16\">薊頭漏斗</text><text x=\"384\" y=\"196\" font-size=\"16\">吸濾瓶</text><text x=\"230\" y=\"104\" font-size=\"16\">橡皮管</text><text x=\"124\" y=\"92\" font-size=\"16\">集氣瓶</text><text x=\"30\" y=\"240\" font-size=\"16\">水槽</text><text x=\"384\" y=\"232\" font-size=\"15\">二氧化錳</text><line x1=\"384\" y1=\"226\" x2=\"371\" y2=\"227.4\" stroke=\"#082f49\" stroke-width=\"1.2\"/><polygon points=\"366,228 371.2,229.9 370.7,225\" fill=\"#082f49\"/></svg>",
+  riceBox: "<svg viewBox=\"0 0 380 172\" role=\"img\" aria-label=\"裝滿米的木盒左右搖晃前後\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"10\" y1=\"40\" x2=\"370\" y2=\"40\" stroke=\"#52677a\" stroke-width=\"1.5\" stroke-dasharray=\"6 4\"/><rect x=\"20\" y=\"40\" width=\"120\" height=\"100\" fill=\"#fef3c7\"/><ellipse cx=\"25.0\" cy=\"135.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(140 25.0 134.0)\"/><ellipse cx=\"35.1\" cy=\"135.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(17 34.5 134.0)\"/><ellipse cx=\"44.5\" cy=\"134.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(71 44.0 134.0)\"/><ellipse cx=\"54.8\" cy=\"135.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(107 53.5 134.0)\"/><ellipse cx=\"63.3\" cy=\"134.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(48 63.0 134.0)\"/><ellipse cx=\"73.8\" cy=\"134.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(7 72.5 134.0)\"/><ellipse cx=\"83.8\" cy=\"134.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(16 82.0 134.0)\"/><ellipse cx=\"92.4\" cy=\"135.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(117 91.5 134.0)\"/><ellipse cx=\"101.5\" cy=\"135.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(83 101.0 134.0)\"/><ellipse cx=\"111.0\" cy=\"134.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(91 110.5 134.0)\"/><ellipse cx=\"121.1\" cy=\"135.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(56 120.0 134.0)\"/><ellipse cx=\"130.0\" cy=\"135.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(115 129.5 134.0)\"/><ellipse cx=\"25.3\" cy=\"126.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(172 25.0 124.5)\"/><ellipse cx=\"36.2\" cy=\"125.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(164 34.5 124.5)\"/><ellipse cx=\"45.2\" cy=\"126.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(46 44.0 124.5)\"/><ellipse cx=\"54.2\" cy=\"124.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(76 53.5 124.5)\"/><ellipse cx=\"63.7\" cy=\"124.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(150 63.0 124.5)\"/><ellipse cx=\"73.3\" cy=\"124.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(67 72.5 124.5)\"/><ellipse cx=\"83.6\" cy=\"126.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(78 82.0 124.5)\"/><ellipse cx=\"92.5\" cy=\"125.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(55 91.5 124.5)\"/><ellipse cx=\"102.0\" cy=\"125.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(105 101.0 124.5)\"/><ellipse cx=\"111.7\" cy=\"126.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(85 110.5 124.5)\"/><ellipse cx=\"120.7\" cy=\"125.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(133 120.0 124.5)\"/><ellipse cx=\"130.2\" cy=\"125.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(166 129.5 124.5)\"/><ellipse cx=\"25.8\" cy=\"116.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(117 25.0 115.0)\"/><ellipse cx=\"35.1\" cy=\"116.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(45 34.5 115.0)\"/><ellipse cx=\"45.6\" cy=\"116.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(25 44.0 115.0)\"/><ellipse cx=\"54.8\" cy=\"115.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(80 53.5 115.0)\"/><ellipse cx=\"63.7\" cy=\"115.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(123 63.0 115.0)\"/><ellipse cx=\"73.8\" cy=\"117.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(80 72.5 115.0)\"/><ellipse cx=\"82.3\" cy=\"116.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(136 82.0 115.0)\"/><ellipse cx=\"92.6\" cy=\"116.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(41 91.5 115.0)\"/><ellipse cx=\"101.1\" cy=\"115.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(62 101.0 115.0)\"/><ellipse cx=\"110.7\" cy=\"116.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(61 110.5 115.0)\"/><ellipse cx=\"120.9\" cy=\"116.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(138 120.0 115.0)\"/><ellipse cx=\"131.2\" cy=\"115.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(30 129.5 115.0)\"/><ellipse cx=\"26.3\" cy=\"106.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(140 25.0 105.5)\"/><ellipse cx=\"36.0\" cy=\"107.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(82 34.5 105.5)\"/><ellipse cx=\"44.2\" cy=\"105.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(144 44.0 105.5)\"/><ellipse cx=\"53.6\" cy=\"106.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(117 53.5 105.5)\"/><ellipse cx=\"63.9\" cy=\"106.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(3 63.0 105.5)\"/><ellipse cx=\"72.6\" cy=\"105.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(99 72.5 105.5)\"/><ellipse cx=\"83.4\" cy=\"105.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(163 82.0 105.5)\"/><ellipse cx=\"92.7\" cy=\"106.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(47 91.5 105.5)\"/><ellipse cx=\"102.5\" cy=\"106.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(167 101.0 105.5)\"/><ellipse cx=\"112.4\" cy=\"106.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(133 110.5 105.5)\"/><ellipse cx=\"121.9\" cy=\"106.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(171 120.0 105.5)\"/><ellipse cx=\"131.1\" cy=\"107.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(133 129.5 105.5)\"/><ellipse cx=\"26.8\" cy=\"96.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(128 25.0 96.0)\"/><ellipse cx=\"36.1\" cy=\"96.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(80 34.5 96.0)\"/><ellipse cx=\"44.6\" cy=\"97.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(113 44.0 96.0)\"/><ellipse cx=\"55.5\" cy=\"97.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(26 53.5 96.0)\"/><ellipse cx=\"64.3\" cy=\"96.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(19 63.0 96.0)\"/><ellipse cx=\"72.5\" cy=\"96.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(69 72.5 96.0)\"/><ellipse cx=\"83.9\" cy=\"96.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(26 82.0 96.0)\"/><ellipse cx=\"92.5\" cy=\"96.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(128 91.5 96.0)\"/><ellipse cx=\"102.5\" cy=\"96.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(118 101.0 96.0)\"/><ellipse cx=\"111.4\" cy=\"96.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(146 110.5 96.0)\"/><ellipse cx=\"120.7\" cy=\"97.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(48 120.0 96.0)\"/><ellipse cx=\"130.9\" cy=\"97.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(50 129.5 96.0)\"/><ellipse cx=\"26.5\" cy=\"87.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(8 25.0 86.5)\"/><ellipse cx=\"35.8\" cy=\"87.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(14 34.5 86.5)\"/><ellipse cx=\"44.8\" cy=\"87.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(45 44.0 86.5)\"/><ellipse cx=\"54.1\" cy=\"87.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(95 53.5 86.5)\"/><ellipse cx=\"63.0\" cy=\"86.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(140 63.0 86.5)\"/><ellipse cx=\"73.1\" cy=\"88.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(29 72.5 86.5)\"/><ellipse cx=\"82.4\" cy=\"86.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(80 82.0 86.5)\"/><ellipse cx=\"92.5\" cy=\"88.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(139 91.5 86.5)\"/><ellipse cx=\"101.5\" cy=\"87.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(124 101.0 86.5)\"/><ellipse cx=\"111.6\" cy=\"87.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(13 110.5 86.5)\"/><ellipse cx=\"121.8\" cy=\"87.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(36 120.0 86.5)\"/><ellipse cx=\"130.8\" cy=\"87.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(104 129.5 86.5)\"/><ellipse cx=\"25.0\" cy=\"78.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(128 25.0 77.0)\"/><ellipse cx=\"34.7\" cy=\"77.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(112 34.5 77.0)\"/><ellipse cx=\"44.6\" cy=\"77.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(102 44.0 77.0)\"/><ellipse cx=\"54.4\" cy=\"77.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(74 53.5 77.0)\"/><ellipse cx=\"65.0\" cy=\"78.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(59 63.0 77.0)\"/><ellipse cx=\"73.4\" cy=\"78.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(125 72.5 77.0)\"/><ellipse cx=\"82.5\" cy=\"78.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(14 82.0 77.0)\"/><ellipse cx=\"92.0\" cy=\"78.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(103 91.5 77.0)\"/><ellipse cx=\"101.8\" cy=\"77.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(61 101.0 77.0)\"/><ellipse cx=\"110.6\" cy=\"78.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(10 110.5 77.0)\"/><ellipse cx=\"122.0\" cy=\"78.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(27 120.0 77.0)\"/><ellipse cx=\"129.7\" cy=\"77.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(1 129.5 77.0)\"/><ellipse cx=\"26.7\" cy=\"68.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(107 25.0 67.5)\"/><ellipse cx=\"34.7\" cy=\"68.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(73 34.5 67.5)\"/><ellipse cx=\"44.1\" cy=\"67.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(98 44.0 67.5)\"/><ellipse cx=\"53.8\" cy=\"68.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(74 53.5 67.5)\"/><ellipse cx=\"64.6\" cy=\"67.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(12 63.0 67.5)\"/><ellipse cx=\"72.6\" cy=\"68.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(170 72.5 67.5)\"/><ellipse cx=\"83.5\" cy=\"69.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(171 82.0 67.5)\"/><ellipse cx=\"92.2\" cy=\"68.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(76 91.5 67.5)\"/><ellipse cx=\"102.8\" cy=\"69.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(20 101.0 67.5)\"/><ellipse cx=\"111.3\" cy=\"69.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(10 110.5 67.5)\"/><ellipse cx=\"121.9\" cy=\"69.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(40 120.0 67.5)\"/><ellipse cx=\"129.7\" cy=\"68.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(178 129.5 67.5)\"/><ellipse cx=\"25.0\" cy=\"59.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(26 25.0 58.0)\"/><ellipse cx=\"36.1\" cy=\"59.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(51 34.5 58.0)\"/><ellipse cx=\"44.3\" cy=\"59.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(17 44.0 58.0)\"/><ellipse cx=\"53.8\" cy=\"59.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(175 53.5 58.0)\"/><ellipse cx=\"64.0\" cy=\"59.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(63 63.0 58.0)\"/><ellipse cx=\"72.8\" cy=\"58.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(178 72.5 58.0)\"/><ellipse cx=\"82.3\" cy=\"59.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(90 82.0 58.0)\"/><ellipse cx=\"92.7\" cy=\"59.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(114 91.5 58.0)\"/><ellipse cx=\"102.5\" cy=\"59.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(117 101.0 58.0)\"/><ellipse cx=\"111.5\" cy=\"59.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(146 110.5 58.0)\"/><ellipse cx=\"120.9\" cy=\"58.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(12 120.0 58.0)\"/><ellipse cx=\"131.1\" cy=\"59.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(104 129.5 58.0)\"/><ellipse cx=\"26.4\" cy=\"49.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(100 25.0 48.5)\"/><ellipse cx=\"36.4\" cy=\"49.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(28 34.5 48.5)\"/><ellipse cx=\"44.6\" cy=\"50.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(174 44.0 48.5)\"/><ellipse cx=\"54.0\" cy=\"49.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(169 53.5 48.5)\"/><ellipse cx=\"63.8\" cy=\"49.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(153 63.0 48.5)\"/><ellipse cx=\"73.0\" cy=\"49.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(69 72.5 48.5)\"/><ellipse cx=\"83.1\" cy=\"49.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(109 82.0 48.5)\"/><ellipse cx=\"92.9\" cy=\"49.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(126 91.5 48.5)\"/><ellipse cx=\"102.2\" cy=\"49.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(105 101.0 48.5)\"/><ellipse cx=\"111.1\" cy=\"48.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(5 110.5 48.5)\"/><ellipse cx=\"121.9\" cy=\"50.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(63 120.0 48.5)\"/><ellipse cx=\"130.9\" cy=\"49.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(111 129.5 48.5)\"/><path d=\"M20,40 L20,140 L140,140 L140,40\" fill=\"none\" stroke=\"#92400e\" stroke-width=\"5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"158\" y1=\"90\" x2=\"205\" y2=\"90\" stroke=\"#d97706\" stroke-width=\"3\"/><polygon points=\"214,90 205,85.5 205,94.5\" fill=\"#d97706\"/><text x=\"186\" y=\"78\" text-anchor=\"middle\" font-size=\"13\">左右搖晃</text><rect x=\"240\" y=\"40\" width=\"120\" height=\"100\" fill=\"#fef3c7\"/><ellipse cx=\"245.3\" cy=\"134.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(67 245.0 134.0)\"/><ellipse cx=\"253.0\" cy=\"135.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(106 252.6 134.0)\"/><ellipse cx=\"260.9\" cy=\"135.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(42 260.2 134.0)\"/><ellipse cx=\"268.2\" cy=\"134.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(50 267.8 134.0)\"/><ellipse cx=\"275.6\" cy=\"134.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(145 275.4 134.0)\"/><ellipse cx=\"284.1\" cy=\"135.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(33 283.0 134.0)\"/><ellipse cx=\"292.4\" cy=\"135.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(172 290.6 134.0)\"/><ellipse cx=\"299.2\" cy=\"134.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(138 298.2 134.0)\"/><ellipse cx=\"307.5\" cy=\"134.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(86 305.8 134.0)\"/><ellipse cx=\"314.2\" cy=\"135.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(93 313.4 134.0)\"/><ellipse cx=\"322.8\" cy=\"135.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(33 321.0 134.0)\"/><ellipse cx=\"328.7\" cy=\"135.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(107 328.6 134.0)\"/><ellipse cx=\"336.9\" cy=\"135.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(171 336.2 134.0)\"/><ellipse cx=\"344.0\" cy=\"135.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(24 343.8 134.0)\"/><ellipse cx=\"352.0\" cy=\"135.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(125 351.4 134.0)\"/><ellipse cx=\"245.8\" cy=\"126.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(155 245.0 126.4)\"/><ellipse cx=\"253.5\" cy=\"127.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(8 252.6 126.4)\"/><ellipse cx=\"261.2\" cy=\"127.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(158 260.2 126.4)\"/><ellipse cx=\"268.0\" cy=\"127.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(64 267.8 126.4)\"/><ellipse cx=\"277.0\" cy=\"127.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(87 275.4 126.4)\"/><ellipse cx=\"283.5\" cy=\"127.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(51 283.0 126.4)\"/><ellipse cx=\"291.8\" cy=\"126.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(135 290.6 126.4)\"/><ellipse cx=\"299.1\" cy=\"126.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(86 298.2 126.4)\"/><ellipse cx=\"307.6\" cy=\"127.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(118 305.8 126.4)\"/><ellipse cx=\"314.0\" cy=\"128.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(128 313.4 126.4)\"/><ellipse cx=\"321.0\" cy=\"127.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(26 321.0 126.4)\"/><ellipse cx=\"330.4\" cy=\"127.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(159 328.6 126.4)\"/><ellipse cx=\"337.6\" cy=\"127.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(123 336.2 126.4)\"/><ellipse cx=\"344.2\" cy=\"127.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(156 343.8 126.4)\"/><ellipse cx=\"353.3\" cy=\"127.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(13 351.4 126.4)\"/><ellipse cx=\"245.1\" cy=\"120.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(138 245.0 118.8)\"/><ellipse cx=\"254.1\" cy=\"120.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(34 252.6 118.8)\"/><ellipse cx=\"261.9\" cy=\"119.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(46 260.2 118.8)\"/><ellipse cx=\"268.0\" cy=\"118.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(88 267.8 118.8)\"/><ellipse cx=\"275.8\" cy=\"120.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(85 275.4 118.8)\"/><ellipse cx=\"283.5\" cy=\"119.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(59 283.0 118.8)\"/><ellipse cx=\"291.8\" cy=\"118.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(102 290.6 118.8)\"/><ellipse cx=\"299.7\" cy=\"118.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(158 298.2 118.8)\"/><ellipse cx=\"307.8\" cy=\"119.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(74 305.8 118.8)\"/><ellipse cx=\"314.3\" cy=\"120.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(33 313.4 118.8)\"/><ellipse cx=\"322.2\" cy=\"120.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(27 321.0 118.8)\"/><ellipse cx=\"329.4\" cy=\"119.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(152 328.6 118.8)\"/><ellipse cx=\"337.5\" cy=\"119.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(144 336.2 118.8)\"/><ellipse cx=\"345.5\" cy=\"119.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(134 343.8 118.8)\"/><ellipse cx=\"352.1\" cy=\"119.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(141 351.4 118.8)\"/><ellipse cx=\"245.4\" cy=\"111.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(20 245.0 111.2)\"/><ellipse cx=\"254.2\" cy=\"111.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(15 252.6 111.2)\"/><ellipse cx=\"261.9\" cy=\"111.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(30 260.2 111.2)\"/><ellipse cx=\"268.3\" cy=\"112.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(130 267.8 111.2)\"/><ellipse cx=\"277.0\" cy=\"111.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(56 275.4 111.2)\"/><ellipse cx=\"284.2\" cy=\"112.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(76 283.0 111.2)\"/><ellipse cx=\"290.8\" cy=\"112.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(16 290.6 111.2)\"/><ellipse cx=\"300.1\" cy=\"112.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(87 298.2 111.2)\"/><ellipse cx=\"306.3\" cy=\"111.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(107 305.8 111.2)\"/><ellipse cx=\"315.1\" cy=\"111.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(39 313.4 111.2)\"/><ellipse cx=\"322.8\" cy=\"111.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(116 321.0 111.2)\"/><ellipse cx=\"329.1\" cy=\"112.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(5 328.6 111.2)\"/><ellipse cx=\"337.9\" cy=\"112.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(126 336.2 111.2)\"/><ellipse cx=\"345.4\" cy=\"111.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(63 343.8 111.2)\"/><ellipse cx=\"352.6\" cy=\"112.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(144 351.4 111.2)\"/><ellipse cx=\"246.2\" cy=\"104.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(37 245.0 103.6)\"/><ellipse cx=\"254.3\" cy=\"103.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(115 252.6 103.6)\"/><ellipse cx=\"261.3\" cy=\"105.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(65 260.2 103.6)\"/><ellipse cx=\"269.4\" cy=\"104.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(90 267.8 103.6)\"/><ellipse cx=\"277.3\" cy=\"105.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(5 275.4 103.6)\"/><ellipse cx=\"284.6\" cy=\"105.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(50 283.0 103.6)\"/><ellipse cx=\"290.6\" cy=\"104.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(75 290.6 103.6)\"/><ellipse cx=\"298.4\" cy=\"104.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(81 298.2 103.6)\"/><ellipse cx=\"306.8\" cy=\"103.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(2 305.8 103.6)\"/><ellipse cx=\"314.7\" cy=\"104.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(57 313.4 103.6)\"/><ellipse cx=\"321.4\" cy=\"104.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(57 321.0 103.6)\"/><ellipse cx=\"330.4\" cy=\"104.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(54 328.6 103.6)\"/><ellipse cx=\"336.5\" cy=\"105.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(82 336.2 103.6)\"/><ellipse cx=\"343.8\" cy=\"104.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(58 343.8 103.6)\"/><ellipse cx=\"351.7\" cy=\"105.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(147 351.4 103.6)\"/><ellipse cx=\"246.3\" cy=\"98.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(131 245.0 96.0)\"/><ellipse cx=\"254.3\" cy=\"96.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(57 252.6 96.0)\"/><ellipse cx=\"261.7\" cy=\"96.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(99 260.2 96.0)\"/><ellipse cx=\"268.1\" cy=\"96.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(114 267.8 96.0)\"/><ellipse cx=\"276.7\" cy=\"96.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(29 275.4 96.0)\"/><ellipse cx=\"283.5\" cy=\"96.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(138 283.0 96.0)\"/><ellipse cx=\"292.3\" cy=\"96.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(107 290.6 96.0)\"/><ellipse cx=\"299.5\" cy=\"96.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(4 298.2 96.0)\"/><ellipse cx=\"306.7\" cy=\"97.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(96 305.8 96.0)\"/><ellipse cx=\"314.3\" cy=\"96.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(100 313.4 96.0)\"/><ellipse cx=\"322.8\" cy=\"96.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(29 321.0 96.0)\"/><ellipse cx=\"329.0\" cy=\"96.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(55 328.6 96.0)\"/><ellipse cx=\"338.0\" cy=\"96.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(31 336.2 96.0)\"/><ellipse cx=\"345.0\" cy=\"96.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(138 343.8 96.0)\"/><ellipse cx=\"353.3\" cy=\"96.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(117 351.4 96.0)\"/><ellipse cx=\"245.3\" cy=\"89.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(28 245.0 88.4)\"/><ellipse cx=\"252.6\" cy=\"90.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(150 252.6 88.4)\"/><ellipse cx=\"260.7\" cy=\"89.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(100 260.2 88.4)\"/><ellipse cx=\"269.3\" cy=\"90.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(36 267.8 88.4)\"/><ellipse cx=\"276.1\" cy=\"89.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(82 275.4 88.4)\"/><ellipse cx=\"283.2\" cy=\"89.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(156 283.0 88.4)\"/><ellipse cx=\"292.2\" cy=\"89.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(19 290.6 88.4)\"/><ellipse cx=\"299.8\" cy=\"88.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(129 298.2 88.4)\"/><ellipse cx=\"306.9\" cy=\"89.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(107 305.8 88.4)\"/><ellipse cx=\"313.6\" cy=\"90.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(51 313.4 88.4)\"/><ellipse cx=\"322.2\" cy=\"89.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(123 321.0 88.4)\"/><ellipse cx=\"329.6\" cy=\"88.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(173 328.6 88.4)\"/><ellipse cx=\"336.9\" cy=\"89.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(60 336.2 88.4)\"/><ellipse cx=\"345.2\" cy=\"89.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(19 343.8 88.4)\"/><ellipse cx=\"353.2\" cy=\"90.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(151 351.4 88.4)\"/><ellipse cx=\"245.3\" cy=\"81.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(146 245.0 80.8)\"/><ellipse cx=\"253.7\" cy=\"81.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(171 252.6 80.8)\"/><ellipse cx=\"261.5\" cy=\"82.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(27 260.2 80.8)\"/><ellipse cx=\"268.9\" cy=\"81.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(107 267.8 80.8)\"/><ellipse cx=\"275.4\" cy=\"82.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(107 275.4 80.8)\"/><ellipse cx=\"283.9\" cy=\"82.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(159 283.0 80.8)\"/><ellipse cx=\"292.3\" cy=\"81.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(118 290.6 80.8)\"/><ellipse cx=\"299.2\" cy=\"81.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(88 298.2 80.8)\"/><ellipse cx=\"307.3\" cy=\"80.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(61 305.8 80.8)\"/><ellipse cx=\"314.4\" cy=\"82.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(170 313.4 80.8)\"/><ellipse cx=\"321.4\" cy=\"82.3\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(92 321.0 80.8)\"/><ellipse cx=\"329.9\" cy=\"81.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(46 328.6 80.8)\"/><ellipse cx=\"337.4\" cy=\"82.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(32 336.2 80.8)\"/><ellipse cx=\"344.3\" cy=\"81.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(165 343.8 80.8)\"/><ellipse cx=\"352.9\" cy=\"82.8\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(10 351.4 80.8)\"/><ellipse cx=\"246.4\" cy=\"74.9\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(102 245.0 73.2)\"/><ellipse cx=\"253.5\" cy=\"73.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(87 252.6 73.2)\"/><ellipse cx=\"260.3\" cy=\"74.1\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(72 260.2 73.2)\"/><ellipse cx=\"268.9\" cy=\"74.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(69 267.8 73.2)\"/><ellipse cx=\"275.5\" cy=\"74.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(93 275.4 73.2)\"/><ellipse cx=\"284.3\" cy=\"74.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(32 283.0 73.2)\"/><ellipse cx=\"290.7\" cy=\"75.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(165 290.6 73.2)\"/><ellipse cx=\"299.4\" cy=\"74.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(19 298.2 73.2)\"/><ellipse cx=\"307.1\" cy=\"73.5\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(129 305.8 73.2)\"/><ellipse cx=\"314.4\" cy=\"73.7\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(46 313.4 73.2)\"/><ellipse cx=\"321.0\" cy=\"74.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(68 321.0 73.2)\"/><ellipse cx=\"329.2\" cy=\"74.0\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(137 328.6 73.2)\"/><ellipse cx=\"337.3\" cy=\"74.4\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(15 336.2 73.2)\"/><ellipse cx=\"344.8\" cy=\"73.6\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(97 343.8 73.2)\"/><ellipse cx=\"353.1\" cy=\"74.2\" rx=\"3.2\" ry=\"1.8\" fill=\"#f8fafc\" stroke=\"#a8a29e\" stroke-width=\"1\" transform=\"rotate(37 351.4 73.2)\"/><path d=\"M240,40 L240,140 L360,140 L360,40\" fill=\"none\" stroke=\"#92400e\" stroke-width=\"5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"80\" y=\"162\" text-anchor=\"middle\" font-size=\"13\">搖晃前</text><text x=\"300\" y=\"162\" text-anchor=\"middle\" font-size=\"13\">搖晃後</text></svg>",
+  sandCyl: "<svg viewBox=\"0 0 410 236\" role=\"img\" aria-label=\"沙子放入量筒、加水攪拌前後的讀數\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"20\" y=\"202\" width=\"66\" height=\"8\" rx=\"2\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"30\" y=\"104\" width=\"46\" height=\"96\" fill=\"#d6b48a\"/><circle cx=\"33\" cy=\"113.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"44.6\" cy=\"178.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"62.2\" cy=\"149\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"46.2\" cy=\"128.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"63.2\" cy=\"148.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"60.4\" cy=\"139.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"65.7\" cy=\"175.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"48\" cy=\"132.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"60.9\" cy=\"193\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"60.4\" cy=\"155\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"69.9\" cy=\"123.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"37.9\" cy=\"150.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"69.9\" cy=\"134.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"58.8\" cy=\"144.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"69.5\" cy=\"114.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"47.9\" cy=\"167.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"66.5\" cy=\"167.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"39.1\" cy=\"170.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"50.1\" cy=\"170.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"70.5\" cy=\"146.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"62.2\" cy=\"117.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"35.3\" cy=\"172.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"55.4\" cy=\"151.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"49.9\" cy=\"180.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"69.4\" cy=\"193\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"47.6\" cy=\"166.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"59.6\" cy=\"113\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"53.6\" cy=\"182.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"49.2\" cy=\"171.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"47.6\" cy=\"159\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"46.3\" cy=\"149.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"57.6\" cy=\"176.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"69.3\" cy=\"155.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"67.5\" cy=\"139.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"58.4\" cy=\"150.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"53.2\" cy=\"134.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"70.6\" cy=\"161.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"61.3\" cy=\"174.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"56.5\" cy=\"165.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"46.2\" cy=\"162\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"64.8\" cy=\"117.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"37.4\" cy=\"122.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"36.1\" cy=\"160.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"39.1\" cy=\"190.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"72.8\" cy=\"177.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"58.3\" cy=\"184.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"51.3\" cy=\"143.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"38.5\" cy=\"113.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"68.4\" cy=\"116.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"68.4\" cy=\"114.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"63.4\" cy=\"172.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"33.4\" cy=\"175.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"36\" cy=\"197.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"57.7\" cy=\"176.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"62.6\" cy=\"153\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"60.5\" cy=\"176.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"68.3\" cy=\"176.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"48\" cy=\"115.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"37.7\" cy=\"153\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"33.1\" cy=\"114\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"58.5\" cy=\"113.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"33.8\" cy=\"115.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"40.5\" cy=\"108.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"55.6\" cy=\"135.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"43.7\" cy=\"177.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"41.4\" cy=\"146.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"35.1\" cy=\"127.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"61\" cy=\"132.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"52.9\" cy=\"195\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"37.4\" cy=\"113.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"38.2\" cy=\"134.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"68.7\" cy=\"194.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"68.3\" cy=\"118.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"72.7\" cy=\"110.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"63.6\" cy=\"159.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"42.9\" cy=\"131.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"68.3\" cy=\"161.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"42.4\" cy=\"160.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"68.5\" cy=\"146.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"47.1\" cy=\"140.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"62.4\" cy=\"167.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"62\" cy=\"159.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"40.9\" cy=\"169.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"72.4\" cy=\"106.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"58.3\" cy=\"117.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"69.7\" cy=\"179.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"58.8\" cy=\"185.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"52.9\" cy=\"146.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"63.9\" cy=\"111\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"52.3\" cy=\"180.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"50.9\" cy=\"182.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"59.5\" cy=\"150\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"55.5\" cy=\"151.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"63.3\" cy=\"164.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"63\" cy=\"195.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"45\" cy=\"148.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"41.1\" cy=\"131.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"44.6\" cy=\"176.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"59.4\" cy=\"158.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"36\" cy=\"126.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"65.9\" cy=\"113.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"69.4\" cy=\"135.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"71.4\" cy=\"195.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"63.5\" cy=\"142.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"62\" cy=\"115.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"34.5\" cy=\"185.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"36.2\" cy=\"188\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"36.4\" cy=\"197.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"57.2\" cy=\"111\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"40.7\" cy=\"185.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"41.1\" cy=\"135.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"42.7\" cy=\"156\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"72.8\" cy=\"159.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"60\" cy=\"126.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"48.9\" cy=\"159.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"35.4\" cy=\"176.8\" r=\"1.3\" fill=\"#a47148\"/><path d=\"M30,26 L30,200 L76,200 L76,26\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M26,23 Q30,26 33,26\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"30\" y1=\"192\" x2=\"37\" y2=\"192\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"184\" x2=\"37\" y2=\"184\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"176\" x2=\"37\" y2=\"176\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"168\" x2=\"37\" y2=\"168\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"160\" x2=\"44\" y2=\"160\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"152\" x2=\"37\" y2=\"152\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"144\" x2=\"37\" y2=\"144\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"136\" x2=\"37\" y2=\"136\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"128\" x2=\"37\" y2=\"128\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"120\" x2=\"44\" y2=\"120\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"112\" x2=\"37\" y2=\"112\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"104\" x2=\"37\" y2=\"104\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"96\" x2=\"37\" y2=\"96\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"88\" x2=\"37\" y2=\"88\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"80\" x2=\"44\" y2=\"80\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"72\" x2=\"37\" y2=\"72\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"64\" x2=\"37\" y2=\"64\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"56\" x2=\"37\" y2=\"56\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"48\" x2=\"37\" y2=\"48\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"40\" x2=\"44\" y2=\"40\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"84\" y=\"108\" font-size=\"12\">沙子讀數</text><text x=\"84\" y=\"124\" font-size=\"13\" font-weight=\"700\">120.0 mL</text><line x1=\"150\" y1=\"130\" x2=\"173\" y2=\"130\" stroke=\"#d97706\" stroke-width=\"3\"/><polygon points=\"182,130 173,125.5 173,134.5\" fill=\"#d97706\"/><text x=\"166\" y=\"112\" text-anchor=\"middle\" font-size=\"12\">加入水</text><text x=\"166\" y=\"156\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\">100.0 mL</text><text x=\"166\" y=\"172\" text-anchor=\"middle\" font-size=\"12\">並攪拌</text><rect x=\"195\" y=\"202\" width=\"66\" height=\"8\" rx=\"2\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"205\" y=\"48\" width=\"46\" height=\"152\" fill=\"#bae6fd\"/><line x1=\"205\" y1=\"48\" x2=\"251\" y2=\"48\" stroke=\"#0284c7\" stroke-width=\"2\"/><rect x=\"205\" y=\"112\" width=\"46\" height=\"88\" fill=\"#d6b48a\"/><circle cx=\"240.3\" cy=\"116.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"214.1\" cy=\"120.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"228.3\" cy=\"187.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"216.4\" cy=\"147.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"214.8\" cy=\"191.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"218.9\" cy=\"143.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"230.2\" cy=\"157.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"247.8\" cy=\"191.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"224.5\" cy=\"171.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"208.2\" cy=\"197.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"224.5\" cy=\"190.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"217.4\" cy=\"120.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"239.1\" cy=\"133.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"225.5\" cy=\"126.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"246.5\" cy=\"130.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"234.5\" cy=\"149.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"221.9\" cy=\"163.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"227.9\" cy=\"156.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"230.7\" cy=\"137.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"234.6\" cy=\"144.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"237.2\" cy=\"123.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"241.8\" cy=\"115\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"225.5\" cy=\"157.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"246.3\" cy=\"116.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"222.3\" cy=\"191.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"221.7\" cy=\"123.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"236.3\" cy=\"136\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"246.2\" cy=\"131.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"216.3\" cy=\"178\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"239.9\" cy=\"189.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"244.6\" cy=\"130.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"233.4\" cy=\"138.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"229.4\" cy=\"160.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"242.9\" cy=\"150.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"242.9\" cy=\"175.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"235.5\" cy=\"161.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"223.8\" cy=\"182.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"231.6\" cy=\"178.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"244\" cy=\"128.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"221.5\" cy=\"140.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"243.1\" cy=\"188.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"220.3\" cy=\"120.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"208.1\" cy=\"186.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"223.9\" cy=\"196.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"235.7\" cy=\"122.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"214.9\" cy=\"180.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"245.9\" cy=\"139.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"215\" cy=\"188.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"233.1\" cy=\"196.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"240.5\" cy=\"148.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"238\" cy=\"187.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"221.3\" cy=\"138\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"246.2\" cy=\"152\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"231.5\" cy=\"132.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"236.1\" cy=\"136.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"231.9\" cy=\"189.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"209.8\" cy=\"146.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"217\" cy=\"149.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"218\" cy=\"179.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"232.8\" cy=\"145.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"240.5\" cy=\"177.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"244.2\" cy=\"193.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"235.6\" cy=\"163.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"239.7\" cy=\"142.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"240.2\" cy=\"189.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"244.8\" cy=\"155.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"240.9\" cy=\"162.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"242.7\" cy=\"131.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"237.1\" cy=\"121.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"242.3\" cy=\"182\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"236.8\" cy=\"185\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"213\" cy=\"118.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"246.2\" cy=\"193.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"211.1\" cy=\"176\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"245.6\" cy=\"124.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"246.3\" cy=\"174.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"215.9\" cy=\"195.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"226.8\" cy=\"151\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"213.7\" cy=\"170.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"227.2\" cy=\"179\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"210.2\" cy=\"194.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"211.7\" cy=\"145.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"226.7\" cy=\"130.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"237.1\" cy=\"155.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"236\" cy=\"165.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"232.5\" cy=\"116.9\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"238.8\" cy=\"117.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"236.5\" cy=\"147.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"240.1\" cy=\"183.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"210.6\" cy=\"137\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"233.9\" cy=\"161.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"229.8\" cy=\"165.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"227.8\" cy=\"187.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"210.7\" cy=\"191.4\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"222.2\" cy=\"169.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"216\" cy=\"144.2\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"213\" cy=\"193.6\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"208.1\" cy=\"127.8\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"242.8\" cy=\"194.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"238.7\" cy=\"171.3\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"224.1\" cy=\"121.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"239.9\" cy=\"197\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"247.7\" cy=\"180.7\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"233.7\" cy=\"162.1\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"209.3\" cy=\"183.5\" r=\"1.3\" fill=\"#a47148\"/><circle cx=\"238.2\" cy=\"134.7\" r=\"1.3\" fill=\"#a47148\"/><path d=\"M205,26 L205,200 L251,200 L251,26\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M201,23 Q205,26 208,26\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"205\" y1=\"192\" x2=\"212\" y2=\"192\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"184\" x2=\"212\" y2=\"184\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"176\" x2=\"212\" y2=\"176\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"168\" x2=\"212\" y2=\"168\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"160\" x2=\"219\" y2=\"160\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"152\" x2=\"212\" y2=\"152\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"144\" x2=\"212\" y2=\"144\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"136\" x2=\"212\" y2=\"136\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"128\" x2=\"212\" y2=\"128\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"120\" x2=\"219\" y2=\"120\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"112\" x2=\"212\" y2=\"112\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"104\" x2=\"212\" y2=\"104\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"96\" x2=\"212\" y2=\"96\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"88\" x2=\"212\" y2=\"88\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"80\" x2=\"219\" y2=\"80\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"72\" x2=\"212\" y2=\"72\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"64\" x2=\"212\" y2=\"64\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"56\" x2=\"212\" y2=\"56\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"48\" x2=\"212\" y2=\"48\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"205\" y1=\"40\" x2=\"219\" y2=\"40\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"258\" y=\"52\" font-size=\"13\" font-weight=\"700\" fill=\"#0284c7\">水面讀數 190.0 mL</text><text x=\"258\" y=\"116\" font-size=\"13\" font-weight=\"700\">沙子讀數 110.0 mL</text><text x=\"53\" y=\"226\" text-anchor=\"middle\">①</text><text x=\"228\" y=\"226\" text-anchor=\"middle\">②</text></svg>",
+  separateSteps: "<svg viewBox=\"0 0 420 380\" role=\"img\" aria-label=\"分離食鹽與沙子的四個步驟\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><g transform=\"translate(0,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"182\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">甲</text><text x=\"52\" y=\"30\" font-size=\"13\">混合物倒入水中攪拌</text><rect x=\"71\" y=\"112\" width=\"68\" height=\"43\" fill=\"#bae6fd\"/><path d=\"M66,77 Q70,80 70,84 L70,156 L140,156 L140,80\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"78\" cy=\"150\" r=\"2.4\" fill=\"#a47148\"/><circle cx=\"88\" cy=\"150\" r=\"2.4\" fill=\"#a47148\"/><circle cx=\"96\" cy=\"150\" r=\"2.4\" fill=\"#a47148\"/><circle cx=\"104\" cy=\"150\" r=\"2.4\" fill=\"#a47148\"/><circle cx=\"112\" cy=\"150\" r=\"2.4\" fill=\"#a47148\"/><circle cx=\"120\" cy=\"150\" r=\"2.4\" fill=\"#a47148\"/><circle cx=\"128\" cy=\"150\" r=\"2.4\" fill=\"#a47148\"/><circle cx=\"84\" cy=\"145\" r=\"2.4\" fill=\"#a47148\"/><circle cx=\"100\" cy=\"145\" r=\"2.4\" fill=\"#a47148\"/><circle cx=\"116\" cy=\"145\" r=\"2.4\" fill=\"#a47148\"/><line x1=\"92\" y1=\"60\" x2=\"120\" y2=\"150\" stroke=\"#94a3b8\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M100,66 q12,-10 24,0\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polygon points=\"124,66 118,60 118,70\" fill=\"#dc2626\" stroke-linejoin=\"round\"/></g><g transform=\"translate(210,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"182\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">乙</text><text x=\"52\" y=\"30\" font-size=\"13\">用濾紙過濾</text><rect x=\"14\" y=\"168\" width=\"166\" height=\"8\" fill=\"#cbd5e1\"/><line x1=\"24\" y1=\"168\" x2=\"24\" y2=\"44\" stroke=\"#64748b\" stroke-width=\"4\"/><line x1=\"24\" y1=\"76\" x2=\"82\" y2=\"76\" stroke=\"#64748b\" stroke-width=\"3\"/><polygon points=\"81,64 129,64 105,102\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/><path d=\"M75,60 L100,104 L100,152 M135,60 L110,104 L110,144\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><rect x=\"45\" y=\"152\" width=\"64\" height=\"15\" fill=\"#bae6fd\"/><path d=\"M40,119 Q44,122 44,126 L44,168 L110,168 L110,122\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><g transform=\"translate(0,190)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"182\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丙</text><text x=\"52\" y=\"30\" font-size=\"13\">濾液倒入蒸發皿</text><g transform=\"rotate(-38 95 95)\"><rect x=\"61\" y=\"92\" width=\"58\" height=\"33\" fill=\"#bae6fd\"/><path d=\"M56,57 Q60,60 60,64 L60,126 L120,126 L120,60\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><line x1=\"116\" y1=\"92\" x2=\"128\" y2=\"150\" stroke=\"#94a3b8\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M98,150 Q128,174 158,150\" fill=\"#fff\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M106,154 Q128,166 150,154 Z\" fill=\"#bae6fd\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><g transform=\"translate(210,190)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"182\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丁</text><text x=\"52\" y=\"30\" font-size=\"13\">加熱至蒸乾</text><g transform=\"translate(-10,18) scale(0.9)\"><line x1=\"84\" y1=\"86\" x2=\"176\" y2=\"86\" stroke=\"#475569\" stroke-width=\"3\"/><line x1=\"90\" y1=\"86\" x2=\"84\" y2=\"160\" stroke=\"#475569\" stroke-width=\"3\"/><line x1=\"170\" y1=\"86\" x2=\"176\" y2=\"160\" stroke=\"#475569\" stroke-width=\"3\"/><rect x=\"80\" y=\"82\" width=\"100\" height=\"5\" fill=\"#e7e5e4\" stroke=\"#78716c\" stroke-width=\"1\"/><path d=\"M96,62 Q130,98 164,62\" fill=\"#fff\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M104,68 Q130,86 156,68 Z\" fill=\"#bae6fd\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M104,160 Q100,132 122,126 L138,126 Q160,132 156,160 Z\" fill=\"#fce7f3\" stroke=\"#be185d\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><rect x=\"126\" y=\"114\" width=\"8\" height=\"12\" fill=\"#e2e8f0\" stroke=\"#475569\" stroke-width=\"1.5\"/><path d=\"M130,90 Q139,102 130,114 Q121,102 130,90 Z\" fill=\"#fbbf24\" stroke=\"#d97706\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g></g></svg>",
+  silver: "<svg viewBox=\"0 0 420 232\" role=\"img\" aria-label=\"銀飾品放入量筒後水面上升 6.0 mL，電子秤顯示 54.0 g\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"20\" y=\"202\" width=\"66\" height=\"8\" rx=\"2\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"30\" y=\"112\" width=\"46\" height=\"88\" fill=\"#bae6fd\"/><line x1=\"30\" y1=\"112\" x2=\"76\" y2=\"112\" stroke=\"#0284c7\" stroke-width=\"2\"/><path d=\"M30,54 L30,200 L76,200 L76,54\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M26,51 Q30,54 33,54\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"30\" y1=\"195.6\" x2=\"37\" y2=\"195.6\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"191.2\" x2=\"37\" y2=\"191.2\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"186.8\" x2=\"37\" y2=\"186.8\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"182.4\" x2=\"37\" y2=\"182.4\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"178\" x2=\"44\" y2=\"178\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"47\" y=\"182\" font-size=\"10\" fill=\"#475569\">10</text><line x1=\"30\" y1=\"173.6\" x2=\"37\" y2=\"173.6\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"169.2\" x2=\"37\" y2=\"169.2\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"164.8\" x2=\"37\" y2=\"164.8\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"160.4\" x2=\"37\" y2=\"160.4\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"156\" x2=\"44\" y2=\"156\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"47\" y=\"160\" font-size=\"10\" fill=\"#475569\">20</text><line x1=\"30\" y1=\"151.6\" x2=\"37\" y2=\"151.6\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"147.2\" x2=\"37\" y2=\"147.2\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"142.8\" x2=\"37\" y2=\"142.8\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"138.4\" x2=\"37\" y2=\"138.4\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"134\" x2=\"44\" y2=\"134\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"47\" y=\"138\" font-size=\"10\" fill=\"#475569\">30</text><line x1=\"30\" y1=\"129.6\" x2=\"37\" y2=\"129.6\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"125.2\" x2=\"37\" y2=\"125.2\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"120.8\" x2=\"37\" y2=\"120.8\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"116.4\" x2=\"37\" y2=\"116.4\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"112\" x2=\"44\" y2=\"112\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"47\" y=\"116\" font-size=\"10\" fill=\"#475569\">40</text><line x1=\"30\" y1=\"107.6\" x2=\"37\" y2=\"107.6\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"103.2\" x2=\"37\" y2=\"103.2\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"98.8\" x2=\"37\" y2=\"98.8\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"94.4\" x2=\"37\" y2=\"94.4\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"90\" x2=\"44\" y2=\"90\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"47\" y=\"94\" font-size=\"10\" fill=\"#475569\">50</text><line x1=\"30\" y1=\"85.6\" x2=\"37\" y2=\"85.6\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"81.2\" x2=\"37\" y2=\"81.2\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"76.8\" x2=\"37\" y2=\"76.8\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"72.4\" x2=\"37\" y2=\"72.4\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"30\" y1=\"68\" x2=\"44\" y2=\"68\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"47\" y=\"72\" font-size=\"10\" fill=\"#475569\">60</text><line x1=\"110\" y1=\"110\" x2=\"136\" y2=\"110\" stroke=\"#d97706\" stroke-width=\"3\"/><polygon points=\"145,110 136,105.5 136,114.5\" fill=\"#d97706\"/><rect x=\"150\" y=\"202\" width=\"84\" height=\"8\" rx=\"2\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"160\" y=\"98.8\" width=\"64\" height=\"101.2\" fill=\"#bae6fd\"/><line x1=\"160\" y1=\"98.8\" x2=\"224\" y2=\"98.8\" stroke=\"#0284c7\" stroke-width=\"2\"/><circle cx=\"204\" cy=\"186\" r=\"4\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"2\"/><circle cx=\"208.5\" cy=\"177\" r=\"4\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"2\"/><circle cx=\"207.1\" cy=\"168\" r=\"4\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"2\"/><circle cx=\"204.5\" cy=\"159\" r=\"4\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"2\"/><circle cx=\"212.6\" cy=\"150\" r=\"4\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"2\"/><circle cx=\"208.1\" cy=\"141\" r=\"4\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"2\"/><circle cx=\"209.2\" cy=\"132\" r=\"4\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"2\"/><path d=\"M160,54 L160,200 L224,200 L224,54\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M156,51 Q160,54 163,54\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"160\" y1=\"195.6\" x2=\"167\" y2=\"195.6\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"191.2\" x2=\"167\" y2=\"191.2\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"186.8\" x2=\"167\" y2=\"186.8\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"182.4\" x2=\"167\" y2=\"182.4\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"178\" x2=\"174\" y2=\"178\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"177\" y=\"182\" font-size=\"10\" fill=\"#475569\">10</text><line x1=\"160\" y1=\"173.6\" x2=\"167\" y2=\"173.6\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"169.2\" x2=\"167\" y2=\"169.2\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"164.8\" x2=\"167\" y2=\"164.8\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"160.4\" x2=\"167\" y2=\"160.4\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"156\" x2=\"174\" y2=\"156\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"177\" y=\"160\" font-size=\"10\" fill=\"#475569\">20</text><line x1=\"160\" y1=\"151.6\" x2=\"167\" y2=\"151.6\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"147.2\" x2=\"167\" y2=\"147.2\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"142.8\" x2=\"167\" y2=\"142.8\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"138.4\" x2=\"167\" y2=\"138.4\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"134\" x2=\"174\" y2=\"134\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"177\" y=\"138\" font-size=\"10\" fill=\"#475569\">30</text><line x1=\"160\" y1=\"129.6\" x2=\"167\" y2=\"129.6\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"125.2\" x2=\"167\" y2=\"125.2\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"120.8\" x2=\"167\" y2=\"120.8\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"116.4\" x2=\"167\" y2=\"116.4\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"112\" x2=\"174\" y2=\"112\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"177\" y=\"116\" font-size=\"10\" fill=\"#475569\">40</text><line x1=\"160\" y1=\"107.6\" x2=\"167\" y2=\"107.6\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"103.2\" x2=\"167\" y2=\"103.2\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"98.8\" x2=\"167\" y2=\"98.8\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"94.4\" x2=\"167\" y2=\"94.4\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"90\" x2=\"174\" y2=\"90\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"177\" y=\"94\" font-size=\"10\" fill=\"#475569\">50</text><line x1=\"160\" y1=\"85.6\" x2=\"167\" y2=\"85.6\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"81.2\" x2=\"167\" y2=\"81.2\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"76.8\" x2=\"167\" y2=\"76.8\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"72.4\" x2=\"167\" y2=\"72.4\" stroke=\"#475569\" stroke-width=\"1\"/><line x1=\"160\" y1=\"68\" x2=\"174\" y2=\"68\" stroke=\"#475569\" stroke-width=\"1\"/><text x=\"177\" y=\"72\" font-size=\"10\" fill=\"#475569\">60</text><line x1=\"150\" y1=\"112\" x2=\"232\" y2=\"112\" stroke=\"#dc2626\" stroke-width=\"1.5\" stroke-dasharray=\"4 3\"/><line x1=\"240\" y1=\"105.4\" x2=\"240\" y2=\"106\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><polygon points=\"240,112 243,106 237,106\" fill=\"#dc2626\"/><line x1=\"240\" y1=\"105.4\" x2=\"240\" y2=\"104.8\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><polygon points=\"240,98.8 237,104.8 243,104.8\" fill=\"#dc2626\"/><text x=\"248\" y=\"110.4\" font-size=\"14\" font-weight=\"700\" fill=\"#dc2626\">6.0 mL</text><rect x=\"300\" y=\"140\" width=\"110\" height=\"60\" rx=\"8\" fill=\"#e2e8f0\" stroke=\"#475569\" stroke-width=\"2\"/><rect x=\"312\" y=\"166\" width=\"86\" height=\"24\" rx=\"4\" fill=\"#0f172a\"/><text x=\"394\" y=\"184\" text-anchor=\"end\" font-size=\"15\" font-weight=\"700\" fill=\"#86efac\">54.0 g</text><rect x=\"316\" y=\"132\" width=\"78\" height=\"8\" rx=\"3\" fill=\"#94a3b8\"/><text x=\"355\" y=\"222\" text-anchor=\"middle\" font-size=\"13\">電子秤</text></svg>",
+  waterAlcohol: "<svg viewBox=\"0 0 380 262\" role=\"img\" aria-label=\"水和酒精的質量與體積關係圖\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"56\" y1=\"220\" x2=\"56\" y2=\"40\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"56\" y1=\"220\" x2=\"326\" y2=\"220\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"83\" y1=\"220\" x2=\"83\" y2=\"40\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"56\" y1=\"202\" x2=\"326\" y2=\"202\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"110\" y1=\"220\" x2=\"110\" y2=\"40\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"56\" y1=\"184\" x2=\"326\" y2=\"184\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"137\" y1=\"220\" x2=\"137\" y2=\"40\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"56\" y1=\"166\" x2=\"326\" y2=\"166\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"164\" y1=\"220\" x2=\"164\" y2=\"40\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"56\" y1=\"148\" x2=\"326\" y2=\"148\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"191\" y1=\"220\" x2=\"191\" y2=\"40\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"56\" y1=\"130\" x2=\"326\" y2=\"130\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"218\" y1=\"220\" x2=\"218\" y2=\"40\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"56\" y1=\"112\" x2=\"326\" y2=\"112\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"245\" y1=\"220\" x2=\"245\" y2=\"40\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"56\" y1=\"94\" x2=\"326\" y2=\"94\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"272\" y1=\"220\" x2=\"272\" y2=\"40\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"56\" y1=\"76\" x2=\"326\" y2=\"76\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"299\" y1=\"220\" x2=\"299\" y2=\"40\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"56\" y1=\"58\" x2=\"326\" y2=\"58\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"326\" y1=\"220\" x2=\"326\" y2=\"40\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><line x1=\"56\" y1=\"40\" x2=\"326\" y2=\"40\" stroke=\"#e2e8f0\" stroke-width=\"1\"/><text x=\"110\" y=\"238\" text-anchor=\"middle\" font-size=\"12\">10</text><text x=\"48\" y=\"188\" text-anchor=\"end\" font-size=\"12\">10</text><text x=\"164\" y=\"238\" text-anchor=\"middle\" font-size=\"12\">20</text><text x=\"48\" y=\"152\" text-anchor=\"end\" font-size=\"12\">20</text><text x=\"218\" y=\"238\" text-anchor=\"middle\" font-size=\"12\">30</text><text x=\"48\" y=\"116\" text-anchor=\"end\" font-size=\"12\">30</text><text x=\"272\" y=\"238\" text-anchor=\"middle\" font-size=\"12\">40</text><text x=\"48\" y=\"80\" text-anchor=\"end\" font-size=\"12\">40</text><text x=\"326\" y=\"238\" text-anchor=\"middle\" font-size=\"12\">50</text><text x=\"48\" y=\"44\" text-anchor=\"end\" font-size=\"12\">50</text><text x=\"48\" y=\"224\" text-anchor=\"end\" font-size=\"12\">0</text><line x1=\"56\" y1=\"220\" x2=\"335\" y2=\"220\" stroke=\"#082f49\" stroke-width=\"2\"/><polygon points=\"344,220 335,215.5 335,224.5\" fill=\"#082f49\"/><line x1=\"56\" y1=\"220\" x2=\"56\" y2=\"33\" stroke=\"#082f49\" stroke-width=\"2\"/><polygon points=\"56,24 51.5,33 60.5,33\" fill=\"#082f49\"/><text x=\"342\" y=\"254\" text-anchor=\"end\" font-size=\"13\">體積（cm³）</text><text x=\"62\" y=\"24\" font-size=\"13\">質量（g）</text><line x1=\"56\" y1=\"220\" x2=\"326\" y2=\"40\" stroke=\"#2563eb\" stroke-width=\"2.5\"/><line x1=\"56\" y1=\"220\" x2=\"326\" y2=\"76\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><circle cx=\"110\" cy=\"184\" r=\"4\" fill=\"#2563eb\"/><circle cx=\"110\" cy=\"191.2\" r=\"4\" fill=\"#dc2626\"/><circle cx=\"164\" cy=\"148\" r=\"4\" fill=\"#2563eb\"/><circle cx=\"164\" cy=\"162.4\" r=\"4\" fill=\"#dc2626\"/><circle cx=\"218\" cy=\"112\" r=\"4\" fill=\"#2563eb\"/><circle cx=\"218\" cy=\"133.6\" r=\"4\" fill=\"#dc2626\"/><circle cx=\"272\" cy=\"76\" r=\"4\" fill=\"#2563eb\"/><circle cx=\"272\" cy=\"104.8\" r=\"4\" fill=\"#dc2626\"/><circle cx=\"326\" cy=\"40\" r=\"4\" fill=\"#2563eb\"/><circle cx=\"326\" cy=\"76\" r=\"4\" fill=\"#dc2626\"/><text x=\"334\" y=\"45\" font-size=\"15\" font-weight=\"700\" fill=\"#2563eb\">水</text><text x=\"334\" y=\"81\" font-size=\"15\" font-weight=\"700\" fill=\"#dc2626\">酒精</text></svg>"
+};
+
+const EXTRA_QUESTIONS = [
+  // 第1章｜實驗 1・2
+  {
+    chapter: 'ch1', section: '實驗 1・2',
+    q: '空量筒質量為 70.4 g；量筒加 30.0 cm³ 水的總質量為 100.4 g。水的質量是多少？',
+    options: ['30.0 g', '70.4 g', '100.4 g', '170.8 g'], answer: '30.0 g',
+    explain: '水的質量＝量筒加水總質量－空量筒質量＝100.4－70.4＝30.0 g。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2',
+    q: '空量筒質量為 70.4 g；量筒加 40.0 cm³ 酒精的總質量為 102.4 g。酒精的質量為多少？',
+    options: ['24.0 g', '32.0 g', '40.0 g', '102.4 g'], answer: '32.0 g',
+    explain: '由紀錄表可知，酒精每 10.0 cm³ 質量約 8.0 g，因此 40.0 cm³ 的質量是 32.0 g。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2',
+    q: '繪製「質量與體積關係圖」時，橫坐標的操縱變因應為何？',
+    options: ['體積', '質量', '密度', '溫度'], answer: '體積',
+    explain: '實驗主動改變液體體積，再量測質量，因此體積放在橫坐標。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2',
+    q: '繪製「質量與體積關係圖」時，縱坐標的應變變因應為何？',
+    options: ['質量', '體積', '時間', '溫度'], answer: '質量',
+    explain: '質量會隨所取體積改變，是本實驗的應變變因。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2',
+    figure: FIG.waterAlcohol,
+    q: '水與酒精的質量－體積關係線，是否都是經過原點的直線？',
+    options: ['是', '不是，只有水是', '不是，只有酒精是', '兩者都是曲線'], answer: '是',
+    explain: '體積為 0 時質量也為 0；同一物質的質量與體積成正比，因此圖線通過原點。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2',
+    figure: FIG.waterAlcohol,
+    q: '同一種物質的質量與體積呈現何種關係？',
+    options: ['成正比', '成反比', '沒有關係', '先增加再減少'], answer: '成正比',
+    explain: '同一物質密度固定，質量＝密度×體積，所以質量與體積成正比。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2',
+    figure: FIG.waterAlcohol,
+    q: '如何利用質量與體積關係圖分辨不同物質？',
+    options: ['比較直線斜率或質量與體積的比值', '只比較樣品顏色', '只比較體積大小', '看直線是否經過原點'], answer: '比較直線斜率或質量與體積的比值',
+    explain: '不同物質密度不同，會呈現不同斜率；斜率就是質量與體積的比值。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2',
+    q: '未知金屬塊質量 17.0 g、體積 6.3 cm³，其質量與體積的比值約是多少？',
+    options: ['2.7 g/cm³', '6.3 g/cm³', '8.96 g/cm³', '17.0 g/cm³'], answer: '2.7 g/cm³',
+    explain: '17.0 ÷ 6.3 ≈ 2.7 g/cm³。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2',
+    q: '查表得銅、鐵、鋁的密度分別約為 8.96、7.87、2.70 g/cm³。密度約 2.7 g/cm³ 的未知金屬最可能是什麼？',
+    options: ['鋁', '鐵', '銅', '無法判斷'], answer: '鋁',
+    explain: '未知金屬的密度與鋁的 2.70 g/cm³ 最接近。'
+  },
+
+  // 第1章｜學力養成篇
+  {
+    chapter: 'ch1', section: '1・1 長度與體積',
+    q: '下列哪一個數值不會受測量工具最小刻度限制而產生估計誤差？',
+    options: ['教室有 32 張桌子', '量筒內有 20.0 mL 酒精', '身高 163.5 cm', '講臺長 4.5 m'], answer: '教室有 32 張桌子',
+    explain: '桌子張數是計數結果，不是測量值，因此沒有估計位與測量誤差。'
+  },
+  {
+    chapter: 'ch1', section: '1・1 長度與體積',
+    q: '關於測量誤差，下列哪一項敘述錯誤？',
+    options: ['不同測量者使用相同工具一定得到相同結果', '正確測量值仍可能與實際值不同', '最小刻度越小通常測量越精密', '明顯異常值應排除後再求平均'], answer: '不同測量者使用相同工具一定得到相同結果',
+    explain: '不同測量者的估計位可能不同，因此即使工具相同，結果也未必完全相同。'
+  },
+  {
+    chapter: 'ch1', section: '1・1 長度與體積',
+    q: '五次測量書櫃寬度為 60.02、60.04、23.63、60.01、60.05 cm。合理的測量結果為何？',
+    options: ['60.03 cm', '60.01 cm', '60.02 cm', '52.75 cm'], answer: '60.03 cm',
+    explain: '23.63 cm 是明顯異常值；其餘四筆平均為 60.03 cm。'
+  },
+  {
+    chapter: 'ch1', section: '1・1 長度與體積',
+    figure: FIG.cylNut,
+    q: '量筒原有 20.0 mL 水，螺帽完全沒入後讀數為 23.0 mL。螺帽體積是多少？',
+    options: ['3.0 cm³', '6.0 cm³', '20.0 cm³', '23.0 cm³'], answer: '3.0 cm³',
+    explain: '排水體積＝23.0－20.0＝3.0 mL＝3.0 cm³。'
+  },
+  {
+    chapter: 'ch1', section: '1・1 長度與體積',
+    figure: FIG.floatSteps,
+    q: '塑膠球與金屬球一起完全沉入量筒時讀數為 X₃；取出塑膠球、只留金屬球時為 X₄。塑膠球體積為何？',
+    options: ['（X₃－X₄）cm³', '（X₄－X₂）cm³', '（X₃－X₄－X₁）cm³', '（X₄－X₂－X₁）cm³'], answer: '（X₃－X₄）cm³',
+    explain: '兩次讀數的差只來自塑膠球所排開的水，因此體積為 X₃－X₄。'
+  },
+  {
+    chapter: 'ch1', section: '1・2 質量與密度',
+    q: '天平右盤有 50 g、20 g、10 g 砝碼各 1 個，另有 200 mg、100 mg 各 1 片。物體質量應記為多少？',
+    options: ['80.30 g', '77.00 g', '79.70 g', '83.00 g'], answer: '80.30 g',
+    explain: '50＋20＋10＋0.20＋0.10＝80.30 g。'
+  },
+  {
+    chapter: 'ch1', section: '1・2 質量與密度',
+    q: '用上皿天平秤取 4 g 小蘇打粉：甲調校準螺絲、乙左盤放秤量紙、丙加入小蘇打至平衡、丁右盤放 4 g 砝碼。正確順序為何？',
+    options: ['乙→甲→丁→丙', '甲→乙→丙→丁', '乙→甲→丙→丁', '甲→乙→丁→丙'], answer: '乙→甲→丁→丙',
+    explain: '先放秤量紙，再歸零；接著放指定砝碼，最後慢慢加入藥品至平衡。'
+  },
+  {
+    chapter: 'ch1', section: '1・2 質量與密度',
+    q: '三個相同燒杯裝等量水，分別放入質量相同的銀、鐵、鋁塊且完全沒入。哪杯水面上升最多？',
+    options: ['放入鋁塊的燒杯', '放入銀塊的燒杯', '放入鐵塊的燒杯', '三杯一樣多'], answer: '放入鋁塊的燒杯',
+    explain: '質量相同時密度越小，體積越大。鋁密度最小，因此排水最多。'
+  },
+  {
+    chapter: 'ch1', section: '1・2 質量與密度',
+    q: '黑麻油密度小於 1 g/cm³。甲牌標示 260 cc、240 g；乙牌標示 275 mL、275 g。哪項判斷最合理？',
+    options: ['乙牌有誤：mL 的數值應大於 g 的數值', '甲牌有誤：cc 與 g 都是質量單位', '甲牌有誤：cc 與 g 都是體積單位', '乙牌有誤：g 的數值應大於 mL 的數值'], answer: '乙牌有誤：mL 的數值應大於 g 的數值',
+    explain: '密度小於 1 表示同一份黑麻油的體積數值應大於質量數值；乙牌兩者相等不合理。'
+  },
+  {
+    chapter: 'ch1', section: '實驗題組',
+    q: '10、20、30 cm³ 水與量筒的總質量分別為 55、65、75 g。量筒質量是多少？',
+    options: ['45.0 g', '10.0 g', '55.0 g', '65.0 g'], answer: '45.0 g',
+    explain: '水密度為 1 g/cm³，10 cm³ 水為 10 g，所以量筒質量＝55－10＝45 g。'
+  },
+  {
+    chapter: 'ch1', section: '實驗題組',
+    q: '量筒質量 45.0 g，加入 10.0 cm³ 酒精後總質量 52.9 g。酒精密度是多少？',
+    options: ['0.79 g/cm³', '1.00 g/cm³', '5.29 g/cm³', '7.90 g/cm³'], answer: '0.79 g/cm³',
+    explain: '酒精質量＝52.9－45.0＝7.9 g；密度＝7.9÷10.0＝0.79 g/cm³。'
+  },
+  {
+    chapter: 'ch1', section: '密度題組',
+    figure: FIG.sandCyl,
+    q: '量筒中放入沙子後讀數 120.0 mL，再加入 100.0 mL 水並充分攪拌，最後讀數 190.0 mL。沙子實際體積為何？',
+    options: ['90.0 cm³', '100.0 cm³', '110.0 cm³', '120.0 cm³'], answer: '90.0 cm³',
+    explain: '沙粒間有空隙；沙子實際排水體積＝190.0－100.0＝90.0 cm³。'
+  },
+  {
+    chapter: 'ch1', section: '密度題組',
+    figure: FIG.sandCyl,
+    q: '144 g 沙子的實際體積為 90.0 cm³，其密度是多少？',
+    options: ['1.6 g/cm³', '0.75 g/cm³', '1.2 g/cm³', '1.44 g/cm³'], answer: '1.6 g/cm³',
+    explain: '密度＝144÷90.0＝1.6 g/cm³。'
+  },
+  {
+    chapter: 'ch1', section: '密度圖表題',
+    figure: FIG.densityLines,
+    q: 'A 物體質量 54 g、體積 20 cm³；B 物體質量 24 g、體積 30 cm³。圖上甲線較陡、乙線較平，A 位在哪一條線？',
+    options: ['甲線', '乙線', '兩線之間', '無法判斷'], answer: '甲線',
+    explain: 'A 密度 2.7，大於 B 的 0.8；質量－體積圖斜率越大代表密度越大，所以 A 在甲線。'
+  },
+  {
+    chapter: 'ch1', section: '密度圖表題',
+    figure: FIG.densityLines,
+    q: 'A、B 物體的密度分別為 2.7、0.8 g/cm³，甲線代表 A、乙線代表 B。若只取一半的 B 物體，質量與體積關係會落在何處？',
+    options: ['仍在乙線上', '改到甲線上', '甲、乙線之間', '無法判斷'], answer: '仍在乙線上',
+    explain: '取一半不改變物質密度，質量與體積的比值仍相同。'
+  },
+  {
+    chapter: 'ch1', section: '密度圖表題',
+    figure: FIG.densityLines,
+    q: 'A、B 密度分別為 2.7 與 0.8 g/cm³。水的密度為 1 g/cm³，其質量－體積關係線會位於何處？',
+    options: ['A、B 兩線之間', '比 A 線更陡', '比 B 線更平', '與 A 線重合'], answer: 'A、B 兩線之間',
+    explain: '水的密度 1 介於 2.7 與 0.8 之間，所以圖線斜率也介於兩者之間。'
+  },
+
+  // 第1章｜素養活用篇
+  {
+    chapter: 'ch1', section: '純銀飾品',
+    q: '純銀的密度約為多少？',
+    options: ['10.49 g/cm³', '9.0 g/cm³', '2.70 g/cm³', '7.87 g/cm³'], answer: '10.49 g/cm³',
+    explain: '習作資料列出的純銀密度約為 10.49 g/cm³（約 10.5 g/cm³ 亦可）。'
+  },
+  {
+    chapter: 'ch1', section: '純銀飾品',
+    figure: FIG.silver,
+    q: '銀飾品質量 54 g，排水體積 6.0 cm³，密度是多少？',
+    options: ['9.0 g/cm³', '6.0 g/cm³', '10.38 g/cm³', '54 g/cm³'], answer: '9.0 g/cm³',
+    explain: '密度＝54÷6.0＝9.0 g/cm³。'
+  },
+  {
+    chapter: 'ch1', section: '純銀飾品',
+    q: '某飾品密度為 9.0 g/cm³，與純銀約 10.49 g/cm³ 不同。假設操作與儀器均無誤，它是 100% 純銀嗎？',
+    options: ['不是', '是', '只要外觀銀亮就是', '無論密度多少都算純銀'], answer: '不是',
+    explain: '同一物質有特定密度；測得值明顯低於純銀，因此不是 100% 純銀。'
+  },
+  {
+    chapter: 'ch1', section: '純銀飾品',
+    q: '業界標榜的 92.5% 純銀飾品密度約 10.38 g/cm³。測得飾品密度 9.0 g/cm³，是否符合該標準？',
+    options: ['不符合，測得密度較低', '符合，任何銀色飾品都符合', '符合，9.0 大於 7.5', '無法用密度比較'], answer: '不符合，測得密度較低',
+    explain: '9.0 g/cm³ 與業界純銀飾品約 10.38 g/cm³ 有明顯落差。'
+  },
+  {
+    chapter: 'ch1', section: '如何測量米有多少',
+    q: '用固定容積木盒量米時，盒中米粒本身的總體積與木盒容積相比如何？',
+    options: ['小於木盒容積', '等於木盒容積', '大於木盒容積', '一定是兩倍'], answer: '小於木盒容積',
+    explain: '米粒之間有空隙，因此米粒本身的總體積小於木盒所占的容積。'
+  },
+  {
+    chapter: 'ch1', section: '如何測量米有多少',
+    figure: FIG.riceBox,
+    q: '將裝滿米的木盒左右搖晃後，米粒間空隙與「米粒＋空隙」整體的密度如何改變？',
+    options: ['空隙變小、密度變大', '空隙變小、密度變小', '空隙變大、密度變小', '空隙與密度都不變'], answer: '空隙變小、密度變大',
+    explain: '搖晃使米粒更密集，整體體積減小但質量不變，所以密度變大。'
+  },
+  {
+    chapter: 'ch1', section: '如何測量米有多少',
+    q: '早期用固定容積木盒買米，哪種方式能買到較重的米？',
+    options: ['搖晃木盒，空出更多空間再裝米', '不搖晃，因為米的密度會變大', '搖晃，因為每粒米會變重', '是否搖晃都完全相同'], answer: '搖晃木盒，空出更多空間再裝米',
+    explain: '搖晃讓米下沉、空隙變小，能再裝入更多米，因此總質量較大。'
+  },
+
+  // 第2章｜實驗 2・1 混合物的分離
+  {
+    chapter: 'ch2', section: '實驗 2・1',
+    q: '把食鹽與沙子加入蒸餾水攪拌後，最合理的觀察結果是什麼？',
+    options: ['看得到沙子，但看不見已溶解的食鹽', '食鹽與沙子都完全消失', '只看得到食鹽', '兩者都浮在水面'], answer: '看得到沙子，但看不見已溶解的食鹽',
+    explain: '食鹽可溶於水形成食鹽水，沙子不溶，仍可看見。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・1',
+    figure: FIG.filterSetup,
+    q: '食鹽與沙子加水後用濾紙過濾，濾紙內主要留下什麼？',
+    options: ['沙子', '食鹽水', '蒸餾水', '溶解的食鹽粒子'], answer: '沙子',
+    explain: '不溶於水且顆粒較大的沙子不能通過濾紙孔隙。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・1',
+    figure: FIG.evaporate,
+    q: '把食鹽水濾液完全蒸乾後，蒸發皿中會留下什麼？',
+    options: ['白色食鹽粉末或晶體', '沙子', '二氧化碳', '只有水'], answer: '白色食鹽粉末或晶體',
+    explain: '水蒸發離開，沸點較高的食鹽留在蒸發皿中。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・1',
+    q: '食鹽與沙子的混合物加水後再過濾，為何能分離兩者？',
+    options: ['食鹽溶於水後可通過濾紙，沙子不能', '沙子溶於水後可通過濾紙', '食鹽被濾紙吸住', '兩者沸點相同'], answer: '食鹽溶於水後可通過濾紙，沙子不能',
+    explain: '利用兩者溶解度與顆粒大小差異：食鹽形成溶液通過濾紙，沙子被截留。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・1',
+    q: '加熱食鹽水濾液後得到的固體是什麼？主要利用哪項差異？',
+    options: ['食鹽；食鹽沸點比水高', '沙子；沙子密度比水大', '食鹽；食鹽比水輕', '水；水的沸點比食鹽高'], answer: '食鹽；食鹽沸點比水高',
+    explain: '加熱使較易汽化的水離開，食鹽因沸點高而留下。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・1',
+    q: '濾紙與紗布相比，哪一種過濾效果較好？為什麼？',
+    options: ['濾紙，因孔徑較小', '紗布，因孔徑較大', '兩者完全相同', '紗布，因能溶解沙子'], answer: '濾紙，因孔徑較小',
+    explain: '濾紙孔徑較小，能攔住更多細小固體，因此濾液較清澈。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・1',
+    q: '要快速分離沙子與鐵粉，最適合的方法是什麼？',
+    options: ['用磁鐵吸出鐵粉', '加水後一起蒸乾', '用濾紙直接過濾乾粉', '加熱到熔化'], answer: '用磁鐵吸出鐵粉',
+    explain: '鐵粉具有磁性，沙子沒有，可利用磁性差異分離。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・1',
+    q: '要分離混在一起的保麗龍球與彈珠，哪個方法可利用兩者輕重差異？',
+    options: ['用電風扇吹動較輕的保麗龍球', '用磁鐵吸出彈珠', '加水使兩者溶解', '一起加熱蒸發'], answer: '用電風扇吹動較輕的保麗龍球',
+    explain: '保麗龍球較輕，較容易被風移動；彈珠較重會留在原處。'
+  },
+
+  // 第2章｜實驗 2・3 氧氣
+  {
+    chapter: 'ch2', section: '實驗 2・3',
+    q: '把點燃的線香分別放入空氣瓶與氧氣瓶，在哪一瓶中會燃燒得較旺盛？',
+    options: ['氧氣瓶', '空氣瓶', '兩瓶相同', '兩瓶都立刻熄滅'], answer: '氧氣瓶',
+    explain: '氧氣有助燃性，氧氣瓶中的氧氣濃度高於空氣。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・3',
+    figure: FIG.oxygenSetup,
+    q: '製備氧氣時，為什麼不收集剛開始產生的氣體？',
+    options: ['其中混有裝置內原有的空氣', '剛開始只有純氧', '氣體溫度一定太低', '剛開始的氧氣會溶解玻璃'], answer: '其中混有裝置內原有的空氣',
+    explain: '吸濾瓶與橡皮管原本裝有空氣，先產生的氣體會把這些空氣排出。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・3',
+    q: '以線香檢驗氧氣性質時，廣口瓶底為何要保留少量水？',
+    options: ['避免突然升溫使玻璃瓶破裂', '讓氧氣全部溶於水', '提高線香溫度', '讓空氣變成氧氣'], answer: '避免突然升溫使玻璃瓶破裂',
+    explain: '線香燃燒使局部溫度升高，少量水可降低玻璃因熱衝擊破裂的風險。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・3',
+    q: '將純水與雙氧水依序加入含二氧化錳的裝置，觀察結果為何？',
+    options: ['加純水無明顯反應；加雙氧水後產生明顯氣泡', '兩者都產生大量氣泡', '只有純水產生氣泡', '兩者都完全沒有反應'], answer: '加純水無明顯反應；加雙氧水後產生明顯氣泡',
+    explain: '雙氧水中的溶質在二氧化錳作用下快速分解產生氧氣，純水不會。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・3',
+    q: '點燃的線香在氧氣瓶與空氣瓶中的燃燒情形，哪一項正確？',
+    options: ['氧氣瓶中燃燒劇烈並產生火花；空氣瓶中較不劇烈', '空氣瓶中燃燒更劇烈', '兩瓶都完全熄滅', '兩瓶燃燒情形完全相同'], answer: '氧氣瓶中燃燒劇烈並產生火花；空氣瓶中較不劇烈',
+    explain: '氧氣濃度越高，助燃效果越明顯。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・3',
+    q: '製備氧氣實驗中，先加入純水再加入雙氧水，加入純水的目的為何？',
+    options: ['作為對照組', '增加氧氣濃度', '直接產生氧氣', '溶解玻璃瓶'], answer: '作為對照組',
+    explain: '純水不會產生氧氣，可與雙氧水的反應比較，證明氣泡來自雙氧水分解。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・3',
+    q: '線香在氧氣瓶中比在空氣瓶中燃燒劇烈，主要原因為何？',
+    options: ['氧氣有助燃性，且氧氣瓶中氧氣濃度較高', '氧氣本身會燃燒', '空氣完全不含氧氣', '氧氣瓶中的水會燃燒'], answer: '氧氣有助燃性，且氧氣瓶中氧氣濃度較高',
+    explain: '氧氣不可燃但能助燃；氧氣濃度高時燃燒更旺盛。'
+  },
+
+  // 第2章｜學力養成篇
+  {
+    chapter: 'ch2', section: '2・1 認識物質',
+    q: '下列何者是氣態物質的共通性質？',
+    options: ['具有可壓縮性', '具有固定體積', '無色無味', '形狀固定'], answer: '具有可壓縮性',
+    explain: '氣體沒有固定形狀與體積，且可以被壓縮；不同氣體不一定無色無味。'
+  },
+  {
+    chapter: 'ch2', section: '2・1 認識物質',
+    q: '下列哪一種物質變化與其他三者不同？',
+    options: ['生米煮熟', '露水蒸發', '粉筆斷裂', '冰雪熔化'], answer: '生米煮熟',
+    explain: '生米煮熟會形成新物質，屬化學變化；其餘為物理變化。'
+  },
+  {
+    chapter: 'ch2', section: '2・1 認識物質',
+    q: '煤炭①是黑色或棕黑色固體，②具有可燃性。這兩項性質如何分類？',
+    options: ['①物理性質、②化學性質', '兩者都是物理性質', '兩者都是化學性質', '①化學性質、②物理性質'], answer: '①物理性質、②化學性質',
+    explain: '顏色與狀態可直接觀察，屬物理性質；可燃性需經化學變化表現。'
+  },
+  {
+    chapter: 'ch2', section: '2・1 認識物質',
+    q: '下列何者屬於純物質？',
+    options: ['蒸餾水', '空氣', '醬油', '氣泡水'], answer: '蒸餾水',
+    explain: '蒸餾水由單一種物質組成；其他選項都含兩種以上物質。'
+  },
+  {
+    chapter: 'ch2', section: '2・1 認識物質',
+    q: '沛沛說「沙子是純物質」；小雯說「空氣是混合物」。誰的說法正確？',
+    options: ['只有小雯正確', '兩人都正確', '兩人都錯誤', '只有沛沛正確'], answer: '只有小雯正確',
+    explain: '沙子通常含多種礦物，屬混合物；空氣含氮氣、氧氣等，也是混合物。'
+  },
+  {
+    chapter: 'ch2', section: '2・1 認識物質',
+    q: '用撈網把煮熟的水餃從水中撈起，其原理與下列哪一項最相同？',
+    options: ['用濾紙分離咖啡豆渣與咖啡液', '晒鹽留下食鹽晶體', '泥漿靜置後沉澱', '色層分析分離色素'], answer: '用濾紙分離咖啡豆渣與咖啡液',
+    explain: '兩者都利用孔隙大小阻擋較大顆粒，讓液體通過。'
+  },
+  {
+    chapter: 'ch2', section: '混合物分離題組',
+    figure: FIG.separateSteps,
+    q: '分離食鹽與沙子時，先把混合物倒入水中攪拌的主要目的為何？',
+    options: ['使食鹽溶解', '使沙子溶解', '使兩者永遠均勻混合', '不攪拌食鹽就絕不溶解'], answer: '使食鹽溶解',
+    explain: '食鹽可溶於水，沙子不溶；攪拌可加快食鹽溶解。'
+  },
+  {
+    chapter: 'ch2', section: '混合物分離題組',
+    figure: FIG.filterSetup,
+    q: '過濾時，漏斗頸下端應貼著燒杯內壁，原因是什麼？',
+    options: ['避免濾液濺起而損失', '讓濾液流速變成零', '避免漏斗頸傾斜', '防止漏斗掉落'], answer: '避免濾液濺起而損失',
+    explain: '濾液沿杯壁流下可避免飛濺。'
+  },
+  {
+    chapter: 'ch2', section: '混合物分離題組',
+    figure: FIG.separateSteps,
+    q: '食鹽與沙子的分離流程中，過濾與蒸發結晶分別分離出什麼？',
+    options: ['過濾分離沙子；蒸發結晶分離食鹽', '過濾分離食鹽；蒸發結晶分離沙子', '兩步都只分離水', '兩步都只分離沙子'], answer: '過濾分離沙子；蒸發結晶分離食鹽',
+    explain: '沙子留在濾紙上；濾液中的水蒸發後，食鹽結晶留下。'
+  },
+  {
+    chapter: 'ch2', section: '混合物分離題組',
+    figure: FIG.separateSteps,
+    q: '過濾與蒸發分別屬於哪一類物質變化？',
+    options: ['兩者都是物理變化', '兩者都是化學變化', '先物理後化學', '先化學後物理'], answer: '兩者都是物理變化',
+    explain: '過程中都沒有產生新物質。'
+  },
+  {
+    chapter: 'ch2', section: '2・2 水溶液',
+    figure: FIG.diffusion,
+    q: '關於擴散現象，下列哪一項敘述錯誤？',
+    options: ['粒子均勻分布後就停止運動', '溶質粒子會不停運動', '最後各處濃度相等', '擴散可發生在液體與氣體中'], answer: '粒子均勻分布後就停止運動',
+    explain: '即使濃度均勻，溶質粒子和水分子仍持續運動。'
+  },
+  {
+    chapter: 'ch2', section: '2・2 水溶液',
+    q: '1000 mL、體積百分率 75% 的酒精水溶液，含有多少 mL 乙醇？',
+    options: ['750 mL', '7.5 mL', '75 mL', '7500 mL'], answer: '750 mL',
+    explain: '乙醇體積＝1000×75%＝750 mL。'
+  },
+  {
+    chapter: 'ch2', section: '2・2 水溶液',
+    q: '草莓農藥殘留量 0.03 ppm，代表什麼意思？',
+    options: ['每公斤含 0.03 mg 農藥', '每公克含 0.03 g 農藥', '每公克含 0.03 mg 農藥', '每公斤含 0.03 g 農藥'], answer: '每公斤含 0.03 mg 農藥',
+    explain: '在此情境下，ppm 可理解為每公斤中所含的毫克數。'
+  },
+  {
+    chapter: 'ch2', section: '溶解度題組',
+    q: '100 g 水中加入 60 g 食鹽，充分攪拌後仍有 20 g 未溶。此溫度的食鹽溶解度是多少？',
+    options: ['40 g／100 g 水', '60 g／100 g 水', '50 g／100 g 水', '30 g／100 g 水'], answer: '40 g／100 g 水',
+    explain: '實際溶解量＝60－20＝40 g。'
+  },
+  {
+    chapter: 'ch2', section: '溶解度題組',
+    q: '40 g 食鹽溶於 100 g 水，食鹽水重量百分率濃度約為多少？',
+    options: ['29%', '20%', '35%', '40%'], answer: '29%',
+    explain: '40÷（40＋100）×100%≈29%。'
+  },
+  {
+    chapter: 'ch2', section: '糖水題組',
+    q: '200 g 黑糖完全溶於 800 g 水後，下列哪一項正確？',
+    options: ['重量百分率濃度為 20%', '糖溶解是化學變化', '糖水是純物質', '糖水稱為溶劑'], answer: '重量百分率濃度為 20%',
+    explain: '200÷（200＋800）×100%＝20%；糖水是混合物與溶液。'
+  },
+  {
+    chapter: 'ch2', section: '糖水題組',
+    q: '關於逐漸加糖調整甜度的過程，下列哪一項敘述錯誤？',
+    options: ['飽和後再攪拌可使更多糖溶解', '未額外加糖前可能是未飽和溶液', '過甜可加水降低濃度', '加熱蒸發水分可能使濃度上升'], answer: '飽和後再攪拌可使更多糖溶解',
+    explain: '在溫度等條件不變時，飽和溶液即使攪拌也不能再溶入更多溶質。'
+  },
+  {
+    chapter: 'ch2', section: '2・3 空氣的組成',
+    figure: FIG.airPie,
+    q: '乾燥空氣約含氮氣 78%、氧氣 21%、氬氣 0.9%。下列哪一項正確？',
+    options: ['點燃的線香在氧氣中燃燒更旺盛', '所有少量氣體都是純物質', '氬氣常填充食品包裝防變質', '氮氣用於焊接以避免金屬和氧反應'], answer: '點燃的線香在氧氣中燃燒更旺盛',
+    explain: '氧氣有助燃性；食品包裝常用氮氣，焊接保護氣體可用氬氣。'
+  },
+  {
+    chapter: 'ch2', section: '2・3 空氣的組成',
+    figure: FIG.gasCollect,
+    q: '實驗室製造二氧化碳時，依習作判斷哪種收集方法最理想？',
+    options: ['排水集氣法，集氣瓶裝滿水倒置於水槽', '瓶口向上，以空氣排除法收集', '瓶口向下，以空氣排除法收集', '瓶口向上裝水，但沒有倒置於水槽'], answer: '排水集氣法，集氣瓶裝滿水倒置於水槽',
+    explain: '二氧化碳微溶於水，習作以排水集氣法作為最適當的收集方式。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・3 題組',
+    q: '實驗室製備氧氣應選用哪些藥品？',
+    options: ['雙氧水與二氧化錳', '鹽酸與大理岩', '蒸餾水與食鹽', '酒精與砂糖'], answer: '雙氧水與二氧化錳',
+    explain: '雙氧水分解可產生氧氣，二氧化錳可加速反應。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・3 題組',
+    figure: FIG.oxygenSetup,
+    q: '氧氣要使用排水集氣法收集，必須具備哪項特性？',
+    options: ['不易溶於水', '易溶於水', '一定比空氣重', '會與水反應'], answer: '不易溶於水',
+    explain: '氣體若不易溶於水，就能排開水而留在集氣瓶內。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・3 題組',
+    figure: FIG.oxygenSetup,
+    q: '製備氧氣時氣泡產生太快，吸濾瓶內液體由薊頭漏斗上升，最好的處理方式是什麼？',
+    options: ['暫時把橡皮管移出水面', '用橡皮塞封住薊頭漏斗', '由薊頭漏斗加水', '再加入二氧化錳'], answer: '暫時把橡皮管移出水面',
+    explain: '把橡皮管移出水面可釋放壓力，避免液體從薊頭漏斗噴出。'
+  },
+  {
+    chapter: 'ch2', section: '跨科｜物質的分離',
+    figure: FIG.aqiScale,
+    q: 'AQI 的「紫爆」等級代表什麼？',
+    options: ['空氣品質指標達 201 以上', '紫外線指數達 101 以上', 'PM₂.₅ 數量達 151 個', '酸雨程度達 301 以上'], answer: '空氣品質指標達 201 以上',
+    explain: '習作表中 201～300 為紫色的「非常不健康」等級。'
+  },
+  {
+    chapter: 'ch2', section: '跨科｜物質的分離',
+    q: '汙水處理流程的「阻截垃圾」與哪些生活例子原理相同？',
+    options: ['冷氣濾網與雨撲滿濾水器', '磁鐵分離鐵粉與沙子', '鹽田晒鹽', '色層分析彩虹糖色素'], answer: '冷氣濾網與雨撲滿濾水器',
+    explain: '阻截垃圾使用過濾原理；冷氣濾網與濾水器也利用孔隙攔截顆粒。'
+  },
+  {
+    chapter: 'ch2', section: '跨科｜物質的分離',
+    q: '下列哪些做法能珍惜水資源並減少環境影響？①汙水倒河川 ②再生水飲用 ③一滴水多次利用 ④雨水洗車拖地',
+    options: ['③④', '①②', '②③④', '①②③'], answer: '③④',
+    explain: '汙水不可直接排入河川；一般再生水不可飲用。重複利用與收集雨水較合適。'
+  },
+
+  // 第2章｜素養活用篇
+  {
+    chapter: 'ch2', section: '手搖飲料',
+    q: '大珍珠直徑約 1 cm、小珍珠約 0.5 cm。哪個工具最適合分離大小珍珠？',
+    options: ['孔徑 0.7 cm 的漏勺', '孔徑 0.2 cm 的濾網', '管徑 1 cm 的漏斗', '沒有任何工具可用'], answer: '孔徑 0.7 cm 的漏勺',
+    explain: '小珍珠可通過 0.7 cm 孔隙，大珍珠會被留下。'
+  },
+  {
+    chapter: 'ch2', section: '手搖飲料',
+    q: '飲料中的冰塊熔化後，飲料濃度通常會如何改變？',
+    options: ['變低', '變高', '完全不變', '先變高再變低'], answer: '變低',
+    explain: '冰塊熔化增加溶劑水的量，而溶質量不變，因此濃度降低。'
+  },
+  {
+    chapter: 'ch2', section: '手搖飲料',
+    q: '冰塊熔化使飲料變淡後，再把飲料放回冰箱冷藏，能恢復原來濃度嗎？',
+    options: ['不能，只冷藏不會移除新增的水', '能，低溫會讓水自動消失', '能，低溫會增加溶質', '一定會變得更濃'], answer: '不能，只冷藏不會移除新增的水',
+    explain: '冷藏只改變溫度，無法讓已熔化加入的水消失。'
+  },
+  {
+    chapter: 'ch2', section: '細懸浮微粒 PM₂.₅',
+    q: '下列關於 PM₂.₅ 的敘述何者錯誤？',
+    options: ['PM₂.₅ 是純物質', '自然界與人為活動都可能產生', '可能進入微血管到達器官', '可能增加癌症風險'], answer: 'PM₂.₅ 是純物質',
+    explain: 'PM₂.₅ 是空氣中多種固態與液態物質的混合物。'
+  },
+  {
+    chapter: 'ch2', section: '細懸浮微粒 PM₂.₅',
+    q: 'PM₂.₅ 口罩主要利用什麼原理阻擋微粒？',
+    options: ['過濾', '蒸發', '結晶', '層析'], answer: '過濾',
+    explain: '口罩的過濾層可攔截細懸浮微粒。'
+  },
+  {
+    chapter: 'ch2', section: '細懸浮微粒 PM₂.₅',
+    figure: FIG.aqiScale,
+    q: '某日空氣品質資訊顯示 AQI 為 154、臭氧濃度為 38 ppb。下列敘述何者錯誤？',
+    options: ['空氣中汙染物濃度高時，AQI 值較大', '可適時佩戴口罩', '可減少在戶外活動時間', '若改用 ppm 表示臭氧濃度，數值會比 38 大'], answer: '若改用 ppm 表示臭氧濃度，數值會比 38 大',
+    explain: '用較大的濃度單位表示同一濃度時，數值會變小；38 ppb＝0.038 ppm。'
+  },
+  // 完整實驗紀錄：數值採教用版參考答案，不代表每組實測結果均相同。
+  {
+    chapter: 'ch1', section: '實驗 1・2｜紀錄 1',
+    q: '依教用版參考紀錄，量筒加 10.0 cm³ 水共重 80.4 g，水本身重 10.0 g。空量筒的質量為多少？',
+    options: ['70.4 g', '80.4 g', '90.4 g', '10.0 g'], answer: '70.4 g',
+    explain: '空量筒質量＝80.4－10.0＝70.4 g；實際操作應記錄自己量得的數值。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2｜紀錄 2',
+    q: '空量筒重 70.4 g，依序加入質量為 10.0、20.0、30.0、40.0、50.0 g 的水。量筒加水總質量的完整紀錄應為何？（單位 g）',
+    options: ['80.4、90.4、100.4、110.4、120.4', '10.0、20.0、30.0、40.0、50.0', '70.4、80.4、90.4、100.4、110.4', '60.4、50.4、40.4、30.4、20.4'], answer: '80.4、90.4、100.4、110.4、120.4',
+    explain: '每欄總質量＝70.4 g＋該欄水質量，對應水體積依序為 10.0、20.0、30.0、40.0、50.0 cm³。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2｜紀錄 2',
+    q: '空量筒重 70.4 g，量筒加水總質量依序為 80.4、90.4、100.4、110.4、120.4 g。扣除量筒後，水質量的完整紀錄為何？（單位 g）',
+    options: ['10.0、20.0、30.0、40.0、50.0', '80.4、90.4、100.4、110.4、120.4', '8.0、16.0、24.0、32.0、40.0', '70.4、70.4、70.4、70.4、70.4'], answer: '10.0、20.0、30.0、40.0、50.0',
+    explain: '每欄總質量各減去 70.4 g，即得到水質量；五欄數據均已列出。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2｜紀錄 3',
+    q: '空量筒重 70.4 g，參考紀錄中 10.0、20.0、30.0、40.0、50.0 cm³ 酒精分別重 8.0、16.0、24.0、32.0、40.0 g。量筒加酒精總質量依序為何？（單位 g）',
+    options: ['78.4、86.4、94.4、102.4、110.4', '80.4、90.4、100.4、110.4、120.4', '8.0、16.0、24.0、32.0、40.0', '70.4、78.4、86.4、94.4、102.4'], answer: '78.4、86.4、94.4、102.4、110.4',
+    explain: '每欄總質量＝空量筒質量 70.4 g＋該欄酒精質量。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2｜紀錄 3',
+    q: '空量筒重 70.4 g，量筒加酒精總質量依序為 78.4、86.4、94.4、102.4、110.4 g。酒精質量的完整紀錄為何？（單位 g）',
+    options: ['8.0、16.0、24.0、32.0、40.0', '10.0、20.0、30.0、40.0、50.0', '78.4、86.4、94.4、102.4、110.4', '70.4、70.4、70.4、70.4、70.4'], answer: '8.0、16.0、24.0、32.0、40.0',
+    explain: '各欄總質量減去空量筒 70.4 g，得到對應 10.0～50.0 cm³ 酒精的五筆質量。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2｜紀錄 4',
+    q: '依參考表：每 10.0 cm³ 水重 10.0 g、酒精重 8.0 g。以體積 V 為橫軸、液體質量 M 為縱軸，哪組圖線正確？',
+    options: ['水 M＝1.0V、酒精 M＝0.8V，水線較陡', '水 M＝0.8V、酒精 M＝1.0V，酒精線較陡', '兩線均為 M＝1.0V', '兩線均為水平線'], answer: '水 M＝1.0V、酒精 M＝0.8V，水線較陡',
+    explain: '五個水座標為（10,10）～（50,50）；酒精為（10,8）、（20,16）、（30,24）、（40,32）、（50,40）。兩線通過原點，水線較陡。'
+  },
+  {
+    chapter: 'ch1', section: '實驗 1・2｜紀錄 5',
+    q: '教用版的未知金屬參考紀錄為「質量 17.0 g、體積 6.3 cm³」。下列哪組紀錄正確使用質量與體積的數值、單位？',
+    options: ['質量 17.0 g；體積 6.3 cm³', '質量 6.3 g；體積 17.0 cm³', '質量 17.0 cm³；體積 6.3 g', '質量 17.0 g；體積 6.3 g'], answer: '質量 17.0 g；體積 6.3 cm³',
+    explain: '質量由天平測得，單位 g；體積由排水法測得，單位 cm³。原書此組數值僅供參考，實驗應依實測填寫。'
+  },
+  {
+    chapter: 'ch2', section: '實驗 2・1｜步驟觀察',
+    q: '尚未加水時，把食鹽與沙子混合物直接放在乾濾紙上，輕輕搖晃漏斗。依本實驗的顆粒大小，能直接分離兩者嗎？',
+    options: ['不能，食鹽與沙子顆粒都無法通過濾紙', '能，乾食鹽全部通過而沙子留下', '能，沙子全部通過而食鹽留下', '能，濾紙會溶解食鹽'], answer: '不能，食鹽與沙子顆粒都無法通過濾紙',
+    explain: '乾燥顆粒不能直接通過濾紙孔隙；加水使食鹽溶解成微小粒子，再過濾，才可讓食鹽水通過而沙子留下。'
+  }
+];
+  </script>
+  <script>
+    const questions = [
+      {
+        chapter: 'ch1', section: '實驗 1・2',
+        q: '繪製水、酒精的「質量與體積關係圖」前，為什麼要先扣除空量筒的質量？',
+        options: ['總質量包含量筒質量，扣除後才是液體質量', '量筒會吸收水與酒精', '扣除後可以讓體積變大', '量筒的質量會隨液體種類改變'],
+        answer: '總質量包含量筒質量，扣除後才是液體質量',
+        explain: '天平測得的是「量筒＋液體」的總質量，先扣掉空量筒質量，才能比較液體本身的質量與體積。'
+      },
+      {
+        chapter: 'ch1', section: '1・1 長度與體積',
+        q: '用最小刻度為 1 mm 的直尺測量長度，下列哪一筆記錄的表示方式不正確？',
+        options: ['1.2500 m', '95.00 cm', '800.0 mm', '100.0 cm'],
+        answer: '100.0 cm',
+        explain: '測量值應記到最小刻度的下一位。1 mm 直尺換算成公分時，應記到 0.01 cm。'
+      },
+      {
+        chapter: 'ch1', section: '1・2 質量與密度',
+        q: '密度為 7.1 g/cm³ 的鋅塊對切成兩半後，半個鋅塊的密度是多少？',
+        options: ['3.55 g/cm³', '7.1 g/cm³', '14.2 g/cm³', '28.4 g/cm³'],
+        answer: '7.1 g/cm³',
+        explain: '密度是物質的基本性質。切半時質量和體積同比例減少，密度不變。'
+      },
+      {
+        chapter: 'ch2', section: '實驗 2・1',
+        figure: FIG.evaporate,
+        q: '加熱食鹽水的濾液時，在蒸發皿上蓋漏斗或錶玻璃的主要目的是什麼？',
+        options: ['防止食鹽晶體噴濺', '提高食鹽的沸點', '讓水更快凝結回流', '避免食鹽溶解'],
+        answer: '防止食鹽晶體噴濺',
+        explain: '濾液加熱蒸乾時可能噴濺，覆蓋漏斗或錶玻璃可降低晶體散失。'
+      },
+      {
+        chapter: 'ch2', section: '2・2 水溶液',
+        q: '15 g 檸檬茶粉完全溶於 150 g 水中，關於此杯檸檬茶，下列何者錯誤？',
+        options: ['溶質質量為 15 g', '溶劑質量為 150 g', '溶液質量為 165 g', '重量百分率濃度為 10%'],
+        answer: '重量百分率濃度為 10%',
+        explain: '重量百分率濃度＝15 ÷（15＋150）×100% ≈ 9.1%。'
+      },
+      {
+        chapter: 'ch2', section: '2・3 空氣的組成',
+        q: '氧氣可使用排水集氣法收集，主要利用氧氣的哪一項性質？',
+        options: ['不易溶於水', '比水輕', '易溶於水', '會與水劇烈反應'],
+        answer: '不易溶於水',
+        explain: '氧氣在水中的溶解程度不大，因此可排開集氣瓶中的水而被收集。'
+      }
+    ];
+
+    questions.push(...EXTRA_QUESTIONS);
+    questions.forEach((q, index) => { q.id = `q${String(index + 1).padStart(3, '0')}`; });
+
+    const $ = (id) => document.getElementById(id);
+    const state = {
+      filter: 'all', mode: 'exam', queue: [], index: 0, selected: null, locked: false,
+      correct: 0, mistakes: [], completed: false, studentName: '', studentSeat: '',
+      examResult: null,
+      reviewPending: new Set(), reviewTotal: 0, lastCorrect: false
+    };
+    const shuffle = (items) => {
+      const arr = [...items];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    };
+    const chapterName = (chapter) => chapter === 'ch1' ? '第1章 基本測量' : '第2章 物質的世界';
+    const rangeName = () => state.filter === 'all' ? '全部單元｜第1章＋第2章' : chapterName(state.filter);
+    const isPerfect = () => state.mode === 'exam' && state.completed && state.queue.length > 0 && state.correct === state.queue.length;
+    const isPassed = () => isPerfect();
+    // Only permutation history is stored; no answers or personal information.
+    const orderMemory = new Map();
+    function shuffleFresh(items, key, everyPosition = false) {
+      const storageKey = `science115-order-v2:${key}`;
+      let previous = orderMemory.get(storageKey);
+      if (!previous) {
+        try { previous = JSON.parse(localStorage.getItem(storageKey) || 'null'); } catch (_) {}
+      }
+      const comparable = Array.isArray(previous) && previous.length === items.length &&
+        new Set(previous).size === items.length && previous.every(value => items.includes(value));
+      let result = shuffle(items);
+      if (comparable && items.length > 1) {
+        const repeats = arr => everyPosition ? arr.some((value, i) => value === previous[i]) :
+          arr.every((value, i) => value === previous[i]);
+        let attempts = 0;
+        while (repeats(result) && attempts++ < 128) result = shuffle(items);
+        if (repeats(result)) {
+          if (everyPosition) result = [...previous.slice(1), previous[0]];
+          else [result[0], result[1]] = [result[1], result[0]];
+        }
+      }
+      orderMemory.set(storageKey, result);
+      try { localStorage.setItem(storageKey, JSON.stringify(result)); } catch (_) {}
+      return result;
+    }
+
+    function makeQueue(pool, key) {
+      const byId = new Map(pool.map(q => [q.id, q]));
+      return shuffleFresh(pool.map(q => q.id), key).map(id => {
+        const q = byId.get(id);
+        return { ...q, shuffled: shuffleFresh(q.options, `options:${id}`, true) };
+      });
+    }
+
+    function resetQuiz() {
+      const pool = state.filter === 'all' ? questions : questions.filter(q => q.chapter === state.filter);
+      state.mode = 'exam';
+      state.queue = makeQueue(pool, `questions:${state.filter}`);
+      state.index = 0;
+      state.selected = null;
+      state.locked = false;
+      state.correct = 0;
+      state.mistakes = [];
+      state.completed = false;
+      state.studentName = '';
+      state.studentSeat = '';
+      state.examResult = null;
+      state.reviewPending = new Set();
+      state.reviewTotal = 0;
+      state.lastCorrect = false;
+      if ($('nameDialog').open) $('nameDialog').close();
+      $('certificate').hidden = true;
+      $('openCertificate').hidden = true;
+      $('studentName').value = '';
+      $('studentSeat').value = '';
+      $('certificateName').textContent = '';
+      $('certificateSeat').textContent = '';
+      $('restart').textContent = '重新開始';
+      $('quizArea').hidden = false;
+      $('finishArea').classList.remove('show');
+      render();
+    }
+
+    function restartQuiz() {
+      const hasProgress = state.mode === 'review' || state.index > 0 || state.locked || state.selected !== null;
+      if (!state.completed && hasProgress && !window.confirm('重新開始會清除本輪答案、分數與進度，並重新排列所選範圍全部題目與選項。確定要開始新的正式測驗嗎？')) return;
+      resetQuiz();
+    }
+
+    function render() {
+      const item = state.queue[state.index];
+      const total = state.queue.length;
+      $('sectionTag').textContent = `${chapterName(item.chapter)}・${item.section}`;
+      $('questionNo').textContent = state.mode === 'review' ? `剩餘 ${state.reviewPending.size} 題待答對` : `第 ${state.index + 1} / ${total} 題`;
+      $('questionText').textContent = item.q;
+      $('contextText').hidden = !item.context;
+      $('contextText').textContent = item.context || '';
+      $('figureBox').hidden = !item.figure;
+      $('figureBox').innerHTML = item.figure || '';
+      $('progressBar').style.width = state.mode === 'review' ? `${(state.reviewTotal - state.reviewPending.size) / state.reviewTotal * 100}%` : `${(state.index / total) * 100}%`;
+      $('feedback').className = 'feedback';
+      $('feedback').innerHTML = '';
+      $('checkAnswer').hidden = false;
+      $('checkAnswer').disabled = true;
+      $('nextQuestion').hidden = true;
+      state.selected = null;
+      state.locked = false;
+      $('options').innerHTML = '';
+      item.shuffled.forEach((text, idx) => {
+        const button = document.createElement('button');
+        button.className = 'option';
+        button.type = 'button';
+        button.dataset.value = text;
+        button.innerHTML = `<span class="letter">${idx + 1}</span><span>${text}</span>`;
+        button.addEventListener('click', () => selectOption(button));
+        $('options').appendChild(button);
+      });
+      updateStats();
+    }
+
+    function selectOption(button) {
+      if (state.locked || state.completed) return;
+      document.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+      button.classList.add('selected');
+      state.selected = button.dataset.value;
+      $('checkAnswer').disabled = false;
+    }
+
+    function checkAnswer() {
+      if (!state.selected || state.locked || state.completed) return;
+      state.locked = true;
+      const item = state.queue[state.index];
+      const isCorrect = state.selected === item.answer;
+      state.lastCorrect = isCorrect;
+      if (state.mode === 'review') {
+        if (isCorrect) state.reviewPending.delete(item.id);
+        state.correct = state.reviewTotal - state.reviewPending.size;
+      } else {
+        if (isCorrect) state.correct += 1;
+        else {
+          state.mistakes.push({ id: item.id, q: item.q, chosen: state.selected, answer: item.answer });
+        }
+      }
+      document.querySelectorAll('.option').forEach(el => {
+        el.disabled = true;
+        if (el.dataset.value === item.answer) el.classList.add('correct');
+        else if (el.dataset.value === state.selected) el.classList.add('wrong');
+      });
+      const feedback = $('feedback');
+      feedback.className = `feedback show ${isCorrect ? 'good' : 'bad'}`;
+      feedback.innerHTML = `<strong>${isCorrect ? '答對了' : '再想一下'}</strong><span>${item.explain}</span>${state.mode === 'review' ? `<p>${isCorrect ? '這題已答對，移出待複習清單。' : '這題會再次出現，答對後才會移出待複習清單。'}</p>` : ''}`;
+      $('checkAnswer').hidden = true;
+      $('nextQuestion').hidden = false;
+      $('nextQuestion').textContent = state.mode === 'review' ? (state.reviewPending.size === 0 ? '完成複習' : '繼續複習') : (state.index === state.queue.length - 1 ? (state.mistakes.length ? '查看結果並複習錯題' : '查看結果') : '下一題');
+      updateStats();
+      $('nextQuestion').focus();
+    }
+
+    function nextQuestion() {
+      if (!state.locked || state.completed) return;
+      if (state.mode === 'review') {
+        const remainingQueue = state.queue.slice(state.index + 1);
+        if (!state.lastCorrect) {
+          const item = state.queue[state.index];
+          remainingQueue.push({ ...item, shuffled: shuffleFresh(item.options, `options:${item.id}`, true) });
+        }
+        state.queue = remainingQueue;
+        state.index = 0;
+        if (state.reviewPending.size === 0) return finishReview();
+        render();
+        return;
+      }
+      if (state.index >= state.queue.length - 1) return finish();
+      state.index += 1;
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function finish() {
+      if (state.mode !== 'exam' || state.completed || !state.locked || state.index !== state.queue.length - 1) return;
+      state.completed = true;
+      state.examResult = { total: state.queue.length, correct: state.correct, mistakes: [...state.mistakes] };
+      const perfect = state.correct === state.queue.length;
+      if (!perfect) return startReview();
+      $('quizArea').hidden = true;
+      $('finishArea').classList.add('show');
+      $('progressBar').style.width = '100%';
+      $('finishHeading').textContent = '本次正式測驗完成';
+      $('restart').textContent = '開始下一次正式測驗';
+      $('finalScore').textContent = `${state.correct} / ${state.queue.length}`;
+      $('finalMessage').textContent = `${rangeName()}本次全部答對，恭喜通關！`;
+      $('review').innerHTML = state.mistakes.length ? `<h3>錯題回顧</h3>${state.mistakes.map((m, i) => `<div class="review-item"><b>第 ${i + 1} 題</b><div>${m.q}</div><small>你的答案：${m.chosen}<br>正確答案：${m.answer}</small></div>`).join('')}` : '<p>全部答對，太棒了！</p>';
+      updateStats();
+      if (isPassed()) {
+        $('finalMessage').textContent = `${rangeName()}一次全對，恭喜通關！填寫座號與姓名，領取你的通關證書。`;
+        $('openCertificate').hidden = false;
+        $('openCertificate').textContent = '填寫座號與姓名，領取證書';
+        openCertificateDialog();
+      }
+    }
+
+    function startReview() {
+      const items = state.examResult.mistakes.map(m => questions.find(q => q.id === m.id));
+      state.mode = 'review';
+      state.reviewPending = new Set(items.map(q => q.id));
+      state.reviewTotal = items.length;
+      state.queue = makeQueue(items, `review:${state.filter}`);
+      state.index = 0;
+      state.selected = null;
+      state.locked = false;
+      state.correct = 0;
+      state.completed = false;
+      $('quizArea').hidden = false;
+      $('finishArea').classList.remove('show');
+      $('certificate').hidden = true;
+      $('openCertificate').hidden = true;
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function finishReview() {
+      if (state.mode !== 'review' || state.completed || state.reviewPending.size !== 0) return;
+      state.completed = true;
+      $('quizArea').hidden = true;
+      $('finishArea').classList.add('show');
+      $('progressBar').style.width = '100%';
+      $('finishHeading').textContent = '錯題複習完成';
+      $('finalScore').textContent = `${state.reviewTotal}／${state.reviewTotal} 題已答對`;
+      $('finalMessage').textContent = `正式測驗原成績：${state.examResult.correct}／${state.examResult.total}。錯題已全部答對！請重新挑戰完整範圍，一次正式測驗全對即可領取通關證書。`;
+      $('restart').textContent = '開始新的正式測驗';
+      $('review').innerHTML = '<p>已完成本輪所有錯題的複習。</p>';
+      updateStats();
+    }
+
+    function openCertificateDialog() {
+      if (!isPassed() || $('nameDialog').open) return;
+      $('nameDialogDescription').textContent = `你已完成${rangeName()}正式測驗，${state.correct} 題全部答對。班級固定為 807，請填寫座號與姓名以顯示通關證書。`;
+      $('studentName').value = state.studentName;
+      $('studentSeat').value = state.studentSeat;
+      $('nameError').hidden = true;
+      $('studentName').removeAttribute('aria-invalid');
+      $('studentSeat').removeAttribute('aria-invalid');
+      $('nameDialog').showModal();
+      $('studentSeat').focus();
+    }
+
+    function showCertificate(event) {
+      event.preventDefault();
+      if (!isPassed()) return;
+      const name = $('studentName').value.trim();
+      const seat = $('studentSeat').value.trim();
+      $('studentName').removeAttribute('aria-invalid');
+      $('studentSeat').removeAttribute('aria-invalid');
+      if (!/^[0-9]{1,2}$/.test(seat) || Number(seat) < 1) {
+        $('nameError').textContent = '請輸入 1～99 的整數座號。';
+        $('nameError').hidden = false;
+        $('studentSeat').setAttribute('aria-invalid', 'true');
+        $('studentSeat').focus();
+        return;
+      }
+      if (!name || name.length > 40) {
+        $('nameError').textContent = '請輸入 1～40 個字的姓名，不可只輸入空白。';
+        $('nameError').hidden = false;
+        $('studentName').setAttribute('aria-invalid', 'true');
+        $('studentName').focus();
+        return;
+      }
+      state.studentName = name;
+      state.studentSeat = String(Number(seat));
+      // Render names as plain text, never HTML.
+      $('certificateClass').textContent = '807 班';
+      $('certificateSeat').textContent = `${state.studentSeat} 號`;
+      $('certificateName').textContent = name;
+      $('certificateRange').textContent = rangeName();
+      $('certificateResult').textContent = `${state.correct}／${state.queue.length} 題全對・正確率 100%`;
+      $('certificateDate').textContent = `通關日期：${new Intl.DateTimeFormat('zh-TW', { timeZone: 'Asia/Taipei', year: 'numeric', month: 'long', day: 'numeric' }).format(new Date())}`;
+      $('certificate').hidden = false;
+      $('openCertificate').textContent = '修改證書座號與姓名';
+      $('nameDialog').close();
+      $('certificate').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function updateStats() {
+      const reviewing = state.mode === 'review';
+      const done = reviewing ? state.reviewTotal - state.reviewPending.size : state.index + (state.locked ? 1 : 0);
+      const total = reviewing ? state.reviewTotal : state.queue.length;
+      $('doneStat').textContent = done;
+      $('totalStat').textContent = total;
+      $('correctStat').textContent = state.correct;
+      $('doneLabel').textContent = reviewing ? '已練會' : '已作答';
+      $('rateLabel').textContent = reviewing ? '複習完成率' : '正確率';
+      $('rateStat').textContent = reviewing ? `${Math.round(done / total * 100)}%` : (done ? `${Math.round(state.correct / done * 100)}%` : '—');
+      if (reviewing) {
+        $('questionNo').textContent = `剩餘 ${state.reviewPending.size} 題待答對`;
+        $('progressBar').style.width = `${done / total * 100}%`;
+      }
+      $('modeLabel').textContent = reviewing ? '錯題複習' : '正式測驗';
+      $('streakStatus').textContent = `${rangeName()}｜${isPassed() ? '全對通關' : '一次正式測驗全對即可領證'}`;
+      $('learningHint').textContent = reviewing ? `正式測驗結果：${state.examResult.correct}／${state.examResult.total}。共 ${state.reviewTotal} 題錯題，尚有 ${state.reviewPending.size} 題待答對；答錯會再出現，答對才移出。` : `本輪包含所選範圍全部 ${total} 題，全部答對即可通關；有錯題則於測驗結束後進入複習。`;
+    }
+
+    $('segments').addEventListener('click', (event) => {
+      const button = event.target.closest('[data-filter]');
+      if (!button) return;
+      document.querySelectorAll('[data-filter]').forEach(el => el.setAttribute('aria-pressed', String(el === button)));
+      state.filter = button.dataset.filter;
+      resetQuiz();
+    });
+    $('checkAnswer').addEventListener('click', checkAnswer);
+    $('nextQuestion').addEventListener('click', nextQuestion);
+    $('reshuffle').addEventListener('click', restartQuiz);
+    $('restart').addEventListener('click', restartQuiz);
+    $('openCertificate').addEventListener('click', openCertificateDialog);
+    $('nameForm').addEventListener('submit', showCertificate);
+    $('cancelCertificate').addEventListener('click', () => $('nameDialog').close());
+    $('nameDialog').addEventListener('close', () => {
+      if (state.completed && !$('openCertificate').hidden) $('openCertificate').focus();
+    });
+    document.addEventListener('keydown', (event) => {
+      if ($('nameDialog').open || state.completed) return;
+      if (!state.locked && ['1','2','3','4'].includes(event.key)) {
+        const option = document.querySelectorAll('.option')[Number(event.key) - 1];
+        if (option) selectOption(option);
+      } else if (event.key === 'Enter') {
+        if ($('quizArea').hidden) return;
+        event.preventDefault();
+        if (state.locked) nextQuestion(); else checkAnswer();
+      }
+    });
+    $('allCount').textContent = `(${questions.length})`;
+    $('ch1Count').textContent = `(${questions.filter(q => q.chapter === 'ch1').length})`;
+    $('ch2Count').textContent = `(${questions.filter(q => q.chapter === 'ch2').length})`;
+    resetQuiz();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1391 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#082f49">
+  <meta name="description" content="第3章波動與聲音與第4章光互動習作練習，選項每次隨機排列。">
+  <title>115學年度第一學期第二次段考理化習作練習</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23082f49'/%3E%3Cpath d='M24 12h16M28 12v15L17 48a5 5 0 0 0 4 7h22a5 5 0 0 0 4-7L36 27V12' fill='none' stroke='%2367e8f9' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M22 44h20' stroke='%23fbbf24' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --ink: #082f49;
+      --muted: #52677a;
+      --paper: #f8fbfd;
+      --line: #cbdce7;
+      --cyan: #06b6d4;
+      --cyan-soft: #cffafe;
+      --amber: #fbbf24;
+      --amber-soft: #fef3c7;
+      --good: #087f5b;
+      --good-soft: #d1fae5;
+      --bad: #be123c;
+      --bad-soft: #ffe4e6;
+      --shadow: 0 20px 55px rgba(8, 47, 73, .13);
+    }
+    * { box-sizing: border-box; }
+    html { color-scheme: light; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(rgba(8,47,73,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(8,47,73,.035) 1px, transparent 1px),
+        #edf7fa;
+      background-size: 28px 28px;
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+    button { font: inherit; }
+    button:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
+    .shell { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 56px; }
+    .masthead {
+      position: relative;
+      overflow: hidden;
+      padding: 24px 28px;
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 24px;
+      color: white;
+      background: var(--ink);
+      box-shadow: var(--shadow);
+    }
+    .masthead::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -80px;
+      top: -120px;
+      border: 42px solid rgba(103,232,249,.18);
+      border-radius: 50%;
+    }
+    .title-row { position: relative; z-index: 1; display: flex; gap: 18px; align-items: center; }
+    .mark {
+      display: grid;
+      place-items: center;
+      flex: 0 0 62px;
+      height: 62px;
+      border-radius: 18px;
+      background: var(--cyan);
+      color: var(--ink);
+      font-size: 30px;
+      font-weight: 900;
+    }
+    h1 { margin: 0; font-size: clamp(1.45rem, 3vw, 2.25rem); line-height: 1.25; letter-spacing: .02em; }
+    .meta { margin: 7px 0 0; color: #bfeaf2; }
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      margin: 20px 0;
+    }
+    .segments { display: flex; gap: 8px; flex-wrap: wrap; }
+    .segment, .ghost, .primary {
+      border: 0;
+      border-radius: 999px;
+      min-height: 44px;
+      padding: 9px 16px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform .15s ease, background .15s ease, color .15s ease;
+    }
+    .segment { color: var(--ink); background: white; border: 1px solid var(--line); }
+    .segment[aria-pressed="true"] { background: var(--ink); color: white; border-color: var(--ink); }
+    .ghost { color: var(--ink); background: var(--amber-soft); }
+    .primary { color: white; background: var(--ink); padding-inline: 22px; }
+    .segment:hover, .ghost:hover, .primary:hover { transform: translateY(-1px); }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 20px; align-items: start; }
+    .card, .stats-card {
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(151,183,201,.65);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+    .card { overflow: hidden; }
+    .progress-rail { height: 8px; background: #e7eef3; }
+    .progress-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--amber)); transition: width .25s ease; }
+    .question-wrap { padding: clamp(22px, 4vw, 38px); }
+    .eyebrow { display: flex; justify-content: space-between; gap: 16px; color: var(--muted); font-size: .92rem; font-weight: 800; }
+    .tag { color: #0e7490; }
+    h2 { margin: 18px 0 22px; font-size: clamp(1.18rem, 2.5vw, 1.55rem); line-height: 1.55; }
+    .context {
+      margin: -6px 0 22px;
+      padding: 14px 16px;
+      border-left: 5px solid var(--amber);
+      border-radius: 0 12px 12px 0;
+      background: #fffaf0;
+      color: #334e61;
+    }
+    .figure { margin: -6px 0 22px; padding: 12px; border: 1px solid var(--line); border-radius: 16px; background: white; }
+    .figure svg { display: block; width: 100%; height: auto; max-width: 560px; max-height: 440px; margin: 0 auto; }
+    .options { display: grid; gap: 12px; }
+    .option {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 12px;
+      align-items: center;
+      min-height: 60px;
+      padding: 11px 16px;
+      text-align: left;
+      color: var(--ink);
+      background: white;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      cursor: pointer;
+    }
+    .option:hover:not(:disabled) { border-color: var(--cyan); background: #f2fdff; }
+    .option.selected { border-color: var(--cyan); background: var(--cyan-soft); }
+    .option.correct { border-color: var(--good); background: var(--good-soft); }
+    .option.wrong { border-color: var(--bad); background: var(--bad-soft); }
+    .option:disabled { cursor: default; color: var(--ink); opacity: 1; }
+    .letter { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: #e8f1f5; font-weight: 900; }
+    .option.selected .letter { background: var(--cyan); }
+    .option.correct .letter { background: var(--good); color: white; }
+    .option.wrong .letter { background: var(--bad); color: white; }
+    .feedback { display: none; margin-top: 20px; padding: 18px; border-radius: 16px; }
+    .feedback.show { display: block; }
+    .feedback.good { background: var(--good-soft); border: 1px solid #6ee7b7; }
+    .feedback.bad { background: var(--bad-soft); border: 1px solid #fda4af; }
+    .feedback strong { display: block; margin-bottom: 5px; font-size: 1.08rem; }
+    .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+    .stats-card { padding: 20px; position: sticky; top: 18px; }
+    .stats-card h3 { margin: 0 0 14px; font-size: 1rem; }
+    .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .metric { padding: 13px; border-radius: 15px; background: var(--paper); border: 1px solid var(--line); }
+    .metric b { display: block; font-size: 1.55rem; line-height: 1.2; }
+    .metric span { color: var(--muted); font-size: .84rem; }
+    .tip { margin: 16px 0 0; color: var(--muted); font-size: .88rem; }
+    .finish { display: none; padding: clamp(28px, 5vw, 48px); text-align: center; }
+    .finish.show { display: block; }
+    .finish .result { font-size: clamp(3rem, 8vw, 5rem); font-weight: 900; color: #0e7490; line-height: 1; }
+    .review { margin-top: 24px; text-align: left; display: grid; gap: 12px; }
+    .review-item { padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); }
+    .review-item b { color: var(--bad); }
+    .learning-status { margin: 0 0 20px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 16px; background: white; }
+    .learning-status strong { color: #0e7490; margin-right: 16px; }
+    .learning-status p { margin: 6px 0 0; color: var(--muted); font-size: .92rem; }
+    [hidden] { display: none !important; }
+    .certificate {
+      margin-top: 28px; padding: clamp(22px, 4vw, 42px);
+      border: 3px double #a77816; outline: 1px solid #e4c779; outline-offset: -12px;
+      border-radius: 8px; color: var(--ink); background: #fffdf5;
+      text-align: center; overflow-wrap: anywhere;
+    }
+    .certificate-kicker { margin: 0; color: #846015; font-size: .9rem; font-weight: 800; letter-spacing: .18em; }
+    .certificate h2 { margin: 8px 0 18px; font-size: clamp(1.8rem, 5vw, 2.5rem); letter-spacing: .12em; }
+    .certificate-name { margin: 18px 0; font-size: clamp(1.6rem, 5vw, 2.2rem); font-weight: 900; line-height: 1.5; }
+    .certificate-course { margin: 12px 0; font-weight: 800; }
+    .certificate-range { display: inline-block; margin: 8px 0; padding: 6px 16px; border-radius: 999px; background: var(--cyan-soft); font-weight: 800; }
+    .certificate-result { color: #846015; font-size: 1.15rem; font-weight: 900; }
+    .certificate-date, .certificate-note { margin-bottom: 0; color: var(--muted); font-size: .9rem; }
+    .certificate-dialog {
+      width: min(440px, calc(100% - 32px)); max-height: calc(100dvh - 40px); overflow-y: auto;
+      padding: 28px; border: 1px solid var(--line); border-radius: 24px; color: var(--ink); box-shadow: var(--shadow);
+    }
+    .certificate-dialog::backdrop { background: rgba(8,47,73,.58); }
+    .certificate-dialog h2 { margin: 0 0 12px; }
+    .certificate-dialog label { display: block; margin: 18px 0 6px; font-weight: 800; }
+    .certificate-dialog input {
+      width: 100%; min-height: 48px; padding: 10px 12px; border: 2px solid var(--line); border-radius: 12px; font: inherit; color: var(--ink);
+    }
+    .certificate-dialog input:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+    .name-error { margin: 8px 0; color: var(--bad); font-size: .9rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+    @media (max-width: 800px) {
+      .shell { width: min(100% - 20px, 720px); padding-top: 10px; }
+      .masthead { border-radius: 18px; padding: 20px; }
+      .mark { flex-basis: 52px; height: 52px; }
+      .toolbar { grid-template-columns: 1fr; }
+      .toolbar .ghost { justify-self: start; }
+      .workspace { grid-template-columns: 1fr; }
+      .stats-card { position: static; order: -1; padding: 14px; }
+      .stats-card h3, .tip { display: none; }
+      .score-grid { grid-template-columns: repeat(4, 1fr); }
+      .metric { padding: 10px; text-align: center; }
+      .metric b { font-size: 1.18rem; }
+      .metric span { font-size: .72rem; }
+    }
+    @media (max-width: 520px) {
+      .title-row { align-items: flex-start; }
+      .meta { font-size: .88rem; }
+      .segments { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+      .segment { padding-inline: 8px; font-size: .88rem; }
+      .score-grid { grid-template-columns: repeat(2, 1fr); }
+      .question-wrap { padding: 20px 16px 24px; }
+      .option { grid-template-columns: 36px 1fr; padding: 10px 12px; }
+      .actions { flex-direction: column; }
+      .actions button { width: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div class="title-row">
+        <div class="mark" aria-hidden="true">⚗</div>
+        <div>
+          <h1>115學年度第一學期第二次段考理化習作練習</h1>
+          <p class="meta">第3章 波動與聲音・第4章 光</p>
+          <p class="meta">每次開啟、重新整理或重新開始，都會重排題目與選項。</p>
+        </div>
+      </div>
+    </header>
+
+    <section class="toolbar" aria-label="測驗範圍">
+      <div class="segments" id="segments">
+        <button class="segment" data-filter="all" aria-pressed="true">全部 <span id="allCount"></span></button>
+        <button class="segment" data-filter="ch3" aria-pressed="false">第3章 <span id="ch3Count"></span></button>
+        <button class="segment" data-filter="ch4" aria-pressed="false">第4章 <span id="ch4Count"></span></button>
+      </div>
+      <button class="ghost" id="reshuffle" title="清除本次進度，重新排列題目與選項">重新開始</button>
+    </section>
+
+    <section class="learning-status" aria-label="通關進度" aria-live="polite">
+      <strong id="modeLabel">正式測驗</strong><span id="streakStatus"></span>
+      <p id="learningHint"></p>
+      <p>所選範圍一次正式測驗全對即可通關領證；錯題複習完成後，請重新挑戰完整範圍。</p>
+    </section>
+
+    <section class="workspace">
+      <article class="card" aria-live="polite">
+        <div class="progress-rail"><div class="progress-bar" id="progressBar"></div></div>
+        <div id="quizArea" class="question-wrap">
+          <div class="eyebrow"><span class="tag" id="sectionTag"></span><span id="questionNo"></span></div>
+          <h2 id="questionText"></h2>
+          <div class="context" id="contextText" hidden></div>
+          <div class="figure" id="figureBox" hidden></div>
+          <div class="options" id="options"></div>
+          <div class="feedback" id="feedback"></div>
+          <div class="actions">
+            <button class="primary" id="checkAnswer" disabled>確認答案</button>
+            <button class="primary" id="nextQuestion" hidden>下一題</button>
+          </div>
+        </div>
+        <div class="finish" id="finishArea">
+          <p id="finishHeading">本次正式測驗完成</p>
+          <div class="result" id="finalScore"></div>
+          <p id="finalMessage"></p>
+          <button class="primary" id="restart">重新開始</button>
+          <button class="ghost" id="openCertificate" hidden>填寫座號與姓名，領取證書</button>
+          <section class="certificate" id="certificate" aria-labelledby="certificateTitle" hidden>
+            <p class="certificate-kicker">理化習作・全對通關</p>
+            <h2 id="certificateTitle">通關證書</h2>
+            <p>恭喜</p>
+            <p class="certificate-course"><span id="certificateClass">807 班</span>・<span id="certificateSeat"></span></p>
+            <p class="certificate-name" id="certificateName"></p>
+            <p>完成以下正式測驗，所有題目皆答對</p>
+            <p class="certificate-course">115學年度第一學期第二次段考理化習作練習</p>
+            <p class="certificate-range" id="certificateRange"></p>
+            <p class="certificate-result" id="certificateResult"></p>
+            <p class="certificate-date" id="certificateDate"></p>
+            <p class="certificate-note">自主練習通關紀念</p>
+          </section>
+          <div class="review" id="review"></div>
+        </div>
+      </article>
+
+      <aside class="stats-card" aria-label="作答統計">
+        <h3>本次進度</h3>
+        <div class="score-grid">
+          <div class="metric"><b id="doneStat">0</b><span id="doneLabel">已作答</span></div>
+          <div class="metric"><b id="totalStat">0</b><span>總題數</span></div>
+          <div class="metric"><b id="correctStat">0</b><span>答對</span></div>
+          <div class="metric"><b id="rateStat">—</b><span id="rateLabel">正確率</span></div>
+        </div>
+        <p class="tip">鍵盤可按 1～4 選答案，Enter 確認或前往下一題。</p>
+      </aside>
+    </section>
+  </main>
+
+  <dialog class="certificate-dialog" id="nameDialog" aria-labelledby="nameDialogTitle" aria-describedby="nameDialogDescription">
+    <form id="nameForm">
+      <h2 id="nameDialogTitle">全對通關！</h2>
+      <p id="nameDialogDescription"></p>
+      <label for="studentClass">班級（固定）</label>
+      <input id="studentClass" name="studentClass" type="text" value="807" readonly>
+      <label for="studentSeat">證書上的座號</label>
+      <input id="studentSeat" name="studentSeat" type="text" inputmode="numeric" pattern="[0-9]{1,2}" maxlength="2" required autocomplete="off" autofocus aria-describedby="namePrivacy nameError" placeholder="例如：7">
+      <label for="studentName">證書上的姓名</label>
+      <input id="studentName" name="studentName" type="text" maxlength="40" required autocomplete="off" aria-describedby="namePrivacy nameError">
+      <p class="name-error" id="nameError" role="alert" hidden></p>
+      <p class="certificate-note" id="namePrivacy">座號與姓名只用於這次顯示證書，不會上傳或保存。座號請填 1～99。</p>
+      <div class="actions">
+        <button class="ghost" type="button" id="cancelCertificate">稍後填寫</button>
+        <button class="primary" type="submit">顯示通關證書</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    // 題目附圖（以程式繪製的 SVG 示意圖）
+    const FIG = {
+      acrylic: "<svg viewBox=\"0 0 370 262\" role=\"img\" aria-label=\"鬼屋俯視圖：壓克力板、參觀者與甲乙丙丁四個位置\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><path d=\"M20,20 L350,20 L350,250\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"3\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"268\" y1=\"52\" x2=\"318\" y2=\"84\" stroke=\"#0891b2\" stroke-width=\"8\"/><line x1=\"271\" y1=\"47\" x2=\"321\" y2=\"79\" stroke=\"#111827\" stroke-width=\"3\"/><text x=\"260\" y=\"58\" text-anchor=\"end\" font-size=\"13\">壓克力板</text><text x=\"260\" y=\"76\" text-anchor=\"end\" font-size=\"11\" fill=\"#52677a\">（背面貼黑紙）</text><circle cx=\"80\" cy=\"40\" r=\"5\" fill=\"#dc2626\"/><text x=\"89\" y=\"45\" font-size=\"15\" font-weight=\"700\">甲</text><circle cx=\"170\" cy=\"190\" r=\"5\" fill=\"#dc2626\"/><text x=\"179\" y=\"195\" font-size=\"15\" font-weight=\"700\">乙</text><circle cx=\"70\" cy=\"215\" r=\"5\" fill=\"#dc2626\"/><text x=\"79\" y=\"220\" font-size=\"15\" font-weight=\"700\">丙</text><circle cx=\"205\" cy=\"105\" r=\"5\" fill=\"#dc2626\"/><text x=\"214\" y=\"110\" font-size=\"15\" font-weight=\"700\">丁</text><circle cx=\"322\" cy=\"236\" r=\"9\" fill=\"#fde68a\" stroke=\"#d97706\" stroke-width=\"2\"/><text x=\"308\" y=\"241\" text-anchor=\"end\" font-size=\"13\">參觀者</text><line x1=\"322\" y1=\"224\" x2=\"318.8\" y2=\"197\" stroke=\"#d97706\" stroke-width=\"2\"/><polygon points=\"318,190 315.3,197.4 322.3,196.5\" fill=\"#d97706\"/></svg>",
+      bellJar: "<svg viewBox=\"0 0 360 220\" role=\"img\" aria-label=\"電鈴放在抽氣機的玻璃罩內，空氣漸漸被抽出\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"40\" y=\"180\" width=\"200\" height=\"12\" rx=\"3\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"2\"/><path d=\"M60,180 L60,80 Q60,30 140,30 Q220,30 220,80 L220,180\" fill=\"#f0f9ff\" stroke=\"#475569\" stroke-width=\"2.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"140\" y1=\"180\" x2=\"140\" y2=\"140\" stroke=\"#64748b\" stroke-width=\"3\"/><circle cx=\"140\" cy=\"118\" r=\"24\" fill=\"#fde68a\" stroke=\"#d97706\" stroke-width=\"2\"/><circle cx=\"140\" cy=\"118\" r=\"6\" fill=\"#d97706\"/><line x1=\"120\" y1=\"148\" x2=\"108\" y2=\"136\" stroke=\"#64748b\" stroke-width=\"3\"/><circle cx=\"106\" cy=\"134\" r=\"5\" fill=\"#64748b\"/><path d=\"M140,192 L140,206 L300,206 L300,170\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"300\" y1=\"170\" x2=\"300\" y2=\"139\" stroke=\"#d97706\" stroke-width=\"3\"/><polygon points=\"300,130 295.5,139 304.5,139\" fill=\"#d97706\"/><text x=\"300\" y=\"120\" text-anchor=\"middle\" font-size=\"14\">抽出空氣</text><text x=\"140\" y=\"20\" text-anchor=\"middle\" font-size=\"13\">玻璃罩</text><text x=\"176\" y=\"112\" font-size=\"13\">電鈴</text></svg>",
+      concaveAB: "<svg viewBox=\"0 0 420 190\" role=\"img\" aria-label=\"凹透鏡，蠟燭在 A 點左側\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"10\" y1=\"110\" x2=\"410\" y2=\"110\" stroke=\"#52677a\" stroke-width=\"1.5\"/><text x=\"406\" y=\"102\" text-anchor=\"end\" font-size=\"13\">主軸</text><path d=\"M219,45 L241,45 Q232,110 241,175 L219,175 Q228,110 219,45 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"110\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"110\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">A</text><circle cx=\"170\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"170\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">F₁</text><circle cx=\"230\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"238\" y=\"134\" text-anchor=\"start\" font-size=\"15\" font-weight=\"700\">O</text><circle cx=\"290\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"290\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">F₂</text><circle cx=\"350\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"350\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">B</text><rect x=\"54\" y=\"72\" width=\"12\" height=\"38\" fill=\"#fecaca\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><path d=\"M60,52 Q68,64 60,70 Q52,64 60,52 Z\" fill=\"#fbbf24\" stroke=\"#d97706\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></svg>",
+      concaveRays: "<svg viewBox=\"0 0 420 344\" role=\"img\" aria-label=\"光線通過凹透鏡的甲、乙、丙、丁四種情形\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><g transform=\"translate(0,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">甲</text><line x1=\"14\" y1=\"98\" x2=\"196\" y2=\"98\" stroke=\"#52677a\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><path d=\"M96,52 L114,52 Q107,98 114,144 L96,144 Q103,98 96,52 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"16,73 105,73 175,108\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/><polyline points=\"16,123 105,123 175,88\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/></g><g transform=\"translate(210,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">乙</text><line x1=\"14\" y1=\"98\" x2=\"196\" y2=\"98\" stroke=\"#52677a\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><path d=\"M96,52 L114,52 Q107,98 114,144 L96,144 Q103,98 96,52 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"16,98 105,73 175,110\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/><polyline points=\"16,98 105,123 175,86\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/></g><g transform=\"translate(0,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丙</text><line x1=\"14\" y1=\"98\" x2=\"196\" y2=\"98\" stroke=\"#52677a\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><path d=\"M96,52 L114,52 Q107,98 114,144 L96,144 Q103,98 96,52 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"16,73 105,73 190,50\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/><polyline points=\"16,123 105,123 190,146\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/></g><g transform=\"translate(210,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丁</text><line x1=\"14\" y1=\"98\" x2=\"196\" y2=\"98\" stroke=\"#52677a\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><path d=\"M96,52 L114,52 Q107,98 114,144 L96,144 Q103,98 96,52 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"16,58 105,73\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/><polyline points=\"105,73 150,98\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-dasharray=\"4 4\"/><polyline points=\"105,73 186,104\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/><polyline points=\"16,138 105,123\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/><polyline points=\"105,123 150,98\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-dasharray=\"4 4\"/><polyline points=\"105,123 186,92\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/></g><text x=\"410\" y=\"338\" text-anchor=\"end\" font-size=\"12\" fill=\"#52677a\">虛線：光線原本的行進方向</text></svg>",
+      ghostLens: "<svg viewBox=\"0 0 420 344\" role=\"img\" aria-label=\"雷射光束由下往上射入透鏡的甲、乙、丙、丁四種擺法\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><g transform=\"translate(0,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">甲</text><line x1=\"105\" y1=\"44\" x2=\"105\" y2=\"150\" stroke=\"#52677a\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><path d=\"M53,82 Q105,64 157,82 Q105,100 53,82 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"79\" y1=\"150\" x2=\"79\" y2=\"99\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><polygon points=\"79,90 74.5,99 83.5,99\" fill=\"#dc2626\"/><text x=\"109\" y=\"56\" font-size=\"11\" fill=\"#52677a\">主軸</text><text x=\"35\" y=\"150\" font-size=\"12\">凸透鏡</text></g><g transform=\"translate(210,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">乙</text><line x1=\"105\" y1=\"44\" x2=\"105\" y2=\"150\" stroke=\"#52677a\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><path d=\"M53,82 Q105,64 157,82 Q105,100 53,82 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"131\" y1=\"150\" x2=\"131\" y2=\"99\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><polygon points=\"131,90 126.5,99 135.5,99\" fill=\"#dc2626\"/><text x=\"109\" y=\"56\" font-size=\"11\" fill=\"#52677a\">主軸</text><text x=\"35\" y=\"150\" font-size=\"12\">凸透鏡</text></g><g transform=\"translate(0,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丙</text><line x1=\"105\" y1=\"44\" x2=\"105\" y2=\"150\" stroke=\"#52677a\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><path d=\"M53,73 Q105,81 157,73 L157,91 Q105,83 53,91 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"79\" y1=\"150\" x2=\"79\" y2=\"99\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><polygon points=\"79,90 74.5,99 83.5,99\" fill=\"#dc2626\"/><text x=\"109\" y=\"56\" font-size=\"11\" fill=\"#52677a\">主軸</text><text x=\"35\" y=\"150\" font-size=\"12\">凹透鏡</text></g><g transform=\"translate(210,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丁</text><line x1=\"105\" y1=\"44\" x2=\"105\" y2=\"150\" stroke=\"#52677a\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><path d=\"M53,73 Q105,81 157,73 L157,91 Q105,83 53,91 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"105\" y1=\"150\" x2=\"105\" y2=\"99\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><polygon points=\"105,90 100.5,99 109.5,99\" fill=\"#dc2626\"/><text x=\"109\" y=\"56\" font-size=\"11\" fill=\"#52677a\">主軸</text><text x=\"35\" y=\"150\" font-size=\"12\">凹透鏡</text></g><text x=\"410\" y=\"338\" text-anchor=\"end\" font-size=\"12\" fill=\"#52677a\">紅色箭頭：射入透鏡前的雷射光</text></svg>",
+      hearing: "<svg viewBox=\"0 0 400 290\" role=\"img\" aria-label=\"小雯的聽力檢查紀錄圖：各頻率單耳能聽見的最低音量\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><text x=\"204\" y=\"18\" text-anchor=\"middle\" font-size=\"13\">頻率（Hz）</text><line x1=\"60\" y1=\"50\" x2=\"60\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"60\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">125</text><line x1=\"108\" y1=\"50\" x2=\"108\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"108\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">250</text><line x1=\"156\" y1=\"50\" x2=\"156\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"156\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">500</text><line x1=\"204\" y1=\"50\" x2=\"204\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"204\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">1000</text><line x1=\"252\" y1=\"50\" x2=\"252\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"252\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">2000</text><line x1=\"300\" y1=\"50\" x2=\"300\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"300\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">4000</text><line x1=\"348\" y1=\"50\" x2=\"348\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"348\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">8000</text><line x1=\"60\" y1=\"50\" x2=\"348\" y2=\"50\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"54\" text-anchor=\"end\" font-size=\"12\">0</text><line x1=\"60\" y1=\"66\" x2=\"348\" y2=\"66\" stroke=\"#eef2f7\" stroke-width=\"1\"/><line x1=\"60\" y1=\"82\" x2=\"348\" y2=\"82\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"86\" text-anchor=\"end\" font-size=\"12\">20</text><line x1=\"60\" y1=\"98\" x2=\"348\" y2=\"98\" stroke=\"#eef2f7\" stroke-width=\"1\"/><line x1=\"60\" y1=\"114\" x2=\"348\" y2=\"114\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"118\" text-anchor=\"end\" font-size=\"12\">40</text><line x1=\"60\" y1=\"130\" x2=\"348\" y2=\"130\" stroke=\"#eef2f7\" stroke-width=\"1\"/><line x1=\"60\" y1=\"146\" x2=\"348\" y2=\"146\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"150\" text-anchor=\"end\" font-size=\"12\">60</text><line x1=\"60\" y1=\"162\" x2=\"348\" y2=\"162\" stroke=\"#eef2f7\" stroke-width=\"1\"/><line x1=\"60\" y1=\"178\" x2=\"348\" y2=\"178\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"182\" text-anchor=\"end\" font-size=\"12\">80</text><line x1=\"60\" y1=\"194\" x2=\"348\" y2=\"194\" stroke=\"#eef2f7\" stroke-width=\"1\"/><line x1=\"60\" y1=\"210\" x2=\"348\" y2=\"210\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"214\" text-anchor=\"end\" font-size=\"12\">100</text><line x1=\"60\" y1=\"226\" x2=\"348\" y2=\"226\" stroke=\"#eef2f7\" stroke-width=\"1\"/><line x1=\"60\" y1=\"242\" x2=\"348\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"246\" text-anchor=\"end\" font-size=\"12\">120</text><text x=\"16\" y=\"268\" font-size=\"13\">音量（dB）</text><circle cx=\"60\" cy=\"82\" r=\"6\" fill=\"#f97316\"/><circle cx=\"108\" cy=\"114\" r=\"6\" fill=\"#f97316\"/><circle cx=\"156\" cy=\"98\" r=\"6\" fill=\"#f97316\"/><circle cx=\"204\" cy=\"66\" r=\"6\" fill=\"#f97316\"/><circle cx=\"252\" cy=\"98\" r=\"6\" fill=\"#f97316\"/><circle cx=\"300\" cy=\"98\" r=\"6\" fill=\"#f97316\"/><circle cx=\"348\" cy=\"130\" r=\"6\" fill=\"#f97316\"/><polygon points=\"60,123 53,135 67,135\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><polygon points=\"108,139 101,151 115,151\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><polygon points=\"156,139 149,151 163,151\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><polygon points=\"204,155 197,167 211,167\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><polygon points=\"252,171 245,183 259,183\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><polygon points=\"300,171 293,183 307,183\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><polygon points=\"348,203 341,215 355,215\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><circle cx=\"240\" cy=\"264\" r=\"6\" fill=\"#f97316\"/><text x=\"250\" y=\"269\" font-size=\"13\">左耳</text><polygon points=\"310,257 303,269 317,269\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><text x=\"322\" y=\"269\" font-size=\"13\">右耳</text></svg>",
+      interface: "<svg viewBox=\"0 0 400 230\" role=\"img\" aria-label=\"雷射光由甲介質射向乙介質，在 O 點發生反射與折射\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"10\" y=\"110\" width=\"380\" height=\"110\" fill=\"#e0f2fe\"/><line x1=\"10\" y1=\"110\" x2=\"390\" y2=\"110\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"24\" y=\"100\" font-size=\"16\" font-weight=\"700\">甲</text><text x=\"24\" y=\"136\" font-size=\"16\" font-weight=\"700\">乙</text><line x1=\"200\" y1=\"10\" x2=\"200\" y2=\"220\" stroke=\"#52677a\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><line x1=\"147.5\" y1=\"19.1\" x2=\"195.5\" y2=\"102.2\" stroke=\"#d97706\" stroke-width=\"2.5\"/><polygon points=\"200,110 199.4,100 191.6,104.5\" fill=\"#d97706\"/><line x1=\"200\" y1=\"110\" x2=\"248\" y2=\"26.9\" stroke=\"#d97706\" stroke-width=\"2.5\"/><polygon points=\"252.5,19.1 244.1,24.6 251.9,29.1\" fill=\"#d97706\"/><line x1=\"200\" y1=\"110\" x2=\"275.6\" y2=\"169.1\" stroke=\"#d97706\" stroke-width=\"2.5\"/><polygon points=\"282.7,174.6 278.4,165.6 272.9,172.6\" fill=\"#d97706\"/><text x=\"141.5\" y=\"23.1\" text-anchor=\"end\" font-size=\"16\" font-weight=\"700\">Ⅰ</text><text x=\"258.5\" y=\"23.1\" font-size=\"16\" font-weight=\"700\">Ⅱ</text><text x=\"288.7\" y=\"178.6\" font-size=\"16\" font-weight=\"700\">Ⅲ</text><path d=\"M166,110 A34,34 0 0 1 183,80.55513627132908\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"128\" y=\"100\" font-size=\"14\">60°</text><text x=\"208\" y=\"130\" font-size=\"14\">O</text></svg>",
+      ironPipe: "<svg viewBox=\"0 0 420 170\" role=\"img\" aria-label=\"在鐵管一端敲擊，另一端耳朵貼著鐵管聽聲音\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"40\" y=\"92\" width=\"340\" height=\"16\" rx=\"4\" fill=\"#cbd5e1\" stroke=\"#64748b\" stroke-width=\"2\"/><line x1=\"30\" y1=\"60\" x2=\"44\" y2=\"96\" stroke=\"#92400e\" stroke-width=\"5\" stroke-linecap=\"round\"/><rect x=\"16\" y=\"50\" width=\"28\" height=\"14\" rx=\"3\" fill=\"#64748b\"/><text x=\"30\" y=\"132\" text-anchor=\"middle\" font-size=\"13\">敲擊</text><path d=\"M392,86 q14,14 0,28 q-6,-14 0,-28 Z\" fill=\"#fcd34d\" stroke=\"#d97706\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"404\" y=\"132\" text-anchor=\"end\" font-size=\"13\">耳朵</text><line x1=\"60\" y1=\"100\" x2=\"351\" y2=\"100\" stroke=\"#dc2626\" stroke-width=\"2\"/><polygon points=\"360,100 351,95.5 351,104.5\" fill=\"#dc2626\"/><text x=\"210\" y=\"126\" text-anchor=\"middle\" font-size=\"13\" fill=\"#dc2626\">經由鐵管傳播</text><line x1=\"60\" y1=\"60\" x2=\"351\" y2=\"60\" stroke=\"#2563eb\" stroke-width=\"2\" stroke-dasharray=\"7 5\"/><polygon points=\"360,60 351,55.5 351,64.5\" fill=\"#2563eb\"/><text x=\"210\" y=\"50\" text-anchor=\"middle\" font-size=\"13\" fill=\"#2563eb\">經由空氣傳播</text><line x1=\"210\" y1=\"152\" x2=\"374\" y2=\"152\" stroke=\"#082f49\" stroke-width=\"1.2\"/><polygon points=\"380,152 374,149 374,155\" fill=\"#082f49\"/><line x1=\"210\" y1=\"152\" x2=\"46\" y2=\"152\" stroke=\"#082f49\" stroke-width=\"1.2\"/><polygon points=\"40,152 46,155 46,149\" fill=\"#082f49\"/><rect x=\"186\" y=\"142\" width=\"48\" height=\"20\" fill=\"#fff\"/><text x=\"210\" y=\"157\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">510 m</text></svg>",
+      jerseys: "<svg viewBox=\"0 0 420 160\" role=\"img\" aria-label=\"皮偶衣服設計 A、B、C、D\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><clipPath id=\"j4\"><path d=\"M32,10 L44,10 Q54,30 64,10 L76,10 L80,34 Q96,44 94,70 L96,128 L12,128 L14,70 Q12,44 28,34 Z\"/></clipPath><g clip-path=\"url(#j4)\"><rect x=\"4\" y=\"0\" width=\"100\" height=\"70\" fill=\"#dc2626\"/><rect x=\"4\" y=\"70\" width=\"100\" height=\"70\" fill=\"#dc2626\"/></g><path d=\"M32,10 L44,10 Q54,30 64,10 L76,10 L80,34 Q96,44 94,70 L96,128 L12,128 L14,70 Q12,44 28,34 Z\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"54\" y=\"98\" text-anchor=\"middle\" font-size=\"40\" font-weight=\"900\" fill=\"#fff\">9</text><clipPath id=\"j108\"><path d=\"M136,10 L148,10 Q158,30 168,10 L180,10 L184,34 Q200,44 198,70 L200,128 L116,128 L118,70 Q116,44 132,34 Z\"/></clipPath><g clip-path=\"url(#j108)\"><rect x=\"108\" y=\"0\" width=\"100\" height=\"70\" fill=\"#fff\"/><rect x=\"108\" y=\"70\" width=\"100\" height=\"70\" fill=\"#fff\"/></g><path d=\"M136,10 L148,10 Q158,30 168,10 L180,10 L184,34 Q200,44 198,70 L200,128 L116,128 L118,70 Q116,44 132,34 Z\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"158\" y=\"98\" text-anchor=\"middle\" font-size=\"40\" font-weight=\"900\" fill=\"#dc2626\">5</text><clipPath id=\"j212\"><path d=\"M240,10 L252,10 Q262,30 272,10 L284,10 L288,34 Q304,44 302,70 L304,128 L220,128 L222,70 Q220,44 236,34 Z\"/></clipPath><g clip-path=\"url(#j212)\"><rect x=\"212\" y=\"0\" width=\"100\" height=\"70\" fill=\"#fff\"/><rect x=\"212\" y=\"70\" width=\"100\" height=\"70\" fill=\"#fff\"/><rect x=\"212\" y=\"56\" width=\"100\" height=\"34\" fill=\"#2563eb\"/></g><path d=\"M240,10 L252,10 Q262,30 272,10 L284,10 L288,34 Q304,44 302,70 L304,128 L220,128 L222,70 Q220,44 236,34 Z\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"262\" y=\"98\" text-anchor=\"middle\" font-size=\"40\" font-weight=\"900\" fill=\"#16a34a\">4</text><clipPath id=\"j316\"><path d=\"M344,10 L356,10 Q366,30 376,10 L388,10 L392,34 Q408,44 406,70 L408,128 L324,128 L326,70 Q324,44 340,34 Z\"/></clipPath><g clip-path=\"url(#j316)\"><rect x=\"316\" y=\"0\" width=\"100\" height=\"70\" fill=\"#dc2626\"/><rect x=\"316\" y=\"70\" width=\"100\" height=\"70\" fill=\"#fff\"/></g><path d=\"M344,10 L356,10 Q366,30 376,10 L388,10 L392,34 Q408,44 406,70 L408,128 L324,128 L326,70 Q324,44 340,34 Z\" fill=\"none\" stroke=\"#475569\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"366\" y=\"98\" text-anchor=\"middle\" font-size=\"40\" font-weight=\"900\" fill=\"#2563eb\">6</text><text x=\"54\" y=\"152\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">設計 A</text><text x=\"158\" y=\"152\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">設計 B</text><text x=\"262\" y=\"152\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">設計 C</text><text x=\"366\" y=\"152\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">設計 D</text></svg>",
+      lensAB: "<svg viewBox=\"0 0 420 190\" role=\"img\" aria-label=\"凸透鏡成像：蠟燭在 A 點左側\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"10\" y1=\"110\" x2=\"410\" y2=\"110\" stroke=\"#52677a\" stroke-width=\"1.5\"/><text x=\"406\" y=\"102\" text-anchor=\"end\" font-size=\"13\">主軸</text><path d=\"M230,45 Q250,110 230,175 Q210,110 230,45 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"110\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"110\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">A</text><circle cx=\"170\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"170\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">F₁</text><circle cx=\"230\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"238\" y=\"134\" text-anchor=\"start\" font-size=\"15\" font-weight=\"700\">O</text><circle cx=\"290\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"290\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">F₂</text><circle cx=\"350\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"350\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">B</text><rect x=\"54\" y=\"72\" width=\"12\" height=\"38\" fill=\"#fecaca\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><path d=\"M60,52 Q68,64 60,70 Q52,64 60,52 Z\" fill=\"#fbbf24\" stroke=\"#d97706\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></svg>",
+      lensBench: "<svg viewBox=\"0 0 420 190\" role=\"img\" aria-label=\"凸透鏡兩側的焦點 f 與 2 倍焦距 2f 位置\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"10\" y1=\"100\" x2=\"410\" y2=\"100\" stroke=\"#52677a\" stroke-width=\"1.5\"/><path d=\"M210,40 Q228,100 210,160 Q192,100 210,40 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"70\" y1=\"94\" x2=\"70\" y2=\"106\" stroke=\"#082f49\" stroke-width=\"2\"/><text x=\"70\" y=\"126\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">2f</text><line x1=\"140\" y1=\"94\" x2=\"140\" y2=\"106\" stroke=\"#082f49\" stroke-width=\"2\"/><text x=\"140\" y=\"126\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">f</text><line x1=\"280\" y1=\"94\" x2=\"280\" y2=\"106\" stroke=\"#082f49\" stroke-width=\"2\"/><text x=\"280\" y=\"126\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">f</text><line x1=\"350\" y1=\"94\" x2=\"350\" y2=\"106\" stroke=\"#082f49\" stroke-width=\"2\"/><text x=\"350\" y=\"126\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">2f</text><circle cx=\"210\" cy=\"100\" r=\"3\" fill=\"#082f49\"/><text x=\"224\" y=\"92\" font-size=\"14\" font-weight=\"700\">O</text><text x=\"105\" y=\"30\" text-anchor=\"middle\" font-size=\"13\">物體這一側</text><text x=\"315\" y=\"30\" text-anchor=\"middle\" font-size=\"13\">成像（紙屏）這一側</text><text x=\"200\" y=\"176\" text-anchor=\"middle\" font-size=\"13\" fill=\"#52677a\">f：焦距　O：鏡心</text></svg>",
+      lensHalf: "<svg viewBox=\"0 0 420 190\" role=\"img\" aria-label=\"凸透鏡上半部塗黑，蠟燭在 A 點左側\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"10\" y1=\"110\" x2=\"410\" y2=\"110\" stroke=\"#52677a\" stroke-width=\"1.5\"/><text x=\"406\" y=\"102\" text-anchor=\"end\" font-size=\"13\">主軸</text><path d=\"M230,45 Q250,110 230,175 Q210,110 230,45 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><clipPath id=\"halfconvex\"><rect x=\"200\" y=\"40\" width=\"60\" height=\"70\"/></clipPath><g clip-path=\"url(#halfconvex)\"><path d=\"M230,45 Q250,110 230,175 Q210,110 230,45 Z\" fill=\"#111827\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></g><circle cx=\"110\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"110\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">A</text><circle cx=\"170\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"170\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">F₁</text><circle cx=\"230\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"238\" y=\"134\" text-anchor=\"start\" font-size=\"15\" font-weight=\"700\">O</text><circle cx=\"290\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"290\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">F₂</text><circle cx=\"350\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"350\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">B</text><rect x=\"54\" y=\"72\" width=\"12\" height=\"38\" fill=\"#fecaca\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><path d=\"M60,52 Q68,64 60,70 Q52,64 60,52 Z\" fill=\"#fbbf24\" stroke=\"#d97706\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"262\" y=\"40\" font-size=\"13\">塗黑</text></svg>",
+      lifebuoy: "<svg viewBox=\"0 0 420 300\" role=\"img\" aria-label=\"岸上四個救生圈甲乙丙丁，光線經水面射到水中沛沛的眼睛\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"10\" y=\"150\" width=\"400\" height=\"140\" fill=\"#e0f2fe\"/><line x1=\"10\" y1=\"150\" x2=\"410\" y2=\"150\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"404\" y=\"170\" text-anchor=\"end\" font-size=\"13\">水面</text><line x1=\"220\" y1=\"15\" x2=\"220\" y2=\"250\" stroke=\"#52677a\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><line x1=\"142.9\" y1=\"58.1\" x2=\"176.3\" y2=\"97.9\" stroke=\"#d97706\" stroke-width=\"2\"/><polygon points=\"181.4,104 179.4,95.3 173.2,100.5\" fill=\"#d97706\"/><line x1=\"181.4\" y1=\"104\" x2=\"220\" y2=\"150\" stroke=\"#d97706\" stroke-width=\"2\"/><circle cx=\"142.9\" cy=\"56.1\" r=\"11\" fill=\"#fff\" stroke=\"#dc2626\" stroke-width=\"5\"/><text x=\"142.9\" y=\"38.1\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">甲</text><line x1=\"244.9\" y1=\"32.6\" x2=\"234.1\" y2=\"83.5\" stroke=\"#d97706\" stroke-width=\"2\"/><polygon points=\"232.5,91.3 238.1,84.3 230.2,82.7\" fill=\"#d97706\"/><line x1=\"232.5\" y1=\"91.3\" x2=\"220\" y2=\"150\" stroke=\"#d97706\" stroke-width=\"2\"/><circle cx=\"244.9\" cy=\"30.6\" r=\"11\" fill=\"#fff\" stroke=\"#dc2626\" stroke-width=\"5\"/><text x=\"244.9\" y=\"12.6\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">乙</text><line x1=\"280\" y1=\"46.1\" x2=\"254\" y2=\"91.1\" stroke=\"#d97706\" stroke-width=\"2\"/><polygon points=\"250,98 257.5,93.1 250.5,89.1\" fill=\"#d97706\"/><line x1=\"250\" y1=\"98\" x2=\"220\" y2=\"150\" stroke=\"#d97706\" stroke-width=\"2\"/><circle cx=\"280\" cy=\"44.1\" r=\"11\" fill=\"#fff\" stroke=\"#dc2626\" stroke-width=\"5\"/><text x=\"280\" y=\"26.1\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">丙</text><line x1=\"318.3\" y1=\"81.2\" x2=\"275.7\" y2=\"111\" stroke=\"#d97706\" stroke-width=\"2\"/><polygon points=\"269.1,115.6 278,114.3 273.4,107.7\" fill=\"#d97706\"/><line x1=\"269.1\" y1=\"115.6\" x2=\"220\" y2=\"150\" stroke=\"#d97706\" stroke-width=\"2\"/><circle cx=\"318.3\" cy=\"79.2\" r=\"11\" fill=\"#fff\" stroke=\"#dc2626\" stroke-width=\"5\"/><text x=\"318.3\" y=\"61.2\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">丁</text><line x1=\"220\" y1=\"150\" x2=\"172\" y2=\"233.1\" stroke=\"#d97706\" stroke-width=\"2.5\"/><polygon points=\"167.5,240.9 175.9,235.4 168.1,230.9\" fill=\"#d97706\"/><ellipse cx=\"159.5\" cy=\"246.93266739736606\" rx=\"11\" ry=\"7\" fill=\"#fff\" stroke=\"#082f49\" stroke-width=\"2\"/><circle cx=\"162.5\" cy=\"246.9\" r=\"3.5\" fill=\"#082f49\"/><text x=\"145.5\" y=\"274.9\" font-size=\"13\">水中的沛沛</text></svg>",
+      mirrorGrid: "<svg viewBox=\"0 0 410 320\" role=\"img\" aria-label=\"平面鏡 M 與甲、乙、丙、丁四人及 A、B、C 三點的位置方格圖\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"20\" y1=\"16\" x2=\"20\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"48\" y1=\"16\" x2=\"48\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"76\" y1=\"16\" x2=\"76\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"104\" y1=\"16\" x2=\"104\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"132\" y1=\"16\" x2=\"132\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"160\" y1=\"16\" x2=\"160\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"188\" y1=\"16\" x2=\"188\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"216\" y1=\"16\" x2=\"216\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"244\" y1=\"16\" x2=\"244\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"272\" y1=\"16\" x2=\"272\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"300\" y1=\"16\" x2=\"300\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"328\" y1=\"16\" x2=\"328\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"356\" y1=\"16\" x2=\"356\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"384\" y1=\"16\" x2=\"384\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"20\" y1=\"16\" x2=\"384\" y2=\"16\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"20\" y1=\"44\" x2=\"384\" y2=\"44\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"20\" y1=\"72\" x2=\"384\" y2=\"72\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"20\" y1=\"100\" x2=\"384\" y2=\"100\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"20\" y1=\"128\" x2=\"384\" y2=\"128\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"20\" y1=\"156\" x2=\"384\" y2=\"156\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"20\" y1=\"184\" x2=\"384\" y2=\"184\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"20\" y1=\"212\" x2=\"384\" y2=\"212\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"20\" y1=\"240\" x2=\"384\" y2=\"240\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"20\" y1=\"268\" x2=\"384\" y2=\"268\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"20\" y1=\"296\" x2=\"384\" y2=\"296\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><rect x=\"132\" y=\"153\" width=\"140\" height=\"6\" fill=\"#0891b2\"/><text x=\"126\" y=\"150\" text-anchor=\"end\" font-size=\"15\" font-weight=\"700\">M</text><circle cx=\"48\" cy=\"184\" r=\"5\" fill=\"#082f49\"/><text x=\"55\" y=\"177\" font-size=\"15\" font-weight=\"700\" fill=\"#082f49\">甲</text><circle cx=\"160\" cy=\"240\" r=\"5\" fill=\"#082f49\"/><text x=\"167\" y=\"233\" font-size=\"15\" font-weight=\"700\" fill=\"#082f49\">乙</text><circle cx=\"216\" cy=\"268\" r=\"5\" fill=\"#082f49\"/><text x=\"223\" y=\"261\" font-size=\"15\" font-weight=\"700\" fill=\"#082f49\">丙</text><circle cx=\"272\" cy=\"240\" r=\"5\" fill=\"#082f49\"/><text x=\"279\" y=\"233\" font-size=\"15\" font-weight=\"700\" fill=\"#082f49\">丁</text><circle cx=\"160\" cy=\"72\" r=\"5\" fill=\"#dc2626\"/><text x=\"167\" y=\"65\" font-size=\"15\" font-weight=\"700\" fill=\"#dc2626\">A</text><circle cx=\"216\" cy=\"100\" r=\"5\" fill=\"#dc2626\"/><text x=\"223\" y=\"93\" font-size=\"15\" font-weight=\"700\" fill=\"#dc2626\">B</text><circle cx=\"300\" cy=\"72\" r=\"5\" fill=\"#dc2626\"/><text x=\"307\" y=\"65\" font-size=\"15\" font-weight=\"700\" fill=\"#dc2626\">C</text><text x=\"384\" y=\"320\" text-anchor=\"end\" font-size=\"13\" fill=\"#52677a\">每一方格邊長 1 公尺（俯視圖）</text></svg>",
+      mirrorXY: "<svg viewBox=\"0 0 400 190\" role=\"img\" aria-label=\"雷射光入射平面鏡：X 為入射光與鏡面夾角，Y 為反射角\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"40\" y=\"150\" width=\"320\" height=\"10\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\"/><text x=\"360\" y=\"180\" text-anchor=\"end\" font-size=\"13\">平面鏡</text><line x1=\"200\" y1=\"150\" x2=\"200\" y2=\"20\" stroke=\"#52677a\" stroke-width=\"1.5\" stroke-dasharray=\"6 4\"/><text x=\"200\" y=\"14\" text-anchor=\"middle\" font-size=\"13\">法線</text><line x1=\"122.9\" y1=\"58.1\" x2=\"194.2\" y2=\"143.1\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><polygon points=\"200,150 197.7,140.2 190.8,146\" fill=\"#dc2626\"/><line x1=\"200\" y1=\"150\" x2=\"271.3\" y2=\"65\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><polygon points=\"277.1,58.1 267.9,62.1 274.8,67.9\" fill=\"#dc2626\"/><text x=\"116.9\" y=\"54.1\" text-anchor=\"end\" font-size=\"13\">入射光</text><text x=\"283.1\" y=\"54.1\" font-size=\"13\">反射光</text><path d=\"M154,150 A46,46 0 0 1 170.4317699544192,114.76195561652702\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"138\" y=\"138\" font-size=\"16\" font-weight=\"700\">X</text><path d=\"M200,110 A40,40 0 0 1 225.71150438746156,119.35822227524088\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"210\" y=\"102\" font-size=\"16\" font-weight=\"700\">Y</text></svg>",
+      pinhole: "<svg viewBox=\"0 0 420 190\" role=\"img\" aria-label=\"蠟燭、刺有小孔的紙板與紙屏，紙屏上形成倒立的像\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"10\" y1=\"150\" x2=\"410\" y2=\"150\" stroke=\"#52677a\" stroke-width=\"1.5\"/><rect x=\"54\" y=\"110\" width=\"12\" height=\"40\" fill=\"#fecaca\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><path d=\"M60,90 Q68,102 60,108 Q52,102 60,90 Z\" fill=\"#fbbf24\" stroke=\"#d97706\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><rect x=\"196\" y=\"40\" width=\"8\" height=\"110\" fill=\"#334155\"/><rect x=\"196\" y=\"92\" width=\"8\" height=\"6\" fill=\"#fff\"/><rect x=\"350\" y=\"30\" width=\"10\" height=\"120\" fill=\"#e2e8f0\" stroke=\"#475569\" stroke-width=\"1.5\"/><line x1=\"60\" y1=\"90\" x2=\"200\" y2=\"95\" stroke=\"#d97706\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><line x1=\"200\" y1=\"95\" x2=\"345\" y2=\"100\" stroke=\"#d97706\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><line x1=\"60\" y1=\"150\" x2=\"200\" y2=\"95\" stroke=\"#d97706\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><line x1=\"200\" y1=\"95\" x2=\"345\" y2=\"40\" stroke=\"#d97706\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><rect x=\"337\" y=\"40\" width=\"12\" height=\"40\" fill=\"#fecaca\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><path d=\"M343,100 Q351,88 343,82 Q335,88 343,100 Z\" fill=\"#fbbf24\" stroke=\"#d97706\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"60\" y=\"176\" text-anchor=\"middle\" font-size=\"13\">蠟燭</text><text x=\"200\" y=\"176\" text-anchor=\"middle\" font-size=\"13\">有小孔的紙板</text><text x=\"355\" y=\"176\" text-anchor=\"middle\" font-size=\"13\">紙屏</text></svg>",
+      poster: "<svg viewBox=\"0 0 420 420\" role=\"img\" aria-label=\"海報在綠光下的樣子，以及甲、乙、丙、丁四種白光下的配色\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><text x=\"14\" y=\"24\" font-size=\"14\" font-weight=\"700\">在綠色燈光下</text><g transform=\"translate(120,8)\"><rect x=\"0\" y=\"0\" width=\"180\" height=\"112\" rx=\"4\" fill=\"#4ade80\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><ellipse cx=\"44\" cy=\"58\" rx=\"28\" ry=\"42\" fill=\"#111827\"/><ellipse cx=\"34\" cy=\"48\" rx=\"7\" ry=\"11\" fill=\"#4ade80\"/><ellipse cx=\"54\" cy=\"48\" rx=\"7\" ry=\"11\" fill=\"#4ade80\"/><ellipse cx=\"44\" cy=\"76\" rx=\"6\" ry=\"9\" fill=\"#4ade80\"/><text x=\"128\" y=\"40\" text-anchor=\"middle\" font-size=\"22\" font-weight=\"900\" fill=\"#111827\">科學社</text><path d=\"M86,12 q10,12 0,22 q-10,-10 0,-22 Z\" fill=\"#111827\"/><path d=\"M166,52 q10,12 0,22 q-10,-10 0,-22 Z\" fill=\"#111827\"/><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"92\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#111827\" stroke=\"#111827\"/><rect x=\"92\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/><rect x=\"96.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#111827\"/><rect x=\"101\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"113\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#111827\" stroke=\"#111827\"/><rect x=\"113\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/><rect x=\"117.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#111827\"/><rect x=\"122\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"134\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#4ade80\" stroke=\"#111827\"/><rect x=\"134\" y=\"72\" width=\"3\" height=\"12\" fill=\"#4ade80\"/><rect x=\"138.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#4ade80\"/><rect x=\"143\" y=\"72\" width=\"3\" height=\"12\" fill=\"#4ade80\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"155\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#111827\" stroke=\"#111827\"/><rect x=\"155\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/><rect x=\"159.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#111827\"/><rect x=\"164\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/></g></g><rect x=\"8\" y=\"140\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"25\" y=\"157\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">甲</text><g transform=\"translate(20,166)\"><rect x=\"0\" y=\"0\" width=\"180\" height=\"112\" rx=\"4\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><ellipse cx=\"44\" cy=\"58\" rx=\"28\" ry=\"42\" fill=\"#2563eb\"/><ellipse cx=\"34\" cy=\"48\" rx=\"7\" ry=\"11\" fill=\"#111827\"/><ellipse cx=\"54\" cy=\"48\" rx=\"7\" ry=\"11\" fill=\"#111827\"/><ellipse cx=\"44\" cy=\"76\" rx=\"6\" ry=\"9\" fill=\"#111827\"/><text x=\"128\" y=\"40\" text-anchor=\"middle\" font-size=\"22\" font-weight=\"900\" fill=\"#16a34a\">科學社</text><path d=\"M86,12 q10,12 0,22 q-10,-10 0,-22 Z\" fill=\"#2563eb\"/><path d=\"M166,52 q10,12 0,22 q-10,-10 0,-22 Z\" fill=\"#2563eb\"/><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"92\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#16a34a\" stroke=\"#111827\"/><rect x=\"92\" y=\"72\" width=\"3\" height=\"12\" fill=\"#16a34a\"/><rect x=\"96.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#16a34a\"/><rect x=\"101\" y=\"72\" width=\"3\" height=\"12\" fill=\"#16a34a\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"113\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#111827\" stroke=\"#111827\"/><rect x=\"113\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/><rect x=\"117.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#111827\"/><rect x=\"122\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"134\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#111827\" stroke=\"#111827\"/><rect x=\"134\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/><rect x=\"138.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#111827\"/><rect x=\"143\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"155\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#16a34a\" stroke=\"#111827\"/><rect x=\"155\" y=\"72\" width=\"3\" height=\"12\" fill=\"#16a34a\"/><rect x=\"159.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#16a34a\"/><rect x=\"164\" y=\"72\" width=\"3\" height=\"12\" fill=\"#16a34a\"/></g></g><rect x=\"218\" y=\"140\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"235\" y=\"157\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">乙</text><g transform=\"translate(230,166)\"><rect x=\"0\" y=\"0\" width=\"180\" height=\"112\" rx=\"4\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><ellipse cx=\"44\" cy=\"58\" rx=\"28\" ry=\"42\" fill=\"#111827\"/><ellipse cx=\"34\" cy=\"48\" rx=\"7\" ry=\"11\" fill=\"#16a34a\"/><ellipse cx=\"54\" cy=\"48\" rx=\"7\" ry=\"11\" fill=\"#16a34a\"/><ellipse cx=\"44\" cy=\"76\" rx=\"6\" ry=\"9\" fill=\"#16a34a\"/><text x=\"128\" y=\"40\" text-anchor=\"middle\" font-size=\"22\" font-weight=\"900\" fill=\"#111827\">科學社</text><path d=\"M86,12 q10,12 0,22 q-10,-10 0,-22 Z\" fill=\"#2563eb\"/><path d=\"M166,52 q10,12 0,22 q-10,-10 0,-22 Z\" fill=\"#2563eb\"/><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"92\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#dc2626\" stroke=\"#111827\"/><rect x=\"92\" y=\"72\" width=\"3\" height=\"12\" fill=\"#dc2626\"/><rect x=\"96.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#dc2626\"/><rect x=\"101\" y=\"72\" width=\"3\" height=\"12\" fill=\"#dc2626\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"113\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#111827\" stroke=\"#111827\"/><rect x=\"113\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/><rect x=\"117.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#111827\"/><rect x=\"122\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"134\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#16a34a\" stroke=\"#111827\"/><rect x=\"134\" y=\"72\" width=\"3\" height=\"12\" fill=\"#16a34a\"/><rect x=\"138.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#16a34a\"/><rect x=\"143\" y=\"72\" width=\"3\" height=\"12\" fill=\"#16a34a\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"155\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#111827\" stroke=\"#111827\"/><rect x=\"155\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/><rect x=\"159.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#111827\"/><rect x=\"164\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/></g></g><rect x=\"8\" y=\"280\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"25\" y=\"297\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丙</text><g transform=\"translate(20,306)\"><rect x=\"0\" y=\"0\" width=\"180\" height=\"112\" rx=\"4\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><ellipse cx=\"44\" cy=\"58\" rx=\"28\" ry=\"42\" fill=\"#16a34a\"/><ellipse cx=\"34\" cy=\"48\" rx=\"7\" ry=\"11\" fill=\"#fff\"/><ellipse cx=\"54\" cy=\"48\" rx=\"7\" ry=\"11\" fill=\"#fff\"/><ellipse cx=\"44\" cy=\"76\" rx=\"6\" ry=\"9\" fill=\"#fff\"/><text x=\"128\" y=\"40\" text-anchor=\"middle\" font-size=\"22\" font-weight=\"900\" fill=\"#111827\">科學社</text><path d=\"M86,12 q10,12 0,22 q-10,-10 0,-22 Z\" fill=\"#16a34a\"/><path d=\"M166,52 q10,12 0,22 q-10,-10 0,-22 Z\" fill=\"#16a34a\"/><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"92\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#111827\" stroke=\"#111827\"/><rect x=\"92\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/><rect x=\"96.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#111827\"/><rect x=\"101\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"113\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#16a34a\" stroke=\"#111827\"/><rect x=\"113\" y=\"72\" width=\"3\" height=\"12\" fill=\"#16a34a\"/><rect x=\"117.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#16a34a\"/><rect x=\"122\" y=\"72\" width=\"3\" height=\"12\" fill=\"#16a34a\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"134\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#111827\" stroke=\"#111827\"/><rect x=\"134\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/><rect x=\"138.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#111827\"/><rect x=\"143\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"155\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#2563eb\" stroke=\"#111827\"/><rect x=\"155\" y=\"72\" width=\"3\" height=\"12\" fill=\"#2563eb\"/><rect x=\"159.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#2563eb\"/><rect x=\"164\" y=\"72\" width=\"3\" height=\"12\" fill=\"#2563eb\"/></g></g><rect x=\"218\" y=\"280\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"235\" y=\"297\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丁</text><g transform=\"translate(230,306)\"><rect x=\"0\" y=\"0\" width=\"180\" height=\"112\" rx=\"4\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><ellipse cx=\"44\" cy=\"58\" rx=\"28\" ry=\"42\" fill=\"#111827\"/><ellipse cx=\"34\" cy=\"48\" rx=\"7\" ry=\"11\" fill=\"#dc2626\"/><ellipse cx=\"54\" cy=\"48\" rx=\"7\" ry=\"11\" fill=\"#dc2626\"/><ellipse cx=\"44\" cy=\"76\" rx=\"6\" ry=\"9\" fill=\"#dc2626\"/><text x=\"128\" y=\"40\" text-anchor=\"middle\" font-size=\"22\" font-weight=\"900\" fill=\"#dc2626\">科學社</text><path d=\"M86,12 q10,12 0,22 q-10,-10 0,-22 Z\" fill=\"#111827\"/><path d=\"M166,52 q10,12 0,22 q-10,-10 0,-22 Z\" fill=\"#111827\"/><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"92\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#111827\" stroke=\"#111827\"/><rect x=\"92\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/><rect x=\"96.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#111827\"/><rect x=\"101\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"113\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#dc2626\" stroke=\"#111827\"/><rect x=\"113\" y=\"72\" width=\"3\" height=\"12\" fill=\"#dc2626\"/><rect x=\"117.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#dc2626\"/><rect x=\"122\" y=\"72\" width=\"3\" height=\"12\" fill=\"#dc2626\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"134\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#dc2626\" stroke=\"#111827\"/><rect x=\"134\" y=\"72\" width=\"3\" height=\"12\" fill=\"#dc2626\"/><rect x=\"138.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#dc2626\"/><rect x=\"143\" y=\"72\" width=\"3\" height=\"12\" fill=\"#dc2626\"/></g><g stroke=\"#111827\" stroke-width=\"0.8\"><rect x=\"155\" y=\"82\" width=\"12\" height=\"26\" rx=\"3\" fill=\"#111827\" stroke=\"#111827\"/><rect x=\"155\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/><rect x=\"159.5\" y=\"70\" width=\"3\" height=\"14\" fill=\"#111827\"/><rect x=\"164\" y=\"72\" width=\"3\" height=\"12\" fill=\"#111827\"/></g></g></svg>",
+      sonar: "<svg viewBox=\"0 0 420 320\" role=\"img\" aria-label=\"甲、乙、丙、丁四種海底地形\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><g transform=\"translate(0,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">甲</text><rect x=\"12\" y=\"46\" width=\"184\" height=\"100\" fill=\"#e0f2fe\"/><path d=\"M12,117 C14.2,117 16.2,120.7 25,117 C33.8,113.3 51.7,95 65,95 C78.3,95 91.7,109.7 105,117 C118.3,124.3 131.7,142.7 145,139 C158.3,135.3 176.5,102.3 185,95 C193.5,87.7 194.2,95 196,95 L196,150 L12,150 Z\" fill=\"#d6b48a\" stroke=\"#a47148\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"12\" y1=\"46\" x2=\"196\" y2=\"46\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"18\" y=\"64\" font-size=\"12\">西</text><text x=\"190\" y=\"64\" text-anchor=\"end\" font-size=\"12\">東</text></g><g transform=\"translate(210,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">乙</text><rect x=\"12\" y=\"46\" width=\"184\" height=\"100\" fill=\"#e0f2fe\"/><path d=\"M12,73 C14.2,73 16.2,69.3 25,73 C33.8,76.7 51.7,87.7 65,95 C78.3,102.3 91.7,113.3 105,117 C118.3,120.7 131.7,120.7 145,117 C158.3,113.3 176.5,98.7 185,95 C193.5,91.3 194.2,95 196,95 L196,150 L12,150 Z\" fill=\"#d6b48a\" stroke=\"#a47148\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"12\" y1=\"46\" x2=\"196\" y2=\"46\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"18\" y=\"64\" font-size=\"12\">西</text><text x=\"190\" y=\"64\" text-anchor=\"end\" font-size=\"12\">東</text></g><g transform=\"translate(0,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丙</text><rect x=\"12\" y=\"46\" width=\"184\" height=\"100\" fill=\"#e0f2fe\"/><path d=\"M12,95 C14.2,95 16.2,91.3 25,95 C33.8,98.7 51.7,117 65,117 C78.3,117 91.7,102.3 105,95 C118.3,87.7 131.7,69.3 145,73 C158.3,76.7 176.5,109.7 185,117 C193.5,124.3 194.2,117 196,117 L196,150 L12,150 Z\" fill=\"#d6b48a\" stroke=\"#a47148\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"12\" y1=\"46\" x2=\"196\" y2=\"46\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"18\" y=\"64\" font-size=\"12\">西</text><text x=\"190\" y=\"64\" text-anchor=\"end\" font-size=\"12\">東</text></g><g transform=\"translate(210,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丁</text><rect x=\"12\" y=\"46\" width=\"184\" height=\"100\" fill=\"#e0f2fe\"/><path d=\"M12,95 C14.2,95 16.2,91.3 25,95 C33.8,98.7 51.7,117 65,117 C78.3,117 91.7,102.3 105,95 C118.3,87.7 131.7,76.7 145,73 C158.3,69.3 176.5,73 185,73 C193.5,73 194.2,73 196,73 L196,150 L12,150 Z\" fill=\"#d6b48a\" stroke=\"#a47148\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"12\" y1=\"46\" x2=\"196\" y2=\"46\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"18\" y=\"64\" font-size=\"12\">西</text><text x=\"190\" y=\"64\" text-anchor=\"end\" font-size=\"12\">東</text></g></svg>",
+      springLong: "<svg viewBox=\"0 0 400 150\" role=\"img\" aria-label=\"前後振動的彈簧波，a、b 為相鄰兩個密部\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><text x=\"20\" y=\"30\" font-size=\"15\" font-weight=\"700\">後</text><text x=\"380\" y=\"30\" text-anchor=\"end\" font-size=\"15\" font-weight=\"700\">前</text><line x1=\"150\" y1=\"25\" x2=\"251\" y2=\"25\" stroke=\"#082f49\" stroke-width=\"2\"/><polygon points=\"260,25 251,20.5 251,29.5\" fill=\"#082f49\"/><text x=\"205\" y=\"18\" text-anchor=\"middle\" font-size=\"13\">波前進方向</text><ellipse cx=\"20.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"30.9\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"41.4\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"50.8\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"59.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"65.8\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"71.4\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"75.9\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"80.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"84.1\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"88.6\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"94.2\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"101.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"109.2\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"118.6\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"129.1\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"140.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"150.9\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"161.4\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"170.8\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"179.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"185.8\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"191.4\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"195.9\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"200.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"204.1\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"208.6\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"214.2\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"221.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"229.2\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"238.6\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"249.1\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"260.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"270.9\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"281.4\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"290.8\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"299.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"305.8\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"311.4\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"315.9\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"320.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"324.1\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"328.6\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"334.2\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"341.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"349.2\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"358.6\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"369.1\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"380.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><circle cx=\"200\" cy=\"80\" r=\"4\" fill=\"#dc2626\"/><circle cx=\"320\" cy=\"80\" r=\"4\" fill=\"#dc2626\"/><text x=\"200\" y=\"128\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\">a</text><text x=\"320\" y=\"128\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\">b</text></svg>",
+      springTrans: "<svg viewBox=\"0 0 400 170\" role=\"img\" aria-label=\"上下振動的彈簧波，a、b 為彈簧上的兩點\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><polyline points=\"30,50 31.7,50.1 33.3,50.3 35,50.8 36.6,51.3 38.3,52.1 39.9,53 41.6,54 43.2,55.3 44.9,56.6 46.5,58.1 48.2,59.7 49.8,61.5 51.5,63.4 53.1,65.4 54.7,67.5 56.4,69.6 58,71.9 59.7,74.3 61.3,76.7 63,79.1 64.6,81.7 66.3,84.2 67.9,86.8 69.6,89.4 71.2,92 72.9,94.5 74.5,97.1 76.2,99.6 77.8,102.1 79.5,104.6 81.1,107 82.8,109.3 84.4,111.5 86.1,113.6 87.7,115.7 89.4,117.6 91,119.4 92.7,121.1 94.3,122.7 96,124.1 97.6,125.4 99.3,126.5 100.9,127.5 102.6,128.3 104.3,129 105.9,129.5 107.6,129.8 109.2,130 110.9,130 112.5,129.8 114.2,129.5 115.8,129 117.5,128.3 119.1,127.5 120.8,126.5 122.4,125.4 124.1,124.1 125.7,122.6 127.4,121.1 129,119.4 130.7,117.6 132.3,115.6 134,113.6 135.6,111.4 137.3,109.2 138.9,106.9 140.6,104.5 142.2,102.1 143.9,99.6 145.5,97 147.2,94.5 148.8,91.9 150.5,89.3 152.1,86.7 153.8,84.1 155.4,81.6 157.1,79.1 158.7,76.6 160.4,74.2 162,71.8 163.7,69.6 165.3,67.4 167,65.3 168.6,63.3 170.3,61.4 171.9,59.7 173.6,58.1 175.2,56.6 176.9,55.2 178.5,54 180.2,53 181.8,52.1 183.5,51.3 185.1,50.7 186.8,50.3 188.4,50.1 190.1,50 191.7,50.1 193.4,50.3 195,50.8 196.7,51.4 198.3,52.1 200,53 201.6,54.1 203.3,55.3 204.9,56.7 206.6,58.2 208.2,59.8 209.9,61.5 211.5,63.4 213.2,65.4 214.8,67.5 216.5,69.7 218.1,72 219.8,74.3 221.4,76.7 223.1,79.2 224.7,81.7 226.4,84.3 228,86.9 229.7,89.5 231.3,92 233,94.6 234.6,97.2 236.3,99.7 237.9,102.2 239.6,104.7 241.2,107 242.9,109.3 244.5,111.6 246.2,113.7 247.8,115.7 249.5,117.7 251.1,119.5 252.8,121.2 254.4,122.7 256.1,124.1 257.7,125.4 259.4,126.6 261,127.5 262.7,128.3 264.3,129 266,129.5 267.6,129.8 269.3,130 270.9,130 272.6,129.8 274.2,129.5 275.9,128.9 277.5,128.3 279.2,127.4 280.8,126.5 282.5,125.3 284.1,124 285.8,122.6 287.4,121 289.1,119.3 290.7,117.5 292.4,115.6 294,113.5 295.7,111.4 297.3,109.1 299,106.8 300.6,104.4 302.3,102 303.9,99.5 305.6,97 307.2,94.4 308.9,91.8 310.5,89.2 312.2,86.6 313.8,84.1 315.5,81.5 317.1,79 318.8,76.5 320.4,74.1 322.1,71.8 323.7,69.5 325.4,67.3 327,65.2 328.7,63.3 330.3,61.4 332,59.6 333.6,58 335.2,56.5 336.9,55.2 338.5,54 340.2,52.9 341.8,52 343.5,51.3 345.1,50.7 346.8,50.3 348.4,50.1 350.1,50 351.7,50.1 353.4,50.4 355,50.8 356.7,51.4 358.3,52.1 360,53\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"14\" stroke-linejoin=\"round\"/><polyline points=\"30,50 31.7,50.1 33.3,50.3 35,50.8 36.6,51.3 38.3,52.1 39.9,53 41.6,54 43.2,55.3 44.9,56.6 46.5,58.1 48.2,59.7 49.8,61.5 51.5,63.4 53.1,65.4 54.7,67.5 56.4,69.6 58,71.9 59.7,74.3 61.3,76.7 63,79.1 64.6,81.7 66.3,84.2 67.9,86.8 69.6,89.4 71.2,92 72.9,94.5 74.5,97.1 76.2,99.6 77.8,102.1 79.5,104.6 81.1,107 82.8,109.3 84.4,111.5 86.1,113.6 87.7,115.7 89.4,117.6 91,119.4 92.7,121.1 94.3,122.7 96,124.1 97.6,125.4 99.3,126.5 100.9,127.5 102.6,128.3 104.3,129 105.9,129.5 107.6,129.8 109.2,130 110.9,130 112.5,129.8 114.2,129.5 115.8,129 117.5,128.3 119.1,127.5 120.8,126.5 122.4,125.4 124.1,124.1 125.7,122.6 127.4,121.1 129,119.4 130.7,117.6 132.3,115.6 134,113.6 135.6,111.4 137.3,109.2 138.9,106.9 140.6,104.5 142.2,102.1 143.9,99.6 145.5,97 147.2,94.5 148.8,91.9 150.5,89.3 152.1,86.7 153.8,84.1 155.4,81.6 157.1,79.1 158.7,76.6 160.4,74.2 162,71.8 163.7,69.6 165.3,67.4 167,65.3 168.6,63.3 170.3,61.4 171.9,59.7 173.6,58.1 175.2,56.6 176.9,55.2 178.5,54 180.2,53 181.8,52.1 183.5,51.3 185.1,50.7 186.8,50.3 188.4,50.1 190.1,50 191.7,50.1 193.4,50.3 195,50.8 196.7,51.4 198.3,52.1 200,53 201.6,54.1 203.3,55.3 204.9,56.7 206.6,58.2 208.2,59.8 209.9,61.5 211.5,63.4 213.2,65.4 214.8,67.5 216.5,69.7 218.1,72 219.8,74.3 221.4,76.7 223.1,79.2 224.7,81.7 226.4,84.3 228,86.9 229.7,89.5 231.3,92 233,94.6 234.6,97.2 236.3,99.7 237.9,102.2 239.6,104.7 241.2,107 242.9,109.3 244.5,111.6 246.2,113.7 247.8,115.7 249.5,117.7 251.1,119.5 252.8,121.2 254.4,122.7 256.1,124.1 257.7,125.4 259.4,126.6 261,127.5 262.7,128.3 264.3,129 266,129.5 267.6,129.8 269.3,130 270.9,130 272.6,129.8 274.2,129.5 275.9,128.9 277.5,128.3 279.2,127.4 280.8,126.5 282.5,125.3 284.1,124 285.8,122.6 287.4,121 289.1,119.3 290.7,117.5 292.4,115.6 294,113.5 295.7,111.4 297.3,109.1 299,106.8 300.6,104.4 302.3,102 303.9,99.5 305.6,97 307.2,94.4 308.9,91.8 310.5,89.2 312.2,86.6 313.8,84.1 315.5,81.5 317.1,79 318.8,76.5 320.4,74.1 322.1,71.8 323.7,69.5 325.4,67.3 327,65.2 328.7,63.3 330.3,61.4 332,59.6 333.6,58 335.2,56.5 336.9,55.2 338.5,54 340.2,52.9 341.8,52 343.5,51.3 345.1,50.7 346.8,50.3 348.4,50.1 350.1,50 351.7,50.1 353.4,50.4 355,50.8 356.7,51.4 358.3,52.1 360,53\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"6\" stroke-linejoin=\"round\"/><circle cx=\"38\" cy=\"52\" r=\"5\" fill=\"#dc2626\"/><circle cx=\"198\" cy=\"52\" r=\"5\" fill=\"#dc2626\"/><text x=\"42\" y=\"82\" font-size=\"16\" font-weight=\"700\">a</text><text x=\"202\" y=\"82\" font-size=\"16\" font-weight=\"700\">b</text><text x=\"14\" y=\"40\" font-size=\"14\" font-weight=\"700\">上</text><text x=\"14\" y=\"160\" font-size=\"14\" font-weight=\"700\">下</text><line x1=\"240\" y1=\"22\" x2=\"351\" y2=\"22\" stroke=\"#082f49\" stroke-width=\"2\"/><polygon points=\"360,22 351,17.5 351,26.5\" fill=\"#082f49\"/><text x=\"300\" y=\"16\" text-anchor=\"middle\" font-size=\"13\">波前進方向</text></svg>",
+      tuner: "<svg viewBox=\"0 0 400 290\" role=\"img\" aria-label=\"圖1與圖2的聲音波形\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"50\" y=\"28\" width=\"320\" height=\"90\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"56\" y=\"20\" font-size=\"13\">圖1　頻率：X Hz</text><line x1=\"50\" y1=\"73\" x2=\"370\" y2=\"73\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><polyline points=\"50,73 51.6,68.5 53.2,64 54.8,59.7 56.4,55.7 58,51.8 59.6,48.4 61.2,45.3 62.8,42.6 64.4,40.4 66,38.8 67.6,37.6 69.2,37.1 70.8,37.1 72.4,37.6 74,38.8 75.6,40.4 77.2,42.6 78.8,45.3 80.4,48.4 82,51.8 83.6,55.7 85.2,59.7 86.8,64 88.4,68.5 90,73 91.6,77.5 93.2,82 94.8,86.3 96.4,90.3 98,94.2 99.6,97.6 101.2,100.7 102.8,103.4 104.4,105.6 106,107.2 107.6,108.4 109.2,108.9 110.8,108.9 112.4,108.4 114,107.2 115.6,105.6 117.2,103.4 118.8,100.7 120.4,97.6 122,94.2 123.6,90.3 125.2,86.3 126.8,82 128.4,77.5 130,73 131.6,68.5 133.2,64 134.8,59.7 136.4,55.7 138,51.8 139.6,48.4 141.2,45.3 142.8,42.6 144.4,40.4 146,38.8 147.6,37.6 149.2,37.1 150.8,37.1 152.4,37.6 154,38.8 155.6,40.4 157.2,42.6 158.8,45.3 160.4,48.4 162,51.8 163.6,55.7 165.2,59.7 166.8,64 168.4,68.5 170,73 171.6,77.5 173.2,82 174.8,86.3 176.4,90.3 178,94.2 179.6,97.6 181.2,100.7 182.8,103.4 184.4,105.6 186,107.2 187.6,108.4 189.2,108.9 190.8,108.9 192.4,108.4 194,107.2 195.6,105.6 197.2,103.4 198.8,100.7 200.4,97.6 202,94.2 203.6,90.3 205.2,86.3 206.8,82 208.4,77.5 210,73 211.6,68.5 213.2,64 214.8,59.7 216.4,55.7 218,51.8 219.6,48.4 221.2,45.3 222.8,42.6 224.4,40.4 226,38.8 227.6,37.6 229.2,37.1 230.8,37.1 232.4,37.6 234,38.8 235.6,40.4 237.2,42.6 238.8,45.3 240.4,48.4 242,51.8 243.6,55.7 245.2,59.7 246.8,64 248.4,68.5 250,73 251.6,77.5 253.2,82 254.8,86.3 256.4,90.3 258,94.2 259.6,97.6 261.2,100.7 262.8,103.4 264.4,105.6 266,107.2 267.6,108.4 269.2,108.9 270.8,108.9 272.4,108.4 274,107.2 275.6,105.6 277.2,103.4 278.8,100.7 280.4,97.6 282,94.2 283.6,90.3 285.2,86.3 286.8,82 288.4,77.5 290,73 291.6,68.5 293.2,64 294.8,59.7 296.4,55.7 298,51.8 299.6,48.4 301.2,45.3 302.8,42.6 304.4,40.4 306,38.8 307.6,37.6 309.2,37.1 310.8,37.1 312.4,37.6 314,38.8 315.6,40.4 317.2,42.6 318.8,45.3 320.4,48.4 322,51.8 323.6,55.7 325.2,59.7 326.8,64 328.4,68.5 330,73 331.6,77.5 333.2,82 334.8,86.3 336.4,90.3 338,94.2 339.6,97.6 341.2,100.7 342.8,103.4 344.4,105.6 346,107.2 347.6,108.4 349.2,108.9 350.8,108.9 352.4,108.4 354,107.2 355.6,105.6 357.2,103.4 358.8,100.7 360.4,97.6 362,94.2 363.6,90.3 365.2,86.3 366.8,82 368.4,77.5 370,73\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2\" stroke-linejoin=\"round\"/><text x=\"44\" y=\"41\" text-anchor=\"end\" font-size=\"11\">1</text><text x=\"44\" y=\"77\" text-anchor=\"end\" font-size=\"11\">0</text><text x=\"44\" y=\"113\" text-anchor=\"end\" font-size=\"11\">－1</text><line x1=\"50\" y1=\"118\" x2=\"50\" y2=\"124\" stroke=\"#082f49\" stroke-width=\"1\"/><text x=\"50\" y=\"138\" text-anchor=\"middle\" font-size=\"12\">0</text><line x1=\"210\" y1=\"118\" x2=\"210\" y2=\"124\" stroke=\"#082f49\" stroke-width=\"1\"/><text x=\"210\" y=\"138\" text-anchor=\"middle\" font-size=\"12\">0.01</text><line x1=\"370\" y1=\"118\" x2=\"370\" y2=\"124\" stroke=\"#082f49\" stroke-width=\"1\"/><text x=\"370\" y=\"138\" text-anchor=\"middle\" font-size=\"12\">0.02 秒</text><rect x=\"50\" y=\"170\" width=\"320\" height=\"90\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"56\" y=\"162\" font-size=\"13\">圖2　頻率：400 Hz</text><line x1=\"50\" y1=\"215\" x2=\"370\" y2=\"215\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><polyline points=\"50,215 51.6,206 53.2,197.7 54.8,190.4 56.4,184.6 58,180.8 59.6,179.1 61.2,179.6 62.8,182.4 64.4,187.3 66,193.8 67.6,201.7 69.2,210.5 70.8,219.5 72.4,228.3 74,236.2 75.6,242.7 77.2,247.6 78.8,250.4 80.4,250.9 82,249.2 83.6,245.4 85.2,239.6 86.8,232.3 88.4,224 90,215 91.6,206 93.2,197.7 94.8,190.4 96.4,184.6 98,180.8 99.6,179.1 101.2,179.6 102.8,182.4 104.4,187.3 106,193.8 107.6,201.7 109.2,210.5 110.8,219.5 112.4,228.3 114,236.2 115.6,242.7 117.2,247.6 118.8,250.4 120.4,250.9 122,249.2 123.6,245.4 125.2,239.6 126.8,232.3 128.4,224 130,215 131.6,206 133.2,197.7 134.8,190.4 136.4,184.6 138,180.8 139.6,179.1 141.2,179.6 142.8,182.4 144.4,187.3 146,193.8 147.6,201.7 149.2,210.5 150.8,219.5 152.4,228.3 154,236.2 155.6,242.7 157.2,247.6 158.8,250.4 160.4,250.9 162,249.2 163.6,245.4 165.2,239.6 166.8,232.3 168.4,224 170,215 171.6,206 173.2,197.7 174.8,190.4 176.4,184.6 178,180.8 179.6,179.1 181.2,179.6 182.8,182.4 184.4,187.3 186,193.8 187.6,201.7 189.2,210.5 190.8,219.5 192.4,228.3 194,236.2 195.6,242.7 197.2,247.6 198.8,250.4 200.4,250.9 202,249.2 203.6,245.4 205.2,239.6 206.8,232.3 208.4,224 210,215 211.6,206 213.2,197.7 214.8,190.4 216.4,184.6 218,180.8 219.6,179.1 221.2,179.6 222.8,182.4 224.4,187.3 226,193.8 227.6,201.7 229.2,210.5 230.8,219.5 232.4,228.3 234,236.2 235.6,242.7 237.2,247.6 238.8,250.4 240.4,250.9 242,249.2 243.6,245.4 245.2,239.6 246.8,232.3 248.4,224 250,215 251.6,206 253.2,197.7 254.8,190.4 256.4,184.6 258,180.8 259.6,179.1 261.2,179.6 262.8,182.4 264.4,187.3 266,193.8 267.6,201.7 269.2,210.5 270.8,219.5 272.4,228.3 274,236.2 275.6,242.7 277.2,247.6 278.8,250.4 280.4,250.9 282,249.2 283.6,245.4 285.2,239.6 286.8,232.3 288.4,224 290,215 291.6,206 293.2,197.7 294.8,190.4 296.4,184.6 298,180.8 299.6,179.1 301.2,179.6 302.8,182.4 304.4,187.3 306,193.8 307.6,201.7 309.2,210.5 310.8,219.5 312.4,228.3 314,236.2 315.6,242.7 317.2,247.6 318.8,250.4 320.4,250.9 322,249.2 323.6,245.4 325.2,239.6 326.8,232.3 328.4,224 330,215 331.6,206 333.2,197.7 334.8,190.4 336.4,184.6 338,180.8 339.6,179.1 341.2,179.6 342.8,182.4 344.4,187.3 346,193.8 347.6,201.7 349.2,210.5 350.8,219.5 352.4,228.3 354,236.2 355.6,242.7 357.2,247.6 358.8,250.4 360.4,250.9 362,249.2 363.6,245.4 365.2,239.6 366.8,232.3 368.4,224 370,215\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2\" stroke-linejoin=\"round\"/><text x=\"44\" y=\"183\" text-anchor=\"end\" font-size=\"11\">1</text><text x=\"44\" y=\"219\" text-anchor=\"end\" font-size=\"11\">0</text><text x=\"44\" y=\"255\" text-anchor=\"end\" font-size=\"11\">－1</text><line x1=\"50\" y1=\"260\" x2=\"50\" y2=\"266\" stroke=\"#082f49\" stroke-width=\"1\"/><text x=\"50\" y=\"280\" text-anchor=\"middle\" font-size=\"12\">0</text><line x1=\"370\" y1=\"260\" x2=\"370\" y2=\"266\" stroke=\"#082f49\" stroke-width=\"1\"/><text x=\"370\" y=\"280\" text-anchor=\"middle\" font-size=\"12\">Y 秒</text></svg>",
+      waterWave: "<svg viewBox=\"0 0 400 210\" role=\"img\" aria-label=\"水波波形圖，每格寬 20 cm、高 20 cm\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"70\" y1=\"40\" x2=\"70\" y2=\"160\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"130\" y1=\"40\" x2=\"130\" y2=\"160\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"190\" y1=\"40\" x2=\"190\" y2=\"160\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"250\" y1=\"40\" x2=\"250\" y2=\"160\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"310\" y1=\"40\" x2=\"310\" y2=\"160\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"70\" y1=\"40\" x2=\"310\" y2=\"40\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"70\" y1=\"100\" x2=\"310\" y2=\"100\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"70\" y1=\"160\" x2=\"310\" y2=\"160\" stroke=\"#94a3b8\" stroke-width=\"1\"/><polyline points=\"70,40 71.2,40.1 72.4,40.5 73.6,41.1 74.8,41.9 76,42.9 77.2,44.2 78.4,45.7 79.6,47.4 80.8,49.3 82,51.5 83.2,53.8 84.4,56.3 85.6,58.9 86.8,61.8 88,64.7 89.2,67.9 90.4,71.1 91.6,74.5 92.8,77.9 94,81.5 95.2,85.1 96.4,88.8 97.6,92.5 98.8,96.2 100,100 101.2,103.8 102.4,107.5 103.6,111.2 104.8,114.9 106,118.5 107.2,122.1 108.4,125.5 109.6,128.9 110.8,132.1 112,135.3 113.2,138.2 114.4,141.1 115.6,143.7 116.8,146.2 118,148.5 119.2,150.7 120.4,152.6 121.6,154.3 122.8,155.8 124,157.1 125.2,158.1 126.4,158.9 127.6,159.5 128.8,159.9 130,160 131.2,159.9 132.4,159.5 133.6,158.9 134.8,158.1 136,157.1 137.2,155.8 138.4,154.3 139.6,152.6 140.8,150.7 142,148.5 143.2,146.2 144.4,143.7 145.6,141.1 146.8,138.2 148,135.3 149.2,132.1 150.4,128.9 151.6,125.5 152.8,122.1 154,118.5 155.2,114.9 156.4,111.2 157.6,107.5 158.8,103.8 160,100 161.2,96.2 162.4,92.5 163.6,88.8 164.8,85.1 166,81.5 167.2,77.9 168.4,74.5 169.6,71.1 170.8,67.9 172,64.7 173.2,61.8 174.4,58.9 175.6,56.3 176.8,53.8 178,51.5 179.2,49.3 180.4,47.4 181.6,45.7 182.8,44.2 184,42.9 185.2,41.9 186.4,41.1 187.6,40.5 188.8,40.1 190,40 191.2,40.1 192.4,40.5 193.6,41.1 194.8,41.9 196,42.9 197.2,44.2 198.4,45.7 199.6,47.4 200.8,49.3 202,51.5 203.2,53.8 204.4,56.3 205.6,58.9 206.8,61.8 208,64.7 209.2,67.9 210.4,71.1 211.6,74.5 212.8,77.9 214,81.5 215.2,85.1 216.4,88.8 217.6,92.5 218.8,96.2 220,100 221.2,103.8 222.4,107.5 223.6,111.2 224.8,114.9 226,118.5 227.2,122.1 228.4,125.5 229.6,128.9 230.8,132.1 232,135.3 233.2,138.2 234.4,141.1 235.6,143.7 236.8,146.2 238,148.5 239.2,150.7 240.4,152.6 241.6,154.3 242.8,155.8 244,157.1 245.2,158.1 246.4,158.9 247.6,159.5 248.8,159.9 250,160 251.2,159.9 252.4,159.5 253.6,158.9 254.8,158.1 256,157.1 257.2,155.8 258.4,154.3 259.6,152.6 260.8,150.7 262,148.5 263.2,146.2 264.4,143.7 265.6,141.1 266.8,138.2 268,135.3 269.2,132.1 270.4,128.9 271.6,125.5 272.8,122.1 274,118.5 275.2,114.9 276.4,111.2 277.6,107.5 278.8,103.8 280,100 281.2,96.2 282.4,92.5 283.6,88.8 284.8,85.1 286,81.5 287.2,77.9 288.4,74.5 289.6,71.1 290.8,67.9 292,64.7 293.2,61.8 294.4,58.9 295.6,56.3 296.8,53.8 298,51.5 299.2,49.3 300.4,47.4 301.6,45.7 302.8,44.2 304,42.9 305.2,41.9 306.4,41.1 307.6,40.5 308.8,40.1 310,40\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><line x1=\"250\" y1=\"22\" x2=\"321\" y2=\"22\" stroke=\"#082f49\" stroke-width=\"2\"/><polygon points=\"330,22 321,17.5 321,26.5\" fill=\"#082f49\"/><text x=\"246\" y=\"27\" text-anchor=\"end\" font-size=\"13\">波的前進方向</text><text x=\"52\" y=\"75\" text-anchor=\"end\" font-size=\"13\">20 cm</text><line x1=\"60\" y1=\"70\" x2=\"60\" y2=\"95\" stroke=\"#082f49\" stroke-width=\"1.2\"/><polygon points=\"60,100 62.5,95 57.5,95\" fill=\"#082f49\"/><line x1=\"60\" y1=\"70\" x2=\"60\" y2=\"45\" stroke=\"#082f49\" stroke-width=\"1.2\"/><polygon points=\"60,40 57.5,45 62.5,45\" fill=\"#082f49\"/><text x=\"100\" y=\"186\" text-anchor=\"middle\" font-size=\"13\">20 cm</text><line x1=\"100\" y1=\"166\" x2=\"125\" y2=\"166\" stroke=\"#082f49\" stroke-width=\"1.2\"/><polygon points=\"130,166 125,163.5 125,168.5\" fill=\"#082f49\"/><line x1=\"100\" y1=\"166\" x2=\"75\" y2=\"166\" stroke=\"#082f49\" stroke-width=\"1.2\"/><polygon points=\"70,166 75,168.5 75,163.5\" fill=\"#082f49\"/></svg>",
+      waterWaveShift: "<svg viewBox=\"0 0 420 450\" role=\"img\" aria-label=\"現在的水波波形，以及甲、乙、丙、丁四種可能的波形\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><g><text x=\"10\" y=\"22\" font-size=\"15\">現在的波形（每格 20 cm，波向右前進）</text><line x1=\"110\" y1=\"34\" x2=\"110\" y2=\"114\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"150\" y1=\"34\" x2=\"150\" y2=\"114\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"190\" y1=\"34\" x2=\"190\" y2=\"114\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"230\" y1=\"34\" x2=\"230\" y2=\"114\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"270\" y1=\"34\" x2=\"270\" y2=\"114\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"110\" y1=\"34\" x2=\"270\" y2=\"34\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"110\" y1=\"74\" x2=\"270\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"110\" y1=\"114\" x2=\"270\" y2=\"114\" stroke=\"#94a3b8\" stroke-width=\"1\"/><polyline points=\"110,34 110.8,34.1 111.6,34.3 112.4,34.7 113.2,35.3 114,36 114.8,36.8 115.6,37.8 116.4,38.9 117.2,40.2 118,41.6 118.8,43.2 119.6,44.8 120.4,46.6 121.2,48.5 122,50.5 122.8,52.6 123.6,54.7 124.4,57 125.2,59.3 126,61.6 126.8,64.1 127.6,66.5 128.4,69 129.2,71.5 130,74 130.8,76.5 131.6,79 132.4,81.5 133.2,83.9 134,86.4 134.8,88.7 135.6,91 136.4,93.3 137.2,95.4 138,97.5 138.8,99.5 139.6,101.4 140.4,103.2 141.2,104.8 142,106.4 142.8,107.8 143.6,109.1 144.4,110.2 145.2,111.2 146,112 146.8,112.7 147.6,113.3 148.4,113.7 149.2,113.9 150,114 150.8,113.9 151.6,113.7 152.4,113.3 153.2,112.7 154,112 154.8,111.2 155.6,110.2 156.4,109.1 157.2,107.8 158,106.4 158.8,104.8 159.6,103.2 160.4,101.4 161.2,99.5 162,97.5 162.8,95.4 163.6,93.3 164.4,91 165.2,88.7 166,86.4 166.8,83.9 167.6,81.5 168.4,79 169.2,76.5 170,74 170.8,71.5 171.6,69 172.4,66.5 173.2,64.1 174,61.6 174.8,59.3 175.6,57 176.4,54.7 177.2,52.6 178,50.5 178.8,48.5 179.6,46.6 180.4,44.8 181.2,43.2 182,41.6 182.8,40.2 183.6,38.9 184.4,37.8 185.2,36.8 186,36 186.8,35.3 187.6,34.7 188.4,34.3 189.2,34.1 190,34 190.8,34.1 191.6,34.3 192.4,34.7 193.2,35.3 194,36 194.8,36.8 195.6,37.8 196.4,38.9 197.2,40.2 198,41.6 198.8,43.2 199.6,44.8 200.4,46.6 201.2,48.5 202,50.5 202.8,52.6 203.6,54.7 204.4,57 205.2,59.3 206,61.6 206.8,64.1 207.6,66.5 208.4,69 209.2,71.5 210,74 210.8,76.5 211.6,79 212.4,81.5 213.2,83.9 214,86.4 214.8,88.7 215.6,91 216.4,93.3 217.2,95.4 218,97.5 218.8,99.5 219.6,101.4 220.4,103.2 221.2,104.8 222,106.4 222.8,107.8 223.6,109.1 224.4,110.2 225.2,111.2 226,112 226.8,112.7 227.6,113.3 228.4,113.7 229.2,113.9 230,114 230.8,113.9 231.6,113.7 232.4,113.3 233.2,112.7 234,112 234.8,111.2 235.6,110.2 236.4,109.1 237.2,107.8 238,106.4 238.8,104.8 239.6,103.2 240.4,101.4 241.2,99.5 242,97.5 242.8,95.4 243.6,93.3 244.4,91 245.2,88.7 246,86.4 246.8,83.9 247.6,81.5 248.4,79 249.2,76.5 250,74 250.8,71.5 251.6,69 252.4,66.5 253.2,64.1 254,61.6 254.8,59.3 255.6,57 256.4,54.7 257.2,52.6 258,50.5 258.8,48.5 259.6,46.6 260.4,44.8 261.2,43.2 262,41.6 262.8,40.2 263.6,38.9 264.4,37.8 265.2,36.8 266,36 266.8,35.3 267.6,34.7 268.4,34.3 269.2,34.1 270,34\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/><line x1=\"290\" y1=\"74\" x2=\"321\" y2=\"74\" stroke=\"#082f49\" stroke-width=\"2\"/><polygon points=\"330,74 321,69.5 321,78.5\" fill=\"#082f49\"/></g><g transform=\"translate(0,124)\"><g transform=\"translate(0,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">甲</text><line x1=\"22\" y1=\"46\" x2=\"22\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"62\" y1=\"46\" x2=\"62\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"102\" y1=\"46\" x2=\"102\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"142\" y1=\"46\" x2=\"142\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"182\" y1=\"46\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"46\" x2=\"182\" y2=\"46\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"86\" x2=\"182\" y2=\"86\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"126\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><polyline points=\"22,46 22.8,46.1 23.6,46.3 24.4,46.7 25.2,47.3 26,48 26.8,48.8 27.6,49.8 28.4,50.9 29.2,52.2 30,53.6 30.8,55.2 31.6,56.8 32.4,58.6 33.2,60.5 34,62.5 34.8,64.6 35.6,66.7 36.4,69 37.2,71.3 38,73.6 38.8,76.1 39.6,78.5 40.4,81 41.2,83.5 42,86 42.8,88.5 43.6,91 44.4,93.5 45.2,95.9 46,98.4 46.8,100.7 47.6,103 48.4,105.3 49.2,107.4 50,109.5 50.8,111.5 51.6,113.4 52.4,115.2 53.2,116.8 54,118.4 54.8,119.8 55.6,121.1 56.4,122.2 57.2,123.2 58,124 58.8,124.7 59.6,125.3 60.4,125.7 61.2,125.9 62,126 62.8,125.9 63.6,125.7 64.4,125.3 65.2,124.7 66,124 66.8,123.2 67.6,122.2 68.4,121.1 69.2,119.8 70,118.4 70.8,116.8 71.6,115.2 72.4,113.4 73.2,111.5 74,109.5 74.8,107.4 75.6,105.3 76.4,103 77.2,100.7 78,98.4 78.8,95.9 79.6,93.5 80.4,91 81.2,88.5 82,86 82.8,83.5 83.6,81 84.4,78.5 85.2,76.1 86,73.6 86.8,71.3 87.6,69 88.4,66.7 89.2,64.6 90,62.5 90.8,60.5 91.6,58.6 92.4,56.8 93.2,55.2 94,53.6 94.8,52.2 95.6,50.9 96.4,49.8 97.2,48.8 98,48 98.8,47.3 99.6,46.7 100.4,46.3 101.2,46.1 102,46 102.8,46.1 103.6,46.3 104.4,46.7 105.2,47.3 106,48 106.8,48.8 107.6,49.8 108.4,50.9 109.2,52.2 110,53.6 110.8,55.2 111.6,56.8 112.4,58.6 113.2,60.5 114,62.5 114.8,64.6 115.6,66.7 116.4,69 117.2,71.3 118,73.6 118.8,76.1 119.6,78.5 120.4,81 121.2,83.5 122,86 122.8,88.5 123.6,91 124.4,93.5 125.2,95.9 126,98.4 126.8,100.7 127.6,103 128.4,105.3 129.2,107.4 130,109.5 130.8,111.5 131.6,113.4 132.4,115.2 133.2,116.8 134,118.4 134.8,119.8 135.6,121.1 136.4,122.2 137.2,123.2 138,124 138.8,124.7 139.6,125.3 140.4,125.7 141.2,125.9 142,126 142.8,125.9 143.6,125.7 144.4,125.3 145.2,124.7 146,124 146.8,123.2 147.6,122.2 148.4,121.1 149.2,119.8 150,118.4 150.8,116.8 151.6,115.2 152.4,113.4 153.2,111.5 154,109.5 154.8,107.4 155.6,105.3 156.4,103 157.2,100.7 158,98.4 158.8,95.9 159.6,93.5 160.4,91 161.2,88.5 162,86 162.8,83.5 163.6,81 164.4,78.5 165.2,76.1 166,73.6 166.8,71.3 167.6,69 168.4,66.7 169.2,64.6 170,62.5 170.8,60.5 171.6,58.6 172.4,56.8 173.2,55.2 174,53.6 174.8,52.2 175.6,50.9 176.4,49.8 177.2,48.8 178,48 178.8,47.3 179.6,46.7 180.4,46.3 181.2,46.1 182,46\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/></g><g transform=\"translate(210,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">乙</text><line x1=\"22\" y1=\"46\" x2=\"22\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"62\" y1=\"46\" x2=\"62\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"102\" y1=\"46\" x2=\"102\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"142\" y1=\"46\" x2=\"142\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"182\" y1=\"46\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"46\" x2=\"182\" y2=\"46\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"86\" x2=\"182\" y2=\"86\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"126\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><polyline points=\"22,126 22.8,125.9 23.6,125.7 24.4,125.3 25.2,124.7 26,124 26.8,123.2 27.6,122.2 28.4,121.1 29.2,119.8 30,118.4 30.8,116.8 31.6,115.2 32.4,113.4 33.2,111.5 34,109.5 34.8,107.4 35.6,105.3 36.4,103 37.2,100.7 38,98.4 38.8,95.9 39.6,93.5 40.4,91 41.2,88.5 42,86 42.8,83.5 43.6,81 44.4,78.5 45.2,76.1 46,73.6 46.8,71.3 47.6,69 48.4,66.7 49.2,64.6 50,62.5 50.8,60.5 51.6,58.6 52.4,56.8 53.2,55.2 54,53.6 54.8,52.2 55.6,50.9 56.4,49.8 57.2,48.8 58,48 58.8,47.3 59.6,46.7 60.4,46.3 61.2,46.1 62,46 62.8,46.1 63.6,46.3 64.4,46.7 65.2,47.3 66,48 66.8,48.8 67.6,49.8 68.4,50.9 69.2,52.2 70,53.6 70.8,55.2 71.6,56.8 72.4,58.6 73.2,60.5 74,62.5 74.8,64.6 75.6,66.7 76.4,69 77.2,71.3 78,73.6 78.8,76.1 79.6,78.5 80.4,81 81.2,83.5 82,86 82.8,88.5 83.6,91 84.4,93.5 85.2,95.9 86,98.4 86.8,100.7 87.6,103 88.4,105.3 89.2,107.4 90,109.5 90.8,111.5 91.6,113.4 92.4,115.2 93.2,116.8 94,118.4 94.8,119.8 95.6,121.1 96.4,122.2 97.2,123.2 98,124 98.8,124.7 99.6,125.3 100.4,125.7 101.2,125.9 102,126 102.8,125.9 103.6,125.7 104.4,125.3 105.2,124.7 106,124 106.8,123.2 107.6,122.2 108.4,121.1 109.2,119.8 110,118.4 110.8,116.8 111.6,115.2 112.4,113.4 113.2,111.5 114,109.5 114.8,107.4 115.6,105.3 116.4,103 117.2,100.7 118,98.4 118.8,95.9 119.6,93.5 120.4,91 121.2,88.5 122,86 122.8,83.5 123.6,81 124.4,78.5 125.2,76.1 126,73.6 126.8,71.3 127.6,69 128.4,66.7 129.2,64.6 130,62.5 130.8,60.5 131.6,58.6 132.4,56.8 133.2,55.2 134,53.6 134.8,52.2 135.6,50.9 136.4,49.8 137.2,48.8 138,48 138.8,47.3 139.6,46.7 140.4,46.3 141.2,46.1 142,46 142.8,46.1 143.6,46.3 144.4,46.7 145.2,47.3 146,48 146.8,48.8 147.6,49.8 148.4,50.9 149.2,52.2 150,53.6 150.8,55.2 151.6,56.8 152.4,58.6 153.2,60.5 154,62.5 154.8,64.6 155.6,66.7 156.4,69 157.2,71.3 158,73.6 158.8,76.1 159.6,78.5 160.4,81 161.2,83.5 162,86 162.8,88.5 163.6,91 164.4,93.5 165.2,95.9 166,98.4 166.8,100.7 167.6,103 168.4,105.3 169.2,107.4 170,109.5 170.8,111.5 171.6,113.4 172.4,115.2 173.2,116.8 174,118.4 174.8,119.8 175.6,121.1 176.4,122.2 177.2,123.2 178,124 178.8,124.7 179.6,125.3 180.4,125.7 181.2,125.9 182,126\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/></g><g transform=\"translate(0,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丙</text><line x1=\"22\" y1=\"46\" x2=\"22\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"62\" y1=\"46\" x2=\"62\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"102\" y1=\"46\" x2=\"102\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"142\" y1=\"46\" x2=\"142\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"182\" y1=\"46\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"46\" x2=\"182\" y2=\"46\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"86\" x2=\"182\" y2=\"86\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"126\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><polyline points=\"22,86 22.8,83.5 23.6,81 24.4,78.5 25.2,76.1 26,73.6 26.8,71.3 27.6,69 28.4,66.7 29.2,64.6 30,62.5 30.8,60.5 31.6,58.6 32.4,56.8 33.2,55.2 34,53.6 34.8,52.2 35.6,50.9 36.4,49.8 37.2,48.8 38,48 38.8,47.3 39.6,46.7 40.4,46.3 41.2,46.1 42,46 42.8,46.1 43.6,46.3 44.4,46.7 45.2,47.3 46,48 46.8,48.8 47.6,49.8 48.4,50.9 49.2,52.2 50,53.6 50.8,55.2 51.6,56.8 52.4,58.6 53.2,60.5 54,62.5 54.8,64.6 55.6,66.7 56.4,69 57.2,71.3 58,73.6 58.8,76.1 59.6,78.5 60.4,81 61.2,83.5 62,86 62.8,88.5 63.6,91 64.4,93.5 65.2,95.9 66,98.4 66.8,100.7 67.6,103 68.4,105.3 69.2,107.4 70,109.5 70.8,111.5 71.6,113.4 72.4,115.2 73.2,116.8 74,118.4 74.8,119.8 75.6,121.1 76.4,122.2 77.2,123.2 78,124 78.8,124.7 79.6,125.3 80.4,125.7 81.2,125.9 82,126 82.8,125.9 83.6,125.7 84.4,125.3 85.2,124.7 86,124 86.8,123.2 87.6,122.2 88.4,121.1 89.2,119.8 90,118.4 90.8,116.8 91.6,115.2 92.4,113.4 93.2,111.5 94,109.5 94.8,107.4 95.6,105.3 96.4,103 97.2,100.7 98,98.4 98.8,95.9 99.6,93.5 100.4,91 101.2,88.5 102,86 102.8,83.5 103.6,81 104.4,78.5 105.2,76.1 106,73.6 106.8,71.3 107.6,69 108.4,66.7 109.2,64.6 110,62.5 110.8,60.5 111.6,58.6 112.4,56.8 113.2,55.2 114,53.6 114.8,52.2 115.6,50.9 116.4,49.8 117.2,48.8 118,48 118.8,47.3 119.6,46.7 120.4,46.3 121.2,46.1 122,46 122.8,46.1 123.6,46.3 124.4,46.7 125.2,47.3 126,48 126.8,48.8 127.6,49.8 128.4,50.9 129.2,52.2 130,53.6 130.8,55.2 131.6,56.8 132.4,58.6 133.2,60.5 134,62.5 134.8,64.6 135.6,66.7 136.4,69 137.2,71.3 138,73.6 138.8,76.1 139.6,78.5 140.4,81 141.2,83.5 142,86 142.8,88.5 143.6,91 144.4,93.5 145.2,95.9 146,98.4 146.8,100.7 147.6,103 148.4,105.3 149.2,107.4 150,109.5 150.8,111.5 151.6,113.4 152.4,115.2 153.2,116.8 154,118.4 154.8,119.8 155.6,121.1 156.4,122.2 157.2,123.2 158,124 158.8,124.7 159.6,125.3 160.4,125.7 161.2,125.9 162,126 162.8,125.9 163.6,125.7 164.4,125.3 165.2,124.7 166,124 166.8,123.2 167.6,122.2 168.4,121.1 169.2,119.8 170,118.4 170.8,116.8 171.6,115.2 172.4,113.4 173.2,111.5 174,109.5 174.8,107.4 175.6,105.3 176.4,103 177.2,100.7 178,98.4 178.8,95.9 179.6,93.5 180.4,91 181.2,88.5 182,86\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/></g><g transform=\"translate(210,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丁</text><line x1=\"22\" y1=\"46\" x2=\"22\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"62\" y1=\"46\" x2=\"62\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"102\" y1=\"46\" x2=\"102\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"142\" y1=\"46\" x2=\"142\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"182\" y1=\"46\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"46\" x2=\"182\" y2=\"46\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"86\" x2=\"182\" y2=\"86\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"126\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><polyline points=\"22,86 22.8,88.5 23.6,91 24.4,93.5 25.2,95.9 26,98.4 26.8,100.7 27.6,103 28.4,105.3 29.2,107.4 30,109.5 30.8,111.5 31.6,113.4 32.4,115.2 33.2,116.8 34,118.4 34.8,119.8 35.6,121.1 36.4,122.2 37.2,123.2 38,124 38.8,124.7 39.6,125.3 40.4,125.7 41.2,125.9 42,126 42.8,125.9 43.6,125.7 44.4,125.3 45.2,124.7 46,124 46.8,123.2 47.6,122.2 48.4,121.1 49.2,119.8 50,118.4 50.8,116.8 51.6,115.2 52.4,113.4 53.2,111.5 54,109.5 54.8,107.4 55.6,105.3 56.4,103 57.2,100.7 58,98.4 58.8,95.9 59.6,93.5 60.4,91 61.2,88.5 62,86 62.8,83.5 63.6,81 64.4,78.5 65.2,76.1 66,73.6 66.8,71.3 67.6,69 68.4,66.7 69.2,64.6 70,62.5 70.8,60.5 71.6,58.6 72.4,56.8 73.2,55.2 74,53.6 74.8,52.2 75.6,50.9 76.4,49.8 77.2,48.8 78,48 78.8,47.3 79.6,46.7 80.4,46.3 81.2,46.1 82,46 82.8,46.1 83.6,46.3 84.4,46.7 85.2,47.3 86,48 86.8,48.8 87.6,49.8 88.4,50.9 89.2,52.2 90,53.6 90.8,55.2 91.6,56.8 92.4,58.6 93.2,60.5 94,62.5 94.8,64.6 95.6,66.7 96.4,69 97.2,71.3 98,73.6 98.8,76.1 99.6,78.5 100.4,81 101.2,83.5 102,86 102.8,88.5 103.6,91 104.4,93.5 105.2,95.9 106,98.4 106.8,100.7 107.6,103 108.4,105.3 109.2,107.4 110,109.5 110.8,111.5 111.6,113.4 112.4,115.2 113.2,116.8 114,118.4 114.8,119.8 115.6,121.1 116.4,122.2 117.2,123.2 118,124 118.8,124.7 119.6,125.3 120.4,125.7 121.2,125.9 122,126 122.8,125.9 123.6,125.7 124.4,125.3 125.2,124.7 126,124 126.8,123.2 127.6,122.2 128.4,121.1 129.2,119.8 130,118.4 130.8,116.8 131.6,115.2 132.4,113.4 133.2,111.5 134,109.5 134.8,107.4 135.6,105.3 136.4,103 137.2,100.7 138,98.4 138.8,95.9 139.6,93.5 140.4,91 141.2,88.5 142,86 142.8,83.5 143.6,81 144.4,78.5 145.2,76.1 146,73.6 146.8,71.3 147.6,69 148.4,66.7 149.2,64.6 150,62.5 150.8,60.5 151.6,58.6 152.4,56.8 153.2,55.2 154,53.6 154.8,52.2 155.6,50.9 156.4,49.8 157.2,48.8 158,48 158.8,47.3 159.6,46.7 160.4,46.3 161.2,46.1 162,46 162.8,46.1 163.6,46.3 164.4,46.7 165.2,47.3 166,48 166.8,48.8 167.6,49.8 168.4,50.9 169.2,52.2 170,53.6 170.8,55.2 171.6,56.8 172.4,58.6 173.2,60.5 174,62.5 174.8,64.6 175.6,66.7 176.4,69 177.2,71.3 178,73.6 178.8,76.1 179.6,78.5 180.4,81 181.2,83.5 182,86\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/></g></g></svg>",
+      waveParts: "<svg viewBox=\"0 0 400 200\" role=\"img\" aria-label=\"波形圖上標示 A 到 E\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"30\" y1=\"100\" x2=\"371\" y2=\"100\" stroke=\"#52677a\" stroke-width=\"1.5\"/><polygon points=\"380,100 371,95.5 371,104.5\" fill=\"#52677a\"/><polyline points=\"40,100 41.2,97.6 42.4,95.3 43.6,93 44.8,90.6 46,88.3 47.2,86.1 48.4,83.8 49.6,81.6 50.8,79.4 52,77.3 53.2,75.2 54.4,73.2 55.6,71.2 56.8,69.4 58,67.5 59.2,65.8 60.4,64.1 61.6,62.5 62.8,61 64,59.5 65.2,58.2 66.4,57 67.6,55.8 68.8,54.8 70,53.8 71.2,53 72.4,52.2 73.6,51.6 74.8,51 76,50.6 77.2,50.3 78.4,50.1 79.6,50 80.8,50 82,50.2 83.2,50.4 84.4,50.7 85.6,51.2 86.8,51.8 88,52.4 89.2,53.2 90.4,54.1 91.6,55.1 92.8,56.2 94,57.4 95.2,58.6 96.4,60 97.6,61.5 98.8,63 100,64.6 101.2,66.3 102.4,68.1 103.6,70 104.8,71.9 106,73.9 107.2,75.9 108.4,78 109.6,80.1 110.8,82.3 112,84.5 113.2,86.8 114.4,89.1 115.6,91.4 116.8,93.7 118,96.1 119.2,98.4 120.4,100.8 121.6,103.1 122.8,105.5 124,107.8 125.2,110.1 126.4,112.4 127.6,114.7 128.8,116.9 130,119.1 131.2,121.3 132.4,123.4 133.6,125.5 134.8,127.5 136,129.4 137.2,131.3 138.4,133.1 139.6,134.8 140.8,136.4 142,138 143.2,139.5 144.4,140.9 145.6,142.2 146.8,143.4 148,144.6 149.2,145.6 150.4,146.5 151.6,147.3 152.8,148 154,148.6 155.2,149.1 156.4,149.5 157.6,149.8 158.8,149.9 160,150 161.2,149.9 162.4,149.8 163.6,149.5 164.8,149.1 166,148.6 167.2,148 168.4,147.3 169.6,146.5 170.8,145.6 172,144.6 173.2,143.4 174.4,142.2 175.6,140.9 176.8,139.5 178,138 179.2,136.4 180.4,134.8 181.6,133.1 182.8,131.3 184,129.4 185.2,127.5 186.4,125.5 187.6,123.4 188.8,121.3 190,119.1 191.2,116.9 192.4,114.7 193.6,112.4 194.8,110.1 196,107.8 197.2,105.5 198.4,103.1 199.6,100.8 200.8,98.4 202,96.1 203.2,93.7 204.4,91.4 205.6,89.1 206.8,86.8 208,84.5 209.2,82.3 210.4,80.1 211.6,78 212.8,75.9 214,73.9 215.2,71.9 216.4,70 217.6,68.1 218.8,66.3 220,64.6 221.2,63 222.4,61.5 223.6,60 224.8,58.6 226,57.4 227.2,56.2 228.4,55.1 229.6,54.1 230.8,53.2 232,52.4 233.2,51.8 234.4,51.2 235.6,50.7 236.8,50.4 238,50.2 239.2,50 240.4,50 241.6,50.1 242.8,50.3 244,50.6 245.2,51 246.4,51.6 247.6,52.2 248.8,53 250,53.8 251.2,54.8 252.4,55.8 253.6,57 254.8,58.2 256,59.5 257.2,61 258.4,62.5 259.6,64.1 260.8,65.8 262,67.5 263.2,69.4 264.4,71.2 265.6,73.2 266.8,75.2 268,77.3 269.2,79.4 270.4,81.6 271.6,83.8 272.8,86.1 274,88.3 275.2,90.6 276.4,93 277.6,95.3 278.8,97.6 280,100\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><line x1=\"80\" y1=\"26\" x2=\"80\" y2=\"48\" stroke=\"#52677a\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"240\" y1=\"26\" x2=\"240\" y2=\"48\" stroke=\"#52677a\" stroke-width=\"1\" stroke-dasharray=\"3 3\"/><line x1=\"160\" y1=\"32\" x2=\"233\" y2=\"32\" stroke=\"#082f49\" stroke-width=\"1.5\"/><polygon points=\"240,32 233,28.5 233,35.5\" fill=\"#082f49\"/><line x1=\"160\" y1=\"32\" x2=\"87\" y2=\"32\" stroke=\"#082f49\" stroke-width=\"1.5\"/><polygon points=\"80,32 87,35.5 87,28.5\" fill=\"#082f49\"/><text x=\"160\" y=\"26\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\">B</text><line x1=\"80\" y1=\"75\" x2=\"80\" y2=\"57\" stroke=\"#082f49\" stroke-width=\"1.5\"/><polygon points=\"80,50 76.5,57 83.5,57\" fill=\"#082f49\"/><line x1=\"80\" y1=\"75\" x2=\"80\" y2=\"93\" stroke=\"#082f49\" stroke-width=\"1.5\"/><polygon points=\"80,100 83.5,93 76.5,93\" fill=\"#082f49\"/><text x=\"68\" y=\"80\" text-anchor=\"end\" font-size=\"16\" font-weight=\"700\">A</text><circle cx=\"160\" cy=\"150\" r=\"4\" fill=\"#082f49\"/><text x=\"148\" y=\"170\" font-size=\"16\" font-weight=\"700\">C</text><text x=\"250\" y=\"150\" font-size=\"15\">D＝0.5 秒／次</text><text x=\"250\" y=\"174\" font-size=\"15\">E＝2 次／秒</text></svg>"
+    };
+    const questions = [
+      {
+        chapter: 'ch3', section: "3・1 波的傳播",
+        context: "報導：「重力波」是愛因斯坦預測的物理現象之一。重力波的傳播不需要介質，傳播速率與電磁波相同，都以光速傳播。",
+        q: "根據報導，下列有關重力波的敘述何者最合理？",
+        options: ["與彈簧波一樣都屬於力學波", "與電磁波一樣都屬於力學波", "與光波一樣都不屬於力學波", "與聲波一樣都不屬於力學波"],
+        answer: "與光波一樣都不屬於力學波",
+        explain: "需要介質才能傳播的是力學波，例如彈簧波、聲波；電磁波、光波不需要介質。重力波傳播不需要介質，所以和光波一樣不屬於力學波。"
+      },
+      {
+        chapter: 'ch3', section: "3・1 波的傳播",
+        context: "彈簧前後來回振動，產生一疏一密、向前（右）傳播的彈簧波；a、b 兩點是相鄰兩個密部的對應位置。",
+        figure: FIG.springLong,
+        q: "關於這個彈簧波，下列敘述何者錯誤？",
+        options: ["a、b 兩點的距離為一個波長", "波向前傳播時，彈簧也隨波向前移動", "能量沿波前進的方向朝右傳播", "所產生的波為縱波"],
+        answer: "波向前傳播時，彈簧也隨波向前移動",
+        explain: "波只傳遞能量，介質（彈簧）只在原位置附近來回振動，不會隨波向前移動。前後振動的方向與波前進方向平行，所以是縱波。"
+      },
+      {
+        chapter: 'ch3', section: "3・1 波的傳播",
+        context: "彈簧上下振動，產生向右傳播的彈簧波；a、b 是彈簧上的兩點。",
+        figure: FIG.springTrans,
+        q: "關於這個彈簧波，下列敘述何者正確？",
+        options: ["所產生的波為縱波", "相同時間內，a 點振動次數比 b 點多", "若 a 點來回振動一次需 3 秒，則 b 點需 2 秒", "a、b 兩點的振動方向垂直於波前進方向"],
+        answer: "a、b 兩點的振動方向垂直於波前進方向",
+        explain: "上下振動、向右傳播，振動方向和前進方向垂直，是橫波。同一個波上的各點，振動次數與振動一次所需時間都相同。"
+      },
+      {
+        chapter: 'ch3', section: "3・1 波的傳播",
+        context: "波形圖中以 A～E 標示波的各項性質（如圖）。",
+        figure: FIG.waveParts,
+        q: "下列「名稱—代號」的配對，何者完全正確？",
+        options: ["波谷 C、波長 B、振幅 A、週期 D、頻率 E", "波谷 C、波長 A、振幅 B、週期 D、頻率 E", "波谷 C、波長 B、振幅 A、週期 E、頻率 D", "波谷 A、波長 B、振幅 C、週期 D、頻率 E"],
+        answer: "波谷 C、波長 B、振幅 A、週期 D、頻率 E",
+        explain: "振幅是波峰（或波谷）到原靜止位置的距離；波長是相鄰兩波峰的距離；週期的單位是「秒／次」，頻率的單位是「次／秒」，也就是赫（Hz）。"
+      },
+      {
+        chapter: 'ch3', section: "3・1 波的傳播",
+        q: "某波的週期為 0.5 秒／次、頻率為 2 次／秒。週期與頻率有什麼關係？",
+        options: ["頻率＝1 ÷ 週期，兩者互為倒數", "頻率＝週期，只是單位不同", "頻率越大，週期也越大", "頻率與週期沒有關係"],
+        answer: "頻率＝1 ÷ 週期，兩者互為倒數",
+        explain: "振動一次要 0.5 秒，1 秒就能振動 1 ÷ 0.5＝2 次。頻率＝1／週期，頻率越大，週期越小。"
+      },
+      {
+        chapter: 'ch3', section: "3・1 波的傳播",
+        context: "小雯在平靜池塘用魚餌製造連續水波，8 秒內產生的水波波形如圖（每格寬 20 cm、高 20 cm）。",
+        figure: FIG.waterWave,
+        q: "此水波的振幅及波長分別為多少？",
+        options: ["振幅 20 cm；波長 40 cm", "振幅 20 cm；波長 20 cm", "振幅 40 cm；波長 40 cm", "振幅 40 cm；波長 20 cm"],
+        answer: "振幅 20 cm；波長 40 cm",
+        explain: "振幅是波峰到原靜止位置的距離＝1 格＝20 cm；波長是相鄰兩波峰的距離＝2 格＝40 cm。"
+      },
+      {
+        chapter: 'ch3', section: "3・1 波的傳播",
+        context: "小雯製造的水波：8 秒內產生 2 個完整的波，波長 40 cm。",
+        figure: FIG.waterWaveShift,
+        q: "再經過 1 秒後，水波的波形應為圖中哪一個？",
+        options: ["圖甲", "圖乙", "圖丙", "圖丁"],
+        answer: "圖丙",
+        explain: "8 秒產生 2 個波，週期＝4 秒。經過 1 秒是四分之一個週期，波形向前（右）移動四分之一個波長＝10 cm（半格），所以是圖丙。圖甲是經過 4 秒、圖乙是經過 2 秒、圖丁是經過 3 秒後的樣子。"
+      },
+      {
+        chapter: 'ch3', section: "3・1 波的傳播",
+        context: "小雯製造的水波：8 秒內產生 2 個完整的波。",
+        figure: FIG.waterWave,
+        q: "此水波的頻率為多少赫？",
+        options: ["4 Hz", "1 Hz", "0.5 Hz", "0.25 Hz"],
+        answer: "0.25 Hz",
+        explain: "8 秒產生 2 個波，週期＝4 秒；頻率＝1 ÷ 週期＝1 ÷ 4＝0.25 Hz。"
+      },
+      {
+        chapter: 'ch3', section: "3・1 波的傳播",
+        context: "小雯製造的水波：頻率 0.25 Hz，波長 40 cm。",
+        figure: FIG.waterWave,
+        q: "此水波的波速為多少公尺／秒？",
+        options: ["160 m/s", "10 m/s", "0.1 m/s", "0.01 m/s"],
+        answer: "0.1 m/s",
+        explain: "波速＝頻率 × 波長＝0.25 Hz × 40 cm＝10 cm/s＝0.1 m/s。注意單位換算：100 cm＝1 m。"
+      },
+      {
+        chapter: 'ch3', section: "3・1 波的傳播",
+        context: "戰繩是一種健身器材：繩子中間固定在牆上的掛勾，訓練者手持兩端甩繩，製造繩波。",
+        q: "若想讓戰繩在相同時間內產生更多個波，訓練者應如何調整？",
+        options: ["以更大的幅度擺動戰繩", "以更快的速度擺動戰繩", "以更慢的速度擺動戰繩", "以上方法都無法成功"],
+        answer: "以更快的速度擺動戰繩",
+        explain: "擺動得更快，振動頻率增加，單位時間內產生的波就變多。擺動幅度變大只會讓振幅變大。"
+      },
+      {
+        chapter: 'ch3', section: "3・1 波的傳播",
+        context: "戰繩是一種健身器材：繩子中間固定在牆上的掛勾，訓練者手持兩端甩繩，製造繩波。",
+        q: "使用同一條戰繩，若想讓繩波更快到達牆壁，訓練者應如何調整？",
+        options: ["以更大的力氣擺動戰繩", "以更大的頻率擺動戰繩", "以更大的幅度擺動戰繩", "以上方法都無法成功"],
+        answer: "以上方法都無法成功",
+        explain: "波速由介質的種類和狀態決定。同一條戰繩、介質不變，怎麼甩，繩波的波速都相同；頻率變大只會讓波長變短。"
+      },
+      {
+        chapter: 'ch3', section: "3・2 聲波的產生與傳播",
+        q: "下列哪一個現象，可以證明聲音是由物體振動產生的？",
+        options: ["電鈴在玻璃罩內振動，抽出空氣後聲音漸漸變弱", "敲鼓發聲時，鼓面上的米粒隨鼓面振動而上下跳動", "聲音在水中的傳播速率比在空氣中快", "聲音在空氣中的傳播速率與氣溫有關"],
+        answer: "敲鼓發聲時，鼓面上的米粒隨鼓面振動而上下跳動",
+        explain: "米粒跳動顯示發聲的鼓面正在振動。抽氣實驗只能證明聲音傳播需要介質；另外兩項只說明聲速與介質種類、狀態有關。"
+      },
+      {
+        chapter: 'ch3', section: "3・2 聲波的產生與傳播",
+        q: "下列有關聲音的敘述，何者正確？",
+        options: ["在空氣中傳播的聲波是橫波", "聲音只能在空氣中傳播", "聲音在空氣中傳播時，空氣隨聲波向前移動", "聲音在空氣中傳播時，空氣在原位置附近隨聲波振動"],
+        answer: "聲音在空氣中傳播時，空氣在原位置附近隨聲波振動",
+        explain: "空氣中的聲波是縱波；固體、液體、氣體都能傳播聲音；介質只在原位置附近振動，不會跟著波前進。"
+      },
+      {
+        chapter: 'ch3', section: "3・2 聲波的產生與傳播",
+        q: "聲音在下列哪一種介質中傳播速率最快？",
+        options: ["20 ℃ 的水", "20 ℃ 的鋼鐵", "20 ℃ 的空氣", "15 ℃ 的空氣"],
+        answer: "20 ℃ 的鋼鐵",
+        explain: "聲速通常是固體＞液體＞氣體；同一種氣體，溫度越高聲速越快。鋼鐵是固體，傳得最快。"
+      },
+      {
+        chapter: 'ch3', section: "3・2 聲波的產生與傳播",
+        context: "米勒畫作《晚禱》中，農夫婦聽到遠處教堂傳來鐘聲而低頭禱告。鐘聲在傍晚五點響起，夫婦在 4 秒後聽到；當時空氣中的聲速為 340 m/s。",
+        q: "教堂距離夫婦多少公尺？",
+        options: ["85 m", "170 m", "680 m", "1360 m"],
+        answer: "1360 m",
+        explain: "距離＝聲速 × 時間＝340 m/s × 4 s＝1360 m。聲音只走單程，不需要除以 2。"
+      },
+      {
+        chapter: 'ch3', section: "3・2 聲波的產生與傳播",
+        context: "把電鈴放在抽氣機的玻璃罩內，通電後鈴槌持續敲擊電鈴；接著把罩內空氣漸漸抽出。",
+        figure: FIG.bellJar,
+        q: "抽氣過程中，聽到的電鈴音量會如何改變？",
+        options: ["變大", "不變", "變小", "不一定"],
+        answer: "變小",
+        explain: "罩內傳遞聲音的介質（空氣）越來越少，傳出來的聲音就越來越小。"
+      },
+      {
+        chapter: 'ch3', section: "3・2 聲波的產生與傳播",
+        context: "電鈴在玻璃罩內持續響，抽出罩內空氣後，聽到的聲音變小。",
+        q: "聲音變小的原因是什麼？",
+        options: ["鈴聲被抽氣機抽走了", "鈴槌振動頻率改變了", "空氣減少，缺乏傳播聲音的介質", "空氣減少，聲音傳播時受到的阻礙變小"],
+        answer: "空氣減少，缺乏傳播聲音的介質",
+        explain: "聲波是力學波，需要介質才能傳遞。介質變少，傳到耳朵的聲音就變小。"
+      },
+      {
+        chapter: 'ch3', section: "3・3 聲波的反射與超聲波",
+        q: "同學認為音樂教室的回聲太大，下列哪一項建議可以減少回聲？",
+        options: ["把四周牆壁處理得平整光滑", "把教室內的書櫃和擺設全部清空", "把天花板設計得更高", "在窗戶裝設窗簾或絨布幔"],
+        answer: "在窗戶裝設窗簾或絨布幔",
+        explain: "光滑堅硬的表面容易反射聲波；柔軟、有孔隙的表面容易吸收聲波。窗簾和絨布幔可以吸收聲音、減少回聲。"
+      },
+      {
+        chapter: 'ch3', section: "3・3 聲波的反射與超聲波",
+        context: "聽覺頻率範圍：人約 20～20,000 Hz；狗約 50～50,000 Hz。",
+        q: "沛沛用犬笛呼喚狗，狗聽得到，沛沛卻聽不見。哨音的頻率可能是多少？",
+        options: ["10 Hz", "1,000 Hz", "30,000 Hz", "300,000 Hz"],
+        answer: "30,000 Hz",
+        explain: "人聽不見、狗聽得見的頻率在 20,000～50,000 Hz 之間，只有 30,000 Hz 符合。"
+      },
+      {
+        chapter: 'ch3', section: "3・3 聲波的反射與超聲波",
+        context: "船由西向東行駛，用聲納探測海底深度。第 1～5 次收到回聲所需時間依序為 8、10、8、6、10 秒；海底越深，收到回聲的時間越長。",
+        figure: FIG.sonar,
+        q: "依據回聲時間，由西向東的海底地形最可能是哪一張圖？",
+        options: ["圖甲", "圖乙", "圖丙", "圖丁"],
+        answer: "圖丙",
+        explain: "回聲時間 8→10 表示變深，10→8→6 表示變淺，6→10 表示又變深；第 2 次與第 5 次都是 10 秒，深度相同。只有圖丙符合「先變深、再變淺、最後又變深」。"
+      },
+      {
+        chapter: 'ch3', section: "3・4 多變的聲音",
+        context: "音樂會中，音樂家演奏大鼓、小提琴、長笛等不同音色的樂器。",
+        q: "根據樂器發聲的特性，下列敘述何者錯誤？",
+        options: ["打擊大鼓時，鼓聲振幅越大，響度越大", "小提琴可以改變琴弦振動頻率，呈現不同音調", "吹奏長笛時只能改變音調，無法改變響度和音色", "不同樂器聲音的波形不同，所以音色不同"],
+        answer: "吹奏長笛時只能改變音調，無法改變響度和音色",
+        explain: "吹奏長笛時，按不同的孔可以改變音調，吹氣的強弱也能改變響度，所以「無法改變響度」是錯的。"
+      },
+      {
+        chapter: 'ch3', section: "3・4 多變的聲音",
+        context: "小雯的聽力檢查紀錄如圖：每個頻率標出單耳能聽見的最低音量（● 左耳、▲ 右耳）。",
+        figure: FIG.hearing,
+        q: "依據紀錄，下列敘述何者正確？",
+        options: ["左耳可聽見頻率 125 Hz、音量 10 dB 的聲音", "左耳聽不見頻率 8,000 Hz、音量 100 dB 的聲音", "右耳可聽見頻率 250 Hz、音量 40 dB 的聲音", "右耳聽不見頻率 4,000 Hz、音量 70 dB 的聲音"],
+        answer: "右耳聽不見頻率 4,000 Hz、音量 70 dB 的聲音",
+        explain: "紀錄是「能聽見的最低音量」，音量要大於或等於紀錄值才聽得見。右耳 4000 Hz 至少要 80 dB，70 dB 聽不見。"
+      },
+      {
+        chapter: 'ch3', section: "3・4 多變的聲音",
+        context: "尼龍弦線（長度 cm／粗細 mm）：A 15／0.23、B 20／0.23、C 20／0.28、D 25／0.23、E 25／0.28、F 25／0.38、G 30／0.23、H 30／0.28、I 30／0.33、J 30／0.38、K 35／0.23、L 35／0.33。",
+        q: "小軒想做類似古箏的樂器，要挑 5 條粗細相同、長度不同的弦線，以相同鬆緊程度安裝。應挑哪 5 條？",
+        options: ["A、B、D、G、K", "B、C、E、H、L", "A、C、F、J、L", "C、E、H、I、J"],
+        answer: "A、B、D、G、K",
+        explain: "A、B、D、G、K 的粗細都是 0.23 mm，長度分別為 15、20、25、30、35 cm，符合「粗細相同、長度不同」。"
+      },
+      {
+        chapter: 'ch3', section: "3・4 多變的聲音",
+        context: "弦線 A、B、D、G、K 粗細相同，長度依序為 15、20、25、30、35 cm，可彈出 Do、Re、Mi、Fa、Sol 五個音（Do 最低、Sol 最高）。",
+        q: "若想彈奏「Sol→Mi→Fa→Re→Do」，弦線編號依序為何？",
+        options: ["A→D→B→G→K", "K→D→G→B→A", "A→B→D→G→K", "K→G→D→B→A"],
+        answer: "A→D→B→G→K",
+        explain: "弦越短音調越高：A 是 Sol、B 是 Fa、D 是 Mi、G 是 Re、K 是 Do，所以 Sol→Mi→Fa→Re→Do 是 A→D→B→G→K。"
+      },
+      {
+        chapter: 'ch3', section: "3・4 多變的聲音",
+        context: "調音器測出尼龍弦線的聲音波形如圖 1。",
+        figure: FIG.tuner,
+        q: "圖 1 波形的頻率 X 是多少赫？",
+        options: ["2 Hz", "50 Hz", "200 Hz", "400 Hz"],
+        answer: "200 Hz",
+        explain: "頻率＝振動次數 ÷ 時間＝2 次 ÷ 0.01 s＝200 Hz。"
+      },
+      {
+        chapter: 'ch3', section: "3・4 多變的聲音",
+        context: "調音器測出另一個聲音的波形如圖 2，頻率為 400 Hz。",
+        figure: FIG.tuner,
+        q: "圖 2 的時間 Y 是多少秒？",
+        options: ["0.002 s", "0.02 s", "0.2 s", "50 s"],
+        answer: "0.02 s",
+        explain: "400 Hz 表示 1 秒振動 400 次；振動 8 次需要 8 ÷ 400＝0.02 s。"
+      },
+      {
+        chapter: 'ch3', section: "素養活用・來學烏克麗麗",
+        context: "烏克麗麗 4 條空弦的音高：Do 261.6 Hz、Mi 329.6 Hz、Sol 392.0 Hz、La 440.0 Hz；4 條琴弦粗細都不同，長度與鬆緊相近。",
+        q: "依空弦音高推測，琴弦由「最細到最粗」依序對應哪些音？",
+        options: ["La、Sol、Mi、Do", "Do、Mi、Sol、La", "La、Mi、Sol、Do", "Sol、La、Do、Mi"],
+        answer: "La、Sol、Mi、Do",
+        explain: "長度和鬆緊相近時，弦越細，振動頻率越高、音調越高。頻率由高到低是 La＞Sol＞Mi＞Do，所以由細到粗是 La、Sol、Mi、Do。"
+      },
+      {
+        chapter: 'ch3', section: "素養活用・來學烏克麗麗",
+        context: "說明書：琴弦②的空弦應為 Mi（329.6 Hz）；旋緊弦鈕可調高音調，旋鬆弦鈕可調低音調。調音器測得琴弦②為 300.0 Hz。",
+        q: "小軒應該如何轉弦鈕？原因是什麼？",
+        options: ["旋緊弦鈕：測得音調比正常值低，弦變緊可提高音調", "旋鬆弦鈕：測得音調比正常值低，弦變鬆可提高音調", "旋緊弦鈕：測得音調比正常值高，弦變緊可降低音調", "旋鬆弦鈕：測得音調比正常值高，弦變鬆可降低音調"],
+        answer: "旋緊弦鈕：測得音調比正常值低，弦變緊可提高音調",
+        explain: "300.0 Hz 比 Mi 的 329.6 Hz 低，音調太低；弦拉得越緊，頻率越高，所以要旋緊弦鈕。"
+      },
+      {
+        chapter: 'ch3', section: "素養活用・來學烏克麗麗",
+        context: "手機 APP：音訊編輯器—偵測聲音波形後修飾、轉化出其他音效；音頻偵測器—分析並顯示音訊中的各種頻率；音量檢測儀—測量聲音的分貝數。",
+        q: "沛沛沒有調音器，想用手機 APP 輔助調音，應選哪一個？",
+        options: ["音頻偵測器，因為可以測出琴聲的頻率，檢查是否走音", "音量檢測儀，因為走音時分貝數會改變", "音訊編輯器，因為可以把走音的聲音修成正確音色", "三個都可以，因為都能偵測聲音"],
+        answer: "音頻偵測器，因為可以測出琴聲的頻率，檢查是否走音",
+        explain: "音調由頻率決定，調音就是要檢查頻率是否正確；分貝是響度，音色由波形決定，都不能判斷是否走音。"
+      },
+      {
+        chapter: 'ch3', section: "閱讀趣・如何測量聲速",
+        context: "必歐實驗：在長鐵管一端敲擊一下，另一端的人把耳朵貼在鐵管上，會聽到兩次聲響。",
+        figure: FIG.ironPipe,
+        q: "小雯聽到的第一次與第二次聲響，分別經由什麼介質傳來？",
+        options: ["第一次經由鐵管、第二次經由空氣，因為聲音在固體中傳得比氣體快", "第一次經由空氣、第二次經由鐵管，因為聲音在空氣中傳得比固體快", "第一次經由鐵管、第二次經由空氣，因為鐵管比空氣的路徑短", "兩次都經由空氣，第二次是回聲"],
+        answer: "第一次經由鐵管、第二次經由空氣，因為聲音在固體中傳得比氣體快",
+        explain: "兩條路徑一樣長，但聲音在固體中的速率比氣體快很多，所以先聽到經鐵管傳來的聲音，再聽到經空氣傳來的聲音。"
+      },
+      {
+        chapter: 'ch3', section: "閱讀趣・如何測量聲速",
+        context: "鐵管長 510 m，當時空氣中的聲速為 340 m/s。",
+        figure: FIG.ironPipe,
+        q: "小軒敲擊鐵管後，小雯約經過幾秒會聽到從空氣傳來的聲響？",
+        options: ["0.5 s", "1 s", "1.5 s", "2 s"],
+        answer: "1.5 s",
+        explain: "時間＝距離 ÷ 速率＝510 m ÷ 340 m/s＝1.5 s。"
+      },
+      {
+        chapter: 'ch3', section: "閱讀趣・如何測量聲速",
+        context: "鐵管長 510 m，聲音經空氣傳到需要 1.5 s；小雯聽到的兩次聲響相差 1.4 秒。",
+        figure: FIG.ironPipe,
+        q: "聲音在鐵管中的傳播速率約為多少？",
+        options: ["362 m/s", "714 m/s", "2550 m/s", "5100 m/s"],
+        answer: "5100 m/s",
+        explain: "經鐵管傳來的時間＝1.5－1.4＝0.1 s；速率＝510 m ÷ 0.1 s＝5100 m/s。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・3 透鏡的成像觀察",
+        q: "已知凸透鏡會使平行光會聚。做透鏡成像實驗前，預測凸透鏡可能呈現哪一種像？",
+        options: ["實像與虛像都可能", "只能形成實像", "只能形成虛像", "無法形成任何像"],
+        answer: "實像與虛像都可能",
+        explain: "物體在焦點外時，凸透鏡形成倒立實像；在焦點內時，形成正立放大虛像，所以兩種都可能。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・3 透鏡的成像觀察",
+        q: "已知凹透鏡會使平行光發散。預測凹透鏡可能呈現哪一種像？",
+        options: ["只能形成虛像", "只能形成實像", "實像與虛像都可能", "無法形成任何像"],
+        answer: "只能形成虛像",
+        explain: "凹透鏡使光線發散，折射光不會實際交會，只能由反向延長線形成正立縮小虛像。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・3 透鏡的成像觀察",
+        figure: FIG.lensBench,
+        q: "凸透鏡成像實驗中，物距大於 2 倍焦距（2f）時，像距與成像性質為何？",
+        options: ["像距介於 f～2f，倒立縮小實像", "像距大於 2f，倒立放大實像", "像距等於 2f，倒立等大實像", "無法在紙屏成像，正立放大虛像"],
+        answer: "像距介於 f～2f，倒立縮小實像",
+        explain: "物體在 2 倍焦距外，像落在另一側 f～2f 之間，是倒立縮小的實像，照相機就是這種成像。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・3 透鏡的成像觀察",
+        figure: FIG.lensBench,
+        q: "凸透鏡成像實驗中，物距剛好等於 2 倍焦距（2f）時，像距與成像性質為何？",
+        options: ["像距介於 f～2f，倒立縮小實像", "像距大於 2f，倒立放大實像", "像距等於 2f，倒立等大實像", "無法在紙屏成像，正立放大虛像"],
+        answer: "像距等於 2f，倒立等大實像",
+        explain: "物距等於 2f 時，像距也等於 2f，形成和原物一樣大的倒立實像。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・3 透鏡的成像觀察",
+        figure: FIG.lensBench,
+        q: "凸透鏡成像實驗中，物距介於 1 倍焦距和 2 倍焦距之間（f～2f）時，像距與成像性質為何？",
+        options: ["像距介於 f～2f，倒立縮小實像", "像距大於 2f，倒立放大實像", "像距等於 2f，倒立等大實像", "無法在紙屏成像，正立放大虛像"],
+        answer: "像距大於 2f，倒立放大實像",
+        explain: "物體在 f～2f 之間，像落在另一側 2f 之外，是倒立放大的實像，投影機就是這種成像。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・3 透鏡的成像觀察",
+        figure: FIG.lensBench,
+        q: "凸透鏡成像實驗中，光源剛好放在焦點上（物距等於 f）時，結果為何？",
+        options: ["無法成像", "倒立等大實像", "正立放大虛像", "倒立縮小實像"],
+        answer: "無法成像",
+        explain: "從焦點發出的光經凸透鏡折射後平行射出，不會交會，所以無法成像。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・3 透鏡的成像觀察",
+        figure: FIG.lensBench,
+        q: "凸透鏡成像實驗中，物距小於焦距（f）時，成像情形為何？",
+        options: ["無法在紙屏上成像，從另一側透過透鏡可看到正立放大虛像", "可在紙屏上看到倒立放大實像", "可在紙屏上看到正立縮小實像", "無法在紙屏上成像，透過透鏡也看不到任何像"],
+        answer: "無法在紙屏上成像，從另一側透過透鏡可看到正立放大虛像",
+        explain: "物體在焦點內，折射光發散不會交會，紙屏接不到像；但眼睛透過透鏡可以看到正立放大虛像，放大鏡就是這樣用的。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・3 透鏡的成像觀察",
+        q: "把凸透鏡換成凹透鏡，物體分別放在焦距外與焦距內時，成像情形為何？",
+        options: ["兩種情況都無法在紙屏成像，都是正立縮小虛像", "焦距外是倒立縮小實像，焦距內是正立放大虛像", "兩種情況都可以在紙屏上看到倒立實像", "焦距外是正立縮小虛像，焦距內無法成像"],
+        answer: "兩種情況都無法在紙屏成像，都是正立縮小虛像",
+        explain: "凹透鏡只會使光發散，不論物距大小，都只能形成正立縮小的虛像，紙屏上接不到。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・3 透鏡的成像觀察",
+        q: "透鏡成像實驗中，「無法在紙屏上成像」代表什麼？若透過透鏡能看到像，那是哪一種像？",
+        options: ["光線沒有會聚到紙屏上；看到的是虛像", "光線太亮，使紙屏看不清楚；看到的是實像", "透鏡的焦距太短；看到的是實像", "紙屏離透鏡太近；看到的是實像"],
+        answer: "光線沒有會聚到紙屏上；看到的是虛像",
+        explain: "實像由實際光線交會而成，能投在紙屏上；虛像沒有實際光線交會，紙屏接不到，只能用眼睛透過透鏡看到。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・3 透鏡的成像觀察",
+        q: "光源剛好移到凸透鏡的焦點上時，為什麼觀察不到成像？",
+        options: ["從焦點發出的光經透鏡折射後平行射出，不會交會", "光線全部被透鏡反射回去", "光線經透鏡後又會聚回焦點，與光源重疊", "透鏡在焦點處會吸收所有光線"],
+        answer: "從焦點發出的光經透鏡折射後平行射出，不會交會",
+        explain: "根據光的可逆性：平行光經凸透鏡會聚在焦點；反過來，從焦點發出的光經凸透鏡後會平行射出，不會交會成像。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・3 透鏡的成像觀察",
+        q: "綜合透鏡成像實驗結果，下列敘述何者正確？",
+        options: ["凸透鏡可成放大、等大、縮小的倒立實像及正立放大虛像；凹透鏡只成正立縮小虛像", "凸透鏡只能成實像；凹透鏡只能成虛像", "凸透鏡只能成倒立縮小實像；凹透鏡可成正立放大虛像", "凸透鏡與凹透鏡都能成倒立實像"],
+        answer: "凸透鏡可成放大、等大、縮小的倒立實像及正立放大虛像；凹透鏡只成正立縮小虛像",
+        explain: "凸透鏡的成像會隨物距改變：焦點外是倒立實像（大小依物距而定），焦點內是正立放大虛像；凹透鏡只能成正立縮小虛像。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・3 透鏡的成像觀察",
+        q: "如果要得到物體放大的像，生活中哪一樣物品可以取代凸透鏡？",
+        options: ["裝滿水的圓柱形玻璃杯", "平面鏡", "黑色紙板", "不透明的塑膠盒"],
+        answer: "裝滿水的圓柱形玻璃杯",
+        explain: "透明、中間較厚的物體能像凸透鏡一樣使光會聚，例如裝水的圓柱形玻璃杯、透明玻璃珠、裝水的透明寶特瓶。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・5 色光與顏色的關係",
+        q: "製作色光觀察箱時，為什麼要讓紙箱內部是白色？",
+        options: ["白色能反射所有色光，可增加觀察的準確性", "白色會吸收所有色光，讓箱內更暗", "白色本身會發出白光，可當作光源", "白色可以讓紙箱更堅固"],
+        answer: "白色能反射所有色光，可增加觀察的準確性",
+        explain: "白色物體會反射各種色光，箱內是白色，照進來的色光就不會被箱壁吸收而影響觀察。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・5 色光與顏色的關係",
+        q: "要觀察不同色光照射不同顏色物體的情形，可以用什麼製造色光？又用什麼製作不透光的觀察空間？",
+        options: ["不同顏色的玻璃紙加檯燈；紙箱", "不同顏色的色紙；透明塑膠盒", "三稜鏡；白色紙板", "彩色筆；玻璃罩"],
+        answer: "不同顏色的玻璃紙加檯燈；紙箱",
+        explain: "檯燈的光透過色玻璃紙，就能得到該顏色的色光；用紙箱圍出暗箱，可減少外界光線干擾。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・5 色光與顏色的關係",
+        q: "紅色色紙分別在紅光、綠光、藍光照射下，依序呈現什麼顏色？",
+        options: ["紅、黑、黑", "紅、綠、藍", "黑、綠、藍", "紅、紅、紅"],
+        answer: "紅、黑、黑",
+        explain: "紅色色紙只反射紅光、吸收其他色光。紅光照射時呈紅色；綠光、藍光都被吸收，看起來是黑色。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・5 色光與顏色的關係",
+        q: "綠色色紙分別在紅光、綠光、藍光照射下，依序呈現什麼顏色？",
+        options: ["黑、綠、黑", "紅、綠、藍", "綠、綠、綠", "綠、黑、綠"],
+        answer: "黑、綠、黑",
+        explain: "綠色色紙只反射綠光。紅光、藍光照射時被吸收而呈黑色，只有綠光照射時呈綠色。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・5 色光與顏色的關係",
+        q: "藍色色紙分別在紅光、綠光、藍光照射下，依序呈現什麼顏色？",
+        options: ["黑、黑、藍", "紅、綠、藍", "藍、藍、藍", "藍、黑、黑"],
+        answer: "黑、黑、藍",
+        explain: "藍色色紙只反射藍光。紅光、綠光照射時被吸收而呈黑色，只有藍光照射時呈藍色。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・5 色光與顏色的關係",
+        q: "白色色紙分別在紅光、綠光、藍光照射下，依序呈現什麼顏色？",
+        options: ["紅、綠、藍", "白、白、白", "黑、黑、黑", "紅、黑、黑"],
+        answer: "紅、綠、藍",
+        explain: "白色會反射所有色光，照什麼顏色的光就呈現什麼顏色。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・5 色光與顏色的關係",
+        q: "黑色色紙分別在紅光、綠光、藍光照射下，依序呈現什麼顏色？",
+        options: ["黑、黑、黑", "紅、綠、藍", "白、白、白", "紅、黑、藍"],
+        answer: "黑、黑、黑",
+        explain: "黑色會吸收所有色光，不論照什麼色光都沒有光反射出來，所以一直是黑色。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・5 色光與顏色的關係",
+        q: "在沒有光源的暗箱中，能分辨色紙的顏色嗎？為什麼？",
+        options: ["不能，因為物體沒有反射任何光線進入眼睛", "能，因為色紙本身會發出自己的顏色", "能，但只看得到白色色紙", "不能，因為色紙在黑暗中會褪色"],
+        answer: "不能，因為物體沒有反射任何光線進入眼睛",
+        explain: "我們看見物體的顏色，是因為物體反射的色光進入眼睛。沒有光源，就沒有光可以反射。"
+      },
+      {
+        chapter: 'ch4', section: "實驗 4・5 色光與顏色的關係",
+        q: "紅色色紙在哪些光源照射下，依然保持原來的紅色？",
+        options: ["白光或紅光", "只有綠光", "藍光或綠光", "任何色光"],
+        answer: "白光或紅光",
+        explain: "紅色色紙反射紅光。白光含有紅光，紅光照射也有紅光可反射，所以都呈紅色。"
+      },
+      {
+        chapter: 'ch4', section: "4・1 光的傳播與光速",
+        q: "下列有關光傳播的敘述，何者正確？",
+        options: ["光在真空中無法傳播", "光在不同物質中傳播速率都相同", "影子的形成是光直線傳播的結果", "水中倒影是光直線傳播的結果"],
+        answer: "影子的形成是光直線傳播的結果",
+        explain: "光可以在真空中傳播，在不同物質中速率不同；影子是光直進被擋住形成的，水中倒影則是光的反射。"
+      },
+      {
+        chapter: 'ch4', section: "4・1 光的傳播與光速",
+        context: "在不透明紙板中央刺一個小孔，放在點燃的蠟燭與紙屏之間，做針孔成像實驗。",
+        figure: FIG.pinhole,
+        q: "關於燭焰在紙屏上的成像，下列敘述何者錯誤？",
+        options: ["成像大小會因燭焰和針孔的距離改變而變化", "紙屏上的像和原物相比，必為倒立", "針孔越大，成像效果越好", "針孔成像是光直線前進的結果"],
+        answer: "針孔越大，成像效果越好",
+        explain: "針孔要大小適當。針孔太大，通過的光線太多而重疊，成像會變模糊。"
+      },
+      {
+        chapter: 'ch4', section: "4・1 光的傳播與光速",
+        context: "針孔成像實驗：蠟燭、刺了一個針孔的不透明紙板、紙屏排成一直線。",
+        figure: FIG.pinhole,
+        q: "若在紙板上再多刺兩個針孔（共三個），其他條件不變，紙屏上的燭焰像會如何？",
+        options: ["依然只有一個像", "變成三個像", "依然一個像，但變大很多", "變成三個像，且每個都縮小很多"],
+        answer: "變成三個像",
+        explain: "每一個針孔都會讓光直線通過，各自形成一個倒立的像，所以三個針孔會有三個像；條件不變，像的大小也不變。"
+      },
+      {
+        chapter: 'ch4', section: "4・2 光的反射與面鏡",
+        q: "光照到凹凸不平的水泥牆表面而發生反射時，入射角和反射角的大小關係為何？",
+        options: ["入射角大於反射角", "入射角等於反射角", "入射角小於反射角", "要看牆面的凹凸情況而定"],
+        answer: "入射角等於反射角",
+        explain: "粗糙表面是漫射，但每一條光線在它照到的小區域仍遵守反射定律：反射角等於入射角。"
+      },
+      {
+        chapter: 'ch4', section: "4・2 光的反射與面鏡",
+        context: "雷射光射向平面鏡（如圖）：X 是入射光與鏡面的夾角，Y 是反射角。改變四次入射角度並記錄。",
+        figure: FIG.mirrorXY,
+        q: "各次實驗數據的 X 與 Y，應符合下列哪一個關係式？",
+        options: ["X＝Y", "X＝90°－Y", "X＝90°－2Y", "X＝180°－2Y"],
+        answer: "X＝90°－Y",
+        explain: "法線和鏡面垂直，入射角＝90°－X；反射角 Y＝入射角，所以 Y＝90°－X，也就是 X＝90°－Y。"
+      },
+      {
+        chapter: 'ch4', section: "4・2 光的反射與面鏡",
+        context: "平面鏡 M 直立於水平地面上，甲、乙、丙、丁四人站在鏡前不同位置（如圖，每一方格邊長 1 公尺）。",
+        figure: FIG.mirrorGrid,
+        q: "有關四人在平面鏡中成像的敘述，何者錯誤？",
+        options: ["甲無法在平面鏡中成像", "乙在平面鏡後的成像位置為 A", "丙在平面鏡中的成像為正立虛像", "若丁面向平面鏡前進 1 公尺，丁與成像間的距離會縮短 2 公尺"],
+        answer: "甲無法在平面鏡中成像",
+        explain: "甲雖然不在鏡面正前方，射向鏡面的光仍依反射定律反射，反射線的延長線交會在鏡面延伸線後方，所以甲也能成像。乙在鏡前 3 格，像在鏡後 3 格的 A 點；丁前進 1 公尺，物距、像距各少 1 公尺，共縮短 2 公尺。"
+      },
+      {
+        chapter: 'ch4', section: "4・2 光的反射與面鏡",
+        context: "部分救護車車頭的「救護車」字樣是左右相反印製的；前方車輛駕駛透過車內後視鏡，可看到正確且縮小的「救護車」字樣。",
+        q: "依上述敘述，此後視鏡應為何種面鏡？",
+        options: ["凸面鏡", "凹面鏡", "平面鏡", "以上皆非"],
+        answer: "凸面鏡",
+        explain: "看到的是正立縮小的像，符合凸面鏡的成像性質；平面鏡的像和原物一樣大。"
+      },
+      {
+        chapter: 'ch4', section: "4・2 光的反射與面鏡",
+        q: "衛星天線、氣象雷達的碟形構造，可以把接收到的訊號聚集起來，和哪一種面鏡的作用相似？",
+        options: ["平面鏡", "凸面鏡", "凹面鏡", "三種都有可能"],
+        answer: "凹面鏡",
+        explain: "平行主軸的光射向凹面鏡，反射後會交會在焦點，所以凹面鏡可以聚集訊號。"
+      },
+      {
+        chapter: 'ch4', section: "4・2 光的反射與面鏡",
+        q: "停車場轉彎處設立大型凸面鏡，幫助駕駛注意對向來車，主要原因是什麼？",
+        options: ["凸面鏡的成像範圍較大", "物體經凸面鏡反射後成實像", "物體經凸面鏡反射後成像較大", "凸面鏡使像比實際景物更明亮"],
+        answer: "凸面鏡的成像範圍較大",
+        explain: "物體經凸面鏡反射後形成正立縮小的虛像，看得到的範圍變大，可以看到轉角的來車。"
+      },
+      {
+        chapter: 'ch4', section: "4・3 光的折射與透鏡",
+        q: "成語「刀光劍影」與哪些光學現象最相關？（甲：光的直進性　乙：光的反射　丙：光的折射）",
+        options: ["甲、乙", "乙、丙", "只有乙", "只有甲"],
+        answer: "甲、乙",
+        explain: "「刀光」是光照在刀面反射出的光（反射）；「劍影」是光被劍擋住在後方形成的影子（直進）。"
+      },
+      {
+        chapter: 'ch4', section: "4・3 光的折射與透鏡",
+        q: "成語「清澈見底」與哪些光學現象最相關？（甲：光的直進性　乙：光的反射　丙：光的折射）",
+        options: ["甲、乙", "乙、丙", "只有乙", "只有甲"],
+        answer: "乙、丙",
+        explain: "水底的物體反射光線，光從水中進入空氣時發生折射，再進入眼睛，所以看得到水底。"
+      },
+      {
+        chapter: 'ch4', section: "4・3 光的折射與透鏡",
+        q: "成語「鏡花水月」與哪些光學現象最相關？（甲：光的直進性　乙：光的反射　丙：光的折射）",
+        options: ["甲、乙", "乙、丙", "只有乙", "只有甲"],
+        answer: "只有乙",
+        explain: "鏡中的花、水中的月亮，都是光的反射形成的虛像。"
+      },
+      {
+        chapter: 'ch4', section: "4・3 光的折射與透鏡",
+        q: "成語「鑿壁偷光」與哪些光學現象最相關？（甲：光的直進性　乙：光的反射　丙：光的折射）",
+        options: ["甲、乙", "乙、丙", "只有乙", "只有甲"],
+        answer: "只有甲",
+        explain: "匡衡在牆上鑿洞，鄰居的燭光沿直線穿過小洞照進來，是光的直進。"
+      },
+      {
+        chapter: 'ch4', section: "4・3 光的折射與透鏡",
+        figure: FIG.lifebuoy,
+        q: "沛沛在游泳池水面下看到岸上的救生圈，圖中哪一條光線的行進路徑最合理？",
+        options: ["光線甲", "光線乙", "光線丙", "光線丁"],
+        answer: "光線丁",
+        explain: "光從空氣斜射進入水中，速率變慢，折射線偏向法線，所以空氣中與法線的夾角要大於水中。光線丁符合；光線丙沒有偏折，光線乙進入水中反而偏離法線，光線甲進入水中後仍在法線同一側，都不合理。"
+      },
+      {
+        chapter: 'ch4', section: "4・3 光的折射與透鏡",
+        context: "阿康：「光從特定角度通過凸透鏡可能會交會，那通過凹透鏡可能交會嗎？」小雯：「要看光線射入的角度，凹透鏡也可能讓光線聚集在一點喔！」",
+        figure: FIG.concaveRays,
+        q: "下列哪一張圖可以佐證小雯的說法？",
+        options: ["圖甲", "圖乙", "圖丙", "圖丁"],
+        answer: "圖丁",
+        explain: "凹透鏡一定使光線往發散方向偏折。圖丁的光線原本朝某點會聚（虛線），經凹透鏡偏折後會聚變慢，仍在較遠處交會，可以佐證小雯。圖甲、圖乙的光線通過凹透鏡後反而更會聚，不符合凹透鏡的特性；圖丙的光線發散，沒有交會。"
+      },
+      {
+        chapter: 'ch4', section: "4・3 光的折射與透鏡",
+        q: "下列哪一個現象和光的折射有關？",
+        options: ["由後照鏡看到後面的來車", "站在池塘邊看到池中自己的影像", "駕駛經由凸面鏡看到彎道的對向來車", "站在河邊看到河底的石頭"],
+        answer: "站在河邊看到河底的石頭",
+        explain: "河底石頭的光從水進入空氣時發生折射。其他三項都是光的反射。"
+      },
+      {
+        chapter: 'ch4', section: "4・3 光的折射與透鏡",
+        context: "夏日晴天正午，沛沛把一個鏡片放在未點燃火柴棒的正上方，火柴棒上出現一個小亮點，不久後燒了起來。",
+        q: "下列敘述何者正確？",
+        options: ["鏡片為凹透鏡，起火點在透鏡焦點內", "鏡片為凸透鏡，起火點在透鏡焦點內", "鏡片為凹透鏡，起火點在透鏡焦點上", "鏡片為凸透鏡，起火點在透鏡焦點上"],
+        answer: "鏡片為凸透鏡，起火點在透鏡焦點上",
+        explain: "太陽光可視為平行光，經凸透鏡會聚在焦點，形成又小又亮、溫度很高的光點，能點燃火柴。"
+      },
+      {
+        chapter: 'ch4', section: "4・3 光的折射與透鏡",
+        context: "雷射光束由甲介質斜射向乙介質，在交界面 O 點同時發生反射與折射（如圖）。",
+        figure: FIG.interface,
+        q: "光束Ⅰ、Ⅱ、Ⅲ 中，哪一條是折射線？",
+        options: ["Ⅲ", "Ⅰ", "Ⅱ", "Ⅰ和Ⅱ"],
+        answer: "Ⅲ",
+        explain: "Ⅰ是入射線；Ⅱ回到原介質，是反射線；Ⅲ進入另一個介質，是折射線。"
+      },
+      {
+        chapter: 'ch4', section: "4・3 光的折射與透鏡",
+        context: "雷射光束由甲介質斜射向乙介質，在交界面 O 點同時發生反射與折射（如圖）。",
+        figure: FIG.interface,
+        q: "比較光在兩介質中的行進速率，何者正確？",
+        options: ["光在甲介質的速率小於在乙介質的速率", "光在甲介質的速率大於在乙介質的速率", "光在兩介質的速率相等", "條件不足，無法比較"],
+        answer: "光在甲介質的速率小於在乙介質的速率",
+        explain: "光進入速率較快的介質時，折射線偏離法線（像從水進入空氣）。所以光在乙介質中比較快。"
+      },
+      {
+        chapter: 'ch4', section: "4・3 光的折射與透鏡",
+        context: "O 為凸透鏡中心，F₁、F₂ 為焦點，A、B 為透鏡兩側的 2 倍焦距處；點燃的蠟燭豎立在 A 點左側（如圖）。",
+        figure: FIG.lensAB,
+        q: "燭焰所成的像，性質為何？",
+        options: ["正立放大", "正立縮小", "倒立放大", "倒立縮小"],
+        answer: "倒立縮小",
+        explain: "蠟燭在凸透鏡 2 倍焦距外，在另一側形成倒立縮小的實像。"
+      },
+      {
+        chapter: 'ch4', section: "4・3 光的折射與透鏡",
+        context: "凸透鏡成像實驗：蠟燭在 2 倍焦距外，紙屏上已有清楚的燭焰像。",
+        figure: FIG.lensHalf,
+        q: "若把透鏡上半部塗黑，讓燭光無法穿過塗黑的部分，成像會如何？",
+        options: ["只剩燭焰下半部的像，亮度不變", "只剩燭焰上半部的像，亮度不變", "仍是完整的像，但亮度變暗", "無法成像"],
+        answer: "仍是完整的像，但亮度變暗",
+        explain: "燭焰上每一點發出的光，都有一部分能穿過下半部的透鏡而成像，所以像仍完整；但通過的光變少，亮度變暗。"
+      },
+      {
+        chapter: 'ch4', section: "4・3 光的折射與透鏡",
+        context: "把凸透鏡換成焦距相同的凹透鏡，點燃的蠟燭仍豎立在透鏡左側 2 倍焦距外。",
+        figure: FIG.concaveAB,
+        q: "要怎麼做，才能看到燭光經凹透鏡折射所成的像？",
+        options: ["吹熄蠟燭", "在透鏡右側立一張紙屏觀察", "人站在透鏡右側，朝向透鏡觀察", "必須把蠟燭移到左側焦點內"],
+        answer: "人站在透鏡右側，朝向透鏡觀察",
+        explain: "凹透鏡只成正立縮小虛像，紙屏接不到，要從透鏡另一側用眼睛透過透鏡觀察。"
+      },
+      {
+        chapter: 'ch4', section: "4・4 光學儀器",
+        q: "小雯用複式顯微鏡觀察草履蟲，關於她看到的像，下列敘述何者錯誤？",
+        options: ["成像經過多次放大而形成", "成像為虛像", "成像和物體左右相反", "成像和物體的上下方向一致"],
+        answer: "成像和物體的上下方向一致",
+        explain: "顯微鏡看到的像經過多次放大，是和原物上下顛倒、左右相反的虛像。"
+      },
+      {
+        chapter: 'ch4', section: "4・4 光學儀器",
+        context: "近視的沛沛帶著數位相機和手機去拍攝夜空。",
+        q: "相機鏡頭、手機鏡頭與近視眼鏡，分別是哪種透鏡的應用？",
+        options: ["凸透鏡、凹透鏡、凸透鏡", "凹透鏡、凸透鏡、凹透鏡", "凹透鏡、凹透鏡、凸透鏡", "凸透鏡、凸透鏡、凹透鏡"],
+        answer: "凸透鏡、凸透鏡、凹透鏡",
+        explain: "相機和手機鏡頭的透鏡組作用相當於凸透鏡；近視時像落在視網膜前方，要用凹透鏡矯正。"
+      },
+      {
+        chapter: 'ch4', section: "4・4 光學儀器",
+        q: "相機、手機的感光元件與眼睛的視網膜上所形成的像，分別是實像還是虛像？",
+        options: ["三者都是實像", "三者都是虛像", "相機與手機是實像，視網膜是虛像", "相機與手機是虛像，視網膜是實像"],
+        answer: "三者都是實像",
+        explain: "三者都是光線經凸透鏡（或晶狀體）會聚，在感光元件或視網膜上形成倒立的實像。"
+      },
+      {
+        chapter: 'ch4', section: "4・5 光與顏色",
+        context: "元宵燈會上，燈光透過花燈的紅色玻璃紙變成紅光；路燈下的燈會布條呈現紅色。",
+        q: "這兩種現象的原因分別是什麼？",
+        options: ["紅色玻璃紙讓紅光穿透；紅布條反射紅光", "紅色玻璃紙吸收紅光；紅布條反射紅光", "紅色玻璃紙讓紅光穿透；紅布條發出紅光", "紅色玻璃紙發出紅光；紅布條吸收紅光"],
+        answer: "紅色玻璃紙讓紅光穿透；紅布條反射紅光",
+        explain: "透明物體的顏色由「能穿透的色光」決定；不透明物體的顏色由「反射的色光」決定。"
+      },
+      {
+        chapter: 'ch4', section: "4・5 光與顏色",
+        context: "以白光照射一張單色圖卡，圖卡會反射綠光，並吸收其他顏色的光。",
+        q: "這張圖卡應是什麼顏色？",
+        options: ["黑色", "紅色", "藍色", "綠色"],
+        answer: "綠色",
+        explain: "不透明物體的顏色就是它反射的色光。只反射綠光，所以是綠色圖卡。"
+      },
+      {
+        chapter: 'ch4', section: "4・5 光與顏色",
+        context: "一張綠色圖卡只反射綠光，吸收其他顏色的光。",
+        q: "改用紅光照射這張圖卡，最可能發生什麼情形？",
+        options: ["吸收綠光", "吸收紅光", "反射藍光", "反射紅光"],
+        answer: "吸收紅光",
+        explain: "綠色圖卡會吸收紅光，紅光照射時沒有光反射出來，圖卡看起來接近黑色。"
+      },
+      {
+        chapter: 'ch4', section: "素養活用・鬼屋布置",
+        context: "凸透鏡使光線偏向主軸，凹透鏡使光線偏離主軸。阿康讓沿地面前進的雷射光束由下往上射入透鏡（如圖），想讓光束折射後往右偏，指引參觀路線。",
+        figure: FIG.ghostLens,
+        q: "圖中哪一種擺法可以讓光束往右偏？",
+        options: ["擺法甲", "擺法乙", "擺法丙", "擺法丁"],
+        answer: "擺法甲",
+        explain: "擺法甲的光束從凸透鏡主軸左側射入，會偏向主軸，也就是往右偏。擺法乙從凸透鏡主軸右側射入，會往左偏；擺法丙從凹透鏡主軸左側射入，會偏離主軸往左偏；擺法丁沿主軸射入，不偏折。"
+      },
+      {
+        chapter: 'ch4', section: "素養活用・鬼屋布置",
+        context: "小軒用手電筒照射骷髏模型，在牆上投出巨大的骷髏影子。",
+        q: "下列哪一組現象，都與此運用相同的原理？",
+        options: ["利用日晷計時、陽光照射產生的人影", "使用照相機拍照、配戴眼鏡看清書中文字", "樹木在水中的倒影、陽光照射產生的人影", "使用顯微鏡觀察生物、利用日晷計時"],
+        answer: "利用日晷計時、陽光照射產生的人影",
+        explain: "影子是光直線前進被物體擋住形成的。日晷靠影子位置計時；照相機、眼鏡、顯微鏡是折射；水中倒影是反射。"
+      },
+      {
+        chapter: 'ch4', section: "素養活用・鬼屋布置",
+        context: "沛沛在透明壓克力板背面貼上黑紙當作鏡面，想讓參觀者看到自己反射出來的半透明幽靈影像。圖為鬼屋的俯視圖。",
+        figure: FIG.acrylic,
+        q: "沛沛應站在圖中哪一個位置？",
+        options: ["位置甲", "位置乙", "位置丙", "位置丁"],
+        answer: "位置丁",
+        explain: "光滑表面遵守反射定律（反射角＝入射角）。只有站在位置丁，身上的光經壓克力板反射後才會射進參觀者的眼睛；其他位置反射出來的光都不會到達參觀者。"
+      },
+      {
+        chapter: 'ch4', section: "素養活用・鬼屋布置",
+        q: "鬼屋中，沛沛想看到更大的範圍，以掌握走出來嚇人的時機，可在天花板裝設哪一種鏡子？",
+        options: ["凸面鏡", "凹面鏡", "平面鏡", "凹透鏡"],
+        answer: "凸面鏡",
+        explain: "凸面鏡形成正立縮小的虛像，可以看到的範圍比較大，就像路口的轉角鏡。"
+      },
+      {
+        chapter: 'ch4', section: "素養活用・鬼屋布置",
+        context: "阿康和小雯布置的海報，在綠色燈光下的樣子如圖最上方。",
+        figure: FIG.poster,
+        q: "這張海報在白光下，最可能是甲～丁哪一種配色？",
+        options: ["海報甲", "海報乙", "海報丙", "海報丁"],
+        answer: "海報乙",
+        explain: "在綠光下，白色和綠色呈綠色；紅、藍、黑色吸收綠光而呈黑色。海報乙：白底、綠眼睛、一隻綠手變綠，黑色鬼臉與黑字仍黑，藍色火焰和紅手變黑，完全符合。海報甲的綠字、海報丙的綠色鬼臉在綠光下會是綠色；海報丁的紅眼睛會變黑。"
+      },
+      {
+        chapter: 'ch4', section: "閱讀趣・皮影戲",
+        context: "皮影戲的影窗是白布屏幕，後方有燈光；皮偶用刮淨、能透光的獸皮製作並染色，觀眾在影窗另一面觀看。",
+        q: "沛沛想自製皮偶，下列哪一種材料與作法最能代替獸皮？",
+        options: ["以各色半透明塑膠片剪裁拼貼", "以白色厚紙板剪裁並上色", "以各色厚紙板剪裁拼貼", "捏製黏土模型"],
+        answer: "以各色半透明塑膠片剪裁拼貼",
+        explain: "皮偶要能透光，燈光穿過皮偶，影窗上才看得到顏色。厚紙板和黏土不透光，只會形成黑影。"
+      },
+      {
+        chapter: 'ch4', section: "閱讀趣・皮影戲",
+        context: "以紅光照射可透光的皮偶衣服，四種設計如圖。",
+        figure: FIG.jerseys,
+        q: "在紅光照射下，哪一種設計的數字形狀看起來不會改變？為什麼？",
+        options: ["設計 D：紅色與白色部分都透出紅光，藍色數字吸收紅光而變暗，形狀清楚", "設計 A：白色數字在紅光下仍是白色，與紅色衣服對比明顯", "設計 B：紅色數字在紅光下更鮮豔，與白色衣服對比明顯", "設計 C：綠色數字和藍色橫帶在紅光下顏色都不變"],
+        answer: "設計 D：紅色與白色部分都透出紅光，藍色數字吸收紅光而變暗，形狀清楚",
+        explain: "紅光下，紅色和白色部分都呈紅色，所以 A、B 的數字會和衣服融成一片；C 的綠色數字和藍色橫帶都變暗，數字形狀消失；D 的藍色數字變暗，在紅色背景上形狀不變。"
+      }
+    ];
+
+    questions.forEach((q, index) => { q.id = `q${String(index + 1).padStart(3, '0')}`; });
+
+    const $ = (id) => document.getElementById(id);
+    const state = {
+      filter: 'all', mode: 'exam', queue: [], index: 0, selected: null, locked: false,
+      correct: 0, mistakes: [], completed: false, studentName: '', studentSeat: '',
+      examResult: null,
+      reviewPending: new Set(), reviewTotal: 0, lastCorrect: false
+    };
+    const shuffle = (items) => {
+      const arr = [...items];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    };
+    const chapterName = (chapter) => chapter === 'ch3' ? '第3章 波動與聲音' : '第4章 光';
+    const rangeName = () => state.filter === 'all' ? '全部單元｜第3章＋第4章' : chapterName(state.filter);
+    const isPerfect = () => state.mode === 'exam' && state.completed && state.queue.length > 0 && state.correct === state.queue.length;
+    const isPassed = () => isPerfect();
+    // Only permutation history is stored; no answers or personal information.
+    const orderMemory = new Map();
+    function shuffleFresh(items, key, everyPosition = false) {
+      const storageKey = `science115-2nd-order-v1:${key}`;
+      let previous = orderMemory.get(storageKey);
+      if (!previous) {
+        try { previous = JSON.parse(localStorage.getItem(storageKey) || 'null'); } catch (_) {}
+      }
+      const comparable = Array.isArray(previous) && previous.length === items.length &&
+        new Set(previous).size === items.length && previous.every(value => items.includes(value));
+      let result = shuffle(items);
+      if (comparable && items.length > 1) {
+        const repeats = arr => everyPosition ? arr.some((value, i) => value === previous[i]) :
+          arr.every((value, i) => value === previous[i]);
+        let attempts = 0;
+        while (repeats(result) && attempts++ < 128) result = shuffle(items);
+        if (repeats(result)) {
+          if (everyPosition) result = [...previous.slice(1), previous[0]];
+          else [result[0], result[1]] = [result[1], result[0]];
+        }
+      }
+      orderMemory.set(storageKey, result);
+      try { localStorage.setItem(storageKey, JSON.stringify(result)); } catch (_) {}
+      return result;
+    }
+
+    function makeQueue(pool, key) {
+      const byId = new Map(pool.map(q => [q.id, q]));
+      return shuffleFresh(pool.map(q => q.id), key).map(id => {
+        const q = byId.get(id);
+        return { ...q, shuffled: shuffleFresh(q.options, `options:${id}`, true) };
+      });
+    }
+
+    function resetQuiz() {
+      const pool = state.filter === 'all' ? questions : questions.filter(q => q.chapter === state.filter);
+      state.mode = 'exam';
+      state.queue = makeQueue(pool, `questions:${state.filter}`);
+      state.index = 0;
+      state.selected = null;
+      state.locked = false;
+      state.correct = 0;
+      state.mistakes = [];
+      state.completed = false;
+      state.studentName = '';
+      state.studentSeat = '';
+      state.examResult = null;
+      state.reviewPending = new Set();
+      state.reviewTotal = 0;
+      state.lastCorrect = false;
+      if ($('nameDialog').open) $('nameDialog').close();
+      $('certificate').hidden = true;
+      $('openCertificate').hidden = true;
+      $('studentName').value = '';
+      $('studentSeat').value = '';
+      $('certificateName').textContent = '';
+      $('certificateSeat').textContent = '';
+      $('restart').textContent = '重新開始';
+      $('quizArea').hidden = false;
+      $('finishArea').classList.remove('show');
+      render();
+    }
+
+    function restartQuiz() {
+      const hasProgress = state.mode === 'review' || state.index > 0 || state.locked || state.selected !== null;
+      if (!state.completed && hasProgress && !window.confirm('重新開始會清除本輪答案、分數與進度，並重新排列所選範圍全部題目與選項。確定要開始新的正式測驗嗎？')) return;
+      resetQuiz();
+    }
+
+    function render() {
+      const item = state.queue[state.index];
+      const total = state.queue.length;
+      $('sectionTag').textContent = `${chapterName(item.chapter)}・${item.section}`;
+      $('questionNo').textContent = state.mode === 'review' ? `剩餘 ${state.reviewPending.size} 題待答對` : `第 ${state.index + 1} / ${total} 題`;
+      $('questionText').textContent = item.q;
+      $('contextText').hidden = !item.context;
+      $('contextText').textContent = item.context || '';
+      $('figureBox').hidden = !item.figure;
+      $('figureBox').innerHTML = item.figure || '';
+      $('progressBar').style.width = state.mode === 'review' ? `${(state.reviewTotal - state.reviewPending.size) / state.reviewTotal * 100}%` : `${(state.index / total) * 100}%`;
+      $('feedback').className = 'feedback';
+      $('feedback').innerHTML = '';
+      $('checkAnswer').hidden = false;
+      $('checkAnswer').disabled = true;
+      $('nextQuestion').hidden = true;
+      state.selected = null;
+      state.locked = false;
+      $('options').innerHTML = '';
+      item.shuffled.forEach((text, idx) => {
+        const button = document.createElement('button');
+        button.className = 'option';
+        button.type = 'button';
+        button.dataset.value = text;
+        button.innerHTML = `<span class="letter">${idx + 1}</span><span>${text}</span>`;
+        button.addEventListener('click', () => selectOption(button));
+        $('options').appendChild(button);
+      });
+      updateStats();
+    }
+
+    function selectOption(button) {
+      if (state.locked || state.completed) return;
+      document.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+      button.classList.add('selected');
+      state.selected = button.dataset.value;
+      $('checkAnswer').disabled = false;
+    }
+
+    function checkAnswer() {
+      if (!state.selected || state.locked || state.completed) return;
+      state.locked = true;
+      const item = state.queue[state.index];
+      const isCorrect = state.selected === item.answer;
+      state.lastCorrect = isCorrect;
+      if (state.mode === 'review') {
+        if (isCorrect) state.reviewPending.delete(item.id);
+        state.correct = state.reviewTotal - state.reviewPending.size;
+      } else {
+        if (isCorrect) state.correct += 1;
+        else {
+          state.mistakes.push({ id: item.id, q: item.q, chosen: state.selected, answer: item.answer });
+        }
+      }
+      document.querySelectorAll('.option').forEach(el => {
+        el.disabled = true;
+        if (el.dataset.value === item.answer) el.classList.add('correct');
+        else if (el.dataset.value === state.selected) el.classList.add('wrong');
+      });
+      const feedback = $('feedback');
+      feedback.className = `feedback show ${isCorrect ? 'good' : 'bad'}`;
+      feedback.innerHTML = `<strong>${isCorrect ? '答對了' : '再想一下'}</strong><span>${item.explain}</span>${state.mode === 'review' ? `<p>${isCorrect ? '這題已答對，移出待複習清單。' : '這題會再次出現，答對後才會移出待複習清單。'}</p>` : ''}`;
+      $('checkAnswer').hidden = true;
+      $('nextQuestion').hidden = false;
+      $('nextQuestion').textContent = state.mode === 'review' ? (state.reviewPending.size === 0 ? '完成複習' : '繼續複習') : (state.index === state.queue.length - 1 ? (state.mistakes.length ? '查看結果並複習錯題' : '查看結果') : '下一題');
+      updateStats();
+      $('nextQuestion').focus();
+    }
+
+    function nextQuestion() {
+      if (!state.locked || state.completed) return;
+      if (state.mode === 'review') {
+        const remainingQueue = state.queue.slice(state.index + 1);
+        if (!state.lastCorrect) {
+          const item = state.queue[state.index];
+          remainingQueue.push({ ...item, shuffled: shuffleFresh(item.options, `options:${item.id}`, true) });
+        }
+        state.queue = remainingQueue;
+        state.index = 0;
+        if (state.reviewPending.size === 0) return finishReview();
+        render();
+        return;
+      }
+      if (state.index >= state.queue.length - 1) return finish();
+      state.index += 1;
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function finish() {
+      if (state.mode !== 'exam' || state.completed || !state.locked || state.index !== state.queue.length - 1) return;
+      state.completed = true;
+      state.examResult = { total: state.queue.length, correct: state.correct, mistakes: [...state.mistakes] };
+      const perfect = state.correct === state.queue.length;
+      if (!perfect) return startReview();
+      $('quizArea').hidden = true;
+      $('finishArea').classList.add('show');
+      $('progressBar').style.width = '100%';
+      $('finishHeading').textContent = '本次正式測驗完成';
+      $('restart').textContent = '開始下一次正式測驗';
+      $('finalScore').textContent = `${state.correct} / ${state.queue.length}`;
+      $('finalMessage').textContent = `${rangeName()}本次全部答對，恭喜通關！`;
+      $('review').innerHTML = state.mistakes.length ? `<h3>錯題回顧</h3>${state.mistakes.map((m, i) => `<div class="review-item"><b>第 ${i + 1} 題</b><div>${m.q}</div><small>你的答案：${m.chosen}<br>正確答案：${m.answer}</small></div>`).join('')}` : '<p>全部答對，太棒了！</p>';
+      updateStats();
+      if (isPassed()) {
+        $('finalMessage').textContent = `${rangeName()}一次全對，恭喜通關！填寫座號與姓名，領取你的通關證書。`;
+        $('openCertificate').hidden = false;
+        $('openCertificate').textContent = '填寫座號與姓名，領取證書';
+        openCertificateDialog();
+      }
+    }
+
+    function startReview() {
+      const items = state.examResult.mistakes.map(m => questions.find(q => q.id === m.id));
+      state.mode = 'review';
+      state.reviewPending = new Set(items.map(q => q.id));
+      state.reviewTotal = items.length;
+      state.queue = makeQueue(items, `review:${state.filter}`);
+      state.index = 0;
+      state.selected = null;
+      state.locked = false;
+      state.correct = 0;
+      state.completed = false;
+      $('quizArea').hidden = false;
+      $('finishArea').classList.remove('show');
+      $('certificate').hidden = true;
+      $('openCertificate').hidden = true;
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function finishReview() {
+      if (state.mode !== 'review' || state.completed || state.reviewPending.size !== 0) return;
+      state.completed = true;
+      $('quizArea').hidden = true;
+      $('finishArea').classList.add('show');
+      $('progressBar').style.width = '100%';
+      $('finishHeading').textContent = '錯題複習完成';
+      $('finalScore').textContent = `${state.reviewTotal}／${state.reviewTotal} 題已答對`;
+      $('finalMessage').textContent = `正式測驗原成績：${state.examResult.correct}／${state.examResult.total}。錯題已全部答對！請重新挑戰完整範圍，一次正式測驗全對即可領取通關證書。`;
+      $('restart').textContent = '開始新的正式測驗';
+      $('review').innerHTML = '<p>已完成本輪所有錯題的複習。</p>';
+      updateStats();
+    }
+
+    function openCertificateDialog() {
+      if (!isPassed() || $('nameDialog').open) return;
+      $('nameDialogDescription').textContent = `你已完成${rangeName()}正式測驗，${state.correct} 題全部答對。班級固定為 807，請填寫座號與姓名以顯示通關證書。`;
+      $('studentName').value = state.studentName;
+      $('studentSeat').value = state.studentSeat;
+      $('nameError').hidden = true;
+      $('studentName').removeAttribute('aria-invalid');
+      $('studentSeat').removeAttribute('aria-invalid');
+      $('nameDialog').showModal();
+      $('studentSeat').focus();
+    }
+
+    function showCertificate(event) {
+      event.preventDefault();
+      if (!isPassed()) return;
+      const name = $('studentName').value.trim();
+      const seat = $('studentSeat').value.trim();
+      $('studentName').removeAttribute('aria-invalid');
+      $('studentSeat').removeAttribute('aria-invalid');
+      if (!/^[0-9]{1,2}$/.test(seat) || Number(seat) < 1) {
+        $('nameError').textContent = '請輸入 1～99 的整數座號。';
+        $('nameError').hidden = false;
+        $('studentSeat').setAttribute('aria-invalid', 'true');
+        $('studentSeat').focus();
+        return;
+      }
+      if (!name || name.length > 40) {
+        $('nameError').textContent = '請輸入 1～40 個字的姓名，不可只輸入空白。';
+        $('nameError').hidden = false;
+        $('studentName').setAttribute('aria-invalid', 'true');
+        $('studentName').focus();
+        return;
+      }
+      state.studentName = name;
+      state.studentSeat = String(Number(seat));
+      // Render names as plain text, never HTML.
+      $('certificateClass').textContent = '807 班';
+      $('certificateSeat').textContent = `${state.studentSeat} 號`;
+      $('certificateName').textContent = name;
+      $('certificateRange').textContent = rangeName();
+      $('certificateResult').textContent = `${state.correct}／${state.queue.length} 題全對・正確率 100%`;
+      $('certificateDate').textContent = `通關日期：${new Intl.DateTimeFormat('zh-TW', { timeZone: 'Asia/Taipei', year: 'numeric', month: 'long', day: 'numeric' }).format(new Date())}`;
+      $('certificate').hidden = false;
+      $('openCertificate').textContent = '修改證書座號與姓名';
+      $('nameDialog').close();
+      $('certificate').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function updateStats() {
+      const reviewing = state.mode === 'review';
+      const done = reviewing ? state.reviewTotal - state.reviewPending.size : state.index + (state.locked ? 1 : 0);
+      const total = reviewing ? state.reviewTotal : state.queue.length;
+      $('doneStat').textContent = done;
+      $('totalStat').textContent = total;
+      $('correctStat').textContent = state.correct;
+      $('doneLabel').textContent = reviewing ? '已練會' : '已作答';
+      $('rateLabel').textContent = reviewing ? '複習完成率' : '正確率';
+      $('rateStat').textContent = reviewing ? `${Math.round(done / total * 100)}%` : (done ? `${Math.round(state.correct / done * 100)}%` : '—');
+      if (reviewing) {
+        $('questionNo').textContent = `剩餘 ${state.reviewPending.size} 題待答對`;
+        $('progressBar').style.width = `${done / total * 100}%`;
+      }
+      $('modeLabel').textContent = reviewing ? '錯題複習' : '正式測驗';
+      $('streakStatus').textContent = `${rangeName()}｜${isPassed() ? '全對通關' : '一次正式測驗全對即可領證'}`;
+      $('learningHint').textContent = reviewing ? `正式測驗結果：${state.examResult.correct}／${state.examResult.total}。共 ${state.reviewTotal} 題錯題，尚有 ${state.reviewPending.size} 題待答對；答錯會再出現，答對才移出。` : `本輪包含所選範圍全部 ${total} 題，全部答對即可通關；有錯題則於測驗結束後進入複習。`;
+    }
+
+    $('segments').addEventListener('click', (event) => {
+      const button = event.target.closest('[data-filter]');
+      if (!button) return;
+      document.querySelectorAll('[data-filter]').forEach(el => el.setAttribute('aria-pressed', String(el === button)));
+      state.filter = button.dataset.filter;
+      resetQuiz();
+    });
+    $('checkAnswer').addEventListener('click', checkAnswer);
+    $('nextQuestion').addEventListener('click', nextQuestion);
+    $('reshuffle').addEventListener('click', restartQuiz);
+    $('restart').addEventListener('click', restartQuiz);
+    $('openCertificate').addEventListener('click', openCertificateDialog);
+    $('nameForm').addEventListener('submit', showCertificate);
+    $('cancelCertificate').addEventListener('click', () => $('nameDialog').close());
+    $('nameDialog').addEventListener('close', () => {
+      if (state.completed && !$('openCertificate').hidden) $('openCertificate').focus();
+    });
+    document.addEventListener('keydown', (event) => {
+      if ($('nameDialog').open || state.completed) return;
+      if (!state.locked && ['1','2','3','4'].includes(event.key)) {
+        const option = document.querySelectorAll('.option')[Number(event.key) - 1];
+        if (option) selectOption(option);
+      } else if (event.key === 'Enter') {
+        if ($('quizArea').hidden) return;
+        event.preventDefault();
+        if (state.locked) nextQuestion(); else checkAnswer();
+      }
+    });
+    $('allCount').textContent = `(${questions.length})`;
+    $('ch3Count').textContent = `(${questions.filter(q => q.chapter === 'ch3').length})`;
+    $('ch4Count').textContent = `(${questions.filter(q => q.chapter === 'ch4').length})`;
+    resetQuiz();
+  </script>
+</body>
+</html>
