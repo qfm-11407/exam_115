@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>八年級數學 第二次段考闖關</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<style>
+  :root{
+    --bg:#eef2f9; --card:#ffffff; --ink:#1b2333; --muted:#5a6477; --line:#d9e0ec;
+    --primary:#2c56c9; --primary-soft:#e5ecff; --accent:#f2a516; --accent-soft:#fff4dc;
+    --ok:#15924a; --ok-soft:#e3f6ea; --bad:#d23a3a; --bad-soft:#fde8e8;
+    --easy:#3fae2a; --mid:#e9a300; --hard:#e24a4a; --boss:#6b3fd1; --boss-soft:#efe8ff;
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html{font-size:18px}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;line-height:1.6}
+  button{font:inherit;cursor:pointer}
+  .katex{font-size:1.08em}
+  .em{font-weight:800;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+
+  /* ===== 頂部 ===== */
+  header{position:sticky;top:0;z-index:10;background:#1f3f99;color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+  .bar{max-width:980px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .home-btn{background:rgba(255,255,255,.14);border:none;color:#fff;border-radius:10px;padding:6px 12px;font-weight:700}
+  .brand{font-weight:800;font-size:1.05rem;letter-spacing:.5px;flex:1;min-width:180px}
+  .brand small{display:block;font-weight:400;font-size:.75rem;opacity:.85;letter-spacing:0}
+  .chips{display:flex;gap:8px}
+  .chip{background:rgba(255,255,255,.14);border-radius:999px;padding:4px 14px;font-weight:700;white-space:nowrap}
+  .chip b{color:#ffd56b}
+  .chip.combo.hot{background:#f2a516;color:#1b2333}
+  .chip.combo.hot b{color:#1b2333}
+
+  main{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:0 4px 18px rgba(30,50,100,.08);padding:24px}
+  .hidden{display:none!important}
+
+  .btn{border:none;border-radius:12px;padding:12px 22px;font-weight:700;font-size:1rem;transition:transform .1s}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--primary);color:#fff;box-shadow:0 3px 0 #1c3a8f}
+  .btn-accent{background:var(--accent);color:#1b2333;box-shadow:0 3px 0 #c48510}
+  .btn-ghost{background:var(--primary-soft);color:var(--primary)}
+  .btn-boss{background:var(--boss);color:#fff;box-shadow:0 3px 0 #4a2a99}
+  .btn-sm{padding:8px 14px;font-size:.92rem;border-radius:10px}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap}
+
+  /* ===== 入口頁 ===== */
+  .hero{margin-bottom:18px}
+  .hero h1{margin:0 0 4px;font-size:1.7rem}
+  .hero .sub{color:var(--muted);margin:0}
+  .range{display:inline-block;margin-top:10px;background:var(--primary-soft);color:var(--primary);
+    font-weight:800;border-radius:10px;padding:4px 12px}
+  .progress{margin-top:16px}
+  .progress-top{display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted);font-weight:700}
+  .progress-bar{height:12px;background:var(--bg);border-radius:999px;overflow:hidden;margin-top:4px}
+  .progress-bar span{display:block;height:100%;background:linear-gradient(90deg,#3f74ef,#15924a);border-radius:999px;transition:width .4s}
+
+  .sec-title{font-size:1.05rem;font-weight:800;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+  .sec-title small{font-weight:400;color:var(--muted);font-size:.85rem}
+  .units{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+  #examUnits{grid-template-columns:repeat(2,1fr)}
+  @media (max-width:640px){ #examUnits{grid-template-columns:1fr} }
+  .unit{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:0 4px 18px rgba(30,50,100,.08);
+    display:flex;flex-direction:column;gap:8px;border-top:6px solid var(--u,#2c56c9)}
+  .unit.review{border:2px dashed #b9c4da;border-top:6px solid #8a96ad;box-shadow:none;background:#fafbfe}
+  .unit-head{display:flex;align-items:center;gap:10px}
+  .unit-no{flex:none;background:var(--u,#2c56c9);color:#fff;font-weight:900;border-radius:10px;padding:2px 10px;font-size:1rem}
+  .unit.review .unit-no{background:#8a96ad}
+  .unit h3{margin:0;font-size:1.15rem;line-height:1.35}
+  .unit-meta{display:flex;gap:6px;flex-wrap:wrap;font-size:.82rem}
+  .mini{border-radius:999px;padding:1px 10px;font-weight:700;color:#fff}
+  .mini.e{background:var(--easy)} .mini.m{background:var(--mid)} .mini.h{background:var(--hard)}
+  .mini.rv{background:#eef1f6;color:#5a6477}
+  .unit-best{font-size:.9rem;color:var(--muted);min-height:1.4em}
+  .unit-best .st{letter-spacing:2px}
+  .unit .btn-row{margin-top:auto}
+  .boss-card{margin-top:14px;background:linear-gradient(135deg,#2a1a63,#5b34c4);color:#fff;border-radius:var(--radius);
+    padding:20px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .boss-card .ico{font-size:2.6rem}
+  .boss-card h3{margin:0;font-size:1.25rem}
+  .boss-card p{margin:2px 0 0;opacity:.88;font-size:.92rem}
+  .boss-card .txt{flex:1;min-width:220px}
+  .boss-card .btn{background:#ffd56b;color:#2a1a63;box-shadow:0 3px 0 #c89a1c}
+  .rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+  .rule{background:#fff;border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:flex-start}
+  .rule .ico{font-size:1.3rem}
+  .rule b{display:block}
+  .rule span{color:var(--muted);font-size:.88rem}
+
+  /* ===== 關卡地圖 ===== */
+  .map{display:flex;align-items:center;justify-content:space-between;margin:0 0 16px;padding:0 4px}
+  .node{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:.85rem;
+    background:#fff;border:3px solid var(--line);color:var(--muted);flex:none}
+  .link{flex:1;height:4px;background:var(--line);margin:0 -2px}
+  .link.done{background:#9fb4ea}
+  .node.cur{border-color:var(--primary);color:var(--primary);box-shadow:0 0 0 5px rgba(44,86,201,.18)}
+  .node.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+  .node.bad{background:var(--bad);border-color:var(--bad);color:#fff}
+
+  /* ===== 題目 ===== */
+  .q-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .stage{font-weight:800;font-size:1.1rem;margin-right:4px}
+  .tag{background:var(--primary-soft);color:var(--primary);border-radius:999px;padding:2px 12px;font-size:.85rem;font-weight:700}
+  .tag.u{background:var(--boss-soft);color:var(--boss)}
+  .lvl{color:#fff;border-radius:999px;padding:2px 12px;font-size:.85rem;font-weight:700}
+  .lvl-易{background:var(--easy)} .lvl-中{background:var(--mid)} .lvl-難{background:var(--hard)}
+  .worth{margin-left:auto;color:var(--muted);font-size:.9rem;font-weight:700}
+  .stem{font-size:1.25rem;margin:4px 0 16px}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .opt{display:flex;align-items:center;gap:12px;text-align:left;background:#fff;border:2px solid var(--line);
+    border-radius:14px;padding:12px 14px;font-size:1.15rem;color:var(--ink);min-height:64px;transition:border-color .15s, background .15s}
+  .opt:hover:not(:disabled){border-color:var(--primary);background:#f7f9ff}
+  .opt .L{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800;
+    background:var(--primary-soft);color:var(--primary);font-size:1rem}
+  .opt:disabled{cursor:default}
+  .opt.right{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.right .L{background:var(--ok);color:#fff}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+  .opt.wrong .L{background:var(--bad);color:#fff}
+  .opt.dim{opacity:.55}
+  .tools{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+  .hint-btn{background:var(--accent-soft);color:#8a5a00;border:none;border-radius:10px;padding:8px 16px;font-weight:700}
+  .hint-btn:disabled{opacity:.5;cursor:default}
+  .hint-box{margin-top:12px;background:var(--accent-soft);border-left:5px solid var(--accent);border-radius:10px;padding:10px 14px;font-size:1.05rem}
+
+  /* ===== 圖形 ===== */
+  .fig{display:flex;justify-content:center;margin:4px 0 18px;color:var(--ink)}
+  .fig svg{max-width:100%;height:auto;overflow:visible}
+  .fig svg text{fill:currentColor;font-size:15px;font-family:"Times New Roman",serif}
+  .fig svg text.zh{font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;font-size:13px}
+  .fig svg text.v{font-style:italic}
+  .steps .fig{justify-content:flex-start;margin:6px 0}
+  .rect-fig{display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;column-gap:6px;align-items:center}
+  .rect-fig .top{grid-column:2;text-align:center;font-size:1.15rem;line-height:1.2}
+  .rect-fig .top svg{display:block;margin:2px auto 0}
+  .rect-fig .left{grid-column:1;grid-row:2;display:flex;align-items:center;gap:2px;font-size:1.15rem}
+  .rect-fig .box{grid-column:2;grid-row:2;width:240px;height:96px;border:3px solid var(--ink);background:#f7f9ff}
+  .brace-top{width:240px;height:14px}
+  .brace-left{width:12px;height:96px}
+  /* 十字交乘 */
+  .cross{display:inline-flex;flex-direction:column;align-items:center;font-size:1.15rem;background:#fff;
+    border:2px solid var(--line);border-radius:12px;padding:8px 18px}
+  .cx-grid{display:grid;grid-template-columns:auto 44px auto;grid-template-rows:auto auto;align-items:center;row-gap:2px}
+  .cx-grid .l{text-align:right}
+  .cx-grid .r{text-align:left}
+  .cx-grid svg{grid-column:2;grid-row:1 / span 2;width:44px;height:52px;justify-self:center}
+  .cx-note{border-top:2px solid var(--ink);margin-top:4px;padding-top:2px;min-width:100%;text-align:center}
+  .steps-fig{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:1.1rem}
+  .steps-fig .mid{display:flex;align-items:center;gap:6px}
+  .steps-fig .vlab{font-size:.9rem;font-weight:700;color:var(--muted);line-height:1.15;text-align:center}
+  .steps-fig .brk{border:2px solid var(--ink);border-radius:6px;padding:2px 10px}
+
+  /* 回饋 */
+  .feedback{margin-top:18px;border-radius:14px;padding:16px 18px}
+  .feedback.ok{background:var(--ok-soft);border:2px solid #9bd8b3}
+  .feedback.bad{background:var(--bad-soft);border:2px solid #f2b0b0}
+  .fb-head{font-size:1.2rem;font-weight:800;margin-bottom:8px}
+  .feedback.ok .fb-head{color:var(--ok)} .feedback.bad .fb-head{color:var(--bad)}
+  .steps{margin:6px 0 0;padding-left:0;list-style:none;counter-reset:s}
+  .steps li{counter-increment:s;position:relative;padding:6px 0 6px 38px;font-size:1.08rem;
+    opacity:0;transform:translateY(6px);animation:pop .35s forwards}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:7px;width:26px;height:26px;border-radius:50%;
+    background:#fff;border:2px solid var(--muted);color:var(--muted);font-size:.8rem;font-weight:800;display:grid;place-items:center}
+  .steps li.figstep{counter-increment:none;padding-left:38px}
+  .steps li.figstep::before{display:none}
+  @keyframes pop{to{opacity:1;transform:none}}
+  .tip{margin-top:10px;background:#fff;border-radius:10px;padding:10px 14px;font-size:1rem}
+  .tip b{color:var(--primary)}
+  .next-row{margin-top:14px;display:flex;justify-content:flex-end}
+
+  /* ===== 結算 ===== */
+  .result-top{text-align:center}
+  .stars{font-size:2.6rem;letter-spacing:6px;margin:4px 0}
+  .stars .off{filter:grayscale(1);opacity:.3}
+  .rank{font-size:1.5rem;font-weight:800;margin:0}
+  .big-score{font-size:3rem;font-weight:900;color:var(--primary);line-height:1.1;margin:8px 0 0}
+  .stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:14px 0 20px}
+  .stat{background:var(--bg);border-radius:12px;padding:8px 16px;font-weight:700}
+  .tbl-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;margin:8px 0 20px;font-size:.95rem}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--muted);font-weight:700}
+  td.c,th.c{text-align:center}
+  .yes{color:var(--ok);font-weight:800} .no{color:var(--bad);font-weight:800} .fix{color:var(--primary);font-weight:700}
+
+  /* ===== 總覽 ===== */
+  .ov-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .ov-head h2{margin:0}
+  .ov-item{margin-bottom:16px;border:2px solid var(--line);border-radius:var(--radius);padding:18px}
+  .ov-opts{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:1.12rem;margin-bottom:10px}
+  .ov-opts .is-ans{color:var(--ok);font-weight:800}
+  .ov-ans{margin-top:10px;background:var(--ok-soft);border-radius:12px;padding:12px 16px}
+  .ov-ans .steps li{opacity:1;transform:none;animation:none}
+
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 24px}
+
+  @media (max-width:640px){
+    html{font-size:16px}
+    .card{padding:18px 16px}
+    .opts,.ov-opts{grid-template-columns:1fr}
+    .stem{font-size:1.15rem}
+    .node{width:26px;height:26px;font-size:.72rem;border-width:2px}
+    .rect-fig .box{width:180px;height:76px}
+    .brace-top{width:180px} .brace-left{height:76px}
+    .worth{margin-left:0}
+    .hero h1{font-size:1.4rem}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <button class="home-btn hidden" id="homeBtn" title="回到入口頁">🏠 入口</button>
+    <div class="brand">√ 八年級數學闖關
+      <small id="brandSub">第二次段考｜2-2 根式的運算 ～ 3-2 十字交乘法</small></div>
+    <div class="chips" id="chips">
+      <span class="chip">積分 <b id="scoreTxt">0</b></span>
+      <span class="chip combo" id="comboChip">連擊 <b id="comboTxt">0</b></span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- 入口頁 -->
+  <section id="home">
+    <div class="card hero">
+      <h1>第二次段考 數學闖關基地</h1>
+      <p class="sub">每個單元 10 關，答對拿積分、連續答對有連擊加成。先暖身複習，再逐單元挑戰，最後打倒魔王關！</p>
+      <span class="range">段考範圍：2-2 根式的運算 ～ 3-2 利用十字交乘法因式分解</span>
+      <div class="progress">
+        <div class="progress-top"><span>段考範圍通關進度（答對 6 題以上算通關）</span><span id="progTxt">0 / 4</span></div>
+        <div class="progress-bar"><span id="progBar" style="width:0%"></span></div>
+      </div>
+    </div>
+
+    <div class="sec-title">🧩 暖身複習 <small>上次段考範圍，先熱身再出發</small></div>
+    <div class="units" id="reviewUnits"></div>
+
+    <div class="sec-title">🗺️ 段考範圍 <small>四個單元，依序挑戰</small></div>
+    <div class="units" id="examUnits"></div>
+
+    <div class="boss-card">
+      <div class="ico">👾</div>
+      <div class="txt">
+        <h3>魔王關：段考模擬</h3>
+        <p>從 2-2 ～ 3-2 隨機抽出 10 題（每單元至少 2 題），每次題目都不一樣！</p>
+        <p id="bossBest"></p>
+      </div>
+      <button class="btn" id="bossBtn">挑戰魔王 ⚔️</button>
+    </div>
+
+    <div class="sec-title">📜 闖關規則</div>
+    <div class="rules">
+      <div class="rule"><div class="ico">🎯</div><div><b>關卡積分</b><span>答對：易 10、中 15、難 20 分；每關只能作答一次。</span></div></div>
+      <div class="rule"><div class="ico">🔥</div><div><b>連擊加成</b><span>連續答對第 3 題起，每題再加 5 分。</span></div></div>
+      <div class="rule"><div class="ico">💡</div><div><b>提示卡</b><span>卡關可看提示，但該關得分減半。</span></div></div>
+      <div class="rule"><div class="ico">🔁</div><div><b>錯題重練</b><span>闖完可把錯題再練一次，直到訂正成功。</span></div></div>
+    </div>
+  </section>
+
+  <!-- 闖關 -->
+  <section id="game" class="hidden">
+    <div class="map" id="map"></div>
+    <div class="card" id="qCard"></div>
+  </section>
+
+  <!-- 結算 -->
+  <section id="result" class="card hidden"></section>
+
+  <!-- 總覽 -->
+  <section id="overview" class="card hidden"></section>
+</main>
+
+<footer>題目改寫自翰林版八年級數學速測題（CH2-1 ～ CH3-2），僅供課堂練習使用。可用鍵盤 1–4（或 A–D）作答、Enter 進入下一關。</footer>
+
+<script>
+const R = String.raw;
+
+/* ============ 圖形（全部以程式繪製） ============ */
+function rectFig(){
+  return `<div class="fig"><div class="rect-fig" role="img" aria-label="長方形，長為根號5加根號3，寬為根號2">
+    <div class="top">${rich(R`$\sqrt{5}+\sqrt{3}$`)}
+      <svg viewBox="0 0 240 14" preserveAspectRatio="none" class="brace-top"><path d="M2 13 Q2 6 12 6 L108 6 Q120 6 120 1 Q120 6 132 6 L228 6 Q238 6 238 13" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+    </div>
+    <div class="left">${rich(R`$\sqrt{2}$`)}
+      <svg viewBox="0 0 12 96" preserveAspectRatio="none" class="brace-left"><path d="M11 2 Q5 2 5 10 L5 40 Q5 48 1 48 Q5 48 5 56 L5 86 Q5 94 11 94" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+    </div>
+    <div class="box"></div>
+  </div></div>`;
+}
+const stroke = 'fill="none" stroke="currentColor" stroke-width="2"';
+function svgWrap(w,h,inner,label){
+  return `<div class="fig"><svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}">${inner}</svg></div>`;
+}
+function ladderFig(){
+  let grass='';
+  for(let x=78;x<226;x+=9) grass+=`<path d="M${x} 130 q2 -9 4 0 q2 -7 4 0" fill="#7cbf5a" stroke="#4f8f35" stroke-width="1"/>`;
+  return svgWrap(330,175,`
+    <line x1="10" y1="130" x2="300" y2="130" stroke="currentColor" stroke-width="2"/>
+    ${grass}
+    <rect x="232" y="40" width="20" height="90" fill="#c9ced8" stroke="currentColor" stroke-width="2"/>
+    <line x1="64" y1="130" x2="232" y2="40" stroke="#b5651d" stroke-width="4" stroke-linecap="round"/>
+    <path d="M78 140 Q78 150 90 150 L144 150 Q154 150 154 158 Q154 150 164 150 L218 150 Q230 150 230 140" ${stroke}/>
+    <text class="zh" x="154" y="172" text-anchor="middle">5 公尺（花圃）</text>
+    <path d="M262 40 Q272 40 272 52 L272 78 Q272 85 280 85 Q272 85 272 92 L272 118 Q272 130 262 130" ${stroke}/>
+    <text class="zh" x="286" y="90">3 公尺</text>
+    <text class="zh" x="110" y="86" fill="#b5651d" style="fill:#b5651d">梯子</text>`,'風箏圍牆梯子示意圖');
+}
+function trapFig(detail){
+  const A=[60,22],D=[140,22],B=[60,150],C=[200,150];
+  const ra=(x,y,dx,dy)=>`<path d="M${x+dx} ${y} L${x+dx} ${y+dy} L${x} ${y+dy}" ${stroke} stroke-width="1.5"/>`;
+  let inner=`<polygon points="${A} ${D} ${C} ${B}" ${stroke}/>
+    ${ra(60,22,10,10)}${ra(60,150,10,-10)}
+    <text class="v" x="48" y="18">A</text><text class="v" x="142" y="18">D</text>
+    <text class="v" x="44" y="166">B</text><text class="v" x="204" y="166">C</text>`;
+  if(detail){
+    inner+=`<line x1="140" y1="22" x2="140" y2="150" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 4"/>
+      ${ra(140,150,-10,-10)}<text class="v" x="136" y="168">E</text>
+      <text x="96" y="16" text-anchor="middle">8</text><text x="38" y="92">12</text>
+      <text x="124" y="92">12</text><text x="176" y="84">13</text>
+      <text x="100" y="168" text-anchor="middle">8</text><text x="170" y="168" text-anchor="middle">5</text>`;
+  }
+  return svgWrap(230,175,inner,'直角梯形ABCD');
+}
+function altFig(){
+  // 底 10 與 7，比例 8px/單位
+  return svgWrap(220,190,`
+    <polygon points="120,18 40,160 176,160" ${stroke}/>
+    <line x1="120" y1="18" x2="120" y2="160" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M120 150 L130 150 L130 160" ${stroke} stroke-width="1.5"/>
+    <text class="v" x="64" y="88">a</text><text x="154" y="88">25</text>
+    <text x="80" y="180" text-anchor="middle">10</text><text x="148" y="180" text-anchor="middle">7</text>`,'含高的三角形');
+}
+function quadFig(){
+  return svgWrap(175,205,`
+    <polygon points="101.7,20 30,76 110,178.5 130.5,23.8" ${stroke}/>
+    <path d="M36.3 71.1 L41.2 77.4 L34.9 82.3" ${stroke} stroke-width="1.5"/>
+    <path d="M122.6 22.8 L121.5 30.7 L129.4 31.7" ${stroke} stroke-width="1.5"/>
+    <text class="v" x="96" y="14">A</text><text class="v" x="14" y="80">B</text>
+    <text class="v" x="104" y="198">C</text><text class="v" x="136" y="22">D</text>`,'四邊形ABCD，角B與角D為直角');
+}
+function tilesFig(){
+  return svgWrap(300,110,`
+    <rect x="30" y="24" width="72" height="72" ${stroke}/><text class="v" x="58" y="66">A</text>
+    <text class="v" x="62" y="18">x</text><text class="v" x="14" y="64">x</text>
+    <rect x="150" y="50" width="72" height="22" ${stroke}/><text class="v" x="180" y="66">B</text>
+    <text class="v" x="182" y="44">x</text><text x="136" y="66">1</text>
+    <rect x="252" y="50" width="22" height="22" ${stroke}/><text class="v" x="257" y="66">C</text>
+    <text x="259" y="44">1</text><text x="280" y="66">1</text>`,'三種圖案A、B、C');
+}
+function rects3Fig(){
+  // 以 x=3 示意比例，每單位 14px
+  return svgWrap(240,200,`
+    <rect x="40" y="24" width="168" height="42" ${stroke}/>
+    <text class="v" x="124" y="18" text-anchor="middle">3x+3</text><text class="v" x="24" y="50">x</text>
+    <rect x="40" y="96" width="126" height="28" ${stroke}/>
+    <text class="v" x="103" y="90" text-anchor="middle">2x+3</text><text x="24" y="115">2</text>
+    <rect x="40" y="154" width="42" height="28" ${stroke}/>
+    <text class="v" x="61" y="148" text-anchor="middle">x</text><text x="24" y="173">2</text>`,'三塊長方形紙板');
+}
+function coordFig(o){
+  const s=o.s, pad=28;
+  const W=(o.x1-o.x0)*s+pad*2, H=(o.y1-o.y0)*s+pad*2;
+  const X=x=>pad+(x-o.x0)*s, Y=y=>pad+(o.y1-y)*s;
+  let g=`<line x1="${X(o.x0)-6}" y1="${Y(0)}" x2="${X(o.x1)+8}" y2="${Y(0)}" stroke="currentColor" stroke-width="1.5"/>
+    <polygon points="${X(o.x1)+14},${Y(0)} ${X(o.x1)+6},${Y(0)-4} ${X(o.x1)+6},${Y(0)+4}" fill="currentColor"/>
+    <line x1="${X(0)}" y1="${Y(o.y0)+6}" x2="${X(0)}" y2="${Y(o.y1)-8}" stroke="currentColor" stroke-width="1.5"/>
+    <polygon points="${X(0)},${Y(o.y1)-14} ${X(0)-4},${Y(o.y1)-6} ${X(0)+4},${Y(o.y1)-6}" fill="currentColor"/>
+    <text class="v" x="${X(o.x1)+16}" y="${Y(0)+5}">x</text><text class="v" x="${X(0)+6}" y="${Y(o.y1)-10}">y</text>
+    <text class="v" x="${X(0)-14}" y="${Y(0)+16}">O</text>`;
+  for(let t=o.x0;t<=o.x1;t+=o.tick) if(t) g+=`<line x1="${X(t)}" y1="${Y(0)-3}" x2="${X(t)}" y2="${Y(0)+3}" stroke="currentColor"/>`;
+  for(let t=o.y0;t<=o.y1;t+=o.tick) if(t) g+=`<line x1="${X(0)-3}" y1="${Y(t)}" x2="${X(0)+3}" y2="${Y(t)}" stroke="currentColor"/>`;
+  (o.dash||[]).forEach(([a,b,c,d])=>g+=`<line x1="${X(a)}" y1="${Y(b)}" x2="${X(c)}" y2="${Y(d)}" stroke="currentColor" stroke-dasharray="4 3"/>`);
+  (o.seg||[]).forEach(([a,b,c,d])=>g+=`<line x1="${X(a)}" y1="${Y(b)}" x2="${X(c)}" y2="${Y(d)}" stroke="#2c56c9" stroke-width="2.5"/>`);
+  if(o.poly) g+=`<polygon points="${o.poly.map(([a,b])=>X(a)+','+Y(b)).join(' ')}" fill="rgba(44,86,201,.12)" stroke="#2c56c9" stroke-width="2"/>`;
+  (o.lab||[]).forEach(([t,a,b])=>g+=`<text x="${X(a)}" y="${Y(b)}" font-size="13">${t}</text>`);
+  (o.pts||[]).forEach(([t,a,b,dx,dy])=>g+=`<circle cx="${X(a)}" cy="${Y(b)}" r="3.5" fill="currentColor"/><text x="${X(a)+dx}" y="${Y(b)+dy}" font-size="14">${t}</text>`);
+  return svgWrap(Math.round(W+30),Math.round(H),g,o.label||'坐標平面');
+}
+function crossSVG(){return `<svg viewBox="0 0 44 52"><line x1="6" y1="8" x2="38" y2="44" stroke="currentColor" stroke-width="2"/><line x1="38" y1="8" x2="6" y2="44" stroke="currentColor" stroke-width="2"/></svg>`;}
+function cross(a,b,c,d,note){
+  return `<div class="fig"><div class="cross">
+    <div class="cx-grid"><span class="l">${rich('$'+a+'$')}</span>${crossSVG()}<span class="r">${rich('$'+b+'$')}</span>
+    <span class="l" style="grid-column:1">${rich('$'+c+'$')}</span><span class="r" style="grid-column:3">${rich('$'+d+'$')}</span></div>
+    ${note?`<div class="cx-note">${rich(note)}</div>`:''}</div></div>`;
+}
+function huiFig(){
+  return `<div class="fig"><div class="steps-fig">
+    <div>${rich(R`$2x^2-7x-15$`)}</div>
+    <div class="mid"><span class="vlab">步<br>驟<br>一</span>
+      <div class="brk"><div class="cx-grid"><span class="l">${rich('$2x$')}</span>${crossSVG()}<span class="r">${rich('$3$')}</span>
+      <span class="l" style="grid-column:1">${rich('$x$')}</span><span class="r" style="grid-column:3">${rich('$-5$')}</span></div></div>
+      <span class="vlab">步<br>驟<br>二</span></div>
+    <div><b>步驟三</b>　${rich(R`$(2x-5)(x+3)$`)}</div>
+  </div></div>`;
+}
+
+/* ============ 題庫 ============ */
+const UNITS = [
+{ id:'2-1', title:'平方根的意義', review:true, color:'#8a96ad', qs:[
+  { lvl:'中', skill:'平方根的範圍',
+    stem:R`滿足 $3\le\sqrt{x}<6$ 的正整數 $x$ 有幾個？`,
+    opts:['3 個','4 個','27 個','28 個'], ans:2,
+    hint:R`三邊同時平方，把根號去掉。`,
+    steps:[R`三邊同時平方：$9\le x<36$`, R`$x=9,10,11,\dots,35$`, R`個數 $=35-9+1=27$ 個`],
+    tip:R`數個數時「頭尾都算」要 $+1$；36 不能取，因為「$<$」沒有等號。` },
+  { lvl:'中', skill:'平方根的計算',
+    stem:R`計算 $\sqrt{0.25}-\sqrt{\dfrac{9}{4}}-\sqrt{(-9)^2}=$？`,
+    opts:['$10$','$8$','$-10$','$-8$'], ans:2,
+    hint:R`$\sqrt{(-9)^2}$ 先算根號裡面：$(-9)^2=81$。`,
+    steps:[R`$\sqrt{0.25}=0.5=\dfrac{1}{2}$，$\sqrt{\dfrac{9}{4}}=\dfrac{3}{2}$`, R`$\sqrt{(-9)^2}=\sqrt{81}=9$`, R`原式 $=\dfrac{1}{2}-\dfrac{3}{2}-9=-1-9=-10$`],
+    tip:R`$\sqrt{(-9)^2}=9$，不是 $-9$！根號算出來一定大於或等於 0。` },
+  { lvl:'中', skill:'估算根號',
+    stem:R`請估算 $\sqrt{155}$ 的整數部分為何？`,
+    opts:['$15$','$14$','$13$','$12$'], ans:3,
+    hint:R`找出 155 夾在哪兩個「完全平方數」之間。`,
+    steps:[R`$12^2=144$，$13^2=169$`, R`$144<155<169$，所以 $12<\sqrt{155}<13$`, R`整數部分是 $12$`],
+    tip:R`把 $11^2$ ～ $20^2$ 背熟，估算根號會快很多。` },
+  { lvl:'中', skill:'平方根的意義',
+    stem:R`關於 $\sqrt{2}$ 的敘述，下列何者[[錯誤]]？`,
+    opts:[R`$\sqrt{2}=1.414$，在數線上找到 $1.414$ 即為 $\sqrt{2}$ 的位置`, R`$(\sqrt{2})^2=2$`, R`$\sqrt{2}$ 有 2 個平方根`, R`$1<\sqrt{2}<2$`], ans:0,
+    hint:R`$\sqrt{2}$ 是無限不循環小數，$1.414$ 只是它的什麼值？`,
+    steps:[R`(A) $\sqrt{2}=1.41421\cdots$，$1.414$ 只是近似值，兩點位置不同，所以 (A) 錯誤。`,
+           R`(B) 平方根再平方會回到原數：$(\sqrt{2})^2=2$，正確。`,
+           R`(C) $\sqrt{2}$ 是正數，正數有 2 個平方根（一正一負），正確。`,
+           R`(D) $1^2=1<2<4=2^2$，所以 $1<\sqrt{2}<2$，正確。`],
+    tip:R`「$\approx$」和「$=$」不一樣：$\sqrt{2}\approx1.414$ 才是正確寫法。` },
+  { lvl:'易', skill:'估算根號：正方形邊長',
+    stem:R`面積為 18 平方單位的正方形，其邊長最接近下列何者？`,
+    opts:['$4.3$','$4.2$','$3.8$','$3.7$'], ans:1,
+    hint:R`邊長是 $\sqrt{18}$，把選項平方，看誰最接近 18。`,
+    steps:[R`邊長 $=\sqrt{18}$`, R`$4.2^2=17.64$，$4.3^2=18.49$`, R`$18-17.64=0.36$，$18.49-18=0.49$，所以 $4.2$ 較接近`],
+    tip:R`$3.8^2=14.44$，連 15 都不到，可以先刪掉 (C)、(D)。` },
+  { lvl:'難', skill:'整數部分與小數部分',
+    stem:R`若 $\sqrt{3}$ 的整數部分為 $a$，小數部分為 $b$，下列敘述何者[[錯誤]]？`,
+    opts:['$a=1$',R`$b=\sqrt{3}-1$`,R`$\sqrt{a}=1$`,'$b^2=2$'], ans:3,
+    hint:R`小數部分 = 原數 − 整數部分。`,
+    steps:[R`$1<\sqrt{3}<2$，所以 $a=1$，(A) 正確`, R`$b=\sqrt{3}-1$，(B) 正確`, R`$\sqrt{a}=\sqrt{1}=1$，(C) 正確`,
+           R`$b^2=(\sqrt{3}-1)^2=3-2\sqrt{3}+1=4-2\sqrt{3}\neq2$，(D) 錯誤`],
+    tip:R`小數部分要寫成 $\sqrt{3}-1$ 才精確，不要用 $0.732\cdots$ 去算。` },
+  { lvl:'易', skill:'估算根號：正方形邊長',
+    stem:R`有一個邊長為 $a$ 公分的正方形，面積為 43 平方公分，則下列敘述何者正確？`,
+    opts:['$5<a<6$','$6<a<7$','$7<a<8$','$8<a<9$'], ans:1,
+    hint:R`找出 43 夾在哪兩個完全平方數之間。`,
+    steps:[R`$a^2=43$`, R`$6^2=36<43<49=7^2$`, R`所以 $6<a<7$`],
+    tip:R`正方形邊長 $=\sqrt{\text{面積}}$，所以 $a=\sqrt{43}$。` },
+  { lvl:'中', skill:'平方根的意義',
+    stem:R`若 $\sqrt{a}$ 的平方根為 $\pm2$，請問 $a$ 所代表的值為何？`,
+    opts:['$32$','$16$','$8$','$4$'], ans:1,
+    hint:R`「$\sqrt{a}$ 的平方根是 $\pm2$」代表 $(\pm2)^2=\sqrt{a}$。`,
+    steps:[R`$\sqrt{a}=(\pm2)^2=4$`, R`$a=4^2=16$`],
+    tip:R`這題要「倒推兩次」：先推回 $\sqrt{a}$，再推回 $a$。選 4 的同學只推了一次喔！` },
+  { lvl:'易', skill:'平方根的意義',
+    stem:R`關於平方根的敘述，下列何者正確？`,
+    opts:[R`4 的平方根為 $\pm2$`, R`$\sqrt{16}$ 的平方根為 $\pm4$`, R`3 是 $-9$ 的平方根`, R`1 只有一個平方根`], ans:0,
+    hint:R`正數有幾個平方根？負數呢？`,
+    steps:[R`(A) $(\pm2)^2=4$，正確`, R`(B) $\sqrt{16}=4$，4 的平方根是 $\pm2$，錯誤`,
+           R`(C) 任何數平方都不會是負數，$-9$ 沒有平方根，錯誤`, R`(D) 1 的平方根是 $\pm1$，有兩個，錯誤`],
+    tip:R`正數 → 2 個平方根；0 → 1 個；負數 → 沒有。` },
+  { lvl:'中', skill:'平方根的應用',
+    stem:R`已知 5 是 $9-2x$ 的一個平方根，則 $\sqrt{x^2+36}=$？`,
+    opts:['$10$','$-10$',R`$\pm10$`,'無法確定'], ans:0,
+    hint:R`「5 是 $9-2x$ 的平方根」代表 $5^2=9-2x$。`,
+    steps:[R`$9-2x=5^2=25$，$-2x=16$，$x=-8$`, R`$\sqrt{x^2+36}=\sqrt{64+36}=\sqrt{100}=10$`],
+    tip:R`符號 $\sqrt{\;}$ 只取正的平方根，所以是 $10$，不是 $\pm10$。` }
+]},
+
+{ id:'2-2', title:'根式的運算', color:'#2c56c9', qs:[
+  { lvl:'中', skill:'根式符號的意義',
+    stem:R`下列敘述何者正確？`,
+    opts:[R`$4\sqrt{2}$ 表示 $4+\sqrt{2}$`, R`$(\sqrt{6})^2$ 表示 $\sqrt{6}\times 2$`,
+          R`$(3\sqrt{5})^2$ 表示 $(3\sqrt{5})\times(3\sqrt{5})$`, R`$2\sqrt{2}+2$ 表示 $2\times(\sqrt{2}\times 1)$`], ans:2,
+    hint:R`數字和根號緊貼在一起時，中間省略的是什麼運算符號？「平方」又是誰乘誰？`,
+    steps:[R`數字緊貼根號，中間省略的是「×」：$4\sqrt{2}=4\times\sqrt{2}$，所以 (A) 錯。`,
+           R`平方是「自己乘自己」：$(\sqrt{6})^2=\sqrt{6}\times\sqrt{6}$，不是 $\sqrt{6}\times 2$，所以 (B) 錯。`,
+           R`$(3\sqrt{5})^2=(3\sqrt{5})\times(3\sqrt{5})$，(C) 正確。`,
+           R`$2\sqrt{2}+2=\sqrt{2}+\sqrt{2}+2$，所以 (D) 錯。`],
+    tip:R`「$4\sqrt{2}$」就像「$4x$」：$4x$ 是 4 個 $x$，$4\sqrt{2}$ 就是 4 個 $\sqrt{2}$。` },
+  { lvl:'難', skill:'整體代入',
+    stem:R`若 $ab>0$，且 $\sqrt{a+b}=3$，求 $\sqrt{5a+5b}=$？`,
+    opts:[R`$5\sqrt{3}$`, R`$3\sqrt{5}$`, R`$9$`, R`$9\sqrt{5}$`], ans:1,
+    hint:R`先由 $\sqrt{a+b}=3$ 求出 $a+b$，再把 $5a+5b$ 提出公因數 5。`,
+    steps:[R`$\sqrt{a+b}=3$，兩邊平方得 $a+b=9$。`, R`$\sqrt{5a+5b}=\sqrt{5(a+b)}=\sqrt{5\times 9}=\sqrt{45}$`, R`$\sqrt{45}=\sqrt{9\times 5}=3\sqrt{5}$`],
+    tip:R`不必分別求出 $a$、$b$，把 $a+b$ 當成「一整包」直接代入就好。` },
+  { lvl:'中', skill:'根式除法',
+    stem:R`求方程式 $2\sqrt{6}\,x=\sqrt{18}$ 的解為下列何者？`,
+    opts:[R`$\dfrac{3}{2}$`, R`$\dfrac{\sqrt{3}}{2}$`, R`$\dfrac{\sqrt{6}}{2}$`, R`$\dfrac{\sqrt{6}}{3}$`], ans:1,
+    hint:R`兩邊同除以 $2\sqrt{6}$，把 $x$ 單獨留下來。`,
+    steps:[R`$x=\dfrac{\sqrt{18}}{2\sqrt{6}}$`, R`根號可以合在一起相除：$\dfrac{\sqrt{18}}{\sqrt{6}}=\sqrt{\dfrac{18}{6}}=\sqrt{3}$`, R`所以 $x=\dfrac{\sqrt{3}}{2}$`],
+    tip:R`$\dfrac{\sqrt{a}}{\sqrt{b}}=\sqrt{\dfrac{a}{b}}$，根號裡能整除時，先合併再算最快。` },
+  { lvl:'中', skill:'根式應用：三角形面積',
+    stem:R`已知三角形 $ABC$ 的高為 $6$、底為 $m$，面積為 $(2\sqrt{27}+12)$ 平方單位，則 $m=$？`,
+    opts:[R`$\sqrt{2}+4$`, R`$2\sqrt{3}+2$`, R`$\sqrt{3}+2$`, R`$2\sqrt{3}+4$`], ans:3,
+    hint:R`三角形面積 = 底 × 高 ÷ 2。另外，$\sqrt{27}$ 可以先化簡。`,
+    steps:[R`面積 $=\dfrac{m\times 6}{2}=3m$`, R`$2\sqrt{27}=2\times 3\sqrt{3}=6\sqrt{3}$，所以 $3m=6\sqrt{3}+12$`, R`兩邊同除以 3：$m=2\sqrt{3}+4$`],
+    tip:R`除以 3 時，每一項都要除：$6\sqrt{3}\div 3=2\sqrt{3}$，$12\div 3=4$。` },
+  { lvl:'易', skill:'分母有理化',
+    stem:R`解一元一次方程式 $3\sqrt{8}\,x=2\sqrt{3}$，則 $x$ 的解為多少？`,
+    opts:[R`$\dfrac{\sqrt{6}}{2}$`, R`$\dfrac{\sqrt{6}}{3}$`, R`$\dfrac{\sqrt{6}}{6}$`, R`$\sqrt{6}$`], ans:2,
+    hint:R`先把 $\sqrt{8}$ 化簡，求出 $x$ 後，分母有根號要記得有理化。`,
+    steps:[R`$3\sqrt{8}=3\times 2\sqrt{2}=6\sqrt{2}$，方程式變成 $6\sqrt{2}\,x=2\sqrt{3}$`, R`$x=\dfrac{2\sqrt{3}}{6\sqrt{2}}=\dfrac{\sqrt{3}}{3\sqrt{2}}$`, R`分子、分母同乘 $\sqrt{2}$：$x=\dfrac{\sqrt{6}}{3\times 2}=\dfrac{\sqrt{6}}{6}$`],
+    tip:R`最簡根式的分母不能有根號，看到 $\sqrt{2}$ 在分母，就乘上 $\sqrt{2}$ 把它「請」到分子。` },
+  { lvl:'中', skill:'同類方根加減',
+    stem:R`計算 $7\sqrt{8}-3\sqrt{45}+2\sqrt{20}-3\sqrt{18}$ 之值為下列何者？`,
+    opts:[R`$5\sqrt{2}-5\sqrt{5}$`, R`$5\sqrt{3}+3\sqrt{5}$`, R`$7\sqrt{2}+4\sqrt{5}$`, R`$19\sqrt{2}-18\sqrt{5}$`], ans:0,
+    hint:R`每一項先化成最簡根式，再把根號裡一樣的項合併。`,
+    steps:[R`逐項化簡：$7\sqrt{8}=14\sqrt{2}$、$3\sqrt{45}=9\sqrt{5}$、$2\sqrt{20}=4\sqrt{5}$、$3\sqrt{18}=9\sqrt{2}$`, R`原式 $=14\sqrt{2}-9\sqrt{5}+4\sqrt{5}-9\sqrt{2}$`, R`同類方根合併：$(14-9)\sqrt{2}+(-9+4)\sqrt{5}=5\sqrt{2}-5\sqrt{5}$`],
+    tip:R`同類方根就像同一種水果：14 顆蘋果拿走 9 顆剩 5 顆；但 $\sqrt{2}$ 和 $\sqrt{5}$ 是不同水果，不能合併。` },
+  { lvl:'中', skill:'分數根式化簡',
+    stem:R`若 $\sqrt{\dfrac{32}{9}}+\sqrt{\dfrac{16}{3}}-\sqrt{\dfrac{8}{9}}=\dfrac{k}{3}$，則 $k=$？`,
+    opts:[R`$6\sqrt{2}+4\sqrt{3}$`, R`$2\sqrt{2}+4\sqrt{3}$`, R`$6\sqrt{2}-4\sqrt{3}$`, R`$4\sqrt{2}-6\sqrt{3}$`], ans:1,
+    hint:R`根號內的分數可以拆開：$\sqrt{\dfrac{a}{b}}=\dfrac{\sqrt{a}}{\sqrt{b}}$，目標是讓每一項分母都變成 3。`,
+    steps:[R`$\sqrt{\dfrac{32}{9}}=\dfrac{\sqrt{32}}{3}=\dfrac{4\sqrt{2}}{3}$`, R`$\sqrt{\dfrac{16}{3}}=\dfrac{4}{\sqrt{3}}=\dfrac{4\sqrt{3}}{3}$（分母有理化）`, R`$\sqrt{\dfrac{8}{9}}=\dfrac{\sqrt{8}}{3}=\dfrac{2\sqrt{2}}{3}$`,
+           R`合併：$\dfrac{4\sqrt{2}+4\sqrt{3}-2\sqrt{2}}{3}=\dfrac{2\sqrt{2}+4\sqrt{3}}{3}$，所以 $k=2\sqrt{2}+4\sqrt{3}$`],
+    tip:R`分母都是 3 時，只要比較分子就能找到 $k$。` },
+  { lvl:'中', skill:'有理化（平方差）',
+    stem:R`將 $\dfrac{1}{\sqrt{7}-\sqrt{2}}$ 化為最簡根式，結果為下列何者？`,
+    opts:[R`$\dfrac{\sqrt{7}-\sqrt{2}}{9}$`, R`$\dfrac{\sqrt{7}+\sqrt{2}}{9}$`, R`$\dfrac{\sqrt{7}-\sqrt{2}}{5}$`, R`$\dfrac{\sqrt{7}+\sqrt{2}}{5}$`], ans:3,
+    hint:R`分母是 $\sqrt{7}-\sqrt{2}$，找它的「好搭檔」$\sqrt{7}+\sqrt{2}$，用平方差公式。`,
+    steps:[R`分子、分母同乘 $(\sqrt{7}+\sqrt{2})$`, R`分母：$(\sqrt{7}-\sqrt{2})(\sqrt{7}+\sqrt{2})=(\sqrt{7})^2-(\sqrt{2})^2=7-2=5$`, R`結果：$\dfrac{\sqrt{7}+\sqrt{2}}{5}$`],
+    tip:R`平方差的「差」是減法：$7-2=5$，不是 $7+2=9$，選分母 9 的同學要特別注意！` },
+  { lvl:'易', skill:'乘法公式',
+    stem:R`計算 $(\sqrt{18}+\sqrt{12})(\sqrt{18}-\sqrt{12})=$？`,
+    opts:[R`$2\sqrt{3}-3\sqrt{2}$`, R`$3\sqrt{2}-2\sqrt{3}$`, R`$6$`, R`$6\sqrt{3}$`], ans:2,
+    hint:R`這是 $(a+b)(a-b)$ 的形式。`,
+    steps:[R`套用平方差公式 $(a+b)(a-b)=a^2-b^2$`, R`原式 $=(\sqrt{18})^2-(\sqrt{12})^2=18-12=6$`],
+    tip:R`看到「同兩數，一加一減」相乘，就是平方差，根號會直接消失。` },
+  { lvl:'中', skill:'根式乘法：長方形面積',
+    stem:R`如圖，長方形的面積為多少平方單位？`, figure:rectFig,
+    opts:[R`$4$`, R`$\sqrt{10}+\sqrt{6}$`, R`$13$`, R`$\sqrt{15}+\sqrt{10}$`], ans:1,
+    hint:R`長方形面積 = 長 × 寬，用分配律把 $\sqrt{2}$ 乘進括號。`,
+    steps:[R`面積 $=(\sqrt{5}+\sqrt{3})\times\sqrt{2}$`, R`分配律：$\sqrt{5}\times\sqrt{2}+\sqrt{3}\times\sqrt{2}=\sqrt{10}+\sqrt{6}$`],
+    tip:R`$\sqrt{5}+\sqrt{3}\neq\sqrt{8}$！根號不能直接相加，所以要用分配律逐項相乘。` }
+]},
+
+{ id:'2-3', title:'畢氏定理', color:'#0f8a7e', qs:[
+  { lvl:'中', skill:'畢氏定理：方位距離',
+    stem:R`若仕軒與弘宇由同一個位置出發，仕軒先向東走 300 公尺，再向北走 400 公尺到達 $A$ 點；弘宇先向西走 500 公尺，再向南走 200 公尺到達 $B$ 點，則 $A$、$B$ 兩點的距離為多少公尺？`,
+    opts:['$1100$','$1000$',R`$1100\sqrt{3}$`,R`$1000\sqrt{3}$`], ans:1,
+    hint:R`把出發點當作原點，東為 $x$ 軸正向、北為 $y$ 軸正向，寫出 $A$、$B$ 的坐標。`,
+    steps:[R`$A(300,400)$、$B(-500,-200)$，兩點的水平差 $800$、鉛直差 $600$`,
+           ()=>coordFig({x0:-600,x1:400,y0:-300,y1:500,s:0.24,tick:100,
+              pts:[['A(300,400)',300,400,6,-6],['B(−500,−200)',-500,-200,-14,18],['C(300,−200)',300,-200,6,18]],
+              seg:[[-500,-200,300,-200],[300,-200,300,400],[-500,-200,300,400]],label:'A、B兩點位置圖'}),
+           R`$\overline{AB}=\sqrt{800^2+600^2}=\sqrt{1000000}=1000$（公尺）`],
+    tip:R`600、800、1000 是 3、4、5 的 200 倍，認得「3-4-5 家族」可以秒算！` },
+  { lvl:'中', skill:'直角三角形的判別',
+    stem:R`下列何者[[不是]]直角三角形的三邊長？`,
+    opts:['$6$、$8$、$10$',R`$\sqrt{2}$、$\sqrt{3}$、$\sqrt{5}$`,R`$\dfrac{5}{2}$、$\dfrac{12}{2}$、$\dfrac{13}{2}$`,R`$\dfrac{1}{3}$、$\dfrac{1}{4}$、$\dfrac{1}{5}$`], ans:3,
+    hint:R`檢查「兩短邊的平方和」是否等於「最長邊的平方」。`,
+    steps:[R`(A) $6^2+8^2=100=10^2$ ✔`, R`(B) $(\sqrt{2})^2+(\sqrt{3})^2=2+3=5=(\sqrt{5})^2$ ✔`, R`(C) 三邊都乘 2 變成 5、12、13：$25+144=169$ ✔`,
+           R`(D) 最長邊是 $\dfrac{1}{3}$：$\left(\dfrac{1}{4}\right)^2+\left(\dfrac{1}{5}\right)^2=\dfrac{41}{400}$，但 $\left(\dfrac{1}{3}\right)^2=\dfrac{1}{9}$，不相等 ✘`],
+    tip:R`分數邊長要小心：分子相同時，分母越大數越小，所以 $\dfrac{1}{3}$ 才是最長邊。` },
+  { lvl:'中', skill:'畢氏定理：生活應用',
+    stem:R`如圖，小君的風箏掉在 3 公尺高的圍牆上，牆腳附近有 5 公尺寬的花圃（不可踩踏），小君想在花圃外的空地上架一梯子到圍牆頂端取回風箏，試求梯子至少要多少公尺長？`, figure:ladderFig,
+    opts:['$4$','$5$','$6$','$7$'], ans:2,
+    hint:R`梯子、地面、圍牆圍成一個直角三角形，梯子是斜邊。`,
+    steps:[R`梯子長 $=\sqrt{3^2+5^2}=\sqrt{34}$`, R`$5^2=25<34<36=6^2$，所以 $\sqrt{34}\approx5.8$`, R`梯子要比 5.8 公尺長，選項中夠長的是 6 和 7，「至少」取 6 公尺`],
+    tip:R`「至少」要找夠用的選項中最小的；5 公尺搭不到牆頂。` },
+  { lvl:'中', skill:'畢氏定理：梯形周長',
+    stem:R`如圖，梯形 $ABCD$ 中，$\overline{AD}=8$，$\overline{AB}=12$，$\overline{CD}=13$，求此梯形的周長為何？`, figure:()=>trapFig(false),
+    opts:['$44$','$46$','$48$','$52$'], ans:1,
+    hint:R`從 $D$ 往 $\overline{BC}$ 畫一條垂直線，切出一個直角三角形。`,
+    steps:[R`從 $D$ 作 $\overline{BC}$ 的垂線，垂足為 $E$，則 $\overline{DE}=12$、$\overline{BE}=8$`, ()=>trapFig(true),
+           R`$\overline{EC}=\sqrt{13^2-12^2}=\sqrt{25}=5$`, R`$\overline{BC}=8+5=13$，周長 $=8+12+13+13=46$`],
+    tip:R`梯形、四邊形的題目，常靠「作高」切出直角三角形。` },
+  { lvl:'中', skill:'畢氏定理：雙直角三角形',
+    stem:R`利用畢氏定理，求圖中 $a$ 值為何？`, figure:altFig,
+    opts:['$18$','$20$','$25$','$26$'], ans:3,
+    hint:R`先在右邊的直角三角形算出高，再到左邊算 $a$。`,
+    steps:[R`右邊直角三角形：高 $=\sqrt{25^2-7^2}=\sqrt{625-49}=\sqrt{576}=24$`, R`左邊直角三角形：$a=\sqrt{24^2+10^2}=\sqrt{676}=26$`],
+    tip:R`7-24-25 和 10-24-26（5-12-13 的 2 倍）都是常見的整數直角三角形。` },
+  { lvl:'中', skill:'畢氏定理：四邊形',
+    stem:R`如圖，四邊形 $ABCD$ 中，$\angle B=\angle D=90^\circ$，已知 $\overline{AB}=7$，$\overline{BC}=10$，$\overline{CD}=12$，則 $\overline{AD}=$？`, figure:quadFig,
+    opts:[R`$\sqrt{5}$`,R`$\sqrt{7}$`,'$5$','$7$'], ans:0,
+    hint:R`連接對角線 $\overline{AC}$，它同時是兩個直角三角形的斜邊。`,
+    steps:[R`連 $\overline{AC}$，在 $\triangle ABC$ 中：$\overline{AC}^2=7^2+10^2=149$`, R`在 $\triangle ACD$ 中：$\overline{AD}^2=\overline{AC}^2-12^2=149-144=5$`, R`$\overline{AD}=\sqrt{5}$`],
+    tip:R`不用先算出 $\sqrt{149}$，直接用「平方」傳下去更輕鬆。` },
+  { lvl:'中', skill:'坐標平面上兩點距離',
+    stem:R`坐標平面上有 $A(1,14)$、$B(-3,1)$、$C(9,3)$ 三點，則 $\overline{AB}$、$\overline{BC}$、$\overline{AC}$ 哪一線段的長度最短？`,
+    opts:[R`$\overline{AB}$`,R`$\overline{BC}$`,R`$\overline{AC}$`,'一樣長'], ans:1,
+    hint:R`比較長度時，比較「距離的平方」就好，不必開根號。`,
+    steps:[R`$\overline{AB}^2=(1+3)^2+(14-1)^2=16+169=185$`, R`$\overline{BC}^2=(9+3)^2+(3-1)^2=144+4=148$`, R`$\overline{AC}^2=(9-1)^2+(14-3)^2=64+121=185$`, R`148 最小，所以 $\overline{BC}$ 最短`],
+    tip:R`兩點距離 $=\sqrt{(x_1-x_2)^2+(y_1-y_2)^2}$。` },
+  { lvl:'中', skill:'坐標平面上兩點距離',
+    stem:R`直角坐標平面上 $A(1,-3)$、$B(2,5)$ 兩點，求 $\overline{AB}=$？`,
+    opts:[R`$\sqrt{65}$`,'$8$','$9$',R`$\sqrt{97}$`], ans:0,
+    hint:R`先算 $x$ 坐標差和 $y$ 坐標差，注意減負數。`,
+    steps:[R`$x$ 坐標差：$2-1=1$；$y$ 坐標差：$5-(-3)=8$`, R`$\overline{AB}=\sqrt{1^2+8^2}=\sqrt{65}$`],
+    tip:R`$5-(-3)=8$，減負數等於加正數；算成 2 的同學要小心！` },
+  { lvl:'中', skill:'坐標平面上的三角形面積',
+    stem:R`在坐標平面上有 $A(2,3)$、$B(-1,4)$、$C(2,4)$ 三點，則三角形 $ABC$ 的面積為多少平方單位？`,
+    opts:['$1$',R`$\dfrac{3}{2}$`,'$2$','$3$'], ans:1,
+    hint:R`觀察三點坐標：哪兩點的 $x$ 坐標相同？哪兩點的 $y$ 坐標相同？`,
+    steps:[R`$B$、$C$ 的 $y$ 坐標都是 4，$\overline{BC}$ 是水平線段，長 $2-(-1)=3$`, R`$A$、$C$ 的 $x$ 坐標都是 2，$\overline{AC}$ 是鉛直線段，長 $4-3=1$`,
+           ()=>coordFig({x0:-2,x1:3,y0:-1,y1:5,s:30,tick:1,poly:[[2,3],[-1,4],[2,4]],
+              pts:[['A',2,3,8,14],['B',-1,4,-16,-6],['C',2,4,8,-6]],label:'三角形ABC'}),
+           R`水平與鉛直互相垂直，$\angle C=90^\circ$，面積 $=\dfrac{3\times1}{2}=\dfrac{3}{2}$`],
+    tip:R`坐標題先畫圖！畫出來後，直角常常一眼就看到。` },
+  { lvl:'易', skill:'坐標平面上兩點距離',
+    stem:R`直角坐標平面上 $A$、$B$、$C$、$D$ 四點，哪一點離原點 $O$ 最近？`,
+    opts:['$A(3,1)$','$B(2,2)$','$C(-4,1)$','$D(1,-5)$'], ans:1,
+    hint:R`點 $(x,y)$ 到原點的距離是 $\sqrt{x^2+y^2}$。`,
+    steps:[R`到原點距離的平方 $=x^2+y^2$`, R`$\overline{AO}^2=10$、$\overline{BO}^2=8$、$\overline{CO}^2=17$、$\overline{DO}^2=26$`, R`8 最小，所以 $B$ 離原點最近`],
+    tip:R`坐標的正負號不影響平方：$(-4)^2=16$。` }
+]},
+
+{ id:'3-1', title:'提公因式與乘法公式作因式分解', color:'#c2571a', qs:[
+  { lvl:'中', skill:'因式與倍式',
+    stem:R`已知 $3x^2-5x+a$ 為 $x-5$ 的倍式，則下列何者為 $3x^2-5x+a$ 的因式？`,
+    opts:['$3x+10$','$3x-10$','$3x+20$','$3x-20$'], ans:0,
+    hint:R`設 $3x^2-5x+a=(x-5)(3x+k)$，展開後比較 $x$ 項的係數。`,
+    steps:[R`設 $3x^2-5x+a=(x-5)(3x+k)$`, R`展開：$(x-5)(3x+k)=3x^2+(k-15)x-5k$`, R`比較 $x$ 項：$k-15=-5$，$k=10$`, R`所以 $3x+10$ 是因式（同時可得 $a=-50$）`],
+    tip:R`倍式 = 因式 × 另一個因式；「設出另一個因式再比較係數」比長除法更快。` },
+  { lvl:'中', skill:'因式與倍式',
+    stem:R`若 $2x^2+x+m$ 是 $2x-5$ 的倍式，求 $m$ 的值為何？`,
+    opts:['$-15$','$-12$','$12$','$15$'], ans:0,
+    hint:R`設 $2x^2+x+m=(2x-5)(x+k)$。`,
+    steps:[R`設 $2x^2+x+m=(2x-5)(x+k)=2x^2+(2k-5)x-5k$`, R`比較 $x$ 項：$2k-5=1$，$k=3$`, R`$m=-5k=-15$`],
+    tip:R`也可以用代入法：令 $2x-5=0$，$x=\dfrac{5}{2}$ 代入 $2x^2+x+m=0$，一樣得到 $m=-15$。` },
+  { lvl:'中', skill:'提公因式：簡化計算',
+    stem:R`若 $x=-225$，則 $399x-\dfrac{1999x}{5}=$？`,
+    opts:['$120$','$160$','$180$','$200$'], ans:2,
+    hint:R`先提出公因式 $x$，不要急著代入大數字。`,
+    steps:[R`$399x-\dfrac{1999x}{5}=x\left(\dfrac{1995}{5}-\dfrac{1999}{5}\right)=x\times\left(-\dfrac{4}{5}\right)$`, R`$=(-225)\times\left(-\dfrac{4}{5}\right)=180$`],
+    tip:R`提公因式就像「先打包再搬家」：把共同的 $x$ 提出來，計算量大減。` },
+  { lvl:'中', skill:'提公因式',
+    stem:R`因式分解 $2(a-5)-(5a-a^2)=$？`,
+    opts:['$(a-5)(2-a)$','$(a+5)(2-a)$','$(a-5)(2+a)$','$-(a+5)(2+a)$'], ans:2,
+    hint:R`$5a-a^2=a(5-a)$，再把 $(5-a)$ 變號成 $(a-5)$。`,
+    steps:[R`$5a-a^2=a(5-a)=-a(a-5)$`, R`原式 $=2(a-5)+a(a-5)$`, R`$=(a-5)(2+a)$`],
+    tip:R`$(5-a)=-(a-5)$，變號時前面的正負號要跟著改。` },
+  { lvl:'中', skill:'提公因式',
+    stem:R`因式分解 $(y^2-5y)+3(y-5)=$？`,
+    opts:['$(y+3)(y+5)$','$(y+3)(5-y)$','$(y-3)(y+5)$','$(y+3)(y-5)$'], ans:3,
+    hint:R`前面的括號也能提出公因式 $y$。`,
+    steps:[R`$y^2-5y=y(y-5)$`, R`原式 $=y(y-5)+3(y-5)=(y+3)(y-5)$`],
+    tip:R`找到大家共有的「零件」$(y-5)$，就能一次提出來。` },
+  { lvl:'中', skill:'提公因式',
+    stem:R`因式分解 $(2x-1)(x+2)+(1-2x)(x-1)=$？`,
+    opts:['$3(2x-1)$','$(2x-1)(2x+1)$','$-3(2x-1)$','$(2x-1)(x+3)$'], ans:0,
+    hint:R`$1-2x$ 和 $2x-1$ 只差一個負號。`,
+    steps:[R`$(1-2x)=-(2x-1)$`, R`原式 $=(2x-1)(x+2)-(2x-1)(x-1)$`, R`$=(2x-1)[(x+2)-(x-1)]=(2x-1)\times3=3(2x-1)$`],
+    tip:R`中括號裡 $-(x-1)=-x+1$，寫成 $-x-1$ 就會選錯。` },
+  { lvl:'易', skill:'公因式',
+    stem:R`下列何者是 $6x-8$ 與 $12x-9x^2$ 的公因式？`,
+    opts:['$4-3x$','$4+3x$','$3-4x$','$3+4x$'], ans:0,
+    hint:R`把兩個式子各自分解，看看共同的部分。`,
+    steps:[R`$6x-8=2(3x-4)=-2(4-3x)$`, R`$12x-9x^2=3x(4-3x)$`, R`兩式都有 $(4-3x)$，所以它是公因式`],
+    tip:R`$(3x-4)$ 和 $(4-3x)$ 只差負號，兩個都算公因式。` },
+  { lvl:'易', skill:'提公因式',
+    stem:R`因式分解 $(x+1)(x+3)^2-(x+1)^2(x+3)$ 的結果為下列何者？`,
+    opts:['$(x+1)(x+3)$','$(x+1)(x+3)(x+4)$','$2(x+1)(x+3)$','$(x+1)(x+3)(2x+4)$'], ans:2,
+    hint:R`兩項都有 $(x+1)$ 和 $(x+3)$，一起提出來。`,
+    steps:[R`公因式是 $(x+1)(x+3)$`, R`原式 $=(x+1)(x+3)[(x+3)-(x+1)]$`, R`$=(x+1)(x+3)\times2=2(x+1)(x+3)$`],
+    tip:R`提完公因式後，剩下的括號要記得化簡。` },
+  { lvl:'易', skill:'乘法公式：完全平方',
+    stem:R`如圖，阿強剪了三種圖案，$A$ 為邊長 $x$ 的正方形，$B$ 為長 $x$、寬為 1 的長方形，$C$ 為邊長 1 的正方形。現在阿強取 9 塊 $A$ 和 4 塊 $C$，則他應再取多少塊 $B$，才可拼成一個正方形？`, figure:tilesFig,
+    opts:['$6$','$12$','$18$','$24$'], ans:1,
+    hint:R`總面積是 $9x^2+\square x+4$，要湊成「某式的平方」。`,
+    steps:[R`9 塊 $A$ 面積 $9x^2=(3x)^2$，4 塊 $C$ 面積 $4=2^2$`, R`完全平方：$(3x+2)^2=9x^2+12x+4$`, R`中間項 $12x$，需要 12 塊 $B$`],
+    tip:R`$(a+b)^2=a^2+2ab+b^2$，中間項是「2 × 頭 × 尾」：$2\times3x\times2=12x$。` },
+  { lvl:'中', skill:'乘法公式：整體代換',
+    stem:R`因式分解 $(3x-1)^2-10(3x-1)+25=$？`,
+    opts:['$(3x+1)(3x-1)$','$(3x-5)^2$','$3(x-2)^2$','$9(x-2)^2$'], ans:3,
+    hint:R`把 $(3x-1)$ 看成一個整體，令它為 $A$。`,
+    steps:[R`令 $A=3x-1$，原式 $=A^2-10A+25=(A-5)^2$`, R`代回：$(3x-1-5)^2=(3x-6)^2$`, R`$=[3(x-2)]^2=9(x-2)^2$`],
+    tip:R`選 $3(x-2)^2$ 的同學，忘了 3 也要平方喔！` }
+]},
+
+{ id:'3-2', title:'利用十字交乘法因式分解', color:'#a3307a', qs:[
+  { lvl:'中', skill:'十字交乘：找係數',
+    stem:R`已知 $a<0$，若 $x^2+ax+7$ 可以因式分解為兩個一次式之乘積，則 $a$ 的值為多少？`,
+    opts:['$-6$','$-7$','$-8$','$-9$'], ans:2,
+    hint:R`7 只能拆成 $1\times7$ 或 $(-1)\times(-7)$。`,
+    steps:[R`若拆成 $1\times7$：$(x+1)(x+7)$，$a=8$，不合 $a<0$`, ()=>cross('x','-1','x','-7',R`$-7x-x=-8x$`), R`拆成 $(-1)\times(-7)$：$(x-1)(x-7)$，$a=-8$`],
+    tip:R`題目給的條件 $a<0$，就是用來「刪去」不合的情況。` },
+  { lvl:'易', skill:'十字交乘：讀懂過程',
+    stem:R`將 $x^2-5x+a$ 用十字交乘法分解過程如下，則下列何者正確？`, figure:()=>cross('x','-3','x','+k',R`$-3x+kx=-5x$`),
+    opts:[R`$a=6$，$k=-2$`,R`$a=-6$，$k=-2$`,R`$a=6$，$k=2$`,R`$a=-6$，$k=2$`], ans:0,
+    hint:R`交叉相乘的和 = 中間項；右邊兩數相乘 = 常數項。`,
+    steps:[R`交叉相加：$-3x+kx=-5x$，$k=-2$`, R`常數項：$a=(-3)\times(-2)=6$`, R`所以 $a=6$，$k=-2$`],
+    tip:R`十字交乘口訣：「左乘得頭、右乘得尾、交叉相加湊中間」。` },
+  { lvl:'中', skill:'十字交乘：二元',
+    stem:R`因式分解 $14x^2+53xy+14y^2$ 的結果為下列何者？`,
+    opts:['$7(x+y)^2$','$(2x+7y)(7x+2y)$','$14(x+y)(x-y)$','$(2x+7)(7x+2)$'], ans:1,
+    hint:R`$14x^2$ 可拆成 $2x\cdot7x$，$14y^2$ 可拆成 $7y\cdot2y$，試試交叉相加。`,
+    steps:[()=>cross('2x','7y','7x','2y',R`$4xy+49xy=53xy$`), R`橫著讀：$(2x+7y)(7x+2y)$`],
+    tip:R`有兩個文字時，$y$ 要跟著常數走；(D) 就是漏掉了 $y$。` },
+  { lvl:'中', skill:'十字交乘：找係數',
+    stem:R`已知 $15x^2-28x+a$ 可以利用十字交乘法分解，如圖所示，則下列敘述何者正確？`, figure:()=>cross('5x','+c','bx','-8',''),
+    opts:['$bc=-28$','$b+c=7$','$a+c=36$','$a+b+c=39$'], ans:1,
+    hint:R`依序用「首項」「中間項」「常數項」三個條件求 $b$、$c$、$a$。`,
+    steps:[R`首項：$5x\cdot bx=15x^2$，$b=3$`, R`交叉相加：$5x\cdot(-8)+3x\cdot c=-28x$，$-40+3c=-28$，$c=4$`, R`常數項：$a=c\times(-8)=-32$`,
+           R`檢查：$bc=12$、$b+c=7$ ✔、$a+c=-28$、$a+b+c=-25$`],
+    tip:R`十字交乘的每一條線都是一個方程式，三條線解出三個未知數。` },
+  { lvl:'易', skill:'十字交乘：找錯誤',
+    stem:R`小慧利用十字交乘法因式分解 $2x^2-7x-15$ 的步驟如圖所示，請你幫她找出哪一個步驟開始[[出錯]]？`, figure:huiFig,
+    opts:[R`步驟一：將 $2x^2$ 寫成 $2x\cdot x$`,R`步驟二：將 $-15$ 寫成 $3\times(-5)$`,R`步驟三：因式分解成 $(2x-5)(x+3)$`,'以上步驟均正確無誤'], ans:2,
+    hint:R`交叉相乘用斜線，但寫答案時要用哪個方向配對？`,
+    steps:[R`檢查交叉：$2x\cdot(-5)+x\cdot3=-10x+3x=-7x$ ✔，步驟一、二都正確`, R`寫答案要「橫著讀」：第一列 $2x$ 與 $3$ → $(2x+3)$；第二列 $x$ 與 $-5$ → $(x-5)$`, R`正確結果是 $(2x+3)(x-5)$，步驟三斜著配對，出錯了`],
+    tip:R`「斜著乘、橫著寫」——這是十字交乘最常見的陷阱！` },
+  { lvl:'中', skill:'十字交乘',
+    stem:R`若多項式 $4x^2+17x-15$ 可以利用十字交乘法因式分解成 $(ax+b)(cx+d)$，則 $ac-bd=$？`,
+    opts:['$19$','$-11$','$-19$','$11$'], ans:0,
+    hint:R`不管哪個括號在前，$ac$ 一定是首項係數、$bd$ 一定是常數項。`,
+    steps:[()=>cross('x','+5','4x','-3',R`$20x-3x=17x$`), R`$4x^2+17x-15=(x+5)(4x-3)$，$ac=4$，$bd=-15$`, R`$ac-bd=4-(-15)=19$`],
+    tip:R`其實不分解也能做：展開 $(ax+b)(cx+d)$，首項係數就是 $ac=4$、常數項就是 $bd=-15$！` },
+  { lvl:'中', skill:'十字交乘：拼圖應用',
+    stem:R`如圖，有三種不同的長方形紙板，其邊長如圖所示，其中 $x>2$，若這三塊可以緊密的拼成一個大長方形，那麼此長方形的長、寬分別為多少？`, figure:rects3Fig,
+    opts:[R`$x+3$，$x+2$`,R`$2x+3$，$x+2$`,R`$3x+3$，$x+2$`,R`$4x+3$，$x+2$`], ans:2,
+    hint:R`大長方形面積 = 三塊面積總和，再把它因式分解。`,
+    steps:[R`總面積 $=x(3x+3)+2(2x+3)+2x=3x^2+3x+4x+6+2x$`, R`$=3x^2+9x+6=3(x^2+3x+2)$`, R`$=3(x+1)(x+2)=(3x+3)(x+2)$`],
+    tip:R`面積做因式分解，就是在找長方形的長和寬。` },
+  { lvl:'中', skill:'十字交乘：提負號',
+    stem:R`因式分解 $9+3x-6x^2$ 的結果為下列何者？`,
+    opts:['$3(x-1)(2x-3)$','$3(x+1)(2x-3)$','$-3(x+1)(2x-3)$','$-3(x-1)(2x-3)$'], ans:2,
+    hint:R`先依 $x$ 的次方由高到低排好，首項係數是負的就先提出負號。`,
+    steps:[R`降冪排列並提出 $-3$：$-6x^2+3x+9=-3(2x^2-x-3)$`, ()=>cross('2x','-3','x','+1',R`$2x-3x=-x$`), R`$=-3(2x-3)(x+1)$`],
+    tip:R`提出 $-3$ 後，括號內每一項都要變號。` },
+  { lvl:'中', skill:'十字交乘：提負號',
+    stem:R`因式分解 $-12x^2-5x+3$ 的結果為下列何者？`,
+    opts:['$-(3x-1)(4x-3)$','$-(3x+1)(4x-3)$','$-3(x-1)(4x+1)$','$(-3x+1)(4x+3)$'], ans:3,
+    hint:R`先提出負號，分解後再把負號放進其中一個括號。`,
+    steps:[R`$-12x^2-5x+3=-(12x^2+5x-3)$`, ()=>cross('3x','-1','4x','+3',R`$9x-4x=5x$`), R`$=-(3x-1)(4x+3)=(-3x+1)(4x+3)$`],
+    tip:R`$-(3x-1)=(-3x+1)$，負號可以「吸收」進括號裡。` },
+  { lvl:'中', skill:'十字交乘：面積應用',
+    stem:R`若一矩形面積為 $(3x^2+x-10)$ 平方單位，寬為 $x+2$，則下列何者正確？`,
+    opts:[R`長為 $3x+5$`,R`長為 $2x-5$`,R`周長為 $8x-6$`,R`周長為 $8x+6$`], ans:2,
+    hint:R`長 = 面積 ÷ 寬，用十字交乘分解面積。`,
+    steps:[()=>cross('x','+2','3x','-5',R`$-5x+6x=x$`), R`$3x^2+x-10=(x+2)(3x-5)$，長為 $3x-5$`, R`周長 $=2[(x+2)+(3x-5)]=2(4x-3)=8x-6$`],
+    tip:R`周長是「(長＋寬) × 2」，別只算一半。` }
+]}
+];
+UNITS.forEach(u=>u.qs.forEach((q,i)=>{q.unit=u; q.no=i+1;}));
+const PTS = {'易':10,'中':15,'難':20};
+const LETTERS = ['A','B','C','D'];
+const KEY = 'math1150102-';
+
+/* ============ 數學排版 ============ */
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function texFallback(t){
+  let s=t;
+  for(let i=0;i<4;i++) s=s.replace(/\\dfrac\{([^{}]*)\}\{([^{}]*)\}/g,'($1)/($2)').replace(/\\sqrt\{([^{}]*)\}/g,'√$1').replace(/\\overline\{([^{}]*)\}/g,'$1');
+  return esc(s.replace(/\\times/g,'×').replace(/\\neq/g,'≠').replace(/\\le/g,'≤').replace(/\\pm/g,'±').replace(/\\cdot/g,'·')
+    .replace(/\\angle/g,'∠').replace(/\\triangle/g,'△').replace(/\^\\circ/g,'°').replace(/\\left|\\right|\\,|\\;/g,'')
+    .replace(/\^2/g,'²').replace(/[{}]/g,''));
+}
+function rich(str){
+  return str.split('$').map((seg,i)=>{
+    if(i%2===0) return esc(seg).replace(/\[\[(.+?)\]\]/g,'<span class="em">$1</span>');
+    if(window.katex){ try{return katex.renderToString(seg,{throwOnError:false,strict:false});}catch(e){} }
+    return texFallback(seg);
+  }).join('');
+}
+const fig = q => q.figure ? q.figure() : '';
+const stepHTML = (s,k,anim) => typeof s==='function'
+  ? `<li class="figstep" ${anim?`style="animation-delay:${k*0.25}s"`:''}>${s()}</li>`
+  : `<li ${anim?`style="animation-delay:${k*0.25}s"`:''}>${rich(s)}</li>`;
+
+/* ============ 紀錄 ============ */
+function readRec(id){try{return JSON.parse(localStorage.getItem(KEY+id))||null;}catch(e){return null;}}
+function saveRec(id,score,stars){
+  try{
+    const r=readRec(id)||{score:0,stars:0};
+    localStorage.setItem(KEY+id,JSON.stringify({score:Math.max(r.score,score),stars:Math.max(r.stars,stars)}));
+  }catch(e){}
+}
+
+/* ============ 畫面切換 ============ */
+const $ = id=>document.getElementById(id);
+let S=null;
+function show(id){
+  ['home','game','result','overview'].forEach(s=>$(s).classList.toggle('hidden',s!==id));
+  $('chips').style.visibility = (id==='game'||id==='result') ? 'visible':'hidden';
+  $('homeBtn').classList.toggle('hidden', id==='home');
+  if(id==='home') $('brandSub').textContent='第二次段考｜2-2 根式的運算 ～ 3-2 十字交乘法';
+  window.scrollTo({top:0});
+}
+function setHash(h){ try{ history.replaceState(null,'',h?('#'+h):location.pathname+location.search); }catch(e){} }
+
+/* ============ 入口頁 ============ */
+function lvlCount(qs){const c={'易':0,'中':0,'難':0}; qs.forEach(q=>c[q.lvl]++); return c;}
+function unitCard(u){
+  const c=lvlCount(u.qs), rec=readRec(u.id);
+  const best = rec ? `最佳：<span class="st">${'⭐'.repeat(rec.stars)}${'☆'.repeat(3-rec.stars)}</span>　${rec.score} 分` : '尚未挑戰';
+  return `<div class="unit ${u.review?'review':''}" style="--u:${u.color}">
+    <div class="unit-head"><span class="unit-no">${u.id}</span><h3>${u.title}</h3></div>
+    <div class="unit-meta">${u.review?'<span class="mini rv">複習・非段考範圍</span>':''}
+      <span class="mini e">易 ${c['易']}</span><span class="mini m">中 ${c['中']}</span>${c['難']?`<span class="mini h">難 ${c['難']}</span>`:''}</div>
+    <div class="unit-best">${best}</div>
+    <div class="btn-row">
+      <button class="btn btn-primary btn-sm" data-play="${u.id}">開始闖關 ➜</button>
+      <button class="btn btn-ghost btn-sm" data-ov="${u.id}">題目總覽</button>
+    </div></div>`;
+}
+function renderHome(){
+  $('reviewUnits').innerHTML = UNITS.filter(u=>u.review).map(unitCard).join('');
+  $('examUnits').innerHTML = UNITS.filter(u=>!u.review).map(unitCard).join('');
+  const exam=UNITS.filter(u=>!u.review);
+  const cleared=exam.filter(u=>{const r=readRec(u.id);return r&&r.stars>=1;}).length;
+  $('progTxt').textContent=`${cleared} / ${exam.length}`;
+  $('progBar').style.width=(cleared/exam.length*100)+'%';
+  const b=readRec('boss');
+  $('bossBest').textContent = b ? `最佳紀錄：${'⭐'.repeat(b.stars)}${'☆'.repeat(3-b.stars)}　${b.score} 分` : '';
+  document.querySelectorAll('[data-play]').forEach(btn=>btn.onclick=()=>startUnit(btn.dataset.play));
+  document.querySelectorAll('[data-ov]').forEach(btn=>btn.onclick=()=>openOverview(btn.dataset.ov,'home'));
+  show('home'); setHash('');
+}
+
+/* ============ 開始闖關 ============ */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function newState(id,title,items){
+  return {id,title,items,mode:'game',queue:items.map((_,i)=>i),pos:0,score:0,combo:0,maxCombo:0,
+          results:items.map(()=>null),fixed:new Set(),hinted:false,locked:false};
+}
+function startUnit(id){
+  const u=UNITS.find(x=>x.id===id); if(!u) return renderHome();
+  S=newState(u.id,`${u.id} ${u.title}`,u.qs.slice());
+  $('brandSub').textContent=`${u.review?'暖身複習':'第二次段考'}｜${u.id} ${u.title}`;
+  setHash(u.id); show('game'); renderQuestion();
+}
+function startBoss(){
+  const exam=UNITS.filter(u=>!u.review);
+  let pick=[], rest=[];
+  exam.forEach(u=>{const s=shuffle(u.qs.slice()); pick.push(...s.slice(0,2)); rest.push(...s.slice(2));});
+  pick.push(...shuffle(rest).slice(0,10-pick.length));
+  S=newState('boss','魔王關：段考模擬',shuffle(pick));
+  $('brandSub').textContent='👾 魔王關｜段考模擬（2-2 ～ 3-2 隨機 10 題）';
+  setHash('boss'); show('game'); renderQuestion();
+}
+
+/* ============ 關卡地圖 ============ */
+function updateChips(){
+  $('scoreTxt').textContent=S.score; $('comboTxt').textContent=S.combo;
+  $('comboChip').classList.toggle('hot',S.combo>=3);
+}
+function renderMap(){
+  const cur=S.queue[S.pos]; let html='';
+  S.items.forEach((q,i)=>{
+    const r=S.results[i]; let cls='node';
+    if(S.mode==='retry' && S.fixed.has(i)) cls+=' ok'; else if(r) cls+= r.correct?' ok':' bad';
+    if(i===cur) cls+=' cur';
+    if(i>0) html+=`<div class="link ${S.results[i-1]?'done':''}"></div>`;
+    html+=`<div class="${cls}" title="第 ${i+1} 關：${q.skill}">${i+1}</div>`;
+  });
+  $('map').innerHTML=html;
+}
+
+/* ============ 題目 ============ */
+function renderQuestion(){
+  S.hinted=false; S.locked=false;
+  const qi=S.queue[S.pos], q=S.items[qi];
+  const worth = S.mode==='game' ? `答對 +${PTS[q.lvl]} 分` : `錯題重練（${S.pos+1}/${S.queue.length}）`;
+  const utag = S.id==='boss' ? `<span class="tag u">${q.unit.id} 第 ${q.no} 題</span>` : '';
+  $('qCard').innerHTML=`
+    <div class="q-meta"><span class="stage">第 ${qi+1} 關</span>${utag}<span class="tag">${q.skill}</span>
+      <span class="lvl lvl-${q.lvl}">${q.lvl}</span><span class="worth">${worth}</span></div>
+    <div class="stem">${rich(q.stem)}</div>
+    ${fig(q)}
+    <div class="opts">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="L">${LETTERS[i]}</span><span>${rich(o)}</span></button>`).join('')}</div>
+    <div class="tools"><button class="hint-btn" id="hintBtn">💡 看提示${S.mode==='game'?'（本關得分減半）':''}</button></div>
+    <div class="hint-box hidden" id="hintBox">${rich(q.hint)}</div>
+    <div id="fb"></div>`;
+  $('qCard').querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.i))));
+  $('hintBtn').addEventListener('click',()=>{ if(S.locked) return; S.hinted=true; $('hintBox').classList.remove('hidden'); $('hintBtn').disabled=true; });
+  renderMap(); updateChips();
+}
+function choose(i){
+  if(S.locked) return; S.locked=true;
+  const qi=S.queue[S.pos], q=S.items[qi], correct=(i===q.ans);
+  $('hintBtn').disabled=true;
+  $('qCard').querySelectorAll('.opt').forEach((b,k)=>{
+    b.disabled=true;
+    if(k===q.ans) b.classList.add('right'); else if(k===i) b.classList.add('wrong'); else b.classList.add('dim');
+  });
+  let head;
+  if(S.mode==='game'){
+    let pts=0,bonus=0;
+    if(correct){
+      S.combo++; S.maxCombo=Math.max(S.maxCombo,S.combo);
+      pts = S.hinted ? Math.ceil(PTS[q.lvl]/2) : PTS[q.lvl];
+      if(S.combo>=3) bonus=5;
+      S.score+=pts+bonus;
+    } else S.combo=0;
+    S.results[qi]={correct,hinted:S.hinted,pts:pts+bonus};
+    head = correct ? `🎉 答對了！+${pts} 分${S.hinted?'（使用提示）':''}${bonus?`　🔥 連擊加成 +${bonus}`:''}`
+                   : `😵 差一點！正確答案是 (${LETTERS[q.ans]})，連擊中斷`;
+  } else {
+    if(correct) S.fixed.add(qi);
+    head = correct ? `✅ 訂正成功！正確答案是 (${LETTERS[q.ans]})` : `再想想看，正確答案是 (${LETTERS[q.ans]})`;
+  }
+  const last = S.pos===S.queue.length-1;
+  $('fb').innerHTML=`<div class="feedback ${correct?'ok':'bad'}">
+      <div class="fb-head">${head}</div>
+      <ol class="steps">${q.steps.map((s,k)=>stepHTML(s,k,true)).join('')}</ol>
+      <div class="tip"><b>觀念小叮嚀：</b>${rich(q.tip)}</div>
+      <div class="next-row"><button class="btn btn-primary" id="nextBtn">${last?'查看結算 🏁':'下一關 ➜'}</button></div>
+    </div>`;
+  $('nextBtn').addEventListener('click',next);
+  $('nextBtn').focus({preventScroll:true});
+  $('fb').scrollIntoView({behavior:'smooth',block:'nearest'});
+  renderMap(); updateChips();
+}
+function next(){
+  if(S.pos<S.queue.length-1){ S.pos++; renderQuestion(); window.scrollTo({top:0,behavior:'smooth'}); }
+  else showResult();
+}
+
+/* ============ 結算 ============ */
+function showResult(){
+  const n=S.items.length, correct=S.results.filter(r=>r&&r.correct).length;
+  const stars = correct===n?3 : correct>=8?2 : correct>=6?1 : 0;
+  const rank = correct===n?'👑 數學大師' : correct>=8?'🥇 數學達人' : correct>=6?'🥈 數學見習生' : '🌱 數學新手（再挑戰一次！）';
+  const wrong = S.items.map((_,i)=>i).filter(i=>!S.results[i].correct && !S.fixed.has(i));
+  if(!S.saved){ saveRec(S.id,S.score,stars); S.saved=true; }
+  const rec=readRec(S.id), boss=S.id==='boss';
+  $('result').innerHTML=`
+    <div class="result-top">
+      <div style="color:var(--muted);font-weight:700">${S.title}</div>
+      <div class="stars">${[0,1,2].map(k=>`<span class="${k<stars?'':'off'}">⭐</span>`).join('')}</div>
+      <p class="rank">${rank}</p>
+      <p class="big-score">${S.score} 分</p>
+      <div class="stats"><span class="stat">答對 ${correct} / ${n} 題</span><span class="stat">最高連擊 ${S.maxCombo}</span>
+        <span class="stat">最高紀錄 ${rec?rec.score:S.score} 分</span></div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>關卡</th>${boss?'<th>出處</th>':''}<th>考的觀念</th><th class="c">結果</th><th class="c">得分</th></tr></thead>
+      <tbody>${S.items.map((q,i)=>{
+        const r=S.results[i];
+        const mark = r.correct ? '<span class="yes">✔</span>' : S.fixed.has(i) ? '<span class="fix">✘ → 已訂正</span>' : '<span class="no">✘</span>';
+        return `<tr><td>第 ${i+1} 關</td>${boss?`<td>${q.unit.id} 第 ${q.no} 題</td>`:''}<td>${q.skill}${r.hinted?' 💡':''}</td><td class="c">${mark}</td><td class="c">${r.pts}</td></tr>`;
+      }).join('')}</tbody>
+    </table></div>
+    <div class="btn-row" style="justify-content:center">
+      ${wrong.length?`<button class="btn btn-accent" id="retryBtn">🔁 錯題重練（${wrong.length} 題）</button>`:''}
+      <button class="btn btn-primary" id="againBtn">${boss?'再抽一次魔王':'重新闖關'}</button>
+      ${boss?'':'<button class="btn btn-ghost" id="resOvBtn">題目總覽</button>'}
+      <button class="btn btn-ghost" id="resHomeBtn">🏠 回入口頁</button>
+    </div>`;
+  if(wrong.length) $('retryBtn').onclick=()=>{ S.mode='retry'; S.queue=wrong; S.pos=0; show('game'); renderQuestion(); };
+  $('againBtn').onclick=()=> boss?startBoss():startUnit(S.id);
+  if(!boss) $('resOvBtn').onclick=()=>openOverview(S.id,'result');
+  $('resHomeBtn').onclick=renderHome;
+  show('result');
+}
+
+/* ============ 總覽（投影用） ============ */
+function openOverview(id,from){
+  const u=UNITS.find(x=>x.id===id);
+  $('overview').innerHTML=`
+    <div class="ov-head"><h2>${u.id} ${u.title}｜題目總覽</h2>
+      <div class="btn-row"><button class="btn btn-ghost btn-sm" id="ovToggle">全部顯示答案</button>
+      <button class="btn btn-primary btn-sm" id="ovBack">返回</button></div></div>
+    ${u.qs.map((q,i)=>`<div class="ov-item">
+        <div class="q-meta"><span class="stage">第 ${i+1} 題</span><span class="tag">${q.skill}</span><span class="lvl lvl-${q.lvl}">${q.lvl}</span></div>
+        <div class="stem">${rich(q.stem)}</div>${fig(q)}
+        <div class="ov-opts">${q.opts.map((o,k)=>`<div ${k===q.ans?'data-ans="1"':''}>(${LETTERS[k]}) ${rich(o)}</div>`).join('')}</div>
+        <button class="hint-btn ov-show" data-i="${i}">顯示答案與解析</button>
+        <div class="ov-ans hidden" id="ova${i}"><b>答案：(${LETTERS[q.ans]})</b>
+          <ol class="steps">${q.steps.map((s,k)=>stepHTML(s,k,false)).join('')}</ol>
+          <div class="tip"><b>觀念小叮嚀：</b>${rich(q.tip)}</div></div>
+      </div>`).join('')}`;
+  const setOne=(i,on)=>{
+    const box=$('ova'+i), item=box.closest('.ov-item');
+    box.classList.toggle('hidden',!on);
+    item.querySelector('[data-ans]').classList.toggle('is-ans',on);
+    item.querySelector('.ov-show').textContent = on?'隱藏答案':'顯示答案與解析';
+  };
+  $('overview').querySelectorAll('.ov-show').forEach(b=>b.onclick=()=>{const i=+b.dataset.i; setOne(i,$('ova'+i).classList.contains('hidden'));});
+  let all=false;
+  $('ovToggle').onclick=()=>{ all=!all; u.qs.forEach((_,i)=>setOne(i,all)); $('ovToggle').textContent= all?'全部隱藏答案':'全部顯示答案'; };
+  $('ovBack').onclick=()=> from==='result' ? show('result') : renderHome();
+  $('brandSub').textContent=`題目總覽｜${u.id} ${u.title}`;
+  show('overview');
+}
+
+/* ============ 啟動 ============ */
+document.addEventListener('keydown',e=>{
+  if(!S || $('game').classList.contains('hidden')) return;
+  const k=e.key.toUpperCase(), map={'1':0,'2':1,'3':2,'4':3,'A':0,'B':1,'C':2,'D':3};
+  if(!S.locked && k in map) choose(map[k]);
+  else if(S.locked && e.key==='Enter' && $('nextBtn') && document.activeElement!==$('nextBtn')){ e.preventDefault(); next(); }
+});
+window.addEventListener('DOMContentLoaded',()=>{
+  $('homeBtn').onclick=renderHome;
+  $('bossBtn').onclick=startBoss;
+  const h=decodeURIComponent(location.hash.slice(1));
+  if(h==='boss') startBoss();
+  else if(UNITS.some(u=>u.id===h)) startUnit(h);
+  else renderHome();
+});
+</script>
+</body>
+</html>
