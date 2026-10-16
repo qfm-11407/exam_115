@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#082f49">
-  <meta name="description" content="第3章波動與聲音與第4章光互動習作練習，選項每次隨機排列。">
+  <meta name="description" content="第3章波動與聲音、第4章光的習作、章節練習與段考複習，選項每次隨機排列。">
   <title>115學年度第一學期第二次段考理化習作練習</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23082f49'/%3E%3Cpath d='M24 12h16M28 12v15L17 48a5 5 0 0 0 4 7h22a5 5 0 0 0 4-7L36 27V12' fill='none' stroke='%2367e8f9' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M22 44h20' stroke='%23fbbf24' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
   <style>
@@ -165,6 +165,10 @@
     .review { margin-top: 24px; text-align: left; display: grid; gap: 12px; }
     .review-item { padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); }
     .review-item b { color: var(--bad); }
+    .review-item.ok b { color: var(--good); }
+    .review-item summary { cursor: pointer; line-height: 1.6; }
+    .review-item p { margin: 8px 0 0; }
+    .review-explain { color: var(--muted); }
     .learning-status { margin: 0 0 20px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 16px; background: white; }
     .learning-status strong { color: #0e7490; margin-right: 16px; }
     .learning-status p { margin: 6px 0 0; color: var(--muted); font-size: .92rem; }
@@ -230,7 +234,7 @@
         <div class="mark" aria-hidden="true">⚗</div>
         <div>
           <h1>115學年度第一學期第二次段考理化習作練習</h1>
-          <p class="meta">第3章 波動與聲音・第4章 光</p>
+          <p class="meta">第3章 波動與聲音・第4章 光｜習作＋章節練習＋段考複習</p>
           <p class="meta">每次開啟、重新整理或重新開始，都會重排題目與選項。</p>
         </div>
       </div>
@@ -238,9 +242,12 @@
 
     <section class="toolbar" aria-label="測驗範圍">
       <div class="segments" id="segments">
-        <button class="segment" data-filter="all" aria-pressed="true">全部 <span id="allCount"></span></button>
-        <button class="segment" data-filter="ch3" aria-pressed="false">第3章 <span id="ch3Count"></span></button>
-        <button class="segment" data-filter="ch4" aria-pressed="false">第4章 <span id="ch4Count"></span></button>
+        <button class="segment" data-filter="all" aria-pressed="true">習作全部 <span id="allCount"></span></button>
+        <button class="segment" data-filter="ch3" aria-pressed="false">習作第3章 <span id="ch3Count"></span></button>
+        <button class="segment" data-filter="ch4" aria-pressed="false">習作第4章 <span id="ch4Count"></span></button>
+        <button class="segment" data-filter="p3" aria-pressed="false">第3章練習 <span id="p3Count"></span></button>
+        <button class="segment" data-filter="p4" aria-pressed="false">第4章練習 <span id="p4Count"></span></button>
+        <button class="segment" data-filter="rev" aria-pressed="false">段考複習 <span id="revCount"></span></button>
       </div>
       <button class="ghost" id="reshuffle" title="清除本次進度，重新排列題目與選項">重新開始</button>
     </section>
@@ -273,7 +280,7 @@
           <button class="primary" id="restart">重新開始</button>
           <button class="ghost" id="openCertificate" hidden>填寫座號與姓名，領取證書</button>
           <section class="certificate" id="certificate" aria-labelledby="certificateTitle" hidden>
-            <p class="certificate-kicker">理化習作・全對通關</p>
+            <p class="certificate-kicker">理化練習・全對通關</p>
             <h2 id="certificateTitle">通關證書</h2>
             <p>恭喜</p>
             <p class="certificate-course"><span id="certificateClass">807 班</span>・<span id="certificateSeat"></span></p>
@@ -328,6 +335,7 @@
       bellJar: "<svg viewBox=\"0 0 360 220\" role=\"img\" aria-label=\"電鈴放在抽氣機的玻璃罩內，空氣漸漸被抽出\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"40\" y=\"180\" width=\"200\" height=\"12\" rx=\"3\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"2\"/><path d=\"M60,180 L60,80 Q60,30 140,30 Q220,30 220,80 L220,180\" fill=\"#f0f9ff\" stroke=\"#475569\" stroke-width=\"2.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"140\" y1=\"180\" x2=\"140\" y2=\"140\" stroke=\"#64748b\" stroke-width=\"3\"/><circle cx=\"140\" cy=\"118\" r=\"24\" fill=\"#fde68a\" stroke=\"#d97706\" stroke-width=\"2\"/><circle cx=\"140\" cy=\"118\" r=\"6\" fill=\"#d97706\"/><line x1=\"120\" y1=\"148\" x2=\"108\" y2=\"136\" stroke=\"#64748b\" stroke-width=\"3\"/><circle cx=\"106\" cy=\"134\" r=\"5\" fill=\"#64748b\"/><path d=\"M140,192 L140,206 L300,206 L300,170\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"300\" y1=\"170\" x2=\"300\" y2=\"139\" stroke=\"#d97706\" stroke-width=\"3\"/><polygon points=\"300,130 295.5,139 304.5,139\" fill=\"#d97706\"/><text x=\"300\" y=\"120\" text-anchor=\"middle\" font-size=\"14\">抽出空氣</text><text x=\"140\" y=\"20\" text-anchor=\"middle\" font-size=\"13\">玻璃罩</text><text x=\"176\" y=\"112\" font-size=\"13\">電鈴</text></svg>",
       concaveAB: "<svg viewBox=\"0 0 420 190\" role=\"img\" aria-label=\"凹透鏡，蠟燭在 A 點左側\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"10\" y1=\"110\" x2=\"410\" y2=\"110\" stroke=\"#52677a\" stroke-width=\"1.5\"/><text x=\"406\" y=\"102\" text-anchor=\"end\" font-size=\"13\">主軸</text><path d=\"M219,45 L241,45 Q232,110 241,175 L219,175 Q228,110 219,45 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"110\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"110\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">A</text><circle cx=\"170\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"170\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">F₁</text><circle cx=\"230\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"238\" y=\"134\" text-anchor=\"start\" font-size=\"15\" font-weight=\"700\">O</text><circle cx=\"290\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"290\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">F₂</text><circle cx=\"350\" cy=\"110\" r=\"3.5\" fill=\"#082f49\"/><text x=\"350\" y=\"134\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\">B</text><rect x=\"54\" y=\"72\" width=\"12\" height=\"38\" fill=\"#fecaca\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><path d=\"M60,52 Q68,64 60,70 Q52,64 60,52 Z\" fill=\"#fbbf24\" stroke=\"#d97706\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/></svg>",
       concaveRays: "<svg viewBox=\"0 0 420 344\" role=\"img\" aria-label=\"光線通過凹透鏡的甲、乙、丙、丁四種情形\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><g transform=\"translate(0,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">甲</text><line x1=\"14\" y1=\"98\" x2=\"196\" y2=\"98\" stroke=\"#52677a\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><path d=\"M96,52 L114,52 Q107,98 114,144 L96,144 Q103,98 96,52 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"16,73 105,73 175,108\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/><polyline points=\"16,123 105,123 175,88\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/></g><g transform=\"translate(210,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">乙</text><line x1=\"14\" y1=\"98\" x2=\"196\" y2=\"98\" stroke=\"#52677a\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><path d=\"M96,52 L114,52 Q107,98 114,144 L96,144 Q103,98 96,52 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"16,98 105,73 175,110\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/><polyline points=\"16,98 105,123 175,86\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/></g><g transform=\"translate(0,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丙</text><line x1=\"14\" y1=\"98\" x2=\"196\" y2=\"98\" stroke=\"#52677a\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><path d=\"M96,52 L114,52 Q107,98 114,144 L96,144 Q103,98 96,52 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"16,73 105,73 190,50\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/><polyline points=\"16,123 105,123 190,146\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/></g><g transform=\"translate(210,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丁</text><line x1=\"14\" y1=\"98\" x2=\"196\" y2=\"98\" stroke=\"#52677a\" stroke-width=\"1\" stroke-dasharray=\"4 4\"/><path d=\"M96,52 L114,52 Q107,98 114,144 L96,144 Q103,98 96,52 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><polyline points=\"16,58 105,73\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/><polyline points=\"105,73 150,98\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-dasharray=\"4 4\"/><polyline points=\"105,73 186,104\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/><polyline points=\"16,138 105,123\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/><polyline points=\"105,123 150,98\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-dasharray=\"4 4\"/><polyline points=\"105,123 186,92\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\" stroke-linejoin=\"round\"/></g><text x=\"410\" y=\"338\" text-anchor=\"end\" font-size=\"12\" fill=\"#52677a\">虛線：光線原本的行進方向</text></svg>",
+      forkWaves: "<svg viewBox=\"0 0 420 360\" role=\"img\" aria-label=\"甲乙丙丁四支音叉在相同時間內的聲波波形\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><text x=\"16\" y=\"52\" font-size=\"16\" font-weight=\"700\">甲</text><line x1=\"44\" y1=\"46\" x2=\"404\" y2=\"46\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"44\" y1=\"10\" x2=\"44\" y2=\"82\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><polyline points=\"44,46 45.8,44 47.6,42 49.4,40.1 51.2,38.3 53,36.6 54.8,35 56.6,33.7 58.4,32.5 60.2,31.5 62,30.8 63.8,30.3 65.6,30 67.4,30 69.2,30.3 71,30.8 72.8,31.5 74.6,32.5 76.4,33.7 78.2,35 80,36.6 81.8,38.3 83.6,40.1 85.4,42 87.2,44 89,46 90.8,48 92.6,50 94.4,51.9 96.2,53.7 98,55.4 99.8,57 101.6,58.3 103.4,59.5 105.2,60.5 107,61.2 108.8,61.7 110.6,62 112.4,62 114.2,61.7 116,61.2 117.8,60.5 119.6,59.5 121.4,58.3 123.2,57 125,55.4 126.8,53.7 128.6,51.9 130.4,50 132.2,48 134,46 135.8,44 137.6,42 139.4,40.1 141.2,38.3 143,36.6 144.8,35 146.6,33.7 148.4,32.5 150.2,31.5 152,30.8 153.8,30.3 155.6,30 157.4,30 159.2,30.3 161,30.8 162.8,31.5 164.6,32.5 166.4,33.7 168.2,35 170,36.6 171.8,38.3 173.6,40.1 175.4,42 177.2,44 179,46 180.8,48 182.6,50 184.4,51.9 186.2,53.7 188,55.4 189.8,57 191.6,58.3 193.4,59.5 195.2,60.5 197,61.2 198.8,61.7 200.6,62 202.4,62 204.2,61.7 206,61.2 207.8,60.5 209.6,59.5 211.4,58.3 213.2,57 215,55.4 216.8,53.7 218.6,51.9 220.4,50 222.2,48 224,46 225.8,44 227.6,42 229.4,40.1 231.2,38.3 233,36.6 234.8,35 236.6,33.7 238.4,32.5 240.2,31.5 242,30.8 243.8,30.3 245.6,30 247.4,30 249.2,30.3 251,30.8 252.8,31.5 254.6,32.5 256.4,33.7 258.2,35 260,36.6 261.8,38.3 263.6,40.1 265.4,42 267.2,44 269,46 270.8,48 272.6,50 274.4,51.9 276.2,53.7 278,55.4 279.8,57 281.6,58.3 283.4,59.5 285.2,60.5 287,61.2 288.8,61.7 290.6,62 292.4,62 294.2,61.7 296,61.2 297.8,60.5 299.6,59.5 301.4,58.3 303.2,57 305,55.4 306.8,53.7 308.6,51.9 310.4,50 312.2,48 314,46 315.8,44 317.6,42 319.4,40.1 321.2,38.3 323,36.6 324.8,35 326.6,33.7 328.4,32.5 330.2,31.5 332,30.8 333.8,30.3 335.6,30 337.4,30 339.2,30.3 341,30.8 342.8,31.5 344.6,32.5 346.4,33.7 348.2,35 350,36.6 351.8,38.3 353.6,40.1 355.4,42 357.2,44 359,46 360.8,48 362.6,50 364.4,51.9 366.2,53.7 368,55.4 369.8,57 371.6,58.3 373.4,59.5 375.2,60.5 377,61.2 378.8,61.7 380.6,62 382.4,62 384.2,61.7 386,61.2 387.8,60.5 389.6,59.5 391.4,58.3 393.2,57 395,55.4 396.8,53.7 398.6,51.9 400.4,50 402.2,48 404,46\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/><text x=\"16\" y=\"132\" font-size=\"16\" font-weight=\"700\">乙</text><line x1=\"44\" y1=\"126\" x2=\"404\" y2=\"126\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"44\" y1=\"90\" x2=\"44\" y2=\"162\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><polyline points=\"44,126 45.8,124 47.6,122 49.4,120 51.2,118 53,116.1 54.8,114.2 56.6,112.4 58.4,110.6 60.2,108.9 62,107.2 63.8,105.6 65.6,104.1 67.4,102.7 69.2,101.3 71,100.1 72.8,99 74.6,98 76.4,97 78.2,96.2 80,95.6 81.8,95 83.6,94.6 85.4,94.3 87.2,94.1 89,94 90.8,94.1 92.6,94.3 94.4,94.6 96.2,95 98,95.6 99.8,96.2 101.6,97 103.4,98 105.2,99 107,100.1 108.8,101.3 110.6,102.7 112.4,104.1 114.2,105.6 116,107.2 117.8,108.9 119.6,110.6 121.4,112.4 123.2,114.2 125,116.1 126.8,118 128.6,120 130.4,122 132.2,124 134,126 135.8,128 137.6,130 139.4,132 141.2,134 143,135.9 144.8,137.8 146.6,139.6 148.4,141.4 150.2,143.1 152,144.8 153.8,146.4 155.6,147.9 157.4,149.3 159.2,150.7 161,151.9 162.8,153 164.6,154 166.4,155 168.2,155.8 170,156.4 171.8,157 173.6,157.4 175.4,157.7 177.2,157.9 179,158 180.8,157.9 182.6,157.7 184.4,157.4 186.2,157 188,156.4 189.8,155.8 191.6,155 193.4,154 195.2,153 197,151.9 198.8,150.7 200.6,149.3 202.4,147.9 204.2,146.4 206,144.8 207.8,143.1 209.6,141.4 211.4,139.6 213.2,137.8 215,135.9 216.8,134 218.6,132 220.4,130 222.2,128 224,126 225.8,124 227.6,122 229.4,120 231.2,118 233,116.1 234.8,114.2 236.6,112.4 238.4,110.6 240.2,108.9 242,107.2 243.8,105.6 245.6,104.1 247.4,102.7 249.2,101.3 251,100.1 252.8,99 254.6,98 256.4,97 258.2,96.2 260,95.6 261.8,95 263.6,94.6 265.4,94.3 267.2,94.1 269,94 270.8,94.1 272.6,94.3 274.4,94.6 276.2,95 278,95.6 279.8,96.2 281.6,97 283.4,98 285.2,99 287,100.1 288.8,101.3 290.6,102.7 292.4,104.1 294.2,105.6 296,107.2 297.8,108.9 299.6,110.6 301.4,112.4 303.2,114.2 305,116.1 306.8,118 308.6,120 310.4,122 312.2,124 314,126 315.8,128 317.6,130 319.4,132 321.2,134 323,135.9 324.8,137.8 326.6,139.6 328.4,141.4 330.2,143.1 332,144.8 333.8,146.4 335.6,147.9 337.4,149.3 339.2,150.7 341,151.9 342.8,153 344.6,154 346.4,155 348.2,155.8 350,156.4 351.8,157 353.6,157.4 355.4,157.7 357.2,157.9 359,158 360.8,157.9 362.6,157.7 364.4,157.4 366.2,157 368,156.4 369.8,155.8 371.6,155 373.4,154 375.2,153 377,151.9 378.8,150.7 380.6,149.3 382.4,147.9 384.2,146.4 386,144.8 387.8,143.1 389.6,141.4 391.4,139.6 393.2,137.8 395,135.9 396.8,134 398.6,132 400.4,130 402.2,128 404,126\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/><text x=\"16\" y=\"212\" font-size=\"16\" font-weight=\"700\">丙</text><line x1=\"44\" y1=\"206\" x2=\"404\" y2=\"206\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"44\" y1=\"170\" x2=\"44\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><polyline points=\"44,206 45.8,205.4 47.6,204.7 49.4,204.1 51.2,203.5 53,202.9 54.8,202.3 56.6,201.6 58.4,201 60.2,200.4 62,199.8 63.8,199.2 65.6,198.6 67.4,198.1 69.2,197.5 71,196.9 72.8,196.4 74.6,195.8 76.4,195.3 78.2,194.8 80,194.2 81.8,193.7 83.6,193.3 85.4,192.8 87.2,192.3 89,191.9 90.8,191.4 92.6,191 94.4,190.6 96.2,190.2 98,189.8 99.8,189.5 101.6,189.1 103.4,188.8 105.2,188.5 107,188.2 108.8,187.9 110.6,187.6 112.4,187.4 114.2,187.2 116,187 117.8,186.8 119.6,186.6 121.4,186.5 123.2,186.4 125,186.2 126.8,186.2 128.6,186.1 130.4,186 132.2,186 134,186 135.8,186 137.6,186 139.4,186.1 141.2,186.2 143,186.2 144.8,186.4 146.6,186.5 148.4,186.6 150.2,186.8 152,187 153.8,187.2 155.6,187.4 157.4,187.6 159.2,187.9 161,188.2 162.8,188.5 164.6,188.8 166.4,189.1 168.2,189.5 170,189.8 171.8,190.2 173.6,190.6 175.4,191 177.2,191.4 179,191.9 180.8,192.3 182.6,192.8 184.4,193.3 186.2,193.7 188,194.2 189.8,194.8 191.6,195.3 193.4,195.8 195.2,196.4 197,196.9 198.8,197.5 200.6,198.1 202.4,198.6 204.2,199.2 206,199.8 207.8,200.4 209.6,201 211.4,201.6 213.2,202.3 215,202.9 216.8,203.5 218.6,204.1 220.4,204.7 222.2,205.4 224,206 225.8,206.6 227.6,207.3 229.4,207.9 231.2,208.5 233,209.1 234.8,209.7 236.6,210.4 238.4,211 240.2,211.6 242,212.2 243.8,212.8 245.6,213.4 247.4,213.9 249.2,214.5 251,215.1 252.8,215.6 254.6,216.2 256.4,216.7 258.2,217.2 260,217.8 261.8,218.3 263.6,218.7 265.4,219.2 267.2,219.7 269,220.1 270.8,220.6 272.6,221 274.4,221.4 276.2,221.8 278,222.2 279.8,222.5 281.6,222.9 283.4,223.2 285.2,223.5 287,223.8 288.8,224.1 290.6,224.4 292.4,224.6 294.2,224.8 296,225 297.8,225.2 299.6,225.4 301.4,225.5 303.2,225.6 305,225.8 306.8,225.8 308.6,225.9 310.4,226 312.2,226 314,226 315.8,226 317.6,226 319.4,225.9 321.2,225.8 323,225.8 324.8,225.6 326.6,225.5 328.4,225.4 330.2,225.2 332,225 333.8,224.8 335.6,224.6 337.4,224.4 339.2,224.1 341,223.8 342.8,223.5 344.6,223.2 346.4,222.9 348.2,222.5 350,222.2 351.8,221.8 353.6,221.4 355.4,221 357.2,220.6 359,220.1 360.8,219.7 362.6,219.2 364.4,218.7 366.2,218.3 368,217.8 369.8,217.2 371.6,216.7 373.4,216.2 375.2,215.6 377,215.1 378.8,214.5 380.6,213.9 382.4,213.4 384.2,212.8 386,212.2 387.8,211.6 389.6,211 391.4,210.4 393.2,209.7 395,209.1 396.8,208.5 398.6,207.9 400.4,207.3 402.2,206.6 404,206\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/><text x=\"16\" y=\"292\" font-size=\"16\" font-weight=\"700\">丁</text><line x1=\"44\" y1=\"286\" x2=\"404\" y2=\"286\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><line x1=\"44\" y1=\"250\" x2=\"44\" y2=\"322\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><polyline points=\"44,286 45.8,285.2 47.6,284.5 49.4,283.8 51.2,283 53,282.3 54.8,281.6 56.6,280.9 58.4,280.2 60.2,279.6 62,278.9 63.8,278.4 65.6,277.8 67.4,277.3 69.2,276.8 71,276.3 72.8,275.9 74.6,275.5 76.4,275.1 78.2,274.8 80,274.6 81.8,274.4 83.6,274.2 85.4,274.1 87.2,274 89,274 90.8,274 92.6,274.1 94.4,274.2 96.2,274.4 98,274.6 99.8,274.8 101.6,275.1 103.4,275.5 105.2,275.9 107,276.3 108.8,276.8 110.6,277.3 112.4,277.8 114.2,278.4 116,278.9 117.8,279.6 119.6,280.2 121.4,280.9 123.2,281.6 125,282.3 126.8,283 128.6,283.8 130.4,284.5 132.2,285.2 134,286 135.8,286.8 137.6,287.5 139.4,288.2 141.2,289 143,289.7 144.8,290.4 146.6,291.1 148.4,291.8 150.2,292.4 152,293.1 153.8,293.6 155.6,294.2 157.4,294.7 159.2,295.2 161,295.7 162.8,296.1 164.6,296.5 166.4,296.9 168.2,297.2 170,297.4 171.8,297.6 173.6,297.8 175.4,297.9 177.2,298 179,298 180.8,298 182.6,297.9 184.4,297.8 186.2,297.6 188,297.4 189.8,297.2 191.6,296.9 193.4,296.5 195.2,296.1 197,295.7 198.8,295.2 200.6,294.7 202.4,294.2 204.2,293.6 206,293.1 207.8,292.4 209.6,291.8 211.4,291.1 213.2,290.4 215,289.7 216.8,289 218.6,288.2 220.4,287.5 222.2,286.8 224,286 225.8,285.2 227.6,284.5 229.4,283.8 231.2,283 233,282.3 234.8,281.6 236.6,280.9 238.4,280.2 240.2,279.6 242,278.9 243.8,278.4 245.6,277.8 247.4,277.3 249.2,276.8 251,276.3 252.8,275.9 254.6,275.5 256.4,275.1 258.2,274.8 260,274.6 261.8,274.4 263.6,274.2 265.4,274.1 267.2,274 269,274 270.8,274 272.6,274.1 274.4,274.2 276.2,274.4 278,274.6 279.8,274.8 281.6,275.1 283.4,275.5 285.2,275.9 287,276.3 288.8,276.8 290.6,277.3 292.4,277.8 294.2,278.4 296,278.9 297.8,279.6 299.6,280.2 301.4,280.9 303.2,281.6 305,282.3 306.8,283 308.6,283.8 310.4,284.5 312.2,285.2 314,286 315.8,286.8 317.6,287.5 319.4,288.2 321.2,289 323,289.7 324.8,290.4 326.6,291.1 328.4,291.8 330.2,292.4 332,293.1 333.8,293.6 335.6,294.2 337.4,294.7 339.2,295.2 341,295.7 342.8,296.1 344.6,296.5 346.4,296.9 348.2,297.2 350,297.4 351.8,297.6 353.6,297.8 355.4,297.9 357.2,298 359,298 360.8,298 362.6,297.9 364.4,297.8 366.2,297.6 368,297.4 369.8,297.2 371.6,296.9 373.4,296.5 375.2,296.1 377,295.7 378.8,295.2 380.6,294.7 382.4,294.2 384.2,293.6 386,293.1 387.8,292.4 389.6,291.8 391.4,291.1 393.2,290.4 395,289.7 396.8,289 398.6,288.2 400.4,287.5 402.2,286.8 404,286\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/><text x=\"404\" y=\"350\" text-anchor=\"end\" font-size=\"12\" fill=\"#52677a\">時間 →（四者相同時間）</text></svg>",
       ghostLens: "<svg viewBox=\"0 0 420 344\" role=\"img\" aria-label=\"雷射光束由下往上射入透鏡的甲、乙、丙、丁四種擺法\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><g transform=\"translate(0,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">甲</text><line x1=\"105\" y1=\"44\" x2=\"105\" y2=\"150\" stroke=\"#52677a\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><path d=\"M53,82 Q105,64 157,82 Q105,100 53,82 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"79\" y1=\"150\" x2=\"79\" y2=\"99\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><polygon points=\"79,90 74.5,99 83.5,99\" fill=\"#dc2626\"/><text x=\"109\" y=\"56\" font-size=\"11\" fill=\"#52677a\">主軸</text><text x=\"35\" y=\"150\" font-size=\"12\">凸透鏡</text></g><g transform=\"translate(210,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">乙</text><line x1=\"105\" y1=\"44\" x2=\"105\" y2=\"150\" stroke=\"#52677a\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><path d=\"M53,82 Q105,64 157,82 Q105,100 53,82 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"131\" y1=\"150\" x2=\"131\" y2=\"99\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><polygon points=\"131,90 126.5,99 135.5,99\" fill=\"#dc2626\"/><text x=\"109\" y=\"56\" font-size=\"11\" fill=\"#52677a\">主軸</text><text x=\"35\" y=\"150\" font-size=\"12\">凸透鏡</text></g><g transform=\"translate(0,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丙</text><line x1=\"105\" y1=\"44\" x2=\"105\" y2=\"150\" stroke=\"#52677a\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><path d=\"M53,73 Q105,81 157,73 L157,91 Q105,83 53,91 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"79\" y1=\"150\" x2=\"79\" y2=\"99\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><polygon points=\"79,90 74.5,99 83.5,99\" fill=\"#dc2626\"/><text x=\"109\" y=\"56\" font-size=\"11\" fill=\"#52677a\">主軸</text><text x=\"35\" y=\"150\" font-size=\"12\">凹透鏡</text></g><g transform=\"translate(210,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丁</text><line x1=\"105\" y1=\"44\" x2=\"105\" y2=\"150\" stroke=\"#52677a\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><path d=\"M53,73 Q105,81 157,73 L157,91 Q105,83 53,91 Z\" fill=\"#cffafe\" stroke=\"#0891b2\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"105\" y1=\"150\" x2=\"105\" y2=\"99\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><polygon points=\"105,90 100.5,99 109.5,99\" fill=\"#dc2626\"/><text x=\"109\" y=\"56\" font-size=\"11\" fill=\"#52677a\">主軸</text><text x=\"35\" y=\"150\" font-size=\"12\">凹透鏡</text></g><text x=\"410\" y=\"338\" text-anchor=\"end\" font-size=\"12\" fill=\"#52677a\">紅色箭頭：射入透鏡前的雷射光</text></svg>",
       hearing: "<svg viewBox=\"0 0 400 290\" role=\"img\" aria-label=\"小雯的聽力檢查紀錄圖：各頻率單耳能聽見的最低音量\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><text x=\"204\" y=\"18\" text-anchor=\"middle\" font-size=\"13\">頻率（Hz）</text><line x1=\"60\" y1=\"50\" x2=\"60\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"60\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">125</text><line x1=\"108\" y1=\"50\" x2=\"108\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"108\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">250</text><line x1=\"156\" y1=\"50\" x2=\"156\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"156\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">500</text><line x1=\"204\" y1=\"50\" x2=\"204\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"204\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">1000</text><line x1=\"252\" y1=\"50\" x2=\"252\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"252\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">2000</text><line x1=\"300\" y1=\"50\" x2=\"300\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"300\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">4000</text><line x1=\"348\" y1=\"50\" x2=\"348\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"348\" y=\"40\" text-anchor=\"middle\" font-size=\"12\">8000</text><line x1=\"60\" y1=\"50\" x2=\"348\" y2=\"50\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"54\" text-anchor=\"end\" font-size=\"12\">0</text><line x1=\"60\" y1=\"66\" x2=\"348\" y2=\"66\" stroke=\"#eef2f7\" stroke-width=\"1\"/><line x1=\"60\" y1=\"82\" x2=\"348\" y2=\"82\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"86\" text-anchor=\"end\" font-size=\"12\">20</text><line x1=\"60\" y1=\"98\" x2=\"348\" y2=\"98\" stroke=\"#eef2f7\" stroke-width=\"1\"/><line x1=\"60\" y1=\"114\" x2=\"348\" y2=\"114\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"118\" text-anchor=\"end\" font-size=\"12\">40</text><line x1=\"60\" y1=\"130\" x2=\"348\" y2=\"130\" stroke=\"#eef2f7\" stroke-width=\"1\"/><line x1=\"60\" y1=\"146\" x2=\"348\" y2=\"146\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"150\" text-anchor=\"end\" font-size=\"12\">60</text><line x1=\"60\" y1=\"162\" x2=\"348\" y2=\"162\" stroke=\"#eef2f7\" stroke-width=\"1\"/><line x1=\"60\" y1=\"178\" x2=\"348\" y2=\"178\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"182\" text-anchor=\"end\" font-size=\"12\">80</text><line x1=\"60\" y1=\"194\" x2=\"348\" y2=\"194\" stroke=\"#eef2f7\" stroke-width=\"1\"/><line x1=\"60\" y1=\"210\" x2=\"348\" y2=\"210\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"214\" text-anchor=\"end\" font-size=\"12\">100</text><line x1=\"60\" y1=\"226\" x2=\"348\" y2=\"226\" stroke=\"#eef2f7\" stroke-width=\"1\"/><line x1=\"60\" y1=\"242\" x2=\"348\" y2=\"242\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"52\" y=\"246\" text-anchor=\"end\" font-size=\"12\">120</text><text x=\"16\" y=\"268\" font-size=\"13\">音量（dB）</text><circle cx=\"60\" cy=\"82\" r=\"6\" fill=\"#f97316\"/><circle cx=\"108\" cy=\"114\" r=\"6\" fill=\"#f97316\"/><circle cx=\"156\" cy=\"98\" r=\"6\" fill=\"#f97316\"/><circle cx=\"204\" cy=\"66\" r=\"6\" fill=\"#f97316\"/><circle cx=\"252\" cy=\"98\" r=\"6\" fill=\"#f97316\"/><circle cx=\"300\" cy=\"98\" r=\"6\" fill=\"#f97316\"/><circle cx=\"348\" cy=\"130\" r=\"6\" fill=\"#f97316\"/><polygon points=\"60,123 53,135 67,135\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><polygon points=\"108,139 101,151 115,151\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><polygon points=\"156,139 149,151 163,151\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><polygon points=\"204,155 197,167 211,167\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><polygon points=\"252,171 245,183 259,183\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><polygon points=\"300,171 293,183 307,183\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><polygon points=\"348,203 341,215 355,215\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><circle cx=\"240\" cy=\"264\" r=\"6\" fill=\"#f97316\"/><text x=\"250\" y=\"269\" font-size=\"13\">左耳</text><polygon points=\"310,257 303,269 317,269\" fill=\"#16a34a\" stroke-linejoin=\"round\"/><text x=\"322\" y=\"269\" font-size=\"13\">右耳</text></svg>",
       interface: "<svg viewBox=\"0 0 400 230\" role=\"img\" aria-label=\"雷射光由甲介質射向乙介質，在 O 點發生反射與折射\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"10\" y=\"110\" width=\"380\" height=\"110\" fill=\"#e0f2fe\"/><line x1=\"10\" y1=\"110\" x2=\"390\" y2=\"110\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"24\" y=\"100\" font-size=\"16\" font-weight=\"700\">甲</text><text x=\"24\" y=\"136\" font-size=\"16\" font-weight=\"700\">乙</text><line x1=\"200\" y1=\"10\" x2=\"200\" y2=\"220\" stroke=\"#52677a\" stroke-width=\"1.2\" stroke-dasharray=\"5 4\"/><line x1=\"147.5\" y1=\"19.1\" x2=\"195.5\" y2=\"102.2\" stroke=\"#d97706\" stroke-width=\"2.5\"/><polygon points=\"200,110 199.4,100 191.6,104.5\" fill=\"#d97706\"/><line x1=\"200\" y1=\"110\" x2=\"248\" y2=\"26.9\" stroke=\"#d97706\" stroke-width=\"2.5\"/><polygon points=\"252.5,19.1 244.1,24.6 251.9,29.1\" fill=\"#d97706\"/><line x1=\"200\" y1=\"110\" x2=\"275.6\" y2=\"169.1\" stroke=\"#d97706\" stroke-width=\"2.5\"/><polygon points=\"282.7,174.6 278.4,165.6 272.9,172.6\" fill=\"#d97706\"/><text x=\"141.5\" y=\"23.1\" text-anchor=\"end\" font-size=\"16\" font-weight=\"700\">Ⅰ</text><text x=\"258.5\" y=\"23.1\" font-size=\"16\" font-weight=\"700\">Ⅱ</text><text x=\"288.7\" y=\"178.6\" font-size=\"16\" font-weight=\"700\">Ⅲ</text><path d=\"M166,110 A34,34 0 0 1 183,80.55513627132908\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"1.5\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><text x=\"128\" y=\"100\" font-size=\"14\">60°</text><text x=\"208\" y=\"130\" font-size=\"14\">O</text></svg>",
@@ -344,6 +352,13 @@
       sonar: "<svg viewBox=\"0 0 420 320\" role=\"img\" aria-label=\"甲、乙、丙、丁四種海底地形\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><g transform=\"translate(0,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">甲</text><rect x=\"12\" y=\"46\" width=\"184\" height=\"100\" fill=\"#e0f2fe\"/><path d=\"M12,117 C14.2,117 16.2,120.7 25,117 C33.8,113.3 51.7,95 65,95 C78.3,95 91.7,109.7 105,117 C118.3,124.3 131.7,142.7 145,139 C158.3,135.3 176.5,102.3 185,95 C193.5,87.7 194.2,95 196,95 L196,150 L12,150 Z\" fill=\"#d6b48a\" stroke=\"#a47148\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"12\" y1=\"46\" x2=\"196\" y2=\"46\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"18\" y=\"64\" font-size=\"12\">西</text><text x=\"190\" y=\"64\" text-anchor=\"end\" font-size=\"12\">東</text></g><g transform=\"translate(210,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">乙</text><rect x=\"12\" y=\"46\" width=\"184\" height=\"100\" fill=\"#e0f2fe\"/><path d=\"M12,73 C14.2,73 16.2,69.3 25,73 C33.8,76.7 51.7,87.7 65,95 C78.3,102.3 91.7,113.3 105,117 C118.3,120.7 131.7,120.7 145,117 C158.3,113.3 176.5,98.7 185,95 C193.5,91.3 194.2,95 196,95 L196,150 L12,150 Z\" fill=\"#d6b48a\" stroke=\"#a47148\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"12\" y1=\"46\" x2=\"196\" y2=\"46\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"18\" y=\"64\" font-size=\"12\">西</text><text x=\"190\" y=\"64\" text-anchor=\"end\" font-size=\"12\">東</text></g><g transform=\"translate(0,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丙</text><rect x=\"12\" y=\"46\" width=\"184\" height=\"100\" fill=\"#e0f2fe\"/><path d=\"M12,95 C14.2,95 16.2,91.3 25,95 C33.8,98.7 51.7,117 65,117 C78.3,117 91.7,102.3 105,95 C118.3,87.7 131.7,69.3 145,73 C158.3,76.7 176.5,109.7 185,117 C193.5,124.3 194.2,117 196,117 L196,150 L12,150 Z\" fill=\"#d6b48a\" stroke=\"#a47148\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"12\" y1=\"46\" x2=\"196\" y2=\"46\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"18\" y=\"64\" font-size=\"12\">西</text><text x=\"190\" y=\"64\" text-anchor=\"end\" font-size=\"12\">東</text></g><g transform=\"translate(210,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丁</text><rect x=\"12\" y=\"46\" width=\"184\" height=\"100\" fill=\"#e0f2fe\"/><path d=\"M12,95 C14.2,95 16.2,91.3 25,95 C33.8,98.7 51.7,117 65,117 C78.3,117 91.7,102.3 105,95 C118.3,87.7 131.7,76.7 145,73 C158.3,69.3 176.5,73 185,73 C193.5,73 194.2,73 196,73 L196,150 L12,150 Z\" fill=\"#d6b48a\" stroke=\"#a47148\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><line x1=\"12\" y1=\"46\" x2=\"196\" y2=\"46\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"18\" y=\"64\" font-size=\"12\">西</text><text x=\"190\" y=\"64\" text-anchor=\"end\" font-size=\"12\">東</text></g></svg>",
       springLong: "<svg viewBox=\"0 0 400 150\" role=\"img\" aria-label=\"前後振動的彈簧波，a、b 為相鄰兩個密部\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><text x=\"20\" y=\"30\" font-size=\"15\" font-weight=\"700\">後</text><text x=\"380\" y=\"30\" text-anchor=\"end\" font-size=\"15\" font-weight=\"700\">前</text><line x1=\"150\" y1=\"25\" x2=\"251\" y2=\"25\" stroke=\"#082f49\" stroke-width=\"2\"/><polygon points=\"260,25 251,20.5 251,29.5\" fill=\"#082f49\"/><text x=\"205\" y=\"18\" text-anchor=\"middle\" font-size=\"13\">波前進方向</text><ellipse cx=\"20.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"30.9\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"41.4\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"50.8\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"59.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"65.8\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"71.4\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"75.9\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"80.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"84.1\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"88.6\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"94.2\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"101.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"109.2\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"118.6\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"129.1\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"140.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"150.9\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"161.4\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"170.8\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"179.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"185.8\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"191.4\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"195.9\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"200.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"204.1\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"208.6\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"214.2\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"221.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"229.2\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"238.6\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"249.1\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"260.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"270.9\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"281.4\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"290.8\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"299.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"305.8\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"311.4\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"315.9\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"320.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"324.1\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"328.6\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"334.2\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"341.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"349.2\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"358.6\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"369.1\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><ellipse cx=\"380.0\" cy=\"80\" rx=\"3.5\" ry=\"22\" fill=\"none\" stroke=\"#475569\" stroke-width=\"1.8\"/><circle cx=\"200\" cy=\"80\" r=\"4\" fill=\"#dc2626\"/><circle cx=\"320\" cy=\"80\" r=\"4\" fill=\"#dc2626\"/><text x=\"200\" y=\"128\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\">a</text><text x=\"320\" y=\"128\" text-anchor=\"middle\" font-size=\"16\" font-weight=\"700\">b</text></svg>",
       springTrans: "<svg viewBox=\"0 0 400 170\" role=\"img\" aria-label=\"上下振動的彈簧波，a、b 為彈簧上的兩點\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><polyline points=\"30,50 31.7,50.1 33.3,50.3 35,50.8 36.6,51.3 38.3,52.1 39.9,53 41.6,54 43.2,55.3 44.9,56.6 46.5,58.1 48.2,59.7 49.8,61.5 51.5,63.4 53.1,65.4 54.7,67.5 56.4,69.6 58,71.9 59.7,74.3 61.3,76.7 63,79.1 64.6,81.7 66.3,84.2 67.9,86.8 69.6,89.4 71.2,92 72.9,94.5 74.5,97.1 76.2,99.6 77.8,102.1 79.5,104.6 81.1,107 82.8,109.3 84.4,111.5 86.1,113.6 87.7,115.7 89.4,117.6 91,119.4 92.7,121.1 94.3,122.7 96,124.1 97.6,125.4 99.3,126.5 100.9,127.5 102.6,128.3 104.3,129 105.9,129.5 107.6,129.8 109.2,130 110.9,130 112.5,129.8 114.2,129.5 115.8,129 117.5,128.3 119.1,127.5 120.8,126.5 122.4,125.4 124.1,124.1 125.7,122.6 127.4,121.1 129,119.4 130.7,117.6 132.3,115.6 134,113.6 135.6,111.4 137.3,109.2 138.9,106.9 140.6,104.5 142.2,102.1 143.9,99.6 145.5,97 147.2,94.5 148.8,91.9 150.5,89.3 152.1,86.7 153.8,84.1 155.4,81.6 157.1,79.1 158.7,76.6 160.4,74.2 162,71.8 163.7,69.6 165.3,67.4 167,65.3 168.6,63.3 170.3,61.4 171.9,59.7 173.6,58.1 175.2,56.6 176.9,55.2 178.5,54 180.2,53 181.8,52.1 183.5,51.3 185.1,50.7 186.8,50.3 188.4,50.1 190.1,50 191.7,50.1 193.4,50.3 195,50.8 196.7,51.4 198.3,52.1 200,53 201.6,54.1 203.3,55.3 204.9,56.7 206.6,58.2 208.2,59.8 209.9,61.5 211.5,63.4 213.2,65.4 214.8,67.5 216.5,69.7 218.1,72 219.8,74.3 221.4,76.7 223.1,79.2 224.7,81.7 226.4,84.3 228,86.9 229.7,89.5 231.3,92 233,94.6 234.6,97.2 236.3,99.7 237.9,102.2 239.6,104.7 241.2,107 242.9,109.3 244.5,111.6 246.2,113.7 247.8,115.7 249.5,117.7 251.1,119.5 252.8,121.2 254.4,122.7 256.1,124.1 257.7,125.4 259.4,126.6 261,127.5 262.7,128.3 264.3,129 266,129.5 267.6,129.8 269.3,130 270.9,130 272.6,129.8 274.2,129.5 275.9,128.9 277.5,128.3 279.2,127.4 280.8,126.5 282.5,125.3 284.1,124 285.8,122.6 287.4,121 289.1,119.3 290.7,117.5 292.4,115.6 294,113.5 295.7,111.4 297.3,109.1 299,106.8 300.6,104.4 302.3,102 303.9,99.5 305.6,97 307.2,94.4 308.9,91.8 310.5,89.2 312.2,86.6 313.8,84.1 315.5,81.5 317.1,79 318.8,76.5 320.4,74.1 322.1,71.8 323.7,69.5 325.4,67.3 327,65.2 328.7,63.3 330.3,61.4 332,59.6 333.6,58 335.2,56.5 336.9,55.2 338.5,54 340.2,52.9 341.8,52 343.5,51.3 345.1,50.7 346.8,50.3 348.4,50.1 350.1,50 351.7,50.1 353.4,50.4 355,50.8 356.7,51.4 358.3,52.1 360,53\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"14\" stroke-linejoin=\"round\"/><polyline points=\"30,50 31.7,50.1 33.3,50.3 35,50.8 36.6,51.3 38.3,52.1 39.9,53 41.6,54 43.2,55.3 44.9,56.6 46.5,58.1 48.2,59.7 49.8,61.5 51.5,63.4 53.1,65.4 54.7,67.5 56.4,69.6 58,71.9 59.7,74.3 61.3,76.7 63,79.1 64.6,81.7 66.3,84.2 67.9,86.8 69.6,89.4 71.2,92 72.9,94.5 74.5,97.1 76.2,99.6 77.8,102.1 79.5,104.6 81.1,107 82.8,109.3 84.4,111.5 86.1,113.6 87.7,115.7 89.4,117.6 91,119.4 92.7,121.1 94.3,122.7 96,124.1 97.6,125.4 99.3,126.5 100.9,127.5 102.6,128.3 104.3,129 105.9,129.5 107.6,129.8 109.2,130 110.9,130 112.5,129.8 114.2,129.5 115.8,129 117.5,128.3 119.1,127.5 120.8,126.5 122.4,125.4 124.1,124.1 125.7,122.6 127.4,121.1 129,119.4 130.7,117.6 132.3,115.6 134,113.6 135.6,111.4 137.3,109.2 138.9,106.9 140.6,104.5 142.2,102.1 143.9,99.6 145.5,97 147.2,94.5 148.8,91.9 150.5,89.3 152.1,86.7 153.8,84.1 155.4,81.6 157.1,79.1 158.7,76.6 160.4,74.2 162,71.8 163.7,69.6 165.3,67.4 167,65.3 168.6,63.3 170.3,61.4 171.9,59.7 173.6,58.1 175.2,56.6 176.9,55.2 178.5,54 180.2,53 181.8,52.1 183.5,51.3 185.1,50.7 186.8,50.3 188.4,50.1 190.1,50 191.7,50.1 193.4,50.3 195,50.8 196.7,51.4 198.3,52.1 200,53 201.6,54.1 203.3,55.3 204.9,56.7 206.6,58.2 208.2,59.8 209.9,61.5 211.5,63.4 213.2,65.4 214.8,67.5 216.5,69.7 218.1,72 219.8,74.3 221.4,76.7 223.1,79.2 224.7,81.7 226.4,84.3 228,86.9 229.7,89.5 231.3,92 233,94.6 234.6,97.2 236.3,99.7 237.9,102.2 239.6,104.7 241.2,107 242.9,109.3 244.5,111.6 246.2,113.7 247.8,115.7 249.5,117.7 251.1,119.5 252.8,121.2 254.4,122.7 256.1,124.1 257.7,125.4 259.4,126.6 261,127.5 262.7,128.3 264.3,129 266,129.5 267.6,129.8 269.3,130 270.9,130 272.6,129.8 274.2,129.5 275.9,128.9 277.5,128.3 279.2,127.4 280.8,126.5 282.5,125.3 284.1,124 285.8,122.6 287.4,121 289.1,119.3 290.7,117.5 292.4,115.6 294,113.5 295.7,111.4 297.3,109.1 299,106.8 300.6,104.4 302.3,102 303.9,99.5 305.6,97 307.2,94.4 308.9,91.8 310.5,89.2 312.2,86.6 313.8,84.1 315.5,81.5 317.1,79 318.8,76.5 320.4,74.1 322.1,71.8 323.7,69.5 325.4,67.3 327,65.2 328.7,63.3 330.3,61.4 332,59.6 333.6,58 335.2,56.5 336.9,55.2 338.5,54 340.2,52.9 341.8,52 343.5,51.3 345.1,50.7 346.8,50.3 348.4,50.1 350.1,50 351.7,50.1 353.4,50.4 355,50.8 356.7,51.4 358.3,52.1 360,53\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"6\" stroke-linejoin=\"round\"/><circle cx=\"38\" cy=\"52\" r=\"5\" fill=\"#dc2626\"/><circle cx=\"198\" cy=\"52\" r=\"5\" fill=\"#dc2626\"/><text x=\"42\" y=\"82\" font-size=\"16\" font-weight=\"700\">a</text><text x=\"202\" y=\"82\" font-size=\"16\" font-weight=\"700\">b</text><text x=\"14\" y=\"40\" font-size=\"14\" font-weight=\"700\">上</text><text x=\"14\" y=\"160\" font-size=\"14\" font-weight=\"700\">下</text><line x1=\"240\" y1=\"22\" x2=\"351\" y2=\"22\" stroke=\"#082f49\" stroke-width=\"2\"/><polygon points=\"360,22 351,17.5 351,26.5\" fill=\"#082f49\"/><text x=\"300\" y=\"16\" text-anchor=\"middle\" font-size=\"13\">波前進方向</text></svg>",
+      tBox: "<svg viewBox=\"0 0 410 116\" role=\"img\" aria-label=\"紙箱觀察的玻璃紙與色紙組合\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"10\" y=\"10\" width=\"390\" height=\"32\" fill=\"#e0f2fe\"/><rect x=\"10\" y=\"74\" width=\"390\" height=\"32\" fill=\"#f8fafc\"/><text x=\"65\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">組別</text><text x=\"148\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">甲</text><text x=\"204\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">乙</text><text x=\"260\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">丙</text><text x=\"316\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">丁</text><text x=\"372\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">戊</text><text x=\"65\" y=\"63\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">玻璃紙</text><text x=\"148\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">藍</text><text x=\"204\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">藍</text><text x=\"260\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">紅</text><text x=\"316\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">紅</text><text x=\"372\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">綠</text><text x=\"65\" y=\"95\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">色紙</text><text x=\"148\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">綠</text><text x=\"204\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">藍</text><text x=\"260\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">白</text><text x=\"316\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">藍</text><text x=\"372\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">紅</text><line x1=\"10\" y1=\"10\" x2=\"400\" y2=\"10\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"42\" x2=\"400\" y2=\"42\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"74\" x2=\"400\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"106\" x2=\"400\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"10\" x2=\"10\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"120\" y1=\"10\" x2=\"120\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"176\" y1=\"10\" x2=\"176\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"232\" y1=\"10\" x2=\"232\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"288\" y1=\"10\" x2=\"288\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"344\" y1=\"10\" x2=\"344\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"400\" y1=\"10\" x2=\"400\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/></svg>",
+      tForks1: "<svg viewBox=\"0 0 410 116\" role=\"img\" aria-label=\"甲乙丙丁四支音叉的頻率與響度\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"10\" y=\"10\" width=\"390\" height=\"32\" fill=\"#e0f2fe\"/><rect x=\"10\" y=\"74\" width=\"390\" height=\"32\" fill=\"#f8fafc\"/><text x=\"65\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">音叉</text><text x=\"155\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">甲</text><text x=\"225\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">乙</text><text x=\"295\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">丙</text><text x=\"365\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">丁</text><text x=\"65\" y=\"63\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">頻率（Hz）</text><text x=\"155\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">300</text><text x=\"225\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">200</text><text x=\"295\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">100</text><text x=\"365\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">200</text><text x=\"65\" y=\"95\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">響度（dB）</text><text x=\"155\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">40</text><text x=\"225\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">80</text><text x=\"295\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">60</text><text x=\"365\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">60</text><line x1=\"10\" y1=\"10\" x2=\"400\" y2=\"10\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"42\" x2=\"400\" y2=\"42\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"74\" x2=\"400\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"106\" x2=\"400\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"10\" x2=\"10\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"120\" y1=\"10\" x2=\"120\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"260\" y1=\"10\" x2=\"260\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"330\" y1=\"10\" x2=\"330\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"400\" y1=\"10\" x2=\"400\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/></svg>",
+      tForks2: "<svg viewBox=\"0 0 410 116\" role=\"img\" aria-label=\"A、B、C、D 四支音叉的頻率與響度\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"10\" y=\"10\" width=\"390\" height=\"32\" fill=\"#e0f2fe\"/><rect x=\"10\" y=\"74\" width=\"390\" height=\"32\" fill=\"#f8fafc\"/><text x=\"65\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">音叉</text><text x=\"155\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">A</text><text x=\"225\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">B</text><text x=\"295\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">C</text><text x=\"365\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">D</text><text x=\"65\" y=\"63\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">頻率（Hz）</text><text x=\"155\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">200</text><text x=\"225\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">300</text><text x=\"295\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">100</text><text x=\"365\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">200</text><text x=\"65\" y=\"95\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">響度（dB）</text><text x=\"155\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">40</text><text x=\"225\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">20</text><text x=\"295\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">30</text><text x=\"365\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">30</text><line x1=\"10\" y1=\"10\" x2=\"400\" y2=\"10\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"42\" x2=\"400\" y2=\"42\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"74\" x2=\"400\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"106\" x2=\"400\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"10\" x2=\"10\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"120\" y1=\"10\" x2=\"120\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"260\" y1=\"10\" x2=\"260\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"330\" y1=\"10\" x2=\"330\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"400\" y1=\"10\" x2=\"400\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/></svg>",
+      tLens: "<svg viewBox=\"0 0 410 84\" role=\"img\" aria-label=\"凸透鏡成像的物距與像距紀錄\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"10\" y=\"10\" width=\"390\" height=\"32\" fill=\"#e0f2fe\"/><text x=\"65\" y=\"31\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">物距（cm）</text><text x=\"140\" y=\"31\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">12</text><text x=\"180\" y=\"31\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">14</text><text x=\"220\" y=\"31\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">15</text><text x=\"260\" y=\"31\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">20</text><text x=\"300\" y=\"31\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">30</text><text x=\"340\" y=\"31\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">45</text><text x=\"380\" y=\"31\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">60</text><text x=\"65\" y=\"63\" text-anchor=\"middle\" font-size=\"13\" font-weight=\"700\">像距（cm）</text><text x=\"140\" y=\"63\" text-anchor=\"middle\" font-size=\"13\">60</text><text x=\"180\" y=\"63\" text-anchor=\"middle\" font-size=\"13\">35</text><text x=\"220\" y=\"63\" text-anchor=\"middle\" font-size=\"13\">29</text><text x=\"260\" y=\"63\" text-anchor=\"middle\" font-size=\"13\">20</text><text x=\"300\" y=\"63\" text-anchor=\"middle\" font-size=\"13\">15</text><text x=\"340\" y=\"63\" text-anchor=\"middle\" font-size=\"13\">13</text><text x=\"380\" y=\"63\" text-anchor=\"middle\" font-size=\"13\">12</text><line x1=\"10\" y1=\"10\" x2=\"400\" y2=\"10\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"42\" x2=\"400\" y2=\"42\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"74\" x2=\"400\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"10\" x2=\"10\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"120\" y1=\"10\" x2=\"120\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"160\" y1=\"10\" x2=\"160\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"200\" y1=\"10\" x2=\"200\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"240\" y1=\"10\" x2=\"240\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"280\" y1=\"10\" x2=\"280\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"320\" y1=\"10\" x2=\"320\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"360\" y1=\"10\" x2=\"360\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"400\" y1=\"10\" x2=\"400\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/></svg>",
+      tRefract: "<svg viewBox=\"0 0 410 116\" role=\"img\" aria-label=\"光以 30 度入射四種介質的折射角\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"10\" y=\"10\" width=\"390\" height=\"32\" fill=\"#e0f2fe\"/><rect x=\"10\" y=\"74\" width=\"390\" height=\"32\" fill=\"#f8fafc\"/><text x=\"65\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">介質</text><text x=\"155\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">甲</text><text x=\"225\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">乙</text><text x=\"295\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">丙</text><text x=\"365\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">丁</text><text x=\"65\" y=\"63\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">入射角</text><text x=\"155\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">30°</text><text x=\"225\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">30°</text><text x=\"295\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">30°</text><text x=\"365\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">30°</text><text x=\"65\" y=\"95\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">折射角</text><text x=\"155\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">30°</text><text x=\"225\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">15°</text><text x=\"295\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">50°</text><text x=\"365\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">70°</text><line x1=\"10\" y1=\"10\" x2=\"400\" y2=\"10\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"42\" x2=\"400\" y2=\"42\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"74\" x2=\"400\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"106\" x2=\"400\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"10\" x2=\"10\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"120\" y1=\"10\" x2=\"120\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"190\" y1=\"10\" x2=\"190\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"260\" y1=\"10\" x2=\"260\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"330\" y1=\"10\" x2=\"330\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"400\" y1=\"10\" x2=\"400\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/></svg>",
+      tStations: "<svg viewBox=\"0 0 410 180\" role=\"img\" aria-label=\"四個測站收到回聲的時間差\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"10\" y=\"10\" width=\"390\" height=\"32\" fill=\"#e0f2fe\"/><rect x=\"10\" y=\"74\" width=\"390\" height=\"32\" fill=\"#f8fafc\"/><rect x=\"10\" y=\"138\" width=\"390\" height=\"32\" fill=\"#f8fafc\"/><text x=\"45\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">測站</text><text x=\"165\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">收到回聲的時間差</text><text x=\"325\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">海底地質</text><text x=\"45\" y=\"63\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">A</text><text x=\"165\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">2.0 秒</text><text x=\"325\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">砂質平原</text><text x=\"45\" y=\"95\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">B</text><text x=\"165\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">4.0 秒</text><text x=\"325\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">大陸棚邊緣</text><text x=\"45\" y=\"127\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">C</text><text x=\"165\" y=\"127\" text-anchor=\"middle\" font-size=\"14\">8.0 秒</text><text x=\"325\" y=\"127\" text-anchor=\"middle\" font-size=\"14\">深海平原</text><text x=\"45\" y=\"159\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">D</text><text x=\"165\" y=\"159\" text-anchor=\"middle\" font-size=\"14\">14.0 秒</text><text x=\"325\" y=\"159\" text-anchor=\"middle\" font-size=\"14\">海溝深處</text><line x1=\"10\" y1=\"10\" x2=\"400\" y2=\"10\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"42\" x2=\"400\" y2=\"42\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"74\" x2=\"400\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"106\" x2=\"400\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"138\" x2=\"400\" y2=\"138\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"170\" x2=\"400\" y2=\"170\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"10\" x2=\"10\" y2=\"170\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"80\" y1=\"10\" x2=\"80\" y2=\"170\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"250\" y1=\"10\" x2=\"250\" y2=\"170\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"400\" y1=\"10\" x2=\"400\" y2=\"170\" stroke=\"#94a3b8\" stroke-width=\"1\"/></svg>",
+      tWeather: "<svg viewBox=\"0 0 430 244\" role=\"img\" aria-label=\"小貿與小宜記錄的天氣與聽到鐘聲的時間\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"10\" y=\"10\" width=\"410\" height=\"32\" fill=\"#e0f2fe\"/><rect x=\"10\" y=\"74\" width=\"410\" height=\"32\" fill=\"#f8fafc\"/><rect x=\"10\" y=\"138\" width=\"410\" height=\"32\" fill=\"#f8fafc\"/><rect x=\"10\" y=\"202\" width=\"410\" height=\"32\" fill=\"#f8fafc\"/><text x=\"48\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">日期</text><text x=\"121\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">溫度</text><text x=\"201\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">相對溼度</text><text x=\"279\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">風向</text><text x=\"366\" y=\"31\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">聽到鐘聲</text><text x=\"48\" y=\"63\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">8/1</text><text x=\"121\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">28℃</text><text x=\"201\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">25%</text><text x=\"279\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">順風</text><text x=\"366\" y=\"63\" text-anchor=\"middle\" font-size=\"14\">10:01:39</text><text x=\"48\" y=\"95\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">8/2</text><text x=\"121\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">28℃</text><text x=\"201\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">25%</text><text x=\"279\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">無風</text><text x=\"366\" y=\"95\" text-anchor=\"middle\" font-size=\"14\">10:01:40</text><text x=\"48\" y=\"127\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">8/3</text><text x=\"121\" y=\"127\" text-anchor=\"middle\" font-size=\"14\">30℃</text><text x=\"201\" y=\"127\" text-anchor=\"middle\" font-size=\"14\">35%</text><text x=\"279\" y=\"127\" text-anchor=\"middle\" font-size=\"14\">順風</text><text x=\"366\" y=\"127\" text-anchor=\"middle\" font-size=\"14\">10:01:37</text><text x=\"48\" y=\"159\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">8/4</text><text x=\"121\" y=\"159\" text-anchor=\"middle\" font-size=\"14\">34℃</text><text x=\"201\" y=\"159\" text-anchor=\"middle\" font-size=\"14\">25%</text><text x=\"279\" y=\"159\" text-anchor=\"middle\" font-size=\"14\">無風</text><text x=\"366\" y=\"159\" text-anchor=\"middle\" font-size=\"14\">10:01:36</text><text x=\"48\" y=\"191\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">8/5</text><text x=\"121\" y=\"191\" text-anchor=\"middle\" font-size=\"14\">34℃</text><text x=\"201\" y=\"191\" text-anchor=\"middle\" font-size=\"14\">32%</text><text x=\"279\" y=\"191\" text-anchor=\"middle\" font-size=\"14\">無風</text><text x=\"366\" y=\"191\" text-anchor=\"middle\" font-size=\"14\">10:01:35</text><text x=\"48\" y=\"223\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"700\">8/6</text><text x=\"121\" y=\"223\" text-anchor=\"middle\" font-size=\"14\">30℃</text><text x=\"201\" y=\"223\" text-anchor=\"middle\" font-size=\"14\">30%</text><text x=\"279\" y=\"223\" text-anchor=\"middle\" font-size=\"14\">順風</text><text x=\"366\" y=\"223\" text-anchor=\"middle\" font-size=\"14\">10:01:38</text><line x1=\"10\" y1=\"10\" x2=\"420\" y2=\"10\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"42\" x2=\"420\" y2=\"42\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"74\" x2=\"420\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"106\" x2=\"420\" y2=\"106\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"138\" x2=\"420\" y2=\"138\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"170\" x2=\"420\" y2=\"170\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"202\" x2=\"420\" y2=\"202\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"10\" y1=\"234\" x2=\"420\" y2=\"234\" stroke=\"#94a3b8\" stroke-width=\"1.5\"/><line x1=\"10\" y1=\"10\" x2=\"10\" y2=\"234\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"86\" y1=\"10\" x2=\"86\" y2=\"234\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"156\" y1=\"10\" x2=\"156\" y2=\"234\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"246\" y1=\"10\" x2=\"246\" y2=\"234\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"312\" y1=\"10\" x2=\"312\" y2=\"234\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"420\" y1=\"10\" x2=\"420\" y2=\"234\" stroke=\"#94a3b8\" stroke-width=\"1\"/></svg>",
       tuner: "<svg viewBox=\"0 0 400 290\" role=\"img\" aria-label=\"圖1與圖2的聲音波形\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><rect x=\"50\" y=\"28\" width=\"320\" height=\"90\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"56\" y=\"20\" font-size=\"13\">圖1　頻率：X Hz</text><line x1=\"50\" y1=\"73\" x2=\"370\" y2=\"73\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><polyline points=\"50,73 51.6,68.5 53.2,64 54.8,59.7 56.4,55.7 58,51.8 59.6,48.4 61.2,45.3 62.8,42.6 64.4,40.4 66,38.8 67.6,37.6 69.2,37.1 70.8,37.1 72.4,37.6 74,38.8 75.6,40.4 77.2,42.6 78.8,45.3 80.4,48.4 82,51.8 83.6,55.7 85.2,59.7 86.8,64 88.4,68.5 90,73 91.6,77.5 93.2,82 94.8,86.3 96.4,90.3 98,94.2 99.6,97.6 101.2,100.7 102.8,103.4 104.4,105.6 106,107.2 107.6,108.4 109.2,108.9 110.8,108.9 112.4,108.4 114,107.2 115.6,105.6 117.2,103.4 118.8,100.7 120.4,97.6 122,94.2 123.6,90.3 125.2,86.3 126.8,82 128.4,77.5 130,73 131.6,68.5 133.2,64 134.8,59.7 136.4,55.7 138,51.8 139.6,48.4 141.2,45.3 142.8,42.6 144.4,40.4 146,38.8 147.6,37.6 149.2,37.1 150.8,37.1 152.4,37.6 154,38.8 155.6,40.4 157.2,42.6 158.8,45.3 160.4,48.4 162,51.8 163.6,55.7 165.2,59.7 166.8,64 168.4,68.5 170,73 171.6,77.5 173.2,82 174.8,86.3 176.4,90.3 178,94.2 179.6,97.6 181.2,100.7 182.8,103.4 184.4,105.6 186,107.2 187.6,108.4 189.2,108.9 190.8,108.9 192.4,108.4 194,107.2 195.6,105.6 197.2,103.4 198.8,100.7 200.4,97.6 202,94.2 203.6,90.3 205.2,86.3 206.8,82 208.4,77.5 210,73 211.6,68.5 213.2,64 214.8,59.7 216.4,55.7 218,51.8 219.6,48.4 221.2,45.3 222.8,42.6 224.4,40.4 226,38.8 227.6,37.6 229.2,37.1 230.8,37.1 232.4,37.6 234,38.8 235.6,40.4 237.2,42.6 238.8,45.3 240.4,48.4 242,51.8 243.6,55.7 245.2,59.7 246.8,64 248.4,68.5 250,73 251.6,77.5 253.2,82 254.8,86.3 256.4,90.3 258,94.2 259.6,97.6 261.2,100.7 262.8,103.4 264.4,105.6 266,107.2 267.6,108.4 269.2,108.9 270.8,108.9 272.4,108.4 274,107.2 275.6,105.6 277.2,103.4 278.8,100.7 280.4,97.6 282,94.2 283.6,90.3 285.2,86.3 286.8,82 288.4,77.5 290,73 291.6,68.5 293.2,64 294.8,59.7 296.4,55.7 298,51.8 299.6,48.4 301.2,45.3 302.8,42.6 304.4,40.4 306,38.8 307.6,37.6 309.2,37.1 310.8,37.1 312.4,37.6 314,38.8 315.6,40.4 317.2,42.6 318.8,45.3 320.4,48.4 322,51.8 323.6,55.7 325.2,59.7 326.8,64 328.4,68.5 330,73 331.6,77.5 333.2,82 334.8,86.3 336.4,90.3 338,94.2 339.6,97.6 341.2,100.7 342.8,103.4 344.4,105.6 346,107.2 347.6,108.4 349.2,108.9 350.8,108.9 352.4,108.4 354,107.2 355.6,105.6 357.2,103.4 358.8,100.7 360.4,97.6 362,94.2 363.6,90.3 365.2,86.3 366.8,82 368.4,77.5 370,73\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2\" stroke-linejoin=\"round\"/><text x=\"44\" y=\"41\" text-anchor=\"end\" font-size=\"11\">1</text><text x=\"44\" y=\"77\" text-anchor=\"end\" font-size=\"11\">0</text><text x=\"44\" y=\"113\" text-anchor=\"end\" font-size=\"11\">－1</text><line x1=\"50\" y1=\"118\" x2=\"50\" y2=\"124\" stroke=\"#082f49\" stroke-width=\"1\"/><text x=\"50\" y=\"138\" text-anchor=\"middle\" font-size=\"12\">0</text><line x1=\"210\" y1=\"118\" x2=\"210\" y2=\"124\" stroke=\"#082f49\" stroke-width=\"1\"/><text x=\"210\" y=\"138\" text-anchor=\"middle\" font-size=\"12\">0.01</text><line x1=\"370\" y1=\"118\" x2=\"370\" y2=\"124\" stroke=\"#082f49\" stroke-width=\"1\"/><text x=\"370\" y=\"138\" text-anchor=\"middle\" font-size=\"12\">0.02 秒</text><rect x=\"50\" y=\"170\" width=\"320\" height=\"90\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"56\" y=\"162\" font-size=\"13\">圖2　頻率：400 Hz</text><line x1=\"50\" y1=\"215\" x2=\"370\" y2=\"215\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><polyline points=\"50,215 51.6,206 53.2,197.7 54.8,190.4 56.4,184.6 58,180.8 59.6,179.1 61.2,179.6 62.8,182.4 64.4,187.3 66,193.8 67.6,201.7 69.2,210.5 70.8,219.5 72.4,228.3 74,236.2 75.6,242.7 77.2,247.6 78.8,250.4 80.4,250.9 82,249.2 83.6,245.4 85.2,239.6 86.8,232.3 88.4,224 90,215 91.6,206 93.2,197.7 94.8,190.4 96.4,184.6 98,180.8 99.6,179.1 101.2,179.6 102.8,182.4 104.4,187.3 106,193.8 107.6,201.7 109.2,210.5 110.8,219.5 112.4,228.3 114,236.2 115.6,242.7 117.2,247.6 118.8,250.4 120.4,250.9 122,249.2 123.6,245.4 125.2,239.6 126.8,232.3 128.4,224 130,215 131.6,206 133.2,197.7 134.8,190.4 136.4,184.6 138,180.8 139.6,179.1 141.2,179.6 142.8,182.4 144.4,187.3 146,193.8 147.6,201.7 149.2,210.5 150.8,219.5 152.4,228.3 154,236.2 155.6,242.7 157.2,247.6 158.8,250.4 160.4,250.9 162,249.2 163.6,245.4 165.2,239.6 166.8,232.3 168.4,224 170,215 171.6,206 173.2,197.7 174.8,190.4 176.4,184.6 178,180.8 179.6,179.1 181.2,179.6 182.8,182.4 184.4,187.3 186,193.8 187.6,201.7 189.2,210.5 190.8,219.5 192.4,228.3 194,236.2 195.6,242.7 197.2,247.6 198.8,250.4 200.4,250.9 202,249.2 203.6,245.4 205.2,239.6 206.8,232.3 208.4,224 210,215 211.6,206 213.2,197.7 214.8,190.4 216.4,184.6 218,180.8 219.6,179.1 221.2,179.6 222.8,182.4 224.4,187.3 226,193.8 227.6,201.7 229.2,210.5 230.8,219.5 232.4,228.3 234,236.2 235.6,242.7 237.2,247.6 238.8,250.4 240.4,250.9 242,249.2 243.6,245.4 245.2,239.6 246.8,232.3 248.4,224 250,215 251.6,206 253.2,197.7 254.8,190.4 256.4,184.6 258,180.8 259.6,179.1 261.2,179.6 262.8,182.4 264.4,187.3 266,193.8 267.6,201.7 269.2,210.5 270.8,219.5 272.4,228.3 274,236.2 275.6,242.7 277.2,247.6 278.8,250.4 280.4,250.9 282,249.2 283.6,245.4 285.2,239.6 286.8,232.3 288.4,224 290,215 291.6,206 293.2,197.7 294.8,190.4 296.4,184.6 298,180.8 299.6,179.1 301.2,179.6 302.8,182.4 304.4,187.3 306,193.8 307.6,201.7 309.2,210.5 310.8,219.5 312.4,228.3 314,236.2 315.6,242.7 317.2,247.6 318.8,250.4 320.4,250.9 322,249.2 323.6,245.4 325.2,239.6 326.8,232.3 328.4,224 330,215 331.6,206 333.2,197.7 334.8,190.4 336.4,184.6 338,180.8 339.6,179.1 341.2,179.6 342.8,182.4 344.4,187.3 346,193.8 347.6,201.7 349.2,210.5 350.8,219.5 352.4,228.3 354,236.2 355.6,242.7 357.2,247.6 358.8,250.4 360.4,250.9 362,249.2 363.6,245.4 365.2,239.6 366.8,232.3 368.4,224 370,215\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2\" stroke-linejoin=\"round\"/><text x=\"44\" y=\"183\" text-anchor=\"end\" font-size=\"11\">1</text><text x=\"44\" y=\"219\" text-anchor=\"end\" font-size=\"11\">0</text><text x=\"44\" y=\"255\" text-anchor=\"end\" font-size=\"11\">－1</text><line x1=\"50\" y1=\"260\" x2=\"50\" y2=\"266\" stroke=\"#082f49\" stroke-width=\"1\"/><text x=\"50\" y=\"280\" text-anchor=\"middle\" font-size=\"12\">0</text><line x1=\"370\" y1=\"260\" x2=\"370\" y2=\"266\" stroke=\"#082f49\" stroke-width=\"1\"/><text x=\"370\" y=\"280\" text-anchor=\"middle\" font-size=\"12\">Y 秒</text></svg>",
       waterWave: "<svg viewBox=\"0 0 400 210\" role=\"img\" aria-label=\"水波波形圖，每格寬 20 cm、高 20 cm\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><line x1=\"70\" y1=\"40\" x2=\"70\" y2=\"160\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"130\" y1=\"40\" x2=\"130\" y2=\"160\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"190\" y1=\"40\" x2=\"190\" y2=\"160\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"250\" y1=\"40\" x2=\"250\" y2=\"160\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"310\" y1=\"40\" x2=\"310\" y2=\"160\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"70\" y1=\"40\" x2=\"310\" y2=\"40\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"70\" y1=\"100\" x2=\"310\" y2=\"100\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"70\" y1=\"160\" x2=\"310\" y2=\"160\" stroke=\"#94a3b8\" stroke-width=\"1\"/><polyline points=\"70,40 71.2,40.1 72.4,40.5 73.6,41.1 74.8,41.9 76,42.9 77.2,44.2 78.4,45.7 79.6,47.4 80.8,49.3 82,51.5 83.2,53.8 84.4,56.3 85.6,58.9 86.8,61.8 88,64.7 89.2,67.9 90.4,71.1 91.6,74.5 92.8,77.9 94,81.5 95.2,85.1 96.4,88.8 97.6,92.5 98.8,96.2 100,100 101.2,103.8 102.4,107.5 103.6,111.2 104.8,114.9 106,118.5 107.2,122.1 108.4,125.5 109.6,128.9 110.8,132.1 112,135.3 113.2,138.2 114.4,141.1 115.6,143.7 116.8,146.2 118,148.5 119.2,150.7 120.4,152.6 121.6,154.3 122.8,155.8 124,157.1 125.2,158.1 126.4,158.9 127.6,159.5 128.8,159.9 130,160 131.2,159.9 132.4,159.5 133.6,158.9 134.8,158.1 136,157.1 137.2,155.8 138.4,154.3 139.6,152.6 140.8,150.7 142,148.5 143.2,146.2 144.4,143.7 145.6,141.1 146.8,138.2 148,135.3 149.2,132.1 150.4,128.9 151.6,125.5 152.8,122.1 154,118.5 155.2,114.9 156.4,111.2 157.6,107.5 158.8,103.8 160,100 161.2,96.2 162.4,92.5 163.6,88.8 164.8,85.1 166,81.5 167.2,77.9 168.4,74.5 169.6,71.1 170.8,67.9 172,64.7 173.2,61.8 174.4,58.9 175.6,56.3 176.8,53.8 178,51.5 179.2,49.3 180.4,47.4 181.6,45.7 182.8,44.2 184,42.9 185.2,41.9 186.4,41.1 187.6,40.5 188.8,40.1 190,40 191.2,40.1 192.4,40.5 193.6,41.1 194.8,41.9 196,42.9 197.2,44.2 198.4,45.7 199.6,47.4 200.8,49.3 202,51.5 203.2,53.8 204.4,56.3 205.6,58.9 206.8,61.8 208,64.7 209.2,67.9 210.4,71.1 211.6,74.5 212.8,77.9 214,81.5 215.2,85.1 216.4,88.8 217.6,92.5 218.8,96.2 220,100 221.2,103.8 222.4,107.5 223.6,111.2 224.8,114.9 226,118.5 227.2,122.1 228.4,125.5 229.6,128.9 230.8,132.1 232,135.3 233.2,138.2 234.4,141.1 235.6,143.7 236.8,146.2 238,148.5 239.2,150.7 240.4,152.6 241.6,154.3 242.8,155.8 244,157.1 245.2,158.1 246.4,158.9 247.6,159.5 248.8,159.9 250,160 251.2,159.9 252.4,159.5 253.6,158.9 254.8,158.1 256,157.1 257.2,155.8 258.4,154.3 259.6,152.6 260.8,150.7 262,148.5 263.2,146.2 264.4,143.7 265.6,141.1 266.8,138.2 268,135.3 269.2,132.1 270.4,128.9 271.6,125.5 272.8,122.1 274,118.5 275.2,114.9 276.4,111.2 277.6,107.5 278.8,103.8 280,100 281.2,96.2 282.4,92.5 283.6,88.8 284.8,85.1 286,81.5 287.2,77.9 288.4,74.5 289.6,71.1 290.8,67.9 292,64.7 293.2,61.8 294.4,58.9 295.6,56.3 296.8,53.8 298,51.5 299.2,49.3 300.4,47.4 301.6,45.7 302.8,44.2 304,42.9 305.2,41.9 306.4,41.1 307.6,40.5 308.8,40.1 310,40\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><line x1=\"250\" y1=\"22\" x2=\"321\" y2=\"22\" stroke=\"#082f49\" stroke-width=\"2\"/><polygon points=\"330,22 321,17.5 321,26.5\" fill=\"#082f49\"/><text x=\"246\" y=\"27\" text-anchor=\"end\" font-size=\"13\">波的前進方向</text><text x=\"52\" y=\"75\" text-anchor=\"end\" font-size=\"13\">20 cm</text><line x1=\"60\" y1=\"70\" x2=\"60\" y2=\"95\" stroke=\"#082f49\" stroke-width=\"1.2\"/><polygon points=\"60,100 62.5,95 57.5,95\" fill=\"#082f49\"/><line x1=\"60\" y1=\"70\" x2=\"60\" y2=\"45\" stroke=\"#082f49\" stroke-width=\"1.2\"/><polygon points=\"60,40 57.5,45 62.5,45\" fill=\"#082f49\"/><text x=\"100\" y=\"186\" text-anchor=\"middle\" font-size=\"13\">20 cm</text><line x1=\"100\" y1=\"166\" x2=\"125\" y2=\"166\" stroke=\"#082f49\" stroke-width=\"1.2\"/><polygon points=\"130,166 125,163.5 125,168.5\" fill=\"#082f49\"/><line x1=\"100\" y1=\"166\" x2=\"75\" y2=\"166\" stroke=\"#082f49\" stroke-width=\"1.2\"/><polygon points=\"70,166 75,168.5 75,163.5\" fill=\"#082f49\"/></svg>",
       waterWaveShift: "<svg viewBox=\"0 0 420 450\" role=\"img\" aria-label=\"現在的水波波形，以及甲、乙、丙、丁四種可能的波形\" xmlns=\"http://www.w3.org/2000/svg\" font-size=\"15\" fill=\"#082f49\"><g><text x=\"10\" y=\"22\" font-size=\"15\">現在的波形（每格 20 cm，波向右前進）</text><line x1=\"110\" y1=\"34\" x2=\"110\" y2=\"114\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"150\" y1=\"34\" x2=\"150\" y2=\"114\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"190\" y1=\"34\" x2=\"190\" y2=\"114\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"230\" y1=\"34\" x2=\"230\" y2=\"114\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"270\" y1=\"34\" x2=\"270\" y2=\"114\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"110\" y1=\"34\" x2=\"270\" y2=\"34\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"110\" y1=\"74\" x2=\"270\" y2=\"74\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"110\" y1=\"114\" x2=\"270\" y2=\"114\" stroke=\"#94a3b8\" stroke-width=\"1\"/><polyline points=\"110,34 110.8,34.1 111.6,34.3 112.4,34.7 113.2,35.3 114,36 114.8,36.8 115.6,37.8 116.4,38.9 117.2,40.2 118,41.6 118.8,43.2 119.6,44.8 120.4,46.6 121.2,48.5 122,50.5 122.8,52.6 123.6,54.7 124.4,57 125.2,59.3 126,61.6 126.8,64.1 127.6,66.5 128.4,69 129.2,71.5 130,74 130.8,76.5 131.6,79 132.4,81.5 133.2,83.9 134,86.4 134.8,88.7 135.6,91 136.4,93.3 137.2,95.4 138,97.5 138.8,99.5 139.6,101.4 140.4,103.2 141.2,104.8 142,106.4 142.8,107.8 143.6,109.1 144.4,110.2 145.2,111.2 146,112 146.8,112.7 147.6,113.3 148.4,113.7 149.2,113.9 150,114 150.8,113.9 151.6,113.7 152.4,113.3 153.2,112.7 154,112 154.8,111.2 155.6,110.2 156.4,109.1 157.2,107.8 158,106.4 158.8,104.8 159.6,103.2 160.4,101.4 161.2,99.5 162,97.5 162.8,95.4 163.6,93.3 164.4,91 165.2,88.7 166,86.4 166.8,83.9 167.6,81.5 168.4,79 169.2,76.5 170,74 170.8,71.5 171.6,69 172.4,66.5 173.2,64.1 174,61.6 174.8,59.3 175.6,57 176.4,54.7 177.2,52.6 178,50.5 178.8,48.5 179.6,46.6 180.4,44.8 181.2,43.2 182,41.6 182.8,40.2 183.6,38.9 184.4,37.8 185.2,36.8 186,36 186.8,35.3 187.6,34.7 188.4,34.3 189.2,34.1 190,34 190.8,34.1 191.6,34.3 192.4,34.7 193.2,35.3 194,36 194.8,36.8 195.6,37.8 196.4,38.9 197.2,40.2 198,41.6 198.8,43.2 199.6,44.8 200.4,46.6 201.2,48.5 202,50.5 202.8,52.6 203.6,54.7 204.4,57 205.2,59.3 206,61.6 206.8,64.1 207.6,66.5 208.4,69 209.2,71.5 210,74 210.8,76.5 211.6,79 212.4,81.5 213.2,83.9 214,86.4 214.8,88.7 215.6,91 216.4,93.3 217.2,95.4 218,97.5 218.8,99.5 219.6,101.4 220.4,103.2 221.2,104.8 222,106.4 222.8,107.8 223.6,109.1 224.4,110.2 225.2,111.2 226,112 226.8,112.7 227.6,113.3 228.4,113.7 229.2,113.9 230,114 230.8,113.9 231.6,113.7 232.4,113.3 233.2,112.7 234,112 234.8,111.2 235.6,110.2 236.4,109.1 237.2,107.8 238,106.4 238.8,104.8 239.6,103.2 240.4,101.4 241.2,99.5 242,97.5 242.8,95.4 243.6,93.3 244.4,91 245.2,88.7 246,86.4 246.8,83.9 247.6,81.5 248.4,79 249.2,76.5 250,74 250.8,71.5 251.6,69 252.4,66.5 253.2,64.1 254,61.6 254.8,59.3 255.6,57 256.4,54.7 257.2,52.6 258,50.5 258.8,48.5 259.6,46.6 260.4,44.8 261.2,43.2 262,41.6 262.8,40.2 263.6,38.9 264.4,37.8 265.2,36.8 266,36 266.8,35.3 267.6,34.7 268.4,34.3 269.2,34.1 270,34\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/><line x1=\"290\" y1=\"74\" x2=\"321\" y2=\"74\" stroke=\"#082f49\" stroke-width=\"2\"/><polygon points=\"330,74 321,69.5 321,78.5\" fill=\"#082f49\"/></g><g transform=\"translate(0,124)\"><g transform=\"translate(0,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">甲</text><line x1=\"22\" y1=\"46\" x2=\"22\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"62\" y1=\"46\" x2=\"62\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"102\" y1=\"46\" x2=\"102\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"142\" y1=\"46\" x2=\"142\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"182\" y1=\"46\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"46\" x2=\"182\" y2=\"46\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"86\" x2=\"182\" y2=\"86\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"126\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><polyline points=\"22,46 22.8,46.1 23.6,46.3 24.4,46.7 25.2,47.3 26,48 26.8,48.8 27.6,49.8 28.4,50.9 29.2,52.2 30,53.6 30.8,55.2 31.6,56.8 32.4,58.6 33.2,60.5 34,62.5 34.8,64.6 35.6,66.7 36.4,69 37.2,71.3 38,73.6 38.8,76.1 39.6,78.5 40.4,81 41.2,83.5 42,86 42.8,88.5 43.6,91 44.4,93.5 45.2,95.9 46,98.4 46.8,100.7 47.6,103 48.4,105.3 49.2,107.4 50,109.5 50.8,111.5 51.6,113.4 52.4,115.2 53.2,116.8 54,118.4 54.8,119.8 55.6,121.1 56.4,122.2 57.2,123.2 58,124 58.8,124.7 59.6,125.3 60.4,125.7 61.2,125.9 62,126 62.8,125.9 63.6,125.7 64.4,125.3 65.2,124.7 66,124 66.8,123.2 67.6,122.2 68.4,121.1 69.2,119.8 70,118.4 70.8,116.8 71.6,115.2 72.4,113.4 73.2,111.5 74,109.5 74.8,107.4 75.6,105.3 76.4,103 77.2,100.7 78,98.4 78.8,95.9 79.6,93.5 80.4,91 81.2,88.5 82,86 82.8,83.5 83.6,81 84.4,78.5 85.2,76.1 86,73.6 86.8,71.3 87.6,69 88.4,66.7 89.2,64.6 90,62.5 90.8,60.5 91.6,58.6 92.4,56.8 93.2,55.2 94,53.6 94.8,52.2 95.6,50.9 96.4,49.8 97.2,48.8 98,48 98.8,47.3 99.6,46.7 100.4,46.3 101.2,46.1 102,46 102.8,46.1 103.6,46.3 104.4,46.7 105.2,47.3 106,48 106.8,48.8 107.6,49.8 108.4,50.9 109.2,52.2 110,53.6 110.8,55.2 111.6,56.8 112.4,58.6 113.2,60.5 114,62.5 114.8,64.6 115.6,66.7 116.4,69 117.2,71.3 118,73.6 118.8,76.1 119.6,78.5 120.4,81 121.2,83.5 122,86 122.8,88.5 123.6,91 124.4,93.5 125.2,95.9 126,98.4 126.8,100.7 127.6,103 128.4,105.3 129.2,107.4 130,109.5 130.8,111.5 131.6,113.4 132.4,115.2 133.2,116.8 134,118.4 134.8,119.8 135.6,121.1 136.4,122.2 137.2,123.2 138,124 138.8,124.7 139.6,125.3 140.4,125.7 141.2,125.9 142,126 142.8,125.9 143.6,125.7 144.4,125.3 145.2,124.7 146,124 146.8,123.2 147.6,122.2 148.4,121.1 149.2,119.8 150,118.4 150.8,116.8 151.6,115.2 152.4,113.4 153.2,111.5 154,109.5 154.8,107.4 155.6,105.3 156.4,103 157.2,100.7 158,98.4 158.8,95.9 159.6,93.5 160.4,91 161.2,88.5 162,86 162.8,83.5 163.6,81 164.4,78.5 165.2,76.1 166,73.6 166.8,71.3 167.6,69 168.4,66.7 169.2,64.6 170,62.5 170.8,60.5 171.6,58.6 172.4,56.8 173.2,55.2 174,53.6 174.8,52.2 175.6,50.9 176.4,49.8 177.2,48.8 178,48 178.8,47.3 179.6,46.7 180.4,46.3 181.2,46.1 182,46\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/></g><g transform=\"translate(210,0)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">乙</text><line x1=\"22\" y1=\"46\" x2=\"22\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"62\" y1=\"46\" x2=\"62\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"102\" y1=\"46\" x2=\"102\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"142\" y1=\"46\" x2=\"142\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"182\" y1=\"46\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"46\" x2=\"182\" y2=\"46\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"86\" x2=\"182\" y2=\"86\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"126\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><polyline points=\"22,126 22.8,125.9 23.6,125.7 24.4,125.3 25.2,124.7 26,124 26.8,123.2 27.6,122.2 28.4,121.1 29.2,119.8 30,118.4 30.8,116.8 31.6,115.2 32.4,113.4 33.2,111.5 34,109.5 34.8,107.4 35.6,105.3 36.4,103 37.2,100.7 38,98.4 38.8,95.9 39.6,93.5 40.4,91 41.2,88.5 42,86 42.8,83.5 43.6,81 44.4,78.5 45.2,76.1 46,73.6 46.8,71.3 47.6,69 48.4,66.7 49.2,64.6 50,62.5 50.8,60.5 51.6,58.6 52.4,56.8 53.2,55.2 54,53.6 54.8,52.2 55.6,50.9 56.4,49.8 57.2,48.8 58,48 58.8,47.3 59.6,46.7 60.4,46.3 61.2,46.1 62,46 62.8,46.1 63.6,46.3 64.4,46.7 65.2,47.3 66,48 66.8,48.8 67.6,49.8 68.4,50.9 69.2,52.2 70,53.6 70.8,55.2 71.6,56.8 72.4,58.6 73.2,60.5 74,62.5 74.8,64.6 75.6,66.7 76.4,69 77.2,71.3 78,73.6 78.8,76.1 79.6,78.5 80.4,81 81.2,83.5 82,86 82.8,88.5 83.6,91 84.4,93.5 85.2,95.9 86,98.4 86.8,100.7 87.6,103 88.4,105.3 89.2,107.4 90,109.5 90.8,111.5 91.6,113.4 92.4,115.2 93.2,116.8 94,118.4 94.8,119.8 95.6,121.1 96.4,122.2 97.2,123.2 98,124 98.8,124.7 99.6,125.3 100.4,125.7 101.2,125.9 102,126 102.8,125.9 103.6,125.7 104.4,125.3 105.2,124.7 106,124 106.8,123.2 107.6,122.2 108.4,121.1 109.2,119.8 110,118.4 110.8,116.8 111.6,115.2 112.4,113.4 113.2,111.5 114,109.5 114.8,107.4 115.6,105.3 116.4,103 117.2,100.7 118,98.4 118.8,95.9 119.6,93.5 120.4,91 121.2,88.5 122,86 122.8,83.5 123.6,81 124.4,78.5 125.2,76.1 126,73.6 126.8,71.3 127.6,69 128.4,66.7 129.2,64.6 130,62.5 130.8,60.5 131.6,58.6 132.4,56.8 133.2,55.2 134,53.6 134.8,52.2 135.6,50.9 136.4,49.8 137.2,48.8 138,48 138.8,47.3 139.6,46.7 140.4,46.3 141.2,46.1 142,46 142.8,46.1 143.6,46.3 144.4,46.7 145.2,47.3 146,48 146.8,48.8 147.6,49.8 148.4,50.9 149.2,52.2 150,53.6 150.8,55.2 151.6,56.8 152.4,58.6 153.2,60.5 154,62.5 154.8,64.6 155.6,66.7 156.4,69 157.2,71.3 158,73.6 158.8,76.1 159.6,78.5 160.4,81 161.2,83.5 162,86 162.8,88.5 163.6,91 164.4,93.5 165.2,95.9 166,98.4 166.8,100.7 167.6,103 168.4,105.3 169.2,107.4 170,109.5 170.8,111.5 171.6,113.4 172.4,115.2 173.2,116.8 174,118.4 174.8,119.8 175.6,121.1 176.4,122.2 177.2,123.2 178,124 178.8,124.7 179.6,125.3 180.4,125.7 181.2,125.9 182,126\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/></g><g transform=\"translate(0,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丙</text><line x1=\"22\" y1=\"46\" x2=\"22\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"62\" y1=\"46\" x2=\"62\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"102\" y1=\"46\" x2=\"102\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"142\" y1=\"46\" x2=\"142\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"182\" y1=\"46\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"46\" x2=\"182\" y2=\"46\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"86\" x2=\"182\" y2=\"86\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"126\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><polyline points=\"22,86 22.8,83.5 23.6,81 24.4,78.5 25.2,76.1 26,73.6 26.8,71.3 27.6,69 28.4,66.7 29.2,64.6 30,62.5 30.8,60.5 31.6,58.6 32.4,56.8 33.2,55.2 34,53.6 34.8,52.2 35.6,50.9 36.4,49.8 37.2,48.8 38,48 38.8,47.3 39.6,46.7 40.4,46.3 41.2,46.1 42,46 42.8,46.1 43.6,46.3 44.4,46.7 45.2,47.3 46,48 46.8,48.8 47.6,49.8 48.4,50.9 49.2,52.2 50,53.6 50.8,55.2 51.6,56.8 52.4,58.6 53.2,60.5 54,62.5 54.8,64.6 55.6,66.7 56.4,69 57.2,71.3 58,73.6 58.8,76.1 59.6,78.5 60.4,81 61.2,83.5 62,86 62.8,88.5 63.6,91 64.4,93.5 65.2,95.9 66,98.4 66.8,100.7 67.6,103 68.4,105.3 69.2,107.4 70,109.5 70.8,111.5 71.6,113.4 72.4,115.2 73.2,116.8 74,118.4 74.8,119.8 75.6,121.1 76.4,122.2 77.2,123.2 78,124 78.8,124.7 79.6,125.3 80.4,125.7 81.2,125.9 82,126 82.8,125.9 83.6,125.7 84.4,125.3 85.2,124.7 86,124 86.8,123.2 87.6,122.2 88.4,121.1 89.2,119.8 90,118.4 90.8,116.8 91.6,115.2 92.4,113.4 93.2,111.5 94,109.5 94.8,107.4 95.6,105.3 96.4,103 97.2,100.7 98,98.4 98.8,95.9 99.6,93.5 100.4,91 101.2,88.5 102,86 102.8,83.5 103.6,81 104.4,78.5 105.2,76.1 106,73.6 106.8,71.3 107.6,69 108.4,66.7 109.2,64.6 110,62.5 110.8,60.5 111.6,58.6 112.4,56.8 113.2,55.2 114,53.6 114.8,52.2 115.6,50.9 116.4,49.8 117.2,48.8 118,48 118.8,47.3 119.6,46.7 120.4,46.3 121.2,46.1 122,46 122.8,46.1 123.6,46.3 124.4,46.7 125.2,47.3 126,48 126.8,48.8 127.6,49.8 128.4,50.9 129.2,52.2 130,53.6 130.8,55.2 131.6,56.8 132.4,58.6 133.2,60.5 134,62.5 134.8,64.6 135.6,66.7 136.4,69 137.2,71.3 138,73.6 138.8,76.1 139.6,78.5 140.4,81 141.2,83.5 142,86 142.8,88.5 143.6,91 144.4,93.5 145.2,95.9 146,98.4 146.8,100.7 147.6,103 148.4,105.3 149.2,107.4 150,109.5 150.8,111.5 151.6,113.4 152.4,115.2 153.2,116.8 154,118.4 154.8,119.8 155.6,121.1 156.4,122.2 157.2,123.2 158,124 158.8,124.7 159.6,125.3 160.4,125.7 161.2,125.9 162,126 162.8,125.9 163.6,125.7 164.4,125.3 165.2,124.7 166,124 166.8,123.2 167.6,122.2 168.4,121.1 169.2,119.8 170,118.4 170.8,116.8 171.6,115.2 172.4,113.4 173.2,111.5 174,109.5 174.8,107.4 175.6,105.3 176.4,103 177.2,100.7 178,98.4 178.8,95.9 179.6,93.5 180.4,91 181.2,88.5 182,86\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/></g><g transform=\"translate(210,160)\"><rect x=\"4\" y=\"4\" width=\"202\" height=\"152\" rx=\"12\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><rect x=\"12\" y=\"12\" width=\"34\" height=\"24\" rx=\"6\" fill=\"#082f49\"/><text x=\"29\" y=\"29\" text-anchor=\"middle\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">丁</text><line x1=\"22\" y1=\"46\" x2=\"22\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"62\" y1=\"46\" x2=\"62\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"102\" y1=\"46\" x2=\"102\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"142\" y1=\"46\" x2=\"142\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"182\" y1=\"46\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"46\" x2=\"182\" y2=\"46\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"86\" x2=\"182\" y2=\"86\" stroke=\"#94a3b8\" stroke-width=\"1\"/><line x1=\"22\" y1=\"126\" x2=\"182\" y2=\"126\" stroke=\"#94a3b8\" stroke-width=\"1\"/><polyline points=\"22,86 22.8,88.5 23.6,91 24.4,93.5 25.2,95.9 26,98.4 26.8,100.7 27.6,103 28.4,105.3 29.2,107.4 30,109.5 30.8,111.5 31.6,113.4 32.4,115.2 33.2,116.8 34,118.4 34.8,119.8 35.6,121.1 36.4,122.2 37.2,123.2 38,124 38.8,124.7 39.6,125.3 40.4,125.7 41.2,125.9 42,126 42.8,125.9 43.6,125.7 44.4,125.3 45.2,124.7 46,124 46.8,123.2 47.6,122.2 48.4,121.1 49.2,119.8 50,118.4 50.8,116.8 51.6,115.2 52.4,113.4 53.2,111.5 54,109.5 54.8,107.4 55.6,105.3 56.4,103 57.2,100.7 58,98.4 58.8,95.9 59.6,93.5 60.4,91 61.2,88.5 62,86 62.8,83.5 63.6,81 64.4,78.5 65.2,76.1 66,73.6 66.8,71.3 67.6,69 68.4,66.7 69.2,64.6 70,62.5 70.8,60.5 71.6,58.6 72.4,56.8 73.2,55.2 74,53.6 74.8,52.2 75.6,50.9 76.4,49.8 77.2,48.8 78,48 78.8,47.3 79.6,46.7 80.4,46.3 81.2,46.1 82,46 82.8,46.1 83.6,46.3 84.4,46.7 85.2,47.3 86,48 86.8,48.8 87.6,49.8 88.4,50.9 89.2,52.2 90,53.6 90.8,55.2 91.6,56.8 92.4,58.6 93.2,60.5 94,62.5 94.8,64.6 95.6,66.7 96.4,69 97.2,71.3 98,73.6 98.8,76.1 99.6,78.5 100.4,81 101.2,83.5 102,86 102.8,88.5 103.6,91 104.4,93.5 105.2,95.9 106,98.4 106.8,100.7 107.6,103 108.4,105.3 109.2,107.4 110,109.5 110.8,111.5 111.6,113.4 112.4,115.2 113.2,116.8 114,118.4 114.8,119.8 115.6,121.1 116.4,122.2 117.2,123.2 118,124 118.8,124.7 119.6,125.3 120.4,125.7 121.2,125.9 122,126 122.8,125.9 123.6,125.7 124.4,125.3 125.2,124.7 126,124 126.8,123.2 127.6,122.2 128.4,121.1 129.2,119.8 130,118.4 130.8,116.8 131.6,115.2 132.4,113.4 133.2,111.5 134,109.5 134.8,107.4 135.6,105.3 136.4,103 137.2,100.7 138,98.4 138.8,95.9 139.6,93.5 140.4,91 141.2,88.5 142,86 142.8,83.5 143.6,81 144.4,78.5 145.2,76.1 146,73.6 146.8,71.3 147.6,69 148.4,66.7 149.2,64.6 150,62.5 150.8,60.5 151.6,58.6 152.4,56.8 153.2,55.2 154,53.6 154.8,52.2 155.6,50.9 156.4,49.8 157.2,48.8 158,48 158.8,47.3 159.6,46.7 160.4,46.3 161.2,46.1 162,46 162.8,46.1 163.6,46.3 164.4,46.7 165.2,47.3 166,48 166.8,48.8 167.6,49.8 168.4,50.9 169.2,52.2 170,53.6 170.8,55.2 171.6,56.8 172.4,58.6 173.2,60.5 174,62.5 174.8,64.6 175.6,66.7 176.4,69 177.2,71.3 178,73.6 178.8,76.1 179.6,78.5 180.4,81 181.2,83.5 182,86\" fill=\"none\" stroke=\"#082f49\" stroke-width=\"2.2\" stroke-linejoin=\"round\"/></g></g></svg>",
@@ -1049,6 +1064,674 @@
         options: ["設計 D：紅色與白色部分都透出紅光，藍色數字吸收紅光而變暗，形狀清楚", "設計 A：白色數字在紅光下仍是白色，與紅色衣服對比明顯", "設計 B：紅色數字在紅光下更鮮豔，與白色衣服對比明顯", "設計 C：綠色數字和藍色橫帶在紅光下顏色都不變"],
         answer: "設計 D：紅色與白色部分都透出紅光，藍色數字吸收紅光而變暗，形狀清楚",
         explain: "紅光下，紅色和白色部分都呈紅色，所以 A、B 的數字會和衣服融成一片；C 的綠色數字和藍色橫帶都變暗，數字形狀消失；D 的藍色數字變暗，在紅色背景上形狀不變。"
+      },
+      {
+        chapter: 'p3', section: "3・1 波的傳播",
+        q: "小婷想用「丟石頭產生漣漪」的方法，讓水面上的葉子漂到岸邊。這個方法可行嗎？",
+        options: ["不可行，水波只傳遞能量，葉子只會在原處上下起伏", "可行，只要用力丟石頭，葉子就會被推到岸邊", "可行，但葉子有可能越漂越遠", "不可行，水波會讓葉子直接沉入水底"],
+        answer: "不可行，水波只傳遞能量，葉子只會在原處上下起伏",
+        explain: "波傳播時只傳遞能量，不傳遞介質。水波經過時，葉子只在原處附近上下起伏，不會被推到岸邊，也不會被水波弄沉。"
+      },
+      {
+        chapter: 'p3', section: "3・1 波的傳播",
+        q: "下列哪些屬於力學波？（甲）繩波（乙）彈簧波（丙）聲波（丁）電磁波",
+        options: ["甲乙", "甲乙丙", "丙丁", "甲乙丙丁"],
+        answer: "甲乙丙",
+        explain: "需要介質才能傳播的波是力學波：繩波、彈簧波、聲波都靠介質傳播；電磁波（例如光）不需要介質，不是力學波。"
+      },
+      {
+        chapter: 'p3', section: "3・1 波的傳播",
+        q: "某彈簧波每秒來回振動 2 次，測得波在 2 秒內前進了 20 公分。此彈簧波的週期與波速分別為何？",
+        options: ["週期 0.5 秒；波速 10 公分／秒", "週期 2 秒；波速 10 公分／秒", "週期 0.5 秒；波速 40 公分／秒", "週期 2 秒；波速 20 公分／秒"],
+        answer: "週期 0.5 秒；波速 10 公分／秒",
+        explain: "每秒振動 2 次，頻率 2 Hz，週期＝1 ÷ 2＝0.5 秒。波速＝距離 ÷ 時間＝20 cm ÷ 2 s＝10 cm/s。"
+      },
+      {
+        chapter: 'p3', section: "3・1 波的傳播",
+        q: "某波的波速為 60 公分／秒，波長為 20 公分。此波的頻率為多少赫？",
+        options: ["1/3 Hz", "1.5 Hz", "3 Hz", "12 Hz"],
+        answer: "3 Hz",
+        explain: "波速＝頻率 × 波長，所以頻率＝波速 ÷ 波長＝60 ÷ 20＝3 Hz。"
+      },
+      {
+        chapter: 'p3', section: "3・1 波的傳播",
+        q: "同一條繩子上，若讓繩波的週期加倍，下列哪些敘述正確？（甲）波速不變（乙）波速減半（丙）頻率減半（丁）波長加倍（戊）波長不變",
+        options: ["甲丙丁", "甲戊", "乙丙丁", "乙戊"],
+        answer: "甲丙丁",
+        explain: "波速由介質決定，同一條繩子波速不變。週期加倍，頻率變成一半；波速＝頻率 × 波長，頻率減半時波長就要加倍。"
+      },
+      {
+        chapter: 'p3', section: "3・1 波的傳播",
+        q: "兩個聲波在同一介質中傳播，波速相同，波長比為 1：3。兩者的週期比為多少？",
+        options: ["1：3", "3：1", "1：9", "9：1"],
+        answer: "1：3",
+        explain: "波速相同時，波長＝波速 × 週期，波長與週期成正比，所以週期比也是 1：3（頻率比則是 3：1）。"
+      },
+      {
+        chapter: 'p3', section: "3・1 波的傳播",
+        context: "小傑把釣竿甩向湖中，水面泛起水波，水面上的葉子跟著搖盪；不久後浮標往下沉，有魚上鉤了。",
+        q: "下列敘述何者錯誤？",
+        options: ["魚上鉤使浮標下沉時，不會引起水波", "水波會以魚鉤入水點為圓心向外擴散", "浮標不會隨著水波向外移動", "水面上葉子搖盪的方向和水面垂直"],
+        answer: "魚上鉤使浮標下沉時，不會引起水波",
+        explain: "浮標下沉也是對水面的擾動，同樣會產生水波。水波從入水點向外擴散，水面上的浮標、葉子只在原處上下振動，不會隨波移走。"
+      },
+      {
+        chapter: 'p3', section: "3・1 波的傳播",
+        context: "小軒手持繩子一端上下擺動，使繩子形成向前傳播的繩波；繩上 A、B 兩點的位置固定。",
+        q: "若擺動的頻率加倍（同一條繩子），繩波會如何變化？",
+        options: ["A、B 之間的波數增加", "振幅一定減少", "波長變長", "波從 A 傳到 B 的時間變短"],
+        answer: "A、B 之間的波數增加",
+        explain: "同一條繩子波速不變，頻率加倍時波長變成一半，A、B 之間可容納的波數變多。波速不變，從 A 傳到 B 的時間也不變；振幅由擺動幅度決定。"
+      },
+      {
+        chapter: 'p3', section: "3・2 聲波的產生與傳播",
+        q: "游泳比賽時，岸上的加油聲傳到水中。聲波從空氣進入水中時，哪一項性質不會改變？",
+        options: ["頻率", "聲速", "波長", "傳遞的介質"],
+        answer: "頻率",
+        explain: "頻率由發聲體決定，進入不同介質時不變。水中聲速比空氣快，波長＝聲速 ÷ 頻率，所以波長變長；介質也從空氣換成水。"
+      },
+      {
+        chapter: 'p3', section: "3・2 聲波的產生與傳播",
+        q: "婷婷點燃沖天炮，看到它在高空爆炸後 0.5 秒才聽見爆炸聲。當時聲速為 340 公尺／秒，爆炸點離婷婷約多遠？",
+        options: ["680 公尺", "340 公尺", "170 公尺", "85 公尺"],
+        answer: "170 公尺",
+        explain: "光速極快，看到爆炸的時刻可視為爆炸當下。距離＝聲速 × 時間＝340 m/s × 0.5 s＝170 m。"
+      },
+      {
+        chapter: 'p3', section: "3・2 聲波的產生與傳播",
+        q: "轟炸機轟炸一座基地時，下列哪一個人最先聽到爆炸聲？",
+        options: ["在基地正下方 250 公尺地下室的人", "在基地正下方 300 公尺地下室的人", "在地面上空距離基地 250 公尺的人", "在地面上空距離基地 300 公尺的人"],
+        answer: "在基地正下方 250 公尺地下室的人",
+        explain: "聲音在固體（地層）中比在空氣中傳得快，距離越近也越早聽到。基地正下方 250 公尺的地下室，傳播介質是固體，距離又最短。"
+      },
+      {
+        chapter: 'p3', section: "3・2 聲波的產生與傳播",
+        context: "鐵路技師把耳朵貼在鐵軌上，聽 2800 公尺外敲擊鐵軌的聲音：先聽到經鐵軌傳來的聲音，5.5 秒後又聽到經空氣傳來的聲音。空氣中的聲速為 350 m/s。",
+        q: "鐵軌中的聲速約為多少？",
+        options: ["509 m/s", "875 m/s", "1120 m/s", "1925 m/s"],
+        answer: "1120 m/s",
+        explain: "經空氣：2800 ÷ 350＝8 秒；經鐵軌：8－5.5＝2.5 秒；鐵軌中的聲速＝2800 ÷ 2.5＝1120 m/s。"
+      },
+      {
+        chapter: 'p3', section: "3・2 聲波的產生與傳播",
+        context: "小貿每天上午 10:00 整敲一下鐘，遠處的小宜記錄聽到鐘聲的時間（如表）。",
+        figure: FIG.tWeather,
+        q: "哪兩天的紀錄可以證明「溫度越高，聲速越快」？",
+        options: ["8 月 2 日和 8 月 4 日", "8 月 1 日和 8 月 2 日", "8 月 3 日和 8 月 4 日", "8 月 5 日和 8 月 6 日"],
+        answer: "8 月 2 日和 8 月 4 日",
+        explain: "要比較溫度的影響，其他條件（溼度、風向）必須相同。8/2 和 8/4 都是溼度 25%、無風，只有溫度不同（28℃、34℃）；34℃ 那天較早聽到，表示聲速較快。其他組合同時改變了不只一個條件。"
+      },
+      {
+        chapter: 'p3', section: "3・2 聲波的產生與傳播",
+        context: "小貿每天上午 10:00 整敲一下鐘，遠處的小宜記錄聽到鐘聲的時間（如表）。",
+        figure: FIG.tWeather,
+        q: "若 8 月 2 日的聲速為 350 公尺／秒，小貿與小宜相距約多少公里？",
+        options: ["14 公里", "35 公里", "43 公里", "70 公里"],
+        answer: "35 公里",
+        explain: "8/2 在 10:01:40 聽到，聲音走了 1 分 40 秒＝100 秒；距離＝350 × 100＝35000 m＝35 km。"
+      },
+      {
+        chapter: 'p3', section: "3・2 聲波的產生與傳播",
+        q: "大熱天在開著冷氣的教室裡唱歌，歌聲從教室傳到室外時，聲速會怎麼變化？（不考慮溼度和風）",
+        options: ["變快", "變慢", "不變", "不一定"],
+        answer: "變快",
+        explain: "室外氣溫比冷氣房高，空氣溫度越高，聲速越快。"
+      },
+      {
+        chapter: 'p3', section: "3・3 聲波的反射與超聲波",
+        q: "回聲和原來的聲音相比，哪一項會改變？",
+        options: ["振幅", "波速", "波長", "頻率"],
+        answer: "振幅",
+        explain: "回聲仍在同一種空氣中傳播，波速、頻率、波長都不變；但反射時有部分能量被吸收或散失，振幅變小，聽起來比較小聲。"
+      },
+      {
+        chapter: 'p3', section: "3・3 聲波的反射與超聲波",
+        q: "元元和倫倫站在離方方一樣遠的地方，同時向方方大喊；元元的聲音小、倫倫的聲音大。方方會先聽到誰的聲音？",
+        options: ["同時聽到", "元元", "倫倫", "無法判斷"],
+        answer: "同時聽到",
+        explain: "聲速由介質決定，與音量大小無關。距離相同、都在空氣中傳播，所以兩人的聲音同時到達。"
+      },
+      {
+        chapter: 'p3', section: "3・3 聲波的反射與超聲波",
+        context: "直升機停在海面上空 90 公尺處，向海中發出聲波探測潛水艇。聲音在空氣中的速率為 300 m/s，在海水中為 1500 m/s；發出聲波後 1.2 秒收到回聲。",
+        q: "潛水艇離海面多深？",
+        options: ["150 公尺", "300 公尺", "450 公尺", "600 公尺"],
+        answer: "450 公尺",
+        explain: "空氣中來回 180 m，需 180 ÷ 300＝0.6 秒；剩下的 0.6 秒在海水中來回，單程 0.3 秒，深度＝1500 × 0.3＝450 m。"
+      },
+      {
+        chapter: 'p3', section: "3・3 聲波的反射與超聲波",
+        q: "劇院要避免回聲干擾，可以在四周牆壁做哪些處理？甲．貼上多孔的木板　乙．懸掛柔軟的布幔　丙．加裝飾品使牆面凹凸不平　丁．焊上堅硬又光滑的鐵板",
+        options: ["甲乙丙", "甲乙丙丁", "甲乙丁", "乙丙丁"],
+        answer: "甲乙丙",
+        explain: "多孔、柔軟的表面會吸收聲波；凹凸不平的牆面會把聲音反射到各個方向，都能減少回聲。堅硬光滑的鐵板反而容易反射聲音。"
+      },
+      {
+        chapter: 'p3', section: "3・3 聲波的反射與超聲波",
+        context: "聲音在 0℃ 空氣中的速率為 331 m/s，溫度每升高 1℃，速率增加 0.6 m/s。文琪在一口枯井的井口喊話，0.20 秒後聽到回聲，井中氣溫為 15℃。",
+        q: "枯井的深度約為多少公尺？",
+        options: ["34 公尺", "33 公尺", "66 公尺", "68 公尺"],
+        answer: "34 公尺",
+        explain: "15℃ 的聲速＝331＋0.6 × 15＝340 m/s。聲音來回共 0.20 秒，單程 0.10 秒，井深＝340 × 0.10＝34 m。"
+      },
+      {
+        chapter: 'p3', section: "3・3 聲波的反射與超聲波",
+        context: "怡蓁站在甲、乙兩面峭壁之間大喊一聲，2 秒後聽到甲峭壁的回聲，再過 1 秒聽到乙峭壁的回聲。聲速為 340 m/s。",
+        q: "甲、乙兩面峭壁相距多少公尺？",
+        options: ["850 公尺", "1020 公尺", "1700 公尺", "510 公尺"],
+        answer: "850 公尺",
+        explain: "到甲峭壁：340 × 2 ÷ 2＝340 m；乙峭壁的回聲在 3 秒時聽到：340 × 3 ÷ 2＝510 m。兩峭壁相距 340＋510＝850 m。"
+      },
+      {
+        chapter: 'p3', section: "3・3 聲波的反射與超聲波",
+        context: "海洋研究船用聲納垂直向海底發射超聲波，海水聲速設為 1500 m/s。四個測站收到回聲的時間差如表。",
+        figure: FIG.tStations,
+        q: "關於各測站的海水深度，下列敘述何者錯誤？",
+        options: ["測站 B 的深度為 6000 公尺", "測站 A 最淺", "測站 D 最深", "測站 C 的深度為 6000 公尺"],
+        answer: "測站 B 的深度為 6000 公尺",
+        explain: "深度＝1500 × 時間 ÷ 2。測站 A 1500 m、B 3000 m、C 6000 m、D 10500 m，所以測站 B 是 3000 m，不是 6000 m。"
+      },
+      {
+        chapter: 'p3', section: "3・4 多變的聲音",
+        q: "音叉常被當作調音的工具，最主要是因為它具有哪一種特性？",
+        options: ["發出的頻率固定", "音色特別優美", "音調特別低", "響度特別大"],
+        answer: "發出的頻率固定",
+        explain: "同一支音叉每次振動的頻率都相同，音調固定，可以當作校準音高的標準。"
+      },
+      {
+        chapter: 'p3', section: "3・4 多變的聲音",
+        q: "吹奏排笛時，管內的空氣柱越長，吹出的聲音會如何？",
+        options: ["音調越低", "音調越高", "音量越大", "音量越小"],
+        answer: "音調越低",
+        explain: "空氣柱越長，振動頻率越低，音調越低；空氣柱越短，音調越高。音量則由吹氣的強弱（振幅）決定。"
+      },
+      {
+        chapter: 'p3', section: "3・4 多變的聲音",
+        q: "阿康發現吉他其中一條弦彈出的聲音太低，應該如何調音？",
+        options: ["把弦調緊，提高振動頻率", "把弦調緊，增加振動的振幅", "把弦調鬆，增加振動的振幅", "把弦調鬆，增加聲波的速率"],
+        answer: "把弦調緊，提高振動頻率",
+        explain: "音調太低表示頻率太低。弦拉得越緊，振動頻率越高，音調越高；振幅影響的是響度，不是音調。"
+      },
+      {
+        chapter: 'p3', section: "3・4 多變的聲音",
+        context: "武俠小說中，黃藥師只用一根琴弦就彈出各種音調。可能的方法：甲．改變彈弦的速率　乙．改變弦的鬆緊　丙．改變弦的長短　丁．改變弦的粗細",
+        q: "他可以用上述哪些方法，改變同一根弦的音調？",
+        options: ["乙丙", "甲乙丙", "乙丙丁", "只有丙"],
+        answer: "乙丙",
+        explain: "同一根弦的粗細無法改變；彈弦的快慢只改變每秒彈幾次，不會改變弦本身的振動頻率。改變鬆緊（轉弦鈕）和長短（按壓不同位置）都能改變音調。"
+      },
+      {
+        chapter: 'p3', section: "3・4 多變的聲音",
+        q: "打擊樂表演時，鼓手敲擊小鼓的速度越來越快，鼓聲的音調、聲速、音色會如何？",
+        options: ["三者都不會改變", "音調變高", "聲速變快", "音色改變"],
+        answer: "三者都不會改變",
+        explain: "敲得快只是每秒敲的次數變多，鼓皮本身振動的頻率不變，所以音調不變；聲速由空氣決定，音色由鼓的材質與形狀決定，也都不變。"
+      },
+      {
+        chapter: 'p3', section: "3・4 多變的聲音",
+        context: "甲、乙、丙三條吉他弦的質料與長度相同：甲最粗、乙次之、丙最細。測得甲弦的音調最高、乙次之、丙最低。",
+        q: "三條弦的鬆緊程度，由緊到鬆依序為何？",
+        options: ["甲＞乙＞丙", "丙＞乙＞甲", "甲＞丙＞乙", "乙＞甲＞丙"],
+        answer: "甲＞乙＞丙",
+        explain: "弦越粗，原本音調越低。甲最粗卻音調最高，一定拉得最緊；乙比丙粗卻比丙高，乙也比丙緊。所以由緊到鬆是甲＞乙＞丙。"
+      },
+      {
+        chapter: 'p3', section: "3・4 多變的聲音",
+        q: "在曠野中呼喊，聲音傳得越遠越小聲。下列哪一項也跟著變小？",
+        options: ["聲音的振幅", "聲音的頻率", "聲音的速率", "聲音的波長"],
+        answer: "聲音的振幅",
+        explain: "響度由振幅決定。聲音傳得越遠，能量越分散，振幅變小；頻率由聲源決定，速率與波長由介質和頻率決定，都不變。"
+      },
+      {
+        chapter: 'p3', section: "3・4 多變的聲音",
+        context: "家維用木槌敲擊甲、乙、丙、丁四支音叉，記錄頻率與響度（如表）。",
+        figure: FIG.tForks1,
+        q: "四支音叉聲音的響度，由大到小的順序為何？",
+        options: ["乙＞丙＝丁＞甲", "甲＞乙＝丁＞丙", "甲＝乙＝丙＝丁", "甲＞乙＞丙＞丁"],
+        answer: "乙＞丙＝丁＞甲",
+        explain: "響度看分貝數：乙 80 dB＞丙、丁 60 dB＞甲 40 dB。頻率決定的是音調，甲 300 Hz 的音調最高，但響度最小。"
+      },
+      {
+        chapter: 'p4', section: "4・1 光的傳播與光速",
+        figure: FIG.pinhole,
+        q: "針孔成像實驗中，若把燭火移近針孔（針孔與紙屏的位置不變），紙屏上的像會如何變化？",
+        options: ["變大", "變小", "不變", "先變大再變小"],
+        answer: "變大",
+        explain: "像的大小 ÷ 燭火大小＝像距 ÷ 物距。物距變小、像距不變，比值變大，所以像變大。"
+      },
+      {
+        chapter: 'p4', section: "4・1 光的傳播與光速",
+        q: "月球到地球的距離約為 4×10⁸ 公尺，光速約為 3×10⁸ 公尺／秒。月光從月球傳到地球約需多少秒？",
+        options: ["1.33 秒", "0.75 秒", "2.66 秒", "1330 秒"],
+        answer: "1.33 秒",
+        explain: "時間＝距離 ÷ 速率＝4×10⁸ ÷ 3×10⁸ ≈ 1.33 秒。"
+      },
+      {
+        chapter: 'p4', section: "4・1 光的傳播與光速",
+        context: "某次月食從開始（初虧）到結束（復原）共經歷 25 分鐘。",
+        q: "假如光速變得跟聲速一樣慢，下列敘述何者正確？",
+        options: ["月食全程仍是 25 分鐘，但我們看到月食開始的時間會延後", "月食全程會超過 25 分鐘，且開始的時間會提前", "月食全程會超過 25 分鐘，但開始的時間會延後", "月食全程仍是 25 分鐘，但開始的時間會提前"],
+        answer: "月食全程仍是 25 分鐘，但我們看到月食開始的時間會延後",
+        explain: "光速變慢，月光要花更久才傳到地球，所以看到月食開始的時間延後；但開始與結束時的光都延後同樣的時間，看到的全程長度不變。"
+      },
+      {
+        chapter: 'p4', section: "4・1 光的傳播與光速",
+        figure: FIG.pinhole,
+        q: "針孔成像實驗中，若拿一根細針在燭火與針孔之間由右向左移動，紙屏上細針影子的移動方向為何？",
+        options: ["向右", "向左", "向上", "向下"],
+        answer: "向右",
+        explain: "光沿直線通過針孔後，紙屏上的像上下顛倒、左右相反，所以細針向左移，影子就向右移。"
+      },
+      {
+        chapter: 'p4', section: "4・1 光的傳播與光速",
+        q: "小光的家距離某工廠 2 公里。工廠發生爆炸的那一刻，小光感覺到的現象先後順序為何？甲．爆炸聲　乙．地面振動　丙．強光",
+        options: ["丙乙甲", "甲乙丙", "乙丙甲", "甲丙乙"],
+        answer: "丙乙甲",
+        explain: "光速最快，先看到強光；聲音在固體（地面）中比在空氣中快，所以接著感覺地面振動，最後才聽到空氣傳來的爆炸聲。"
+      },
+      {
+        chapter: 'p4', section: "4・1 光的傳播與光速",
+        q: "鋼琴聲、超聲波、紫外線、燈泡發出的光、紅色雷射光，以上五種有幾種能在真空中傳播？",
+        options: ["3 種", "5 種", "4 種", "2 種"],
+        answer: "3 種",
+        explain: "紫外線、燈光、雷射光都是電磁波，不需要介質；鋼琴聲和超聲波都是聲波，需要介質，不能在真空中傳播。"
+      },
+      {
+        chapter: 'p4', section: "4・2 光的反射與面鏡",
+        q: "把一張寫著「b d」的字卡立在平面鏡前，從鏡前看到鏡中的像是下列何者？",
+        options: ["b d", "d b", "p q", "q p"],
+        answer: "b d",
+        explain: "平面鏡的像左右相反：兩個字母的左右位置對調變成「d b」，每個字母本身也左右翻轉（d 變 b、b 變 d），合起來仍是「b d」。"
+      },
+      {
+        chapter: 'p4', section: "4・2 光的反射與面鏡",
+        q: "有關光的反射定律，下列敘述何者錯誤？",
+        options: ["光沿著法線入射時，不會發生反射", "入射角大於 0 度時，入射線與反射線分別在法線兩側", "入射線、反射線、法線在同一平面上", "入射角為 30 度時，入射線與反射線的夾角為 60 度"],
+        answer: "光沿著法線入射時，不會發生反射",
+        explain: "光沿法線入射（入射角 0°）時，反射角也是 0°，光會沿原路反射回去，不是不反射。"
+      },
+      {
+        chapter: 'p4', section: "4・2 光的反射與面鏡",
+        q: "阿美的化妝盒裡附的鏡子，可以把臉部的像放大。這面鏡子應該是哪一種？",
+        options: ["凹面鏡", "凸面鏡", "平面鏡", "鍍銀的平面鏡"],
+        answer: "凹面鏡",
+        explain: "臉靠近凹面鏡（在焦點內）時，可看到正立放大的虛像；凸面鏡成縮小的像，平面鏡成等大的像。"
+      },
+      {
+        chapter: 'p4', section: "4・2 光的反射與面鏡",
+        q: "平行光照到凹凸不平的表面時，反射光雜亂無序，稱為「漫反射」。下列哪些正確？甲．漫反射的光遵守光的直進性　乙．漫反射的光不遵守光的直進性　丙．漫反射的光遵守反射定律　丁．漫反射的光不遵守反射定律",
+        options: ["甲丙", "乙丙", "甲丁", "乙丁"],
+        answer: "甲丙",
+        explain: "漫反射時每一條光線仍沿直線前進，照到的每一小塊表面也都遵守反射定律；只是表面各處方向不同，反射光才射向四面八方。"
+      },
+      {
+        chapter: 'p4', section: "4・2 光的反射與面鏡",
+        q: "平面鏡前放一個沒有數字、只有刻度的指針式時鐘，從鏡中看到的時間是 4 時 23 分。實際時間是幾時幾分？",
+        options: ["7 時 37 分", "4 時 23 分", "8 時 23 分", "8 時 37 分"],
+        answer: "7 時 37 分",
+        explain: "鏡中的鐘面左右相反，鏡中時間與實際時間相加等於 12 時：12:00－4:23＝7:37。"
+      },
+      {
+        chapter: 'p4', section: "4・2 光的反射與面鏡",
+        q: "參觀科學館的哈哈鏡後，下列筆記何者錯誤？",
+        options: ["哈哈鏡不遵守反射定律", "哈哈鏡不是平面鏡", "讓人看起來變高的哈哈鏡可能是凹面鏡", "讓人看起來變矮的哈哈鏡可能是凸面鏡"],
+        answer: "哈哈鏡不遵守反射定律",
+        explain: "哈哈鏡是彎曲的面鏡，鏡面各處仍遵守反射定律；只是彎曲程度不同，像才會被拉長或壓扁。"
+      },
+      {
+        chapter: 'p4', section: "4・2 光的反射與面鏡",
+        q: "天天直立站在一面與地面夾 60° 的平面鏡前，他在鏡中的像與實際地面的夾角為多少？",
+        options: ["30°", "與地面平行", "60°", "90°"],
+        answer: "30°",
+        explain: "平面鏡的像與物體對稱於鏡面。人與地面夾 90°，鏡面與地面夾 60°，人比鏡面多傾 30°；像在鏡面另一側也差 30°，所以像與地面夾 60°－30°＝30°。"
+      },
+      {
+        chapter: 'p4', section: "4・3 光的折射與透鏡",
+        q: "關於光的折射，下列敘述何者錯誤？",
+        options: ["折射角一定大於入射角", "光的傳播速率變慢時，折射線會偏向法線", "折射的原因是光在不同介質中的速率不同", "反射與折射會同時發生"],
+        answer: "折射角一定大於入射角",
+        explain: "光從空氣進入水或玻璃時，速率變慢，折射角小於入射角；只有進入速率較快的介質時，折射角才大於入射角。"
+      },
+      {
+        chapter: 'p4', section: "4・3 光的折射與透鏡",
+        q: "一個焦距 10 cm 的凸透鏡，要讓物體形成虛像，物體與透鏡的距離可能為多少？",
+        options: ["8 cm", "12 cm", "20 cm", "30 cm"],
+        answer: "8 cm",
+        explain: "凸透鏡要成虛像，物體必須放在焦點以內，也就是距離小於 10 cm。"
+      },
+      {
+        chapter: 'p4', section: "4・3 光的折射與透鏡",
+        q: "光線由介質 A 斜射向介質 B，入射角 50°、折射角 30°，同時也發生反射。反射線與折射線的夾角為多少？",
+        options: ["100°", "20°", "60°", "80°"],
+        answer: "100°",
+        explain: "反射角＝入射角＝50°。反射線在交界面上方、折射線在下方，兩者與法線的夾角分別為 50° 和 30°，所以夾角＝180°－50°－30°＝100°。"
+      },
+      {
+        chapter: 'p4', section: "4・3 光的折射與透鏡",
+        context: "小康做凸透鏡成像實驗，測得物距與像距如表。",
+        figure: FIG.tLens,
+        q: "物距小於多少公分時，另一側的紙屏將無法成像？",
+        options: ["10 公分", "12 公分", "20 公分", "30 公分"],
+        answer: "10 公分",
+        explain: "物距 20 cm 時像距也是 20 cm，表示 20 cm 是 2 倍焦距，焦距為 10 cm。物體在焦點內（物距小於 10 cm）時形成虛像，紙屏接不到。"
+      },
+      {
+        chapter: 'p4', section: "4・3 光的折射與透鏡",
+        q: "用凸透鏡在光屏上得到清楚的實像後，把透鏡周邊遮住一半的面積，只讓光從中央部分通過，結果如何？",
+        options: ["像的位置不變，但亮度變暗", "像的位置會改變", "像的長度縮小為原來的一半", "像只剩下一半"],
+        answer: "像的位置不變，但亮度變暗",
+        explain: "透鏡的焦距沒有改變，所以像的位置不變；物體每一點仍有光通過中央部分而成像，像是完整的，只是通過的光變少，亮度變暗。"
+      },
+      {
+        chapter: 'p4', section: "4・3 光的折射與透鏡",
+        context: "小鳥在水面上方 2 m，魚在水面下 1 m。",
+        q: "水中的魚看空中的鳥，會以為鳥離水面多遠？",
+        options: ["大於 2 m", "等於 2 m", "小於 2 m", "不一定"],
+        answer: "大於 2 m",
+        explain: "鳥的光從空氣進入水中時偏向法線，魚順著折射光反向延長，看到的鳥比實際位置更高、更遠。反過來，鳥看水中的魚會覺得魚比較淺。"
+      },
+      {
+        chapter: 'p4', section: "4・3 光的折射與透鏡",
+        context: "阿哲以固定的 30° 入射角，把光從同一種介質射入甲、乙、丙、丁四種介質，測得折射角如表。",
+        figure: FIG.tRefract,
+        q: "光在甲、乙、丙、丁中的速率，由快到慢依序為何？",
+        options: ["丁＞丙＞甲＞乙", "丙＞乙＞甲＞丁", "乙＞丁＞丙＞甲", "丙＞甲＞乙＞丁"],
+        answer: "丁＞丙＞甲＞乙",
+        explain: "入射條件相同時，折射角越大，表示光越偏離法線，進入的介質速率越快。折射角：丁 70°＞丙 50°＞甲 30°＞乙 15°。"
+      },
+      {
+        chapter: 'p4', section: "4・3 光的折射與透鏡",
+        q: "小如拿一個透鏡放在原子筆上方 15 公分處，看到原子筆正立放大的像。這個透鏡的焦距可能是多少？",
+        options: ["20 公分", "5 公分", "7.5 公分", "10 公分"],
+        answer: "20 公分",
+        explain: "凸透鏡要成正立放大的虛像，物體必須在焦點內，所以焦距要大於 15 公分，只有 20 公分符合。"
+      },
+      {
+        chapter: 'p4', section: "4・4 光學儀器",
+        q: "使用相機拍照時，把光圈調大，對成像有什麼影響？",
+        options: ["進入的光線變多", "進入的光線變少", "感光元件的曝光時間變短", "感光元件的曝光時間變長"],
+        answer: "進入的光線變多",
+        explain: "光圈是讓光通過的開口，開口越大，進入的光越多；曝光時間則由快門控制。"
+      },
+      {
+        chapter: 'p4', section: "4・4 光學儀器",
+        q: "某人看物體時，像成在視網膜的後方。下列敘述何者正確？",
+        options: ["這是遠視眼", "這是近視眼", "可配戴凹透鏡矯正", "可能是水晶體焦距過短造成的"],
+        answer: "這是遠視眼",
+        explain: "像落在視網膜後方是遠視眼，要用凸透鏡讓光提早會聚。近視眼的像落在視網膜前方，常因水晶體焦距過短或眼球過長，要用凹透鏡矯正。"
+      },
+      {
+        chapter: 'p4', section: "4・4 光學儀器",
+        q: "用照相機拍攝遠處景物時，感光元件上的像位於透鏡組後方的哪個位置？",
+        options: ["一倍焦距與兩倍焦距之間", "小於一倍焦距", "剛好在一倍焦距上", "大於兩倍焦距"],
+        answer: "一倍焦距與兩倍焦距之間",
+        explain: "景物在兩倍焦距外，會在透鏡另一側一倍焦距與兩倍焦距之間形成倒立縮小的實像，感光元件就放在這裡。"
+      },
+      {
+        chapter: 'p4', section: "4・4 光學儀器",
+        context: "閱讀：遠視是光線會聚在視網膜之後，看遠的物體看不清楚，看近時更不清楚；老花眼是水晶體調節能力變弱，看近的物體會模糊；近視是看遠方物體時，影像會聚在視網膜前。",
+        q: "遠視、老花眼與近視中，哪些在看「遠處」物體時會比較看不清楚？",
+        options: ["近視與遠視", "只有近視", "遠視與老花眼", "三種都看不清楚"],
+        answer: "近視與遠視",
+        explain: "依文章：近視看遠方時像落在視網膜前；遠視看遠的物體也看不清楚。老花眼主要是看近處模糊。"
+      },
+      {
+        chapter: 'p4', section: "4・4 光學儀器",
+        q: "關於複式顯微鏡，下列敘述何者錯誤？",
+        options: ["目鏡成的是虛像，所以目鏡用凸透鏡或凹透鏡都可以", "眼睛最後看到的像，是經過兩個凸透鏡折射形成的", "看到的像與實際物體上下顛倒、左右相反", "最後得到的是虛像，但視網膜上的像是實像"],
+        answer: "目鏡成的是虛像，所以目鏡用凸透鏡或凹透鏡都可以",
+        explain: "目鏡必須是凸透鏡：物鏡形成的實像落在目鏡焦點內，目鏡才能再把它放大成虛像；凹透鏡只能成縮小的像。"
+      },
+      {
+        chapter: 'p4', section: "4・5 光與顏色",
+        q: "在暗室的藍色燈光下，看一張白紙上的藍色字，會看到什麼？",
+        options: ["紙是藍色的，字看不清楚", "紙是白色的，字看不清楚", "紙是白色的，字很清楚", "紙是藍色的，字很清楚"],
+        answer: "紙是藍色的，字看不清楚",
+        explain: "藍光照射時，白紙反射藍光呈藍色，藍字也反射藍光呈藍色；兩者顏色相同，字就看不清楚。"
+      },
+      {
+        chapter: 'p4', section: "4・5 光與顏色",
+        context: "積木娃娃有綠色的頭、黃色的身體、紅色的手和藍色的腳。小美用黃光照射它（黃光是紅光與綠光的組合）。",
+        q: "小美看到的積木娃娃，下列敘述何者正確？",
+        options: ["腳是黑色的，身體是黃色的", "頭是黑色的，身體是黃色的", "手是黑色的，身體是黃色的", "手是紅色的，腳是藍色的"],
+        answer: "腳是黑色的，身體是黃色的",
+        explain: "黃光含紅光和綠光：綠頭反射綠光仍是綠色；黃色身體反射紅、綠光仍是黃色；紅手反射紅光仍是紅色；藍腳沒有藍光可以反射，看起來是黑色。"
+      },
+      {
+        chapter: 'p4', section: "4・5 光與顏色",
+        q: "植物的葉綠素利用光能進行光合作用。綠色植物在哪一種顏色的燈光下生長情況最差？",
+        options: ["綠光", "紅光", "紫光", "白光"],
+        answer: "綠光",
+        explain: "綠色植物會反射綠光，表示綠光幾乎沒有被吸收利用；只照綠光時，植物能用的光能最少。"
+      },
+      {
+        chapter: 'p4', section: "4・5 光與顏色",
+        q: "阿珊把紅色玻璃紙放在眼前，看白色花盆裡的聖誕紅（紅花、綠葉）。她看到花盆、紅花、綠葉的顏色依序為何？",
+        options: ["紅、紅、黑", "黑、紅、綠", "紅、黑、黑", "紅、紅、綠"],
+        answer: "紅、紅、黑",
+        explain: "紅色玻璃紙只讓紅光通過。白花盆和紅花反射的光中都有紅光，看起來是紅色；綠葉反射的綠光被玻璃紙擋住，看起來是黑色。"
+      },
+      {
+        chapter: 'rev', section: "3・1 波的傳播",
+        q: "小軒坐在海上的橡皮艇裡，一個波浪從遠方傳來並通過橡皮艇。他和橡皮艇最可能如何運動？",
+        options: ["在原處附近上下浮動，不會隨波浪長距離移動", "隨著波浪被推向岸邊", "隨著波浪被推回海中央", "以螺旋路徑隨波浪前進"],
+        answer: "在原處附近上下浮動，不會隨波浪長距離移動",
+        explain: "波只傳遞能量，不傳遞介質。波浪通過時，橡皮艇和海水只在原處附近上下起伏。"
+      },
+      {
+        chapter: 'rev', section: "3・1 波的傳播",
+        q: "下列哪些波動主要是橫波？甲．上下擺動繩子造成的波　乙．左右甩動的彈簧波　丙．前後壓縮的彈簧波　丁．空氣中的聲波",
+        options: ["甲乙", "乙丙", "乙丙丁", "丙丁"],
+        answer: "甲乙",
+        explain: "橫波的介質振動方向與波前進方向垂直：上下擺繩、左右甩彈簧（波沿彈簧前進）都是。前後壓縮彈簧與空氣中的聲波是縱波。"
+      },
+      {
+        chapter: 'rev', section: "3・2 聲波的產生與傳播",
+        context: "科幻電影中，太空戰機在真空的宇宙中擊中敵方母艦，畫面爆出巨大火光，接著音響傳來震耳的爆炸聲。",
+        q: "哪一個修正意見最符合科學事實？",
+        options: ["畫面錯誤：太空中沒有傳聲的介質，只看得到火光、聽不到爆炸聲", "畫面正確：爆炸能量極大，足以讓真空傳聲", "畫面正確：爆炸聲屬於電磁波，可在真空中傳播", "畫面錯誤：太空溫度極低，聲波會被凍結而傳得很慢"],
+        answer: "畫面錯誤：太空中沒有傳聲的介質，只看得到火光、聽不到爆炸聲",
+        explain: "光不需要介質，可以在真空中傳播；聲音是力學波，需要介質，真空中無法傳播。"
+      },
+      {
+        chapter: 'rev', section: "3・2 聲波的產生與傳播",
+        q: "跨年夜小翠在象山看煙火，看到火光後約 3 秒才聽到爆炸聲。聲速約 340 公尺／秒，她距離煙火施放點大約多遠？",
+        options: ["1020 公尺", "113 公尺", "340 公尺", "30 萬公里"],
+        answer: "1020 公尺",
+        explain: "光幾乎瞬間到達，聲音走了約 3 秒：340 × 3＝1020 m。"
+      },
+      {
+        chapter: 'rev', section: "3・2 聲波的產生與傳播",
+        q: "音叉在空氣中振動發出聲音，隔著玻璃窗也聽得到。關於音叉產生的聲波，下列敘述何者不合理？",
+        options: ["空氣振動的頻率與音叉的振動頻率無關", "聲波可以傳遞能量", "音量夠大時，聲波可以經過玻璃窗傳出去", "空氣中的聲波是一種縱波"],
+        answer: "空氣振動的頻率與音叉的振動頻率無關",
+        explain: "音叉振動時推擠周圍的空氣，空氣以和音叉相同的頻率振動，兩者的頻率相同，不是無關。"
+      },
+      {
+        chapter: 'rev', section: "3・2 聲波的產生與傳播",
+        context: "森林小火車邊行駛邊鳴笛，小易站在距離火車 8500 公尺的鐵軌邊。空氣中的聲速 340 m/s，鐵軌中的聲速 5000 m/s。",
+        q: "小易感覺到鐵軌振動後，約再過幾秒會聽到空氣傳來的汽笛聲？",
+        options: ["23.3 秒", "2.3 秒", "25 秒", "1.7 秒"],
+        answer: "23.3 秒",
+        explain: "經空氣：8500 ÷ 340＝25 秒；經鐵軌：8500 ÷ 5000＝1.7 秒；兩者相差 25－1.7＝23.3 秒。"
+      },
+      {
+        chapter: 'rev', section: "3・2 聲波的產生與傳播",
+        q: "下列關於光或聲音傳播速率的敘述，何者正確？",
+        options: ["在無風乾燥的空氣中，溫度越高，聲音傳播越快", "光由空氣進入水中時，速率會變快", "光在空氣中的速率約為每分鐘 30 萬公里", "在相同介質中，頻率高的聲音傳得比頻率低的快"],
+        answer: "在無風乾燥的空氣中，溫度越高，聲音傳播越快",
+        explain: "光進入水中速率變慢；光速約為每「秒」30 萬公里；在同一介質中，不同頻率的聲音速率相同。"
+      },
+      {
+        chapter: 'rev', section: "綜合・光與聲音",
+        q: "比較光與聲音在甲．水、乙．玻璃、丙．空氣中的傳播速率，哪一組快慢順序正確？",
+        options: ["光速：丙＞甲＞乙；聲速：乙＞甲＞丙", "光速：丙＞甲＞乙；聲速：丙＞甲＞乙", "光速：丙＞乙＞甲；聲速：甲＞乙＞丙", "光速：乙＞甲＞丙；聲速：乙＞甲＞丙"],
+        answer: "光速：丙＞甲＞乙；聲速：乙＞甲＞丙",
+        explain: "光在空氣中最快、水次之、玻璃最慢；聲音正好相反，在固體（玻璃）中最快、液體（水）次之、氣體（空氣）最慢。"
+      },
+      {
+        chapter: 'rev', section: "綜合・光與聲音",
+        q: "下列關於聲音和光傳播的敘述，何者正確？",
+        options: ["兩者從空氣傳入水中時，頻率都不變", "兩者都需要介質才能傳播", "兩者的速率都是空氣＞水＞玻璃", "陰天先看到閃電再聽到雷聲，是因為閃電先產生"],
+        answer: "兩者從空氣傳入水中時，頻率都不變",
+        explain: "頻率由波源決定，進入其他介質時不變。光不需要介質；聲音在玻璃中最快；閃電和雷聲同時產生，是光速比聲速快，才先看到閃電。"
+      },
+      {
+        chapter: 'rev', section: "3・4 多變的聲音",
+        q: "小正敲擊甲、乙、丙三支音叉，在空氣中產生的聲波波長依序為 0.6 公尺、1.2 公尺、1.5 公尺。哪一支音叉的音調最高？",
+        options: ["甲", "乙", "丙", "三支相同"],
+        answer: "甲",
+        explain: "在空氣中聲速相同，頻率＝聲速 ÷ 波長，波長越短頻率越高、音調越高。甲的波長最短。"
+      },
+      {
+        chapter: 'rev', section: "3・4 多變的聲音",
+        context: "用槌子分別敲擊甲、乙、丙、丁四支音叉，在相同時間內測得的聲波波形如圖。",
+        figure: FIG.forkWaves,
+        q: "依圖中四支音叉的聲波，下列敘述何者錯誤？",
+        options: ["丁聲波的傳播速度最快", "甲聲波的頻率最大", "乙聲波可以傳得最遠", "丙聲波的週期最長"],
+        answer: "丁聲波的傳播速度最快",
+        explain: "四個聲波都在空氣中傳播，速度相同。相同時間內甲振動的次數最多，頻率最大；乙的振幅最大，響度最大，傳得最遠；丙振動的次數最少，週期最長。"
+      },
+      {
+        chapter: 'rev', section: "3・4 多變的聲音",
+        context: "敲擊 A、B、C、D 四支音叉，聲波的頻率與響度如表。",
+        figure: FIG.tForks2,
+        q: "哪一支音叉的聲音可以傳得最遠？",
+        options: ["A 音叉", "B 音叉", "C 音叉", "D 音叉"],
+        answer: "A 音叉",
+        explain: "響度越大（振幅越大），聲音的能量越大，傳得越遠；A 的響度 40 dB 最大。B 的頻率 300 Hz 最高，表示音調最高，不代表傳得最遠。"
+      },
+      {
+        chapter: 'rev', section: "3・3 聲波的反射與超聲波",
+        q: "在浴室裡大聲唱歌，卻怎麼也聽不到回聲，原因是什麼？",
+        options: ["回聲與原聲重疊在一起", "浴室裡不會產生回聲", "回聲全部被牆壁吸收", "聲音都從牆壁傳出去了"],
+        answer: "回聲與原聲重疊在一起",
+        explain: "浴室很小，回聲與原聲相隔不到 0.1 秒，人耳無法分辨，兩者重疊在一起，聽起來反而更響亮。"
+      },
+      {
+        chapter: 'rev', section: "3・3 聲波的反射與超聲波",
+        q: "下列哪一項與聲音的反射關係最小？",
+        options: ["用手摸正在播放音樂的喇叭，感覺到振動", "對著遠方山壁喊叫，隔一會兒聽到回聲", "船隻用聲納偵測水中魚群的位置", "醫師用聽診器聽病人的心跳聲"],
+        answer: "用手摸正在播放音樂的喇叭，感覺到振動",
+        explain: "摸喇叭感覺振動，說明聲音由振動產生，與反射無關。回聲、聲納、聽診器（聲音在管中反射而集中）都和反射有關。"
+      },
+      {
+        chapter: 'rev', section: "3・4 多變的聲音",
+        q: "關於彈吉他發出的聲音，下列敘述何者錯誤？",
+        options: ["越用力撥弦，音調越低", "調整弦的鬆緊可以改變音調", "按壓弦線使振動部分越短，音調越高", "撥動越細的弦，音調越高"],
+        answer: "越用力撥弦，音調越低",
+        explain: "用力撥弦使振幅變大，改變的是響度，不是音調。"
+      },
+      {
+        chapter: 'rev', section: "3・4 多變的聲音",
+        q: "交響樂團開始演奏前，首席小提琴先拉一個音，讓其他樂器跟著校準。這是在校準聲音的哪一項？",
+        options: ["音調", "響度", "音色", "聲速"],
+        answer: "音調",
+        explain: "各樂器要演奏出相同的音高，所以校準的是音調（頻率）。"
+      },
+      {
+        chapter: 'rev', section: "4・1 光的傳播與光速",
+        q: "大樹樹葉間的微小縫隙可視為針孔，從縫隙照到地面的陽光形成許多圓形光點。原因是什麼？",
+        options: ["太陽是圓的", "地球是圓的", "樹葉是圓的", "樹葉縫隙是圓的"],
+        answer: "太陽是圓的",
+        explain: "這是針孔成像：每個小縫隙都在地面形成太陽倒立的實像。太陽是圓的，光點就是圓的，與縫隙的形狀無關。"
+      },
+      {
+        chapter: 'rev', section: "4・2 光的反射與面鏡",
+        q: "便利商店角落裝一面圓形面鏡防竊，讓店員看到貨架後方的死角；手電筒燈頭內也有面鏡，把燈泡的光集中射出。這兩種面鏡分別是哪一種？",
+        options: ["防盜鏡是凸面鏡，手電筒是凹面鏡", "防盜鏡是凹面鏡，手電筒是凸面鏡", "兩者都是凸面鏡", "兩者都是凹面鏡"],
+        answer: "防盜鏡是凸面鏡，手電筒是凹面鏡",
+        explain: "凸面鏡成正立縮小的像，視野大，適合防盜；光源放在凹面鏡的焦點上，反射後平行射出，能集中光線。"
+      },
+      {
+        chapter: 'rev', section: "4・2 光的反射與面鏡",
+        q: "把一隻蚱蜢放在平面鏡前，關於牠在鏡中的像，下列敘述何者錯誤？",
+        options: ["像的大小會隨蚱蜢與鏡子的距離而改變", "像必為虛像", "平面鏡成像是光反射的結果", "蚱蜢到鏡子的距離等於像到鏡子的距離"],
+        answer: "像的大小會隨蚱蜢與鏡子的距離而改變",
+        explain: "平面鏡的像與物體大小相同，不論距離遠近都一樣大；看起來變小只是因為離眼睛比較遠。"
+      },
+      {
+        chapter: 'rev', section: "4・3 光的折射與透鏡",
+        context: "小芳把鋁罐光亮的凹形罐底（鏡片 A）對著太陽，把火煤棒放在罐底上方；小華把一堆細木條放在透明鏡片 B 的下方，讓陽光穿過鏡片 B 照在木條上。數分鐘後兩者都起火燃燒。",
+        q: "關於鏡片 A、B 與起火點，下列敘述何者正確？",
+        options: ["鏡片 B 為凸透鏡，細木條的起火點在透鏡焦點上", "鏡片 A 為凸透鏡，火煤棒的起火點在透鏡焦點上", "鏡片 A 為凸面鏡，火煤棒的起火點在面鏡焦點上", "鏡片 B 為凹面鏡，細木條的起火點在面鏡焦點上"],
+        answer: "鏡片 B 為凸透鏡，細木條的起火點在透鏡焦點上",
+        explain: "鋁罐底反射陽光，是凹面鏡，把光會聚在焦點；陽光穿過鏡片 B，所以 B 是透鏡，能會聚陽光的是凸透鏡。兩者的起火點都在焦點上。"
+      },
+      {
+        chapter: 'rev', section: "4・3 光的折射與透鏡",
+        q: "下列現象中，有幾種屬於光的折射？甲．站在溪中看水中石頭變淺　乙．湖面出現山的倒影　丙．針孔成像　丁．戴近視眼鏡看清楚　戊．旗桿的影子　己．汽車後視鏡中的影像　庚．光的色散　辛．哈哈鏡中的小矮人",
+        options: ["3 種", "2 種", "4 種", "5 種"],
+        answer: "3 種",
+        explain: "屬於折射的有甲（看水中物體變淺）、丁（眼鏡是透鏡）、庚（三稜鏡色散），共 3 種。乙、己、辛是反射；丙、戊是光的直進。"
+      },
+      {
+        chapter: 'rev', section: "4・3 光的折射與透鏡",
+        context: "阿豪看到清澈溪底有一顆白色鵝卵石，伸手去抓卻抓空了，石頭實際的位置比看到的更深。",
+        q: "下列解釋何者正確？",
+        options: ["光從水中進入空氣時偏離法線，所以看到的位置比實際淺", "光從水中進入空氣時偏向法線，所以看到的影像變淺", "若要用雷射筆照中石頭，應瞄準看到的石頭上方", "若想再用手抓石頭，應瞄準看到的石頭上方"],
+        answer: "光從水中進入空氣時偏離法線，所以看到的位置比實際淺",
+        explain: "光從水進入空氣，速率變快，折射線偏離法線；眼睛順著光線反向延長，看到的石頭比實際淺。要抓到石頭應往看到位置的下方抓；雷射光會沿同一路徑偏折（光的可逆性），直接瞄準看到的石頭即可。"
+      },
+      {
+        chapter: 'rev', section: "4・3 光的折射與透鏡",
+        context: "允恩拿爺爺的老花眼鏡在陽光下調整與地面的距離，地面出現一個極亮的小光點，甚至點燃黑紙；用這副眼鏡看報紙，字變大了。",
+        q: "老花眼鏡屬於哪一種透鏡？成像原理為何？",
+        options: ["凸透鏡：點燃黑紙是利用它會聚光線，看報紙放大是正立虛像", "凹透鏡：它能發散光線", "凸透鏡：點燃黑紙是利用它發散光線，看報紙放大是倒立實像", "平面鏡：它能反射陽光"],
+        answer: "凸透鏡：點燃黑紙是利用它會聚光線，看報紙放大是正立虛像",
+        explain: "能把陽光會聚成亮點的是凸透鏡；報紙在焦點內時，透過凸透鏡看到正立放大的虛像。"
+      },
+      {
+        chapter: 'rev', section: "4・4 光學儀器",
+        context: "小莉看黑板上的字模糊，看課本卻很清楚。醫生說可能是水晶體焦距過短或眼球前後徑過長，影像無法落在視網膜上。",
+        q: "小莉的視力問題與應配戴的矯正鏡片為何？",
+        options: ["近視眼，配戴凹透鏡，讓光線發散、延後成像", "近視眼，配戴凸透鏡", "遠視眼，配戴凸透鏡", "遠視眼，配戴凹透鏡，讓光線會聚、提前成像"],
+        answer: "近視眼，配戴凹透鏡，讓光線發散、延後成像",
+        explain: "看遠模糊、看近清楚是近視，像落在視網膜前方；凹透鏡使光線發散，讓像往後移到視網膜上。"
+      },
+      {
+        chapter: 'rev', section: "4・3 光的折射與透鏡",
+        q: "亭珍用近視眼鏡（凹透鏡）觀察桌上的橡皮擦，把橡皮擦從遠處慢慢移近鏡片。成像會如何變化？",
+        options: ["一直是正立縮小虛像，像逐漸變大", "一直是正立縮小虛像，像逐漸變小", "由正立放大虛像變成正立縮小虛像", "由倒立放大實像變成正立放大虛像"],
+        answer: "一直是正立縮小虛像，像逐漸變大",
+        explain: "凹透鏡只成正立縮小的虛像；物體越靠近透鏡，像越大（但仍比物體小）。"
+      },
+      {
+        chapter: 'rev', section: "4・5 光與顏色",
+        q: "彩色電視是利用哪三種色光調整亮度比例，呈現出各種色彩？",
+        options: ["紅、綠、藍", "紅、黃、藍", "紅、橙、藍", "黃、綠、藍"],
+        answer: "紅、綠、藍",
+        explain: "紅、綠、藍是三原色光，以不同的亮度比例混合，可以呈現各種顏色。"
+      },
+      {
+        chapter: 'rev', section: "4・5 光與顏色",
+        context: "小智在紙箱內放不同顏色的色紙，在箱蓋洞口貼上不同顏色的玻璃紙，以白光照射，再從紙箱側邊觀察色紙的顏色（組合如表）。",
+        figure: FIG.tBox,
+        q: "哪幾組的色紙看起來會是黑色？",
+        options: ["甲、丁、戊", "甲、丙、丁", "甲、丙、戊", "甲、乙、丁"],
+        answer: "甲、丁、戊",
+        explain: "白光透過玻璃紙後只剩該色光。甲：藍光照綠紙→黑；乙：藍光照藍紙→藍；丙：紅光照白紙→紅；丁：紅光照藍紙→黑；戊：綠光照紅紙→黑。"
+      },
+      {
+        chapter: 'rev', section: "4・5 光與顏色",
+        q: "太陽光經過三稜鏡後產生色散，下列敘述何者正確？",
+        options: ["太陽光是由不同顏色的光混合而成", "色散出的光只有紅、綠、藍三原色", "紅光在三稜鏡中偏折的角度最大", "可清楚看出各色光在空氣中的速率不同"],
+        answer: "太陽光是由不同顏色的光混合而成",
+        explain: "白光經三稜鏡分成紅、橙、黃、綠、藍、靛、紫等色光，表示太陽光由多種色光混合而成；其中紅光偏折最小、紫光最大。"
+      },
+      {
+        chapter: 'rev', section: "4・3 光的折射與透鏡",
+        q: "關於實像與虛像的區分，下列哪一項是正確的判斷依據？",
+        options: ["實像能呈現在紙屏上，虛像不能", "平面鏡成虛像，透鏡成的一定是實像", "反射形成的是實像，折射形成的是虛像", "虛像一定是放大的，實像一定是縮小的"],
+        answer: "實像能呈現在紙屏上，虛像不能",
+        explain: "實像由實際光線會聚而成，可以用紙屏接到；虛像是光線反向延長的交點，只能用眼睛看到。凸透鏡也能成虛像，實像也可能放大。"
+      },
+      {
+        chapter: 'rev', section: "綜合・光與聲音",
+        q: "下列關於成像的敘述，何者正確？",
+        options: ["物體放在平面鏡前方，一定成虛像", "物體放在近視眼鏡的焦點與兩倍焦距之間，可成實像", "物體與放大鏡的距離小於焦距時，成倒立縮小的像", "照相機可以拍出實像，但無法拍出虛像"],
+        answer: "物體放在平面鏡前方，一定成虛像",
+        explain: "平面鏡永遠成正立等大的虛像。近視眼鏡是凹透鏡，只成虛像；放大鏡在焦點內成正立放大虛像；虛像發出的光是真實的光線，相機也拍得到（例如拍鏡子裡的人）。"
       }
     ];
 
@@ -1057,7 +1740,7 @@
     const $ = (id) => document.getElementById(id);
     const state = {
       filter: 'all', mode: 'exam', queue: [], index: 0, selected: null, locked: false,
-      correct: 0, mistakes: [], completed: false, studentName: '', studentSeat: '',
+      correct: 0, mistakes: [], log: [], completed: false, studentName: '', studentSeat: '',
       examResult: null,
       reviewPending: new Set(), reviewTotal: 0, lastCorrect: false
     };
@@ -1069,8 +1752,10 @@
       }
       return arr;
     };
-    const chapterName = (chapter) => chapter === 'ch3' ? '第3章 波動與聲音' : '第4章 光';
-    const rangeName = () => state.filter === 'all' ? '全部單元｜第3章＋第4章' : chapterName(state.filter);
+    const CHAPTER_NAMES = { ch3: '第3章 波動與聲音', ch4: '第4章 光', p3: '第3章練習', p4: '第4章練習', rev: '段考複習' };
+    const RANGE_NAMES = { all: '習作全部｜第3章＋第4章', ch3: '習作｜第3章 波動與聲音', ch4: '習作｜第4章 光', p3: '第3章練習題', p4: '第4章練習題', rev: '第二次段考複習' };
+    const chapterName = (chapter) => CHAPTER_NAMES[chapter];
+    const rangeName = () => RANGE_NAMES[state.filter];
     const isPerfect = () => state.mode === 'exam' && state.completed && state.queue.length > 0 && state.correct === state.queue.length;
     const isPassed = () => isPerfect();
     // Only permutation history is stored; no answers or personal information.
@@ -1108,7 +1793,7 @@
     }
 
     function resetQuiz() {
-      const pool = state.filter === 'all' ? questions : questions.filter(q => q.chapter === state.filter);
+      const pool = state.filter === 'all' ? questions.filter(q => q.chapter === 'ch3' || q.chapter === 'ch4') : questions.filter(q => q.chapter === state.filter);
       state.mode = 'exam';
       state.queue = makeQueue(pool, `questions:${state.filter}`);
       state.index = 0;
@@ -1116,6 +1801,7 @@
       state.locked = false;
       state.correct = 0;
       state.mistakes = [];
+      state.log = [];
       state.completed = false;
       state.studentName = '';
       state.studentSeat = '';
@@ -1191,6 +1877,7 @@
         if (isCorrect) state.reviewPending.delete(item.id);
         state.correct = state.reviewTotal - state.reviewPending.size;
       } else {
+        state.log.push({ q: item.q, chosen: state.selected, answer: item.answer, explain: item.explain, ok: isCorrect });
         if (isCorrect) state.correct += 1;
         else {
           state.mistakes.push({ id: item.id, q: item.q, chosen: state.selected, answer: item.answer });
@@ -1231,10 +1918,18 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // 逐題檢討：列出正式測驗每一題的作答、正確答案與解析
+    function reviewHtml(log) {
+      if (!log || !log.length) return '';
+      const wrong = log.filter(r => !r.ok).length;
+      return `<h3>逐題檢討（答對 ${log.length - wrong} 題、答錯 ${wrong} 題）</h3>` + log.map((r, i) =>
+        `<details class="review-item ${r.ok ? 'ok' : 'ng'}"${r.ok ? '' : ' open'}><summary><b>第 ${i + 1} 題　${r.ok ? '✔ 答對' : '✘ 答錯'}</b>　${r.q}</summary><p>你的答案：${r.chosen}</p>${r.ok ? '' : `<p>正確答案：${r.answer}</p>`}<p class="review-explain">解析：${r.explain}</p></details>`).join('');
+    }
+
     function finish() {
       if (state.mode !== 'exam' || state.completed || !state.locked || state.index !== state.queue.length - 1) return;
       state.completed = true;
-      state.examResult = { total: state.queue.length, correct: state.correct, mistakes: [...state.mistakes] };
+      state.examResult = { total: state.queue.length, correct: state.correct, mistakes: [...state.mistakes], log: [...state.log] };
       const perfect = state.correct === state.queue.length;
       if (!perfect) return startReview();
       $('quizArea').hidden = true;
@@ -1244,7 +1939,7 @@
       $('restart').textContent = '開始下一次正式測驗';
       $('finalScore').textContent = `${state.correct} / ${state.queue.length}`;
       $('finalMessage').textContent = `${rangeName()}本次全部答對，恭喜通關！`;
-      $('review').innerHTML = state.mistakes.length ? `<h3>錯題回顧</h3>${state.mistakes.map((m, i) => `<div class="review-item"><b>第 ${i + 1} 題</b><div>${m.q}</div><small>你的答案：${m.chosen}<br>正確答案：${m.answer}</small></div>`).join('')}` : '<p>全部答對，太棒了！</p>';
+      $('review').innerHTML = reviewHtml(state.examResult.log);
       updateStats();
       if (isPassed()) {
         $('finalMessage').textContent = `${rangeName()}一次全對，恭喜通關！填寫座號與姓名，領取你的通關證書。`;
@@ -1283,7 +1978,7 @@
       $('finalScore').textContent = `${state.reviewTotal}／${state.reviewTotal} 題已答對`;
       $('finalMessage').textContent = `正式測驗原成績：${state.examResult.correct}／${state.examResult.total}。錯題已全部答對！請重新挑戰完整範圍，一次正式測驗全對即可領取通關證書。`;
       $('restart').textContent = '開始新的正式測驗';
-      $('review').innerHTML = '<p>已完成本輪所有錯題的複習。</p>';
+      $('review').innerHTML = '<p>已完成本輪所有錯題的複習。下面是這次正式測驗的逐題檢討。</p>' + reviewHtml(state.examResult.log);
       updateStats();
     }
 
@@ -1382,9 +2077,9 @@
         if (state.locked) nextQuestion(); else checkAnswer();
       }
     });
-    $('allCount').textContent = `(${questions.length})`;
-    $('ch3Count').textContent = `(${questions.filter(q => q.chapter === 'ch3').length})`;
-    $('ch4Count').textContent = `(${questions.filter(q => q.chapter === 'ch4').length})`;
+    const countOf = (...chapters) => questions.filter(q => chapters.includes(q.chapter)).length;
+    $('allCount').textContent = `(${countOf('ch3', 'ch4')})`;
+    for (const key of ['ch3', 'ch4', 'p3', 'p4', 'rev']) $(`${key}Count`).textContent = `(${countOf(key)})`;
     resetQuiz();
   </script>
 <!-- 回段考入口按鈕（連到 periodicexam_115.html，依檔名自動帶到對應段考） -->
