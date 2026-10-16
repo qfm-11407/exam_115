@@ -9,7 +9,7 @@
   1. 所有練習網站都登記在下方 <script> 的 PAGES 清單。
   2. 新增一個練習：複製一筆，改 subject / exam / file / title / range / tags。
   3. status：'ready' = 開放（可點進去）、'building' = 建置中、'soon' = 即將推出。
-  4. 新增科目：在 SUBJECTS 加一筆，再到 CSS 的 :root 加一個顏色變數。
+  4. 新增科目：在 SUBJECTS 加一筆（順序即畫面上的科目順序），再到 CSS 的 :root 加一個顏色變數。
   5. GitHub 上本頁與各練習 HTML 放在同一層，連結 = SUBJECTS 的 dir（目前為 ''）＋ PAGES 的 file。
      資料夾結構改變時，只要改 dir。
   6. 操作流程：首頁選段考 → 顯示該次段考的各科練習（網址會變成 #exam1、#exam2…，可直接分享）。
@@ -18,7 +18,7 @@
 :root{
   --bg:#f5f6fa; --card:#ffffff; --ink:#1f2433; --muted:#667085; --line:#e3e6ee;
   --accent:#3b5bdb; --accent-soft:#edf1ff;
-  --chi:#c2255c; --eng:#7048e8; --math:#1971c2; --sci:#2b8a3e; --soc:#d9480f;
+  --chi:#c2255c; --idm:#0b7285; --eng:#7048e8; --math:#1971c2; --sci:#2b8a3e; --soc:#d9480f;
   --ready-bg:#e6f6ec; --ready-ink:#1b7a43;
   --build-bg:#fff3dc; --build-ink:#9a5800;
   --soon-bg:#eef0f4; --soon-ink:#6b7280;
@@ -28,7 +28,7 @@
   :root:not([data-theme="light"]){
     --bg:#141821; --card:#1d2230; --ink:#e8ebf2; --muted:#9aa3b5; --line:#2c3344;
     --accent:#748ffc; --accent-soft:#252c44;
-    --chi:#f06595; --eng:#9775fa; --math:#4dabf7; --sci:#51cf66; --soc:#ff922b;
+    --chi:#f06595; --idm:#3bc9db; --eng:#9775fa; --math:#4dabf7; --sci:#51cf66; --soc:#ff922b;
     --ready-bg:#16352a; --ready-ink:#69db7c;
     --build-bg:#3a2d12; --build-ink:#ffc078;
     --soon-bg:#262c3a; --soon-ink:#9aa3b5;
@@ -38,7 +38,7 @@
 :root[data-theme="dark"]{
   --bg:#141821; --card:#1d2230; --ink:#e8ebf2; --muted:#9aa3b5; --line:#2c3344;
   --accent:#748ffc; --accent-soft:#252c44;
-  --chi:#f06595; --eng:#9775fa; --math:#4dabf7; --sci:#51cf66; --soc:#ff922b;
+  --chi:#f06595; --idm:#3bc9db; --eng:#9775fa; --math:#4dabf7; --sci:#51cf66; --soc:#ff922b;
   --ready-bg:#16352a; --ready-ink:#69db7c;
   --build-bg:#3a2d12; --build-ink:#ffc078;
   --soon-bg:#262c3a; --soon-ink:#9aa3b5;
@@ -167,7 +167,8 @@ const EXAMS = [
    dir：該科練習 HTML 所在的子資料夾（相對於本頁）。GitHub 上全部放同一層，所以是 ''；
    若要在本機 literacy_exam 資料夾直接測試，可改成 '八年級成語/' 等子資料夾名稱 */
 const SUBJECTS = [
-  { id: 'chinese', name: '國文・成語', short: '國文', icon: '📖', color: 'var(--chi)',  dir: '' },
+  { id: 'chinese', name: '國文',       short: '國文', icon: '📖', color: 'var(--chi)',  dir: '' },
+  { id: 'idioms',  name: '成語',       short: '成語', icon: '🀄', color: 'var(--idm)',  dir: '' },
   { id: 'english', name: '英文',       short: '英文', icon: '🔤', color: 'var(--eng)',  dir: '' },
   { id: 'math',    name: '數學',       short: '數學', icon: '🔢', color: 'var(--math)', dir: '' },
   { id: 'science', name: '理化',       short: '理化', icon: '🧪', color: 'var(--sci)',  dir: '' },
@@ -178,7 +179,9 @@ const SUBJECTS = [
    status：'ready' 開放｜'building' 建置中｜'soon' 即將推出 */
 const PAGES = [
   // ---------- 第一次段考 ----------
-  { exam: 1, subject: 'chinese', file: 'idioms1150101.html', status: 'ready',
+  { exam: 1, subject: 'chinese', file: 'chinese1150101.html', status: 'soon',
+    title: '國文段考強化練習（一）', range: '第一次段考範圍', tags: [] },
+  { exam: 1, subject: 'idioms', file: 'idioms1150101.html', status: 'ready',
     title: '成語闖關之旅（一）', range: '第一次段考成語', tags: ['成語', '闖關'] },
   { exam: 1, subject: 'english', file: 'english1150101.html', status: 'soon',
     title: '英文段考強化練習（一）', range: '第一次段考範圍', tags: [] },
@@ -191,7 +194,9 @@ const PAGES = [
     tags: ['地理 L1–2', '歷史 L1–2', '公民 L1–2'] },
 
   // ---------- 第二次段考 ----------
-  { exam: 2, subject: 'chinese', file: 'idioms1150102.html', status: 'building',
+  { exam: 2, subject: 'chinese', file: 'chinese1150102.html', status: 'soon',
+    title: '國文段考強化練習（二）', range: '第二次段考範圍', tags: [] },
+  { exam: 2, subject: 'idioms', file: 'idioms1150102.html', status: 'building',
     title: '成語闖關之旅（二）', range: '第二次段考成語', tags: ['成語', '闖關'] },
   { exam: 2, subject: 'english', file: 'english1150102.html', status: 'ready',
     title: '英文段考強化練習（二）', range: 'Lesson 3、Lesson 4、Review 2',
@@ -205,7 +210,9 @@ const PAGES = [
     tags: ['地理 L3–4', '歷史 L3–4', '公民 L3–4'] },
 
   // ---------- 第三次段考 ----------
-  { exam: 3, subject: 'chinese', file: 'idioms1150103.html', status: 'soon',
+  { exam: 3, subject: 'chinese', file: 'chinese1150103.html', status: 'soon',
+    title: '國文段考強化練習（三）', range: '第三次段考範圍', tags: [] },
+  { exam: 3, subject: 'idioms', file: 'idioms1150103.html', status: 'soon',
     title: '成語闖關之旅（三）', range: '第三次段考成語', tags: [] },
   { exam: 3, subject: 'english', file: 'english1150103.html', status: 'soon',
     title: '英文段考強化練習（三）', range: '第三次段考範圍', tags: [] },
