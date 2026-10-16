@@ -147,7 +147,7 @@
                     <button id="retry-incorrect-btn" onclick="retryIncorrect()" class="hidden px-8 py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-medium rounded-xl transition-all shadow-md">
                         錯題重測 <span id="incorrect-badge" class="bg-white text-rose-500 rounded-full px-2 py-0.5 ml-2 text-xs font-black">0</span>
                     </button>
-                    <button onclick="restartChapter()" class="px-8 py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-xl transition-all shadow-md">再測一次本課</button>
+                    <button onclick="restartChapter()" class="px-8 py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-xl transition-all shadow-md">從頭再測一次</button>
                     <button onclick="goBackToChapters()" class="px-8 py-3.5 border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white font-medium rounded-xl transition-all">選其他課次</button>
                     <button onclick="goHome()" class="px-8 py-3.5 border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white font-medium rounded-xl transition-all">回主選單</button>
                 </div>
@@ -1456,7 +1456,7 @@
 
         let currentChapterIndex = 0, currentQuestions = [], currentQuestionIndex = 0;
         let score = 0, correctAnswersCount = 0, hasAnsweredCurrent = false, incorrectQuestions = [], isRetryMode = false;
-        let currentSubjectId = 'geography';
+        let currentSubjectId = 'geography', isExam = false;
         let subject = quizData.geography;
         const $ = id => document.getElementById(id);
 
@@ -1490,13 +1490,13 @@
             const list = $('subject-list');
             list.innerHTML = '';
             Object.entries(quizData).forEach(([id, sub]) => {
-                const t = THEME[sub.color], n = sub.chapters.length;
+                const t = THEME[sub.color], n = sub.chapters.filter(c => !c.exam).length, ne = sub.chapters.length - n;
                 const btn = document.createElement('button');
                 btn.className = `group flex flex-col items-center justify-center p-8 border-2 rounded-2xl transition-all shadow-sm bg-white ${t.card}`;
                 btn.innerHTML = `
                     <div class="w-20 h-20 ${t.icon} rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-4xl shadow-inner">${sub.icon}</div>
                     <span class="text-2xl font-bold text-gray-800 mb-1">${sub.name}</span>
-                    <span class="text-sm font-medium mt-2 ${n ? 'text-gray-500' : 'text-gray-400'}">${n ? `共 ${n} 個課次` : '題庫準備中'}</span>`;
+                    <span class="text-sm font-medium mt-2 ${n ? 'text-gray-500' : 'text-gray-400'}">${n ? `共 ${n} 個課次${ne ? '＋模擬卷' : ''}` : '題庫準備中'}</span>`;
                 btn.onclick = () => showChapters(id);
                 list.appendChild(btn);
             });
@@ -1522,6 +1522,22 @@
                 let [no, ...rest] = ch.name.split(' ');
                 if (!rest.length) { rest = [ch.name.replace(/^\d+_/, '')]; no = `第 ${i + 1} 單元`; }
                 const btn = document.createElement('button');
+                if (ch.exam) {
+                    btn.className = `group text-left p-6 border-2 border-dashed rounded-2xl transition-all shadow-sm bg-gradient-to-br from-white to-rose-50 md:col-span-2 border-rose-300 hover:border-rose-500`;
+                    btn.innerHTML = `
+                    <div class="text-sm font-black text-rose-600 mb-1">📝 段考模擬卷</div>
+                    <div class="text-xl font-bold text-gray-800 mb-1">${rest.join(' ')}</div>
+                    <div class="text-sm text-gray-500 mb-3">${ch.desc || ''}</div>
+                    <div class="flex flex-wrap gap-2 text-xs font-bold">
+                        <span class="px-2 py-1 rounded bg-rose-100 text-rose-700">${ch.data.length} 題・每題 ${+(100 / ch.data.length).toFixed(1)} 分</span>
+                        <span class="px-2 py-1 rounded bg-gray-100 text-gray-600">依考卷題序作答</span>
+                        ${figs ? `<span class="px-2 py-1 rounded bg-orange-100 text-orange-700">附圖表 ${figs} 題</span>` : ''}
+                        ${groups ? `<span class="px-2 py-1 rounded bg-amber-100 text-amber-700">題組 ${groups} 組</span>` : ''}
+                    </div>`;
+                    btn.onclick = () => startQuiz(i);
+                    list.appendChild(btn);
+                    return;
+                }
                 btn.className = `group text-left p-6 border-2 rounded-2xl transition-all shadow-sm bg-white ${t.card}`;
                 btn.innerHTML = `
                     <div class="text-sm font-black ${t.text} mb-1">${no}</div>
@@ -1547,8 +1563,9 @@
             const source = retryData ? retryData : chapter.data;
             isRetryMode = !!retryData;
             const loaded = JSON.parse(JSON.stringify(source));
-            $('quiz-header-title').innerHTML = `${subject.icon} ${chapter.name}` + (isRetryMode ? ' <span class="ml-2 px-2 py-0.5 bg-rose-100 text-rose-600 rounded text-xs">錯題重測</span>' : '');
-            currentQuestions = shuffleKeepGroups(loaded);
+            isExam = !!chapter.exam;
+            $('quiz-header-title').innerHTML = `${subject.icon} ${isExam ? '📝 ' + chapter.name.replace(/^\S+ /, '') : chapter.name}` + (isRetryMode ? ' <span class="ml-2 px-2 py-0.5 bg-rose-100 text-rose-600 rounded text-xs">錯題重測</span>' : '');
+            currentQuestions = isExam ? loaded : shuffleKeepGroups(loaded);
             currentQuestionIndex = 0; score = 0; correctAnswersCount = 0; incorrectQuestions = [];
             updateScoreDisplay();
             loadQuestion();
@@ -1587,7 +1604,7 @@
             const box = $('options-container');
             box.innerHTML = '';
             let opts = q.options.map((text, index) => ({ text, originalIndex: index }));
-            if (!q.fixed) shuffleArray(opts);
+            if (!q.fixed && !isExam) shuffleArray(opts);
             q.shuffledAnswer = opts.findIndex(o => o.originalIndex === q.answer);
 
             opts.forEach((o, index) => {
@@ -1652,7 +1669,7 @@
             $('progress-bar').style.width = '100%';
             let finalScore = Math.round(score);
             if (finalScore > 100 || correctAnswersCount === currentQuestions.length) finalScore = 100;
-            $('result-subject').textContent = subject.name + '｜' + subject.chapters[currentChapterIndex].name + (isRetryMode ? '（錯題重測）' : '');
+            $('result-subject').textContent = subject.name + '｜' + subject.chapters[currentChapterIndex].name.replace(isExam ? /^\S+ / : /^$/, '') + (isRetryMode ? '（錯題重測）' : '');
             $('final-score').innerHTML = `${finalScore} <span class="text-2xl text-gray-400 font-medium">分</span>`;
             $('correct-count').textContent = correctAnswersCount;
             $('total-count').textContent = currentQuestions.length;
@@ -1675,18 +1692,5 @@
 
         renderHome();
     </script>
-<!-- 回段考入口按鈕（連到 periodicexam_115.html，依檔名自動帶到對應段考） -->
-<a id="pe115-home" href="periodicexam_115.html" aria-label="回到一一五上學期段考強化練習入口">🏠 段考入口</a>
-<style>
-#pe115-home{position:fixed;left:12px;bottom:12px;z-index:2147483000;display:inline-flex;align-items:center;gap:4px;
-  padding:8px 14px;border-radius:999px;background:rgba(31,36,51,.88);color:#fff !important;
-  font:600 14px/1.2 "Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
-  text-decoration:none !important;box-shadow:0 2px 10px rgba(0,0,0,.25)}
-#pe115-home:hover{background:#3b5bdb}
-#pe115-home:focus-visible{outline:3px solid #748ffc;outline-offset:2px}
-body{padding-bottom:64px}
-@media print{#pe115-home{display:none}body{padding-bottom:0}}
-</style>
-<script>(function(){var m=location.pathname.match(/115010(\d)\.html?$/i),a=document.getElementById('pe115-home');if(m&&a)a.href='periodicexam_115.html#exam'+m[1];})();</script>
 </body>
 </html>
