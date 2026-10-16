@@ -1675,5 +1675,18 @@
 
         renderHome();
     </script>
+<!-- 回段考入口按鈕（連到 periodicexam_115.html，依檔名自動帶到對應段考） -->
+<a id="pe115-home" href="periodicexam_115.html" aria-label="回到一一五上學期段考強化練習入口">🏠 段考入口</a>
+<style>
+#pe115-home{position:fixed;left:12px;bottom:12px;z-index:2147483000;display:inline-flex;align-items:center;gap:4px;
+  padding:8px 14px;border-radius:999px;background:rgba(31,36,51,.88);color:#fff !important;
+  font:600 14px/1.2 "Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
+  text-decoration:none !important;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+#pe115-home:hover{background:#3b5bdb}
+#pe115-home:focus-visible{outline:3px solid #748ffc;outline-offset:2px}
+body{padding-bottom:64px}
+@media print{#pe115-home{display:none}body{padding-bottom:0}}
+</style>
+<script>(function(){var m=location.pathname.match(/115010(\d)\.html?$/i),a=document.getElementById('pe115-home');if(m&&a)a.href='periodicexam_115.html#exam'+m[1];})();</script>
 </body>
 </html>
