@@ -18,7 +18,7 @@
 :root{
   --bg:#f5f6fa; --card:#ffffff; --ink:#1f2433; --muted:#667085; --line:#e3e6ee;
   --accent:#3b5bdb; --accent-soft:#edf1ff;
-  --chi:#c2255c; --math:#1971c2; --sci:#2b8a3e; --soc:#d9480f;
+  --chi:#c2255c; --eng:#7048e8; --math:#1971c2; --sci:#2b8a3e; --soc:#d9480f;
   --ready-bg:#e6f6ec; --ready-ink:#1b7a43;
   --build-bg:#fff3dc; --build-ink:#9a5800;
   --soon-bg:#eef0f4; --soon-ink:#6b7280;
@@ -28,7 +28,7 @@
   :root:not([data-theme="light"]){
     --bg:#141821; --card:#1d2230; --ink:#e8ebf2; --muted:#9aa3b5; --line:#2c3344;
     --accent:#748ffc; --accent-soft:#252c44;
-    --chi:#f06595; --math:#4dabf7; --sci:#51cf66; --soc:#ff922b;
+    --chi:#f06595; --eng:#9775fa; --math:#4dabf7; --sci:#51cf66; --soc:#ff922b;
     --ready-bg:#16352a; --ready-ink:#69db7c;
     --build-bg:#3a2d12; --build-ink:#ffc078;
     --soon-bg:#262c3a; --soon-ink:#9aa3b5;
@@ -38,7 +38,7 @@
 :root[data-theme="dark"]{
   --bg:#141821; --card:#1d2230; --ink:#e8ebf2; --muted:#9aa3b5; --line:#2c3344;
   --accent:#748ffc; --accent-soft:#252c44;
-  --chi:#f06595; --math:#4dabf7; --sci:#51cf66; --soc:#ff922b;
+  --chi:#f06595; --eng:#9775fa; --math:#4dabf7; --sci:#51cf66; --soc:#ff922b;
   --ready-bg:#16352a; --ready-ink:#69db7c;
   --build-bg:#3a2d12; --build-ink:#ffc078;
   --soon-bg:#262c3a; --soon-ink:#9aa3b5;
@@ -168,6 +168,7 @@ const EXAMS = [
    若要在本機 literacy_exam 資料夾直接測試，可改成 '八年級成語/' 等子資料夾名稱 */
 const SUBJECTS = [
   { id: 'chinese', name: '國文・成語', short: '國文', icon: '📖', color: 'var(--chi)',  dir: '' },
+  { id: 'english', name: '英文',       short: '英文', icon: '🔤', color: 'var(--eng)',  dir: '' },
   { id: 'math',    name: '數學',       short: '數學', icon: '🔢', color: 'var(--math)', dir: '' },
   { id: 'science', name: '理化',       short: '理化', icon: '🧪', color: 'var(--sci)',  dir: '' },
   { id: 'social',  name: '社會',       short: '社會', icon: '🌏', color: 'var(--soc)',  dir: '' }
@@ -179,6 +180,8 @@ const PAGES = [
   // ---------- 第一次段考 ----------
   { exam: 1, subject: 'chinese', file: 'idioms1150101.html', status: 'ready',
     title: '成語闖關之旅（一）', range: '第一次段考成語', tags: ['成語', '闖關'] },
+  { exam: 1, subject: 'english', file: 'english1150101.html', status: 'soon',
+    title: '英文段考強化練習（一）', range: '第一次段考範圍', tags: [] },
   { exam: 1, subject: 'math', file: 'math1150101.html', status: 'soon',
     title: '數學段考練習（一）', range: '第一次段考範圍', tags: [] },
   { exam: 1, subject: 'science', file: 'science1150101.html', status: 'ready',
@@ -190,6 +193,9 @@ const PAGES = [
   // ---------- 第二次段考 ----------
   { exam: 2, subject: 'chinese', file: 'idioms1150102.html', status: 'building',
     title: '成語闖關之旅（二）', range: '第二次段考成語', tags: ['成語', '闖關'] },
+  { exam: 2, subject: 'english', file: 'english1150102.html', status: 'ready',
+    title: '英文段考強化練習（二）', range: 'Lesson 3、Lesson 4、Review 2',
+    tags: ['字彙', '文法', '翻譯', '改寫', '閱讀'] },
   { exam: 2, subject: 'math', file: 'math1150102.html', status: 'ready',
     title: '數學段考練習（二）', range: '2-2～3-2（2-1 為複習）', tags: ['2-2', '2-3', '3-1', '3-2'] },
   { exam: 2, subject: 'science', file: 'science1150102.html', status: 'ready',
@@ -201,6 +207,8 @@ const PAGES = [
   // ---------- 第三次段考 ----------
   { exam: 3, subject: 'chinese', file: 'idioms1150103.html', status: 'soon',
     title: '成語闖關之旅（三）', range: '第三次段考成語', tags: [] },
+  { exam: 3, subject: 'english', file: 'english1150103.html', status: 'soon',
+    title: '英文段考強化練習（三）', range: '第三次段考範圍', tags: [] },
   { exam: 3, subject: 'math', file: 'math1150103.html', status: 'soon',
     title: '數學段考練習（三）', range: '第三次段考範圍', tags: [] },
   { exam: 3, subject: 'science', file: 'science1150103.html', status: 'soon',
