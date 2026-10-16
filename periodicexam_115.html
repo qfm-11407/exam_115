@@ -12,6 +12,7 @@
   4. 新增科目：在 SUBJECTS 加一筆，再到 CSS 的 :root 加一個顏色變數。
   5. GitHub 上本頁與各練習 HTML 放在同一層，連結 = SUBJECTS 的 dir（目前為 ''）＋ PAGES 的 file。
      資料夾結構改變時，只要改 dir。
+  6. 操作流程：首頁選段考 → 顯示該次段考的各科練習（網址會變成 #exam1、#exam2…，可直接分享）。
 -->
 <style>
 :root{
@@ -50,90 +51,95 @@ body{
   font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
   font-size:17px; line-height:1.6;
 }
-.wrap{max-width:1180px; margin:0 auto; padding:0 16px}
+.wrap{max-width:1000px; margin:0 auto; padding:0 16px}
+button{font:inherit}
+:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
 
 /* ---------- 頁首 ---------- */
-header{padding:28px 0 8px}
+header{padding:32px 0 12px; text-align:center}
 .kicker{font-size:.9rem; color:var(--muted); letter-spacing:.08em}
 h1{margin:4px 0 6px; font-size:clamp(1.6rem,4.2vw,2.5rem); line-height:1.25}
 .sub{color:var(--muted); margin:0}
-.toolbar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin:20px 0 8px}
-.seg{display:inline-flex; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:4px}
-.seg button{
-  border:0; background:transparent; color:var(--muted); font:inherit; font-weight:600;
-  padding:8px 18px; border-radius:9px; cursor:pointer;
-}
-.seg button[aria-pressed="true"]{background:var(--accent); color:#fff}
-.summary{font-size:.95rem; color:var(--muted)}
-.summary b{color:var(--ink)}
 
-/* ---------- 科目快速入口 ---------- */
-.quick{display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 4px}
-.quick button{
-  border:1px solid var(--line); background:var(--card); color:var(--ink); font:inherit; font-size:.95rem;
-  padding:6px 14px; border-radius:999px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+/* ---------- 首頁：選段考 ---------- */
+.exam-list{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:24px 0}
+.exam-btn{
+  text-align:left; cursor:pointer; color:var(--ink);
+  background:var(--card); border:1px solid var(--line); border-radius:18px;
+  padding:22px 20px 18px; box-shadow:var(--shadow);
+  display:flex; flex-direction:column; gap:10px;
+  transition:transform .15s, border-color .15s;
 }
-.quick button .dot{width:10px; height:10px; border-radius:50%; background:var(--c)}
-.quick button:hover{border-color:var(--c)}
-
-/* ---------- 區塊 ---------- */
-section.block{margin:26px 0 8px; scroll-margin-top:12px}
-.block-head{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:8px 16px; margin-bottom:12px}
-.block-title{display:flex; align-items:center; gap:12px}
+.exam-btn:hover{transform:translateY(-3px); border-color:var(--accent)}
+.exam-btn[disabled]{cursor:default; opacity:.6}
+.exam-btn[disabled]:hover{transform:none; border-color:var(--line)}
 .stage{
-  font-size:.8rem; font-weight:700; letter-spacing:.1em; color:var(--accent);
+  align-self:flex-start; font-size:.8rem; font-weight:700; letter-spacing:.1em; color:var(--accent);
   background:var(--accent-soft); padding:3px 10px; border-radius:6px;
 }
-.block-title h2{margin:0; font-size:1.45rem}
-.block-title .icon{font-size:1.6rem}
-.prog{min-width:220px; flex:0 1 300px}
+.exam-btn h2{margin:0; font-size:1.6rem}
+.exam-meta{color:var(--muted); font-size:.95rem; margin:0}
+.dots{display:flex; gap:6px; flex-wrap:wrap}
+.dots span{font-size:.8rem; padding:1px 8px; border-radius:6px; border:1px solid var(--line); color:var(--muted)}
+.dots span.on{border-color:transparent; background:var(--c); color:#fff}
+.enter{margin-top:auto; font-weight:700; color:var(--accent)}
+
 .prog-label{font-size:.85rem; color:var(--muted); display:flex; justify-content:space-between}
 .bar{height:8px; background:var(--line); border-radius:99px; overflow:hidden; margin-top:4px}
-.bar i{display:block; height:100%; width:0; background:var(--accent); border-radius:99px; transition:width .4s}
+.bar i{display:block; height:100%; background:var(--accent); border-radius:99px; transition:width .4s}
 
-.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px}
-
-/* ---------- 卡片 ---------- */
-.card{
-  background:var(--card); border:1px solid var(--line); border-top:5px solid var(--c);
-  border-radius:14px; padding:16px 16px 14px; box-shadow:var(--shadow);
-  display:flex; flex-direction:column; gap:8px; min-height:200px;
+/* ---------- 段考頁：各科 ---------- */
+.exam-head{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px 20px; margin:12px 0 18px}
+.back{
+  border:1px solid var(--line); background:var(--card); color:var(--ink);
+  padding:8px 16px; border-radius:10px; cursor:pointer; font-weight:600;
 }
-.card.off{opacity:.72}
+.back:hover{border-color:var(--accent)}
+.exam-title{display:flex; align-items:center; gap:12px; margin-right:auto}
+.exam-title h2{margin:0; font-size:1.6rem}
+.exam-prog{flex:0 1 260px; min-width:200px}
+
+.grid{display:grid; grid-template-columns:repeat(2,1fr); gap:16px}
+.card{
+  background:var(--card); border:1px solid var(--line); border-top:6px solid var(--c);
+  border-radius:16px; padding:18px; box-shadow:var(--shadow);
+  display:flex; flex-direction:column; gap:8px;
+}
+.card.off{opacity:.65}
 .card-top{display:flex; justify-content:space-between; align-items:center; gap:8px}
-.subj{font-weight:700; color:var(--c); display:flex; align-items:center; gap:6px}
+.subj{font-weight:700; font-size:1.15rem; color:var(--c); display:flex; align-items:center; gap:8px}
 .pill{font-size:.78rem; font-weight:700; padding:2px 10px; border-radius:99px; white-space:nowrap}
 .pill.ready{background:var(--ready-bg); color:var(--ready-ink)}
 .pill.building{background:var(--build-bg); color:var(--build-ink)}
 .pill.soon{background:var(--soon-bg); color:var(--soon-ink)}
-.card h3{margin:0; font-size:1.15rem; line-height:1.4}
-.range{margin:0; color:var(--muted); font-size:.95rem}
+.card h3{margin:0; font-size:1.2rem; line-height:1.4}
+.range{margin:0; color:var(--muted)}
 .tags{display:flex; flex-wrap:wrap; gap:6px}
 .tags span{font-size:.8rem; border:1px solid var(--line); padding:1px 8px; border-radius:6px; color:var(--muted)}
-.card-foot{margin-top:auto; display:flex; align-items:center; justify-content:space-between; gap:8px; padding-top:6px}
+.card-foot{margin-top:auto; display:flex; align-items:center; justify-content:space-between; gap:8px; padding-top:8px}
 .go{
   text-decoration:none; font-weight:700; color:#fff; background:var(--c);
-  padding:8px 16px; border-radius:10px; display:inline-block;
+  padding:9px 18px; border-radius:10px; display:inline-block;
 }
 .go:hover{filter:brightness(1.08)}
-.go:focus-visible,.done:focus-visible,.seg button:focus-visible,.quick button:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
 .nogo{font-size:.9rem; color:var(--muted)}
 .done{
-  border:1px solid var(--line); background:transparent; color:var(--muted); font:inherit; font-size:.85rem;
+  border:1px solid var(--line); background:transparent; color:var(--muted); font-size:.85rem;
   padding:6px 10px; border-radius:9px; cursor:pointer; white-space:nowrap;
 }
 .done[aria-pressed="true"]{background:var(--ready-bg); color:var(--ready-ink); border-color:transparent; font-weight:700}
 
 footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:center}
 
+@media (max-width:760px){
+  .exam-list{grid-template-columns:1fr}
+  .exam-btn{flex-direction:column}
+}
 @media (max-width:560px){
   body{font-size:16px}
-  .seg{width:100%} .seg button{flex:1}
-  .prog{flex-basis:100%}
   .grid{grid-template-columns:1fr}
-  .card{min-height:0}
+  .exam-prog{flex-basis:100%}
 }
-@media print{ .toolbar,.quick,.done{display:none} }
 </style>
 </head>
 <body>
@@ -141,16 +147,7 @@ footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:cent
   <header>
     <div class="kicker">八年級・一一五學年度上學期</div>
     <h1>一一五上學期段考強化練習</h1>
-    <p class="sub">三次段考 × 各科練習，一頁找到全部入口。練完記得按「✓ 練完了」記錄進度！</p>
-
-    <div class="toolbar">
-      <div class="seg" role="group" aria-label="檢視方式">
-        <button type="button" data-view="exam">依段考</button>
-        <button type="button" data-view="subject">依科目</button>
-      </div>
-      <div class="summary" id="summary"></div>
-    </div>
-    <div class="quick" id="quick" aria-label="快速跳到"></div>
+    <p class="sub" id="sub">選擇要準備的段考，開始闖關！</p>
   </header>
 
   <main id="main"></main>
@@ -166,14 +163,14 @@ const EXAMS = [
   { n: 3, name: '第三次段考', stage: 'STAGE 3' }
 ];
 
-/* ===== 科目（顏色對應 CSS 變數） ===== */
-/* dir：該科練習 HTML 所在的子資料夾（相對於本頁）。GitHub 上全部放同一層，所以是 ''；
+/* ===== 科目（顏色對應 CSS 變數） =====
+   dir：該科練習 HTML 所在的子資料夾（相對於本頁）。GitHub 上全部放同一層，所以是 ''；
    若要在本機 literacy_exam 資料夾直接測試，可改成 '八年級成語/' 等子資料夾名稱 */
 const SUBJECTS = [
-  { id: 'chinese', name: '國文・成語', icon: '📖', color: 'var(--chi)',  dir: '' },
-  { id: 'math',    name: '數學',       icon: '🔢', color: 'var(--math)', dir: '' },
-  { id: 'science', name: '理化',       icon: '🧪', color: 'var(--sci)',  dir: '' },
-  { id: 'social',  name: '社會',       icon: '🌏', color: 'var(--soc)',  dir: '' }
+  { id: 'chinese', name: '國文・成語', short: '國文', icon: '📖', color: 'var(--chi)',  dir: '' },
+  { id: 'math',    name: '數學',       short: '數學', icon: '🔢', color: 'var(--math)', dir: '' },
+  { id: 'science', name: '理化',       short: '理化', icon: '🧪', color: 'var(--sci)',  dir: '' },
+  { id: 'social',  name: '社會',       short: '社會', icon: '🌏', color: 'var(--soc)',  dir: '' }
 ];
 
 /* ===== 練習網站清單：新增練習就在這裡加一筆 =====
@@ -214,34 +211,62 @@ const PAGES = [
 
 const STATUS_TEXT = { ready: '開放練習', building: '建置中', soon: '即將推出' };
 
-/* ===== 進度與檢視方式：存在瀏覽器（失敗也不影響使用） ===== */
+/* ===== 練完紀錄：存在瀏覽器（失敗也不影響使用） ===== */
 const KEY = 'periodicexam115';
-let state = { view: 'exam', done: {} };
+let state = { done: {} };
 try {
   const saved = JSON.parse(localStorage.getItem(KEY));
-  if (saved && typeof saved === 'object') state = Object.assign(state, saved);
+  if (saved && saved.done && typeof saved.done === 'object') state.done = saved.done;
 } catch (e) {}
 function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 
-const $ = s => document.querySelector(s);
 const subj = id => SUBJECTS.find(s => s.id === id);
+const subjOrder = id => SUBJECTS.findIndex(s => s.id === id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const pagesOf = n => PAGES.filter(p => p.exam === n).sort((a, b) => subjOrder(a.subject) - subjOrder(b.subject));
 
-function card(p, mode) {
+function progress(list) {
+  const open = list.filter(p => p.status === 'ready');
+  const d = open.filter(p => state.done[p.file]).length;
+  const pct = open.length ? Math.round(d / open.length * 100) : 0;
+  return `<div class="prog-label"><span>我的進度</span><span>${d} / ${open.length} 已練完</span></div>
+    <div class="bar"><i style="width:${pct}%"></i></div>`;
+}
+
+/* ---------- 首頁：三次段考 ---------- */
+function renderHome() {
+  document.getElementById('sub').textContent = '選擇要準備的段考，開始闖關！';
+  const html = EXAMS.map(e => {
+    const list = pagesOf(e.n);
+    const open = list.filter(p => p.status === 'ready').length;
+    const dots = list.map(p => {
+      const s = subj(p.subject);
+      return `<span class="${p.status === 'ready' ? 'on' : ''}" style="--c:${s.color}">${esc(s.short)}</span>`;
+    }).join('');
+    return `<button type="button" class="exam-btn" data-exam="${e.n}" ${open ? '' : 'disabled'}>
+      <span class="stage">${e.stage}</span>
+      <h2>${e.name}</h2>
+      <p class="exam-meta">${open ? `${open} 科開放練習` : '尚未開放'}</p>
+      <div class="dots">${dots}</div>
+      ${open ? `<div>${progress(list)}</div><span class="enter">進入 →</span>` : ''}
+    </button>`;
+  }).join('');
+  document.getElementById('main').innerHTML = `<div class="exam-list">${html}</div>`;
+}
+
+/* ---------- 段考頁：各科練習 ---------- */
+function card(p) {
   const s = subj(p.subject);
-  const exam = EXAMS.find(e => e.n === p.exam);
   const ready = p.status === 'ready';
   const done = !!state.done[p.file];
-  const head = mode === 'exam'
-    ? `<span class="subj"><span aria-hidden="true">${s.icon}</span>${esc(s.name)}</span>`
-    : `<span class="subj">${esc(exam.name)}</span>`;
   const tags = (p.tags || []).map(t => `<span>${esc(t)}</span>`).join('');
   const foot = ready
     ? `<a class="go" href="${encodeURI((s.dir || '') + p.file)}">開始練習 →</a>
        <button type="button" class="done" data-file="${esc(p.file)}" aria-pressed="${done}">${done ? '✓ 練完了' : '標記練完'}</button>`
     : `<span class="nogo">${p.status === 'building' ? '老師製作中，敬請期待' : '段考前開放'}</span>`;
   return `<article class="card${ready ? '' : ' off'}" style="--c:${s.color}">
-    <div class="card-top">${head}<span class="pill ${p.status}">${STATUS_TEXT[p.status]}</span></div>
+    <div class="card-top"><span class="subj"><span aria-hidden="true">${s.icon}</span>${esc(s.name)}</span>
+      <span class="pill ${p.status}">${STATUS_TEXT[p.status]}</span></div>
     <h3>${esc(p.title)}</h3>
     <p class="range">範圍：${esc(p.range)}</p>
     ${tags ? `<div class="tags">${tags}</div>` : ''}
@@ -249,67 +274,39 @@ function card(p, mode) {
   </article>`;
 }
 
-function progress(list) {
-  const open = list.filter(p => p.status === 'ready');
-  const d = open.filter(p => state.done[p.file]).length;
-  const pct = open.length ? Math.round(d / open.length * 100) : 0;
-  return `<div class="prog">
-    <div class="prog-label"><span>我的進度</span><span>${d} / ${open.length} 已練完</span></div>
-    <div class="bar"><i style="width:${pct}%"></i></div></div>`;
+function renderExam(n) {
+  const e = EXAMS.find(x => x.n === n);
+  const list = pagesOf(n);
+  document.getElementById('sub').textContent = '選擇科目開始練習，練完記得按「標記練完」！';
+  document.getElementById('main').innerHTML = `
+    <div class="exam-head">
+      <button type="button" class="back" data-home>← 回段考選單</button>
+      <div class="exam-title"><span class="stage">${e.stage}</span><h2>${e.name}</h2></div>
+      <div class="exam-prog">${progress(list)}</div>
+    </div>
+    <div class="grid">${list.map(card).join('')}</div>`;
 }
 
-function render() {
-  document.querySelectorAll('.seg button').forEach(b =>
-    b.setAttribute('aria-pressed', b.dataset.view === state.view));
-
-  let html = '', quick = '';
-  if (state.view === 'exam') {
-    EXAMS.forEach(e => {
-      const list = PAGES.filter(p => p.exam === e.n)
-        .sort((a, b) => SUBJECTS.findIndex(s => s.id === a.subject) - SUBJECTS.findIndex(s => s.id === b.subject));
-      html += `<section class="block" id="exam${e.n}">
-        <div class="block-head">
-          <div class="block-title"><span class="stage">${e.stage}</span><h2>${e.name}</h2></div>
-          ${progress(list)}
-        </div>
-        <div class="grid">${list.map(p => card(p, 'exam')).join('')}</div></section>`;
-      quick += `<button type="button" data-jump="exam${e.n}" style="--c:var(--accent)"><span class="dot"></span>${e.name}</button>`;
-    });
-  } else {
-    SUBJECTS.forEach(s => {
-      const list = PAGES.filter(p => p.subject === s.id).sort((a, b) => a.exam - b.exam);
-      if (!list.length) return;
-      html += `<section class="block" id="subj-${s.id}" style="--c:${s.color}">
-        <div class="block-head">
-          <div class="block-title"><span class="icon" aria-hidden="true">${s.icon}</span><h2>${esc(s.name)}</h2></div>
-          ${progress(list)}
-        </div>
-        <div class="grid">${list.map(p => card(p, 'subject')).join('')}</div></section>`;
-      quick += `<button type="button" data-jump="subj-${s.id}" style="--c:${s.color}"><span class="dot"></span>${esc(s.name)}</button>`;
-    });
-  }
-  $('#main').innerHTML = html;
-  $('#quick').innerHTML = quick;
-
-  const open = PAGES.filter(p => p.status === 'ready');
-  const d = open.filter(p => state.done[p.file]).length;
-  $('#summary').innerHTML = `目前開放 <b>${open.length}</b> 個練習｜已練完 <b>${d}</b> 個`;
+/* ---------- 切換畫面（用網址 #exam1 記住目前段考，瀏覽器返回鍵也能用） ---------- */
+function route() {
+  const m = location.hash.match(/^#exam(\d)$/);
+  const n = m ? Number(m[1]) : 0;
+  if (n && EXAMS.some(e => e.n === n)) renderExam(n); else renderHome();
 }
 
 document.addEventListener('click', e => {
-  const v = e.target.closest('.seg button');
-  if (v) { state.view = v.dataset.view; save(); render(); return; }
-  const j = e.target.closest('[data-jump]');
-  if (j) { const t = document.getElementById(j.dataset.jump); if (t) t.scrollIntoView({ behavior: 'smooth' }); return; }
+  const x = e.target.closest('.exam-btn');
+  if (x && !x.disabled) { location.hash = 'exam' + x.dataset.exam; window.scrollTo(0, 0); return; }
+  if (e.target.closest('[data-home]')) { location.hash = ''; window.scrollTo(0, 0); return; }
   const d = e.target.closest('.done');
   if (d) {
     const f = d.dataset.file;
     if (state.done[f]) delete state.done[f]; else state.done[f] = true;
-    save(); render();
+    save(); route();
   }
 });
-
-render();
+window.addEventListener('hashchange', route);
+route();
 </script>
 </body>
 </html>
