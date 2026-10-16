@@ -208,6 +208,44 @@
     .worth{margin-left:0}
     .hero h1{font-size:1.4rem}
   }
+  /* ===== v2 新增：題組列、模式切換、原題型 ===== */
+  .set-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+  .set-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--bg);border-radius:12px;padding:8px 10px;flex-wrap:wrap}
+  .unit.review .set-row{background:#fff}
+  .set-name{font-weight:800;font-size:.98rem;white-space:nowrap}
+  .set-name small{font-weight:400;color:var(--muted);margin-left:6px;font-size:.8rem}
+  .set-btns{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .pbtn{border:none;background:var(--u,var(--primary));color:#fff;border-radius:10px;padding:5px 12px;display:flex;flex-direction:column;align-items:center;line-height:1.2;min-width:52px}
+  .pbtn b{font-size:.92rem}
+  .pbtn .pst{font-size:.7rem;letter-spacing:1px;min-height:.9em;opacity:.9}
+  .pbtn .pst .on{color:#ffd56b}
+  .ovbtn{border:none;background:#fff;border-radius:10px;padding:6px 10px;font-size:1rem}
+  .unit.review .ovbtn{background:var(--bg)}
+  #chapterUnits{grid-template-columns:repeat(2,1fr)}
+  .q-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .q-top .q-meta{margin-bottom:0;flex:1}
+  .tag.src{background:#fff4dc;color:#8a5a00}
+  .mode-tg{display:inline-flex;background:var(--bg);border-radius:999px;padding:3px;flex:none}
+  .mode-tg button{border:none;background:none;border-radius:999px;padding:4px 14px;font-weight:700;color:var(--muted);font-size:.88rem}
+  .mode-tg button.on{background:var(--primary);color:#fff}
+  .orig-box{background:#fafbff;border:2px dashed var(--line);border-radius:14px;padding:14px 16px}
+  .orig-tip{margin:0 0 6px;color:var(--muted)}
+  .orig-box .steps{margin-bottom:8px}
+  .final{background:var(--ok-soft);border-radius:10px;padding:10px 14px;font-size:1.1rem;margin:6px 0 10px}
+  .self{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .self span{font-weight:700}
+  .btn-ok{background:var(--ok);color:#fff}
+  .btn-no{background:var(--bad);color:#fff}
+  .btn:disabled{opacity:.5;cursor:default}
+  .mc-note{color:var(--muted);font-size:.85rem;margin:8px 0 0}
+  .figcap{font-size:.85rem;color:var(--muted)}
+  .muted{color:var(--muted);font-weight:400}
+  .total-chip{display:inline-block;margin-left:8px;background:var(--accent-soft);color:#8a5a00;font-weight:800;border-radius:10px;padding:4px 12px}
+  @media (max-width:640px){
+    #chapterUnits{grid-template-columns:1fr}
+    .q-top{flex-direction:column}
+  }
+  .progress-top{gap:10px} #progTxt{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -225,14 +263,13 @@
 </header>
 
 <main>
-  <!-- 入口頁 -->
   <section id="home">
     <div class="card hero">
       <h1>第二次段考 數學闖關基地</h1>
-      <p class="sub">每個單元 10 關，答對拿積分、連續答對有連擊加成。先暖身複習，再逐單元挑戰，最後打倒魔王關！</p>
-      <span class="range">段考範圍：2-2 根式的運算 ～ 3-2 利用十字交乘法因式分解</span>
+      <p class="sub">每個單元有三種關卡：📘 課本例題、📒 習作、⚡ 速測。答對拿積分、連續答對有連擊加成；算完可切換「原題型」自己動筆，再一步一步對答案。</p>
+      <span class="range">段考範圍：2-2 根式的運算 ～ 3-2 利用十字交乘法因式分解</span><span class="total-chip" id="totalTxt"></span>
       <div class="progress">
-        <div class="progress-top"><span>段考範圍通關進度（答對 6 題以上算通關）</span><span id="progTxt">0 / 4</span></div>
+        <div class="progress-top"><span>段考範圍通關進度（答對六成以上算通關）</span><span id="progTxt"></span></div>
         <div class="progress-bar"><span id="progBar" style="width:0%"></span></div>
       </div>
     </div>
@@ -240,14 +277,17 @@
     <div class="sec-title">🧩 暖身複習 <small>上次段考範圍，先熱身再出發</small></div>
     <div class="units" id="reviewUnits"></div>
 
-    <div class="sec-title">🗺️ 段考範圍 <small>四個單元，依序挑戰</small></div>
+    <div class="sec-title">🗺️ 段考範圍 <small>每個單元都有課本例題、習作、速測</small></div>
     <div class="units" id="examUnits"></div>
+
+    <div class="sec-title">🏆 章末總習題 <small>習作每章最後的綜合練習</small></div>
+    <div class="units" id="chapterUnits"></div>
 
     <div class="boss-card">
       <div class="ico">👾</div>
       <div class="txt">
         <h3>魔王關：段考模擬</h3>
-        <p>從 2-2 ～ 3-2 隨機抽出 10 題（每單元至少 2 題），每次題目都不一樣！</p>
+        <p>從 2-2 ～ 3-2 的課本、習作、速測題中隨機抽出 10 題（每單元至少 2 題），每次都不一樣！</p>
         <p id="bossBest"></p>
       </div>
       <button class="btn" id="bossBtn">挑戰魔王 ⚔️</button>
@@ -257,25 +297,22 @@
     <div class="rules">
       <div class="rule"><div class="ico">🎯</div><div><b>關卡積分</b><span>答對：易 10、中 15、難 20 分；每關只能作答一次。</span></div></div>
       <div class="rule"><div class="ico">🔥</div><div><b>連擊加成</b><span>連續答對第 3 題起，每題再加 5 分。</span></div></div>
+      <div class="rule"><div class="ico">✏️</div><div><b>原題型</b><span>切到「原題型」先自己算，再逐步看解答、自己判斷對錯。</span></div></div>
       <div class="rule"><div class="ico">💡</div><div><b>提示卡</b><span>卡關可看提示，但該關得分減半。</span></div></div>
       <div class="rule"><div class="ico">🔁</div><div><b>錯題重練</b><span>闖完可把錯題再練一次，直到訂正成功。</span></div></div>
+      <div class="rule"><div class="ico">📋</div><div><b>題目總覽</b><span>點 📋 可看整組題目與解析，適合上課投影。</span></div></div>
     </div>
   </section>
 
-  <!-- 闖關 -->
   <section id="game" class="hidden">
     <div class="map" id="map"></div>
     <div class="card" id="qCard"></div>
   </section>
-
-  <!-- 結算 -->
   <section id="result" class="card hidden"></section>
-
-  <!-- 總覽 -->
   <section id="overview" class="card hidden"></section>
 </main>
 
-<footer>題目改寫自翰林版八年級數學速測題（CH2-1 ～ CH3-2），僅供課堂練習使用。可用鍵盤 1–4（或 A–D）作答、Enter 進入下一關。</footer>
+<footer>題目改寫自翰林版八年級數學課本例題、習作與速測題（CH2-1 ～ CH3-2），僅供課堂練習使用。選擇題可用鍵盤 1–4（或 A–D）作答；Enter 看下一步解答或進入下一關。</footer>
 
 <script>
 const R = String.raw;
@@ -399,8 +436,1233 @@ function huiFig(){
   </div></div>`;
 }
 
-/* ============ 題庫 ============ */
-const UNITS = [
+/* ============ 新增圖形工具 ============ */
+const FILL='#e4ecfb', FILL2='#c9d7f6';
+const fmt=n=>Math.round(n*10)/10;
+function seg(P,Q,extra=''){return `<line x1="${fmt(P[0])}" y1="${fmt(P[1])}" x2="${fmt(Q[0])}" y2="${fmt(Q[1])}" stroke="currentColor" stroke-width="2" ${extra}/>`;}
+function dseg(P,Q){return seg(P,Q,'stroke-dasharray="5 4" stroke-width="1.5"');}
+function poly(pts,fill='none',extra=''){return `<polygon points="${pts.map(p=>fmt(p[0])+','+fmt(p[1])).join(' ')}" fill="${fill}" stroke="currentColor" stroke-width="2" ${extra}/>`;}
+function lab(P,t,dx=0,dy=0,anchor='middle'){
+  const cls=/^[a-zA-Z]$/.test(t)?'v':(/[一-鿿]/.test(t)?'zh':'');
+  return `<text x="${fmt(P[0]+dx)}" y="${fmt(P[1]+dy)}" text-anchor="${anchor}" class="${cls}">${t}</text>`;
+}
+const mid=(P,Q)=>[(P[0]+Q[0])/2,(P[1]+Q[1])/2];
+function raMark(P,A,B,L=9){
+  const u=Q=>{const dx=Q[0]-P[0],dy=Q[1]-P[1],d=Math.hypot(dx,dy);return[dx/d*L,dy/d*L];};
+  const a=u(A),b=u(B);
+  return `<path d="M${fmt(P[0]+a[0])} ${fmt(P[1]+a[1])} L${fmt(P[0]+a[0]+b[0])} ${fmt(P[1]+a[1]+b[1])} L${fmt(P[0]+b[0])} ${fmt(P[1]+b[1])}" fill="none" stroke="currentColor" stroke-width="1.5"/>`;
+}
+function dot(P){return `<circle cx="${fmt(P[0])}" cy="${fmt(P[1])}" r="3.5" fill="currentColor"/>`;}
+
+/* 直角三角形：ra='bl' 直角在左下、'br' 直角在右下 */
+function rightTri(o){
+  const w=o.w||170,h=o.h||90,x0=34,y0=22;
+  let P,Rt,Q,vdx;
+  if(o.ra==='br'){Rt=[x0+w,y0+h];P=[x0+w,y0];Q=[x0,y0+h];vdx=16;}
+  else{Rt=[x0,y0+h];P=[x0,y0];Q=[x0+w,y0+h];vdx=-16;}
+  const cm=mid(P,Q), cdx=o.ra==='br'?-14:14;
+  return svgWrap(w+76,h+52, poly([P,Rt,Q],FILL)+raMark(Rt,P,Q)+
+    lab(mid(P,Rt),o.v,vdx,5)+lab(mid(Rt,Q),o.b,0,20)+lab(cm,o.c,cdx,-6),'直角三角形');
+}
+/* 斜邊在底、作斜邊上的高 */
+function hypAlt(o){
+  const l=o.l,r=o.r,S=o.S||220,c=Math.hypot(l,r),x0=24,y=o.top||20;
+  const foot=l*l/c/c*S, hh=l*r/c/c*S;
+  const Bp=[x0,y+hh],Cp=[x0+S,y+hh],A=[x0+foot,y],F=[x0+foot,y+hh];
+  const L=o.letters||{};
+  let g=poly([Bp,A,Cp],FILL)+seg(A,F,'stroke-width="1.5"')+raMark(A,Bp,Cp,8)+raMark(F,A,Cp,7);
+  g+=lab(mid(Bp,A),o.L,-12,-2)+lab(mid(A,Cp),o.R,12,-2)+lab(mid(A,F),o.H,-9,6)+lab(mid(Bp,Cp),o.C,0,22);
+  if(L.A) g+=lab(A,L.A,0,-6); if(L.B) g+=lab(Bp,L.B,-10,5); if(L.C) g+=lab(Cp,L.C,10,5); if(L.D) g+=lab(F,L.D,4,18);
+  return svgWrap(S+48,hh+52,g,'斜邊上的高');
+}
+/* 一般三角形含高：bl、br 為底邊左右段長、h 為高（皆為比例） */
+function altTri(o){
+  const s=o.s||8,x0=26,y0=18,bl=o.bl*s,br=o.br*s,hh=o.h*s;
+  const B=[x0,y0+hh],C=[x0+bl+br,y0+hh],A=[x0+bl,y0],F=[x0+bl,y0+hh];
+  let g=poly([B,A,C],FILL)+seg(A,F,'stroke-width="1.5"')+raMark(F,A,C,8);
+  g+=lab(mid(B,A),o.L,-12,0)+lab(mid(A,C),o.R,12,0)+(o.H?lab(mid(A,F),o.H,-10,6):'');
+  if(o.base) g+=`<path d="M${B[0]} ${B[1]+8} Q${B[0]} ${B[1]+16} ${B[0]+10} ${B[1]+16} L${(B[0]+C[0])/2-8} ${B[1]+16} Q${(B[0]+C[0])/2} ${B[1]+16} ${(B[0]+C[0])/2} ${B[1]+22} Q${(B[0]+C[0])/2} ${B[1]+16} ${(B[0]+C[0])/2+8} ${B[1]+16} L${C[0]-10} ${B[1]+16} Q${C[0]} ${B[1]+16} ${C[0]} ${B[1]+8}" fill="none" stroke="currentColor" stroke-width="1.5"/>`+lab([(B[0]+C[0])/2,B[1]],o.base,0,38);
+  else g+=lab(mid(B,F),o.BL,0,20)+lab(mid(F,C),o.BR,0,20);
+  return svgWrap(bl+br+52,hh+(o.base?60:46),g,'含高的三角形');
+}
+/* 2-3 習作 基礎1(2)：兩個直角三角形相接 */
+function twoTriFig(){
+  const B=[40,130],T=[40,50],Rt=[120,130],P=[148,102];
+  return svgWrap(200,160,poly([T,B,Rt],FILL)+poly([T,Rt,P],FILL2)+raMark(B,T,Rt)+raMark(Rt,T,P,8)+
+    lab(mid(T,B),'2',-12,5)+lab(mid(B,Rt),'2',0,20)+lab(mid(Rt,P),'1',12,10)+lab(mid(T,P),'x',6,-8)+lab(mid(T,Rt),'y',-8,8),'兩個直角三角形');
+}
+/* 2-3 習作 基礎1(4)：三個直角三角形相接 */
+function threeTriFig(){
+  const M=[60,80],K=[132,80],TR=[132,26],TL=[31.2,41.6],Bt=[60,176];
+  return svgWrap(180,200,poly([TL,TR,M],'#e8e1f7')+poly([M,TR,K],'#fbe7cf')+poly([M,K,Bt],'#dff1e4')+
+    raMark(M,TL,TR,8)+raMark(K,M,TR,8)+raMark(M,K,Bt,8)+
+    lab(mid(TL,TR),'17',0,-8)+lab(mid(TL,M),'8',-12,4)+lab(mid(TR,K),'9',12,5)+lab(mid(M,Bt),'16',-14,5)+lab(mid(Bt,K),'x',12,6)+
+    lab(mid(M,TR),'y',-6,-4)+lab(mid(M,K),'z',0,-5),'三個直角三角形');
+}
+/* 2-3 例3：快遞路線 */
+function routeQuadFig(){
+  const A=[30,100],C=[30,30],B=[198,30],D=[168,138];
+  return svgWrap(240,165,poly([A,C,B,D],FILL)+seg(A,B,'stroke-width="1.5"')+raMark(C,A,B)+
+    `<path d="M160.3 135.9 L162.4 128.2 L170.1 130.3" fill="none" stroke="currentColor" stroke-width="1.5"/>`+
+    lab(C,'C',-10,-4)+lab(B,'B',10,-4)+lab(A,'A',-12,6)+lab(D,'D',4,18)+
+    lab(mid(A,C),'5',-12,5)+lab(mid(C,B),'12',0,-8)+lab(mid(B,D),'8',14,4),'快遞路線圖');
+}
+/* 矩形含對角線 */
+function rectDiag(o){
+  const w=o.w,h=o.h,x0=30,y0=20,A=[x0,y0],B=[x0+w,y0],C=[x0+w,y0+h],D=[x0,y0+h];
+  return poly([A,B,C,D],FILL)+seg(D,B)+(o.top?lab(mid(A,B),o.top,0,-6):'')+(o.left?lab(mid(A,D),o.left,-12,5):'')+(o.d?lab(mid(D,B),o.d,10,-6):'');
+}
+function phoneFig(){
+  return `<div class="fig" style="gap:18px;align-items:flex-end;flex-wrap:wrap">
+   <div style="text-align:center"><svg width="110" height="140" viewBox="0 0 110 140">${rectDiag({w:48,h:96,top:'3',left:'6'})}</svg><div class="figcap">合起來</div></div>
+   <div style="text-align:center"><svg width="160" height="140" viewBox="0 0 160 140">${rectDiag({w:96,h:96,top:'6',left:'6'})}</svg><div class="figcap">展開</div></div></div>`;
+}
+function tabletFig(){
+  return svgWrap(220,150,`<rect x="20" y="15" width="176" height="122" rx="10" fill="#d9dee8" stroke="currentColor" stroke-width="2"/>`+
+    `<rect x="32" y="26" width="152" height="100" fill="#cfe3fb" stroke="currentColor" stroke-width="1"/>`+seg([36,30],[180,122])+lab([108,76],'10',0,-8),'平板電腦');
+}
+/* 竹竿／梯子靠牆 */
+function wallFig(o){
+  const h=o.h||110,w=o.w||70,x0=40,y0=18;
+  const top=[x0+w,y0],base=[x0,y0+h],corner=[x0+w,y0+h];
+  return svgWrap(w+110,h+50,`<rect x="${x0+w}" y="${y0-8}" width="16" height="${h+8}" fill="#e8b4a0" stroke="currentColor" stroke-width="1.5"/>`+
+    seg([x0-20,y0+h],[x0+w+30,y0+h])+seg(base,top,'stroke="#b5651d" stroke-width="3.5"')+raMark(corner,top,base,8)+
+    lab(mid(base,top),o.c,-14,-4)+lab(mid(base,corner),o.b,0,20)+lab(mid(top,corner),o.v,32,5),'靠牆示意圖');
+}
+/* 2-3 精熟1：正方形摺紙 */
+function foldSquareFig(){
+  const A=[30,20],D=[210,20],B=[30,200],C=[210,200],E=[90,20],N=[210,70],M=[30,190],Bp=[20.8,186.2];
+  return svgWrap(250,230,poly([A,D,N,M],FILL)+poly([M,Bp,E,N],'#b9a6e6')+dseg(M,B)+dseg(B,C)+dseg(C,N)+
+    lab(A,'A',-10,-4)+lab(D,'D',10,-4)+lab(E,'E',0,-6)+lab(N,'N',12,5)+lab(M,'M',-14,4)+lab(B,'B',-10,16)+lab(C,'C',10,16)+lab(Bp,'(B)',-16,10)+
+    lab(mid(E,D),'24',0,-6)+lab(mid(D,N),'10',16,5),'正方形摺疊');
+}
+/* 2-3 精熟2：三角形沿高摺疊 */
+function foldTriFig(){
+  const D=[130,110],A=[130,20],B=[10,110],E=[250,110],C=[346,110];
+  return svgWrap(370,135,poly([A,E,C],FILL)+poly([A,D,E],'#b9a6e6')+dseg(A,B)+dseg(B,D)+raMark(D,A,E,8)+
+    lab(A,'A',0,-6)+lab(B,'B',-8,16)+lab(D,'D',0,18)+lab(E,'E',0,18)+lab(C,'C',8,16),'三角形摺疊');
+}
+/* 數線 */
+function numLineFig(){
+  let g=seg([20,40],[300,40])+`<polygon points="306,40 296,35 296,45" fill="currentColor"/>`;
+  ['A','B','C','D','E'].forEach((t,i)=>{const x=40+i*60;g+=seg([x,34],[x,46])+lab([x,40],t,0,-12)+lab([x,40],String(i),0,22);});
+  return svgWrap(320,75,g,'數線');
+}
+/* 第2章 綜合9：小寶的行車路線 */
+function drivePathFig(){
+  const A=[30,150],C=[138,150],p2=[138,105],p3=[66,105],p4=[66,42],B=[75,42];
+  return svgWrap(200,180,`<polyline points="${[A,C,p2,p3,p4,B].map(p=>p.join(',')).join(' ')}" fill="none" stroke="#2c56c9" stroke-width="2.5"/>`+
+    dseg(A,B)+dot(A)+dot(B)+lab(A,'小寶家',-2,20)+lab(B,'車站',22,-4)+lab(mid(A,C),'12',0,18)+lab(mid(C,p2),'5',12,5)+
+    lab(mid(p2,p3),'8',0,-6)+lab(mid(p3,p4),'7',-12,5)+lab(mid(p4,B),'1',0,-6),'行車路線');
+}
+/* 第2章 數學閱讀：五人制足球場 */
+function fieldFig(q){
+  const P=[30,90],R=[130,90],A=[300,90],S=[130,40],T=[130,140];
+  let g=`<rect x="10" y="10" width="300" height="160" fill="#e6f4e4" stroke="currentColor" stroke-width="1.5"/>`+
+    `<line x1="300" y1="10" x2="300" y2="170" stroke="currentColor" stroke-width="1"/><circle cx="300" cy="90" r="22" fill="none" stroke="currentColor" stroke-width="1"/>`+
+    dseg(P,A)+seg(S,T)+raMark(R,S,A,7)+dot(P)+dot(R)+dot(A)+lab(P,'P',-2,-8)+lab(R,'R',10,16)+lab(A,'A',-10,-8)+lab(S,'S',-10,0)+lab(T,'T',-10,8)+
+    lab(mid(P,R),'10',0,16)+lab(mid(S,R),'5',10,4)+lab(mid(R,T),'5',10,4);
+  g+= q===2 ? seg(S,A,'stroke="#b5651d" stroke-width="2.5"') : seg(P,S,'stroke="#b5651d" stroke-width="2.5"');
+  return svgWrap(320,180,g,'足球場示意圖');
+}
+/* 3-1 習作 基礎4：大正方形中剪去小正方形 */
+function squareCutFig(){
+  return svgWrap(220,170,`<rect x="20" y="10" width="150" height="150" fill="${FILL}" stroke="currentColor" stroke-width="2"/>`+
+    poly([[70,70],[108,48],[130,86],[92,108]],'#fff')+lab([111,98],'2x',8,14)+
+    `<path d="M178 10 Q188 10 188 22 L188 78 Q188 85 196 85 Q188 85 188 92 L188 148 Q188 160 178 160" fill="none" stroke="currentColor" stroke-width="1.5"/>`+
+    `<text x="200" y="90" class="v">3x+1</text>`,'剪去小正方形');
+}
+/* 拼圖紙片：n1 塊 x²、n2 塊 x×1、n3 塊 1×1（只畫一塊示意，並標數量） */
+function tileSet(names,counts){
+  const nm=names||['A','B','C'];
+  return svgWrap(330,120,`<rect x="30" y="24" width="72" height="72" fill="#f3dff0" stroke="currentColor" stroke-width="2"/>`+lab([66,64],nm[0])+
+    lab([66,18],'x')+lab([18,64],'x')+
+    `<rect x="150" y="50" width="72" height="22" fill="#eadcf7" stroke="currentColor" stroke-width="2"/>`+lab([186,66],nm[1])+lab([186,44],'x')+lab([140,66],'1')+
+    `<rect x="262" y="50" width="22" height="22" fill="#dff1e4" stroke="currentColor" stroke-width="2"/>`+lab([273,66],nm[2])+lab([273,44],'1')+lab([292,66],'1')+
+    (counts?lab([66,114],counts[0])+lab([186,114],counts[1])+lab([273,114],counts[2]):''),'拼圖紙片');
+}
+/* 第3章 數學閱讀：丁的形狀（邊長 x 的正方形剪去兩塊 1×(x−1)） */
+function dingFig(){
+  const s=22,o=[30,20],p=(a,b)=>[o[0]+a*s,o[1]+b*s];
+  const pts=[p(0,0),p(1,0),p(1,1),p(6,1),p(6,6),p(5,6),p(5,5),p(0,5)];
+  return svgWrap(200,170,`<rect x="${o[0]}" y="${o[1]}" width="${6*s}" height="${6*s}" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3"/>`+
+    poly(pts,'#dff1e4')+lab(p(3,2.9),'丁')+lab(p(0.5,0),'1',0,-5)+lab(p(1,0.5),'1',8,5)+lab(p(5.5,6),'1',0,16)+lab(p(5,5.5),'1',-8,5),'丁的形狀');
+}
+/* 3-2 暖身1：兩種十字交乘選項 */
+function crossChoice(){
+  return `<div class="fig" style="gap:22px;flex-wrap:wrap">
+    <div style="text-align:center"><b>(A)</b>${cross('x','+3','x','+4','')}</div>
+    <div style="text-align:center"><b>(B)</b>${cross('x','+2','x','+6','')}</div></div>`;
+}
+/* 2-3 例7：坐標平面 */
+const ex7Fig=()=>coordFig({x0:-6,x1:5,y0:-5,y1:4,s:22,tick:1,pts:[['A(3,2)',3,2,6,-8],['B(−5,2)',-5,2,-10,-10],['C(3,−4)',3,-4,6,16]],seg:[[-5,2,3,2],[3,2,3,-4]],label:'A、B、C 三點'});
+
+/* ============ 單元與題組設定 ============ */
+const SECTIONS = [
+  {id:'2-1', title:'平方根的意義', review:true, color:'#8a96ad'},
+  {id:'2-2', title:'根式的運算', color:'#2c56c9'},
+  {id:'2-3', title:'畢氏定理', color:'#0f8a7e'},
+  {id:'3-1', title:'提公因式與乘法公式作因式分解', color:'#c2571a'},
+  {id:'3-2', title:'利用十字交乘法因式分解', color:'#a3307a'},
+  {id:'ch2', title:'第 2 章 總習題', short:'第2章', chapter:true, color:'#6b3fd1', sub:'平方根與畢氏定理'},
+  {id:'ch3', title:'第 3 章 總習題', short:'第3章', chapter:true, color:'#6b3fd1', sub:'因式分解'}
+];
+const EXAM = ['2-2','2-3','3-1','3-2'];
+const KINDS = { book:{name:'課本例題',ico:'📘'}, work:{name:'習作',ico:'📒'}, quiz:{name:'速測',ico:'⚡'}, review:{name:'總習題',ico:'🏆'} };
+const KIND_ORDER = ['book','work','quiz','review'];
+const SETS = [];
+function addSet(sec,kind,qs,o={}){ SETS.push({sec,kind,qs,mcOnly:!!o.mcOnly}); }
+
+/* ================= 2-1 平方根的意義 ================= */
+addSet('2-1','book',[
+  { src:'例1(1)', lvl:'易', skill:'根號的平方',
+    stem:R`計算 $(\sqrt{14})^2=$？`, opts:['$14$',R`$\sqrt{14}$`,'$28$','$196$'], ans:0,
+    hint:R`$\sqrt{14}$ 的意思是「平方後等於 14 的正數」。`,
+    steps:[R`平方是「自己乘自己」：$(\sqrt{14})^2=\sqrt{14}\times\sqrt{14}$`, R`$\sqrt{14}$ 平方後就是 14，所以 $(\sqrt{14})^2=14$`],
+    tip:R`若 $a\ge0$，則 $(\sqrt{a})^2=a$。平方不是乘以 2，選 28 的同學要注意！`,
+    v:['sqrt(14)**2',['14','sqrt(14)','28','196']] },
+  { src:'例1(2)', lvl:'易', skill:'根號的平方',
+    stem:R`計算 $\left(\sqrt{\dfrac{2}{3}}\right)^2=$？`, opts:[R`$\dfrac{2}{3}$`,R`$\dfrac{4}{9}$`,R`$\sqrt{\dfrac{2}{3}}$`,R`$\dfrac{4}{3}$`], ans:0,
+    steps:[R`$\left(\sqrt{\dfrac{2}{3}}\right)^2=\sqrt{\dfrac{2}{3}}\times\sqrt{\dfrac{2}{3}}=\dfrac{2}{3}$`],
+    tip:R`根號平方後「脫掉根號」，裡面的分數不用再平方；選 $\dfrac{4}{9}$ 是多平方了一次。`,
+    v:['sqrt(Rational(2,3))**2',['Rational(2,3)','Rational(4,9)','sqrt(Rational(2,3))','Rational(4,3)']] },
+  { src:'例2(1)', lvl:'易', skill:'√(a²) 的值',
+    stem:R`計算 $\sqrt{9^2}=$？`, opts:['$9$','$81$',R`$\pm9$`,'$3$'], ans:0,
+    hint:R`先算根號裡：$9^2=81$，再想哪個正數平方是 81。`,
+    steps:[R`$\sqrt{9^2}=\sqrt{81}$`, R`$9^2=81$ 且 $9>0$，所以 $\sqrt{9^2}=9$`],
+    tip:R`若 $a>0$，則 $\sqrt{a^2}=a$。符號 $\sqrt{\;}$ 只取正的，所以不是 $\pm9$。`,
+    v:['sqrt(9**2)',['9','81','None','3']] },
+  { src:'例2(2)', lvl:'易', skill:'√(a²) 的值',
+    stem:R`計算 $\sqrt{\dfrac{25}{36}}=$？`, opts:[R`$\dfrac{5}{6}$`,R`$\dfrac{25}{36}$`,R`$\pm\dfrac{5}{6}$`,R`$\dfrac{25}{6}$`], ans:0,
+    hint:R`25 和 36 各是哪個數的平方？`,
+    steps:[R`$\dfrac{25}{36}=\dfrac{5^2}{6^2}=\left(\dfrac{5}{6}\right)^2$`, R`$\sqrt{\dfrac{25}{36}}=\sqrt{\left(\dfrac{5}{6}\right)^2}=\dfrac{5}{6}$`],
+    v:['sqrt(Rational(25,36))',['Rational(5,6)','Rational(25,36)','None','Rational(25,6)']] },
+  { src:'例3(1)', lvl:'中', skill:'質因數分解求根號',
+    stem:R`利用質因數分解，計算 $\sqrt{784}=$？`, opts:['$28$','$26$','$32$','$392$'], ans:0,
+    hint:R`先把 784 做質因數分解（連續除以 2）。`,
+    steps:[R`$784=2\times2\times2\times2\times7\times7=2^2\times2^2\times7^2$`, R`$\sqrt{784}=\sqrt{(2\times2\times7)^2}=\sqrt{28^2}$`, R`$=28$`],
+    tip:R`把質因數「兩兩配對」，每一對拿出一個到根號外。`,
+    v:['sqrt(784)',['28','26','32','392']] },
+  { src:'例3(2)', lvl:'中', skill:'質因數分解求根號',
+    stem:R`計算 $\sqrt{2^4\times3^2\times7^2}=$？`, opts:['$84$','$42$','$168$','$1764$'], ans:0,
+    hint:R`$2^4=(2^2)^2$，把整個根號內寫成「某數的平方」。`,
+    steps:[R`$2^4\times3^2\times7^2=(2^2\times3\times7)^2=84^2$`, R`$\sqrt{84^2}=84$`],
+    tip:R`$\sqrt{2^4}=2^2=4$，不是 2；選 42 的同學是把 $\sqrt{2^4}$ 算成 2 了。`,
+    v:['sqrt(2**4*3**2*7**2)',['84','42','168','1764']] },
+  { src:'例3(3)', lvl:'中', skill:'小數的平方根',
+    stem:R`計算 $\sqrt{1.96}=$？`, opts:['$1.4$','$0.14$','$14$','$0.98$'], ans:0,
+    hint:R`把 1.96 寫成分數 $\dfrac{196}{100}$。`,
+    steps:[R`$\sqrt{1.96}=\sqrt{\dfrac{196}{100}}=\sqrt{\dfrac{14^2}{10^2}}$`, R`$=\dfrac{14}{10}=1.4$`],
+    tip:R`檢查：$1.4^2=1.96$ ✔；小數的位數「開根號後減半」。`,
+    v:['sqrt(Rational(196,100))',['Rational(14,10)','Rational(14,100)','14','Rational(98,100)']] },
+  { src:'例4(1)', lvl:'易', skill:'求平方根',
+    stem:R`求 19 的平方根。`, opts:[R`$\pm\sqrt{19}$`,R`$\sqrt{19}$`,R`$-\sqrt{19}$`,R`$\pm19$`], ans:0,
+    hint:R`正數有幾個平方根？`,
+    steps:[R`19 的平方根有兩個：$\sqrt{19}$ 和 $-\sqrt{19}$`, R`合併記為 $\pm\sqrt{19}$`],
+    tip:R`「平方根」有正有負；「$\sqrt{19}$」只是正的那一個（正平方根）。` },
+  { src:'例4(2)', lvl:'易', skill:'求平方根',
+    stem:R`求 196 的平方根。`, opts:[R`$\pm14$`,'$14$',R`$\pm98$`,'$-14$'], ans:0,
+    steps:[R`$196=14^2$`, R`196 的平方根為 $\pm\sqrt{196}=\pm\sqrt{14^2}=\pm14$`],
+    tip:R`$(14)^2=196$ 且 $(-14)^2=196$，兩個都要寫。` },
+  { src:'例4(3)', lvl:'中', skill:'求平方根（帶分數）',
+    stem:R`求 $3\dfrac{1}{16}$ 的平方根。`, opts:[R`$\pm\dfrac{7}{4}$`,R`$\pm3\dfrac{1}{4}$`,R`$\dfrac{7}{4}$`,R`$\pm\dfrac{49}{16}$`], ans:0,
+    hint:R`帶分數要先化成假分數。`,
+    steps:[R`$3\dfrac{1}{16}=\dfrac{49}{16}$`, R`平方根為 $\pm\sqrt{\dfrac{49}{16}}=\pm\sqrt{\left(\dfrac{7}{4}\right)^2}=\pm\dfrac{7}{4}$`],
+    tip:R`常見錯誤：$\sqrt{3\dfrac{1}{16}}\neq3\dfrac{1}{4}$！整數和分數不能分開開根號。` },
+  { src:'例4(4)', lvl:'中', skill:'求平方根（小數）',
+    stem:R`求 2.25 的平方根。`, opts:[R`$\pm1.5$`,'$1.5$',R`$\pm0.15$`,R`$\pm1.125$`], ans:0,
+    steps:[R`$2.25=\dfrac{225}{100}=\dfrac{9}{4}$`, R`平方根為 $\pm\sqrt{\dfrac{9}{4}}=\pm\dfrac{3}{2}=\pm1.5$`],
+    tip:R`$\pm1.125$ 是把 2.25 除以 2，開根號不是除以 2 喔。` },
+  { src:'例5(1)', lvl:'易', skill:'平方根的應用',
+    stem:R`若 14 是 $a$ 的正平方根，則 $a=$？`, opts:['$196$',R`$\sqrt{14}$`,'$7$','$28$'], ans:0,
+    hint:R`「14 是 $a$ 的正平方根」就是 $\sqrt{a}=14$。`,
+    steps:[R`14 是 $a$ 的正平方根，表示 $14^2=a$`, R`$a=196$`],
+    tip:R`由平方根找原數，要「平方回去」。` },
+  { src:'例5(2)', lvl:'中', skill:'平方根的應用',
+    stem:R`若 $-8$ 是 $5x+4$ 的負平方根，則 $x=$？`, opts:['$12$',R`$-\dfrac{12}{5}$`,R`$\dfrac{4}{5}$`,'$-12$'], ans:0,
+    hint:R`「$-8$ 是 $5x+4$ 的平方根」代表 $(-8)^2=5x+4$。`,
+    steps:[R`$5x+4=(-8)^2=64$`, R`$5x=60$，$x=12$`],
+    tip:R`$(-8)^2=64$，平方後是正數；寫成 $5x+4=-8$ 就會選錯。` }
+]);
+
+addSet('2-1','work',[
+  { src:'暖身題1', lvl:'易', skill:'平方根的意義', mc:1,
+    stem:R`正方形面積為 $a$ 時，其邊長記為 $\sqrt{a}$。下列敘述何者正確？`,
+    opts:[R`若正方形面積為 7 時，則邊長為 $\sqrt{7}$`, R`若正方形面積為 $\sqrt{7}$ 時，則邊長為 7`], ans:0,
+    steps:[R`面積為 7，邊長的平方要等於 7，所以邊長是 $\sqrt{7}$`, R`邊長為 7 時，面積是 $7^2=49$，不是 $\sqrt{7}$`] },
+  { src:'暖身題2', lvl:'易', skill:'√(a²) 的值', mc:1,
+    stem:R`若 $a>0$，則 $(\sqrt{a})^2=a$ 且 $\sqrt{a^2}=a$。下列選項中，何者與 $\sqrt{16}$ 的值相等？`,
+    opts:[R`$\pm4$`,'$4$'], ans:1,
+    steps:[R`$\sqrt{16}=\sqrt{4^2}=4$`, R`符號 $\sqrt{\;}$ 只取正的平方根，所以不是 $\pm4$`] },
+  { src:'暖身題3', lvl:'易', skill:'根號比大小', mc:1,
+    stem:R`若 $a$、$b$ 為正數，且 $a>b$，則 $\sqrt{a}>\sqrt{b}$。已知 $\sqrt{9}=3$，則 $\sqrt{8}$ 與 3 的大小關係為何？`,
+    opts:[R`$\sqrt{8}<3$`,R`$\sqrt{8}>3$`], ans:0,
+    steps:[R`$3=\sqrt{9}$`, R`$8<9$，所以 $\sqrt{8}<\sqrt{9}=3$`] },
+  { src:'暖身題4', lvl:'易', skill:'求平方根', mc:1,
+    stem:R`每一個正數 $a$ 都有兩個平方根 $\sqrt{a}$ 和 $-\sqrt{a}$。23 的所有平方根為下列何者？`,
+    opts:[R`$\pm\sqrt{23}$`,R`$\sqrt{23}$`], ans:0,
+    steps:[R`23 的平方根有 $\sqrt{23}$ 和 $-\sqrt{23}$ 兩個，記為 $\pm\sqrt{23}$`] },
+  { src:'基礎題1(1)', lvl:'易', skill:'根號比大小',
+    stem:R`比較大小：$\sqrt{150}$ ＿＿ $12$`, opts:['$>$','$=$','$<$'], ans:0,
+    hint:R`把 12 也寫成根號：$12=\sqrt{?}$`,
+    steps:[R`$12=\sqrt{144}$`, R`$150>144$，所以 $\sqrt{150}>\sqrt{144}=12$`] },
+  { src:'基礎題1(2)', lvl:'中', skill:'根號比大小（負數）',
+    stem:R`比較大小：$-\sqrt{50}$ ＿＿ $-7$`, opts:['$>$','$=$','$<$'], ans:2,
+    hint:R`先比 $\sqrt{50}$ 和 7，再想想加上負號後大小會怎樣？`,
+    steps:[R`$7=\sqrt{49}$，$\sqrt{50}>\sqrt{49}$，所以 $\sqrt{50}>7$`, R`兩邊都加負號，大小關係相反：$-\sqrt{50}<-7$`],
+    tip:R`負數比大小：離 0 越遠的越小，就像 $-8<-7$。` },
+  { src:'基礎題1(3)', lvl:'中', skill:'根號比大小（小數）',
+    stem:R`比較大小：$\sqrt{0.01}$ ＿＿ $0.01$`, opts:['$>$','$=$','$<$'], ans:0,
+    hint:R`先算出 $\sqrt{0.01}$ 是多少。`,
+    steps:[R`$\sqrt{0.01}=0.1$（因為 $0.1^2=0.01$）`, R`$0.1>0.01$，所以 $\sqrt{0.01}>0.01$`],
+    tip:R`介於 0 和 1 之間的數，開根號後會變大！` },
+  { src:'基礎題2(1)', lvl:'易', skill:'小數的平方根',
+    stem:R`求 $\sqrt{0.49}=$？`, opts:['$0.7$','$0.07$','$7$','$0.245$'], ans:0,
+    steps:[R`$0.7^2=0.49$`, R`所以 $\sqrt{0.49}=0.7$`],
+    v:['sqrt(Rational(49,100))',['Rational(7,10)','Rational(7,100)','7','Rational(245,1000)']] },
+  { src:'基礎題2(2)', lvl:'易', skill:'分數的平方根',
+    stem:R`求 $\sqrt{\dfrac{196}{225}}=$？`, opts:[R`$\dfrac{14}{15}$`,R`$\dfrac{15}{14}$`,R`$\dfrac{13}{15}$`,R`$\dfrac{98}{225}$`], ans:0,
+    steps:[R`$196=14^2$，$225=15^2$`, R`$\sqrt{\dfrac{196}{225}}=\dfrac{14}{15}$`],
+    v:['sqrt(Rational(196,225))',['Rational(14,15)','Rational(15,14)','Rational(13,15)','Rational(98,225)']] },
+  { src:'基礎題2(3)', lvl:'中', skill:'根號的平方',
+    stem:R`求 $(-\sqrt{7})^2=$？`, opts:['$7$','$-7$',R`$\pm7$`,R`$\sqrt{7}$`], ans:0,
+    steps:[R`$(-\sqrt{7})^2=(-\sqrt{7})\times(-\sqrt{7})$`, R`負負得正：$=7$`],
+    tip:R`$(-\sqrt{7})^2$ 括號內整個平方，負號也要乘兩次。`,
+    v:['(-sqrt(7))**2',['7','-7','None','sqrt(7)']] },
+  { src:'基礎題2(4)', lvl:'中', skill:'√(a²) 的值',
+    stem:R`求 $\sqrt{(-4)^2}=$？`, opts:['$4$','$-4$',R`$\pm4$`,'$16$'], ans:0,
+    steps:[R`先算根號內：$(-4)^2=16$`, R`$\sqrt{16}=4$`],
+    tip:R`$\sqrt{(-4)^2}=4$，根號的結果不會是負數。`,
+    v:['sqrt((-4)**2)',['4','-4','None','16']] },
+  { src:'基礎題3', lvl:'中', skill:'質因數分解求根號',
+    stem:R`利用質因數分解，化簡 $\sqrt{30.25}=$？`, opts:['$5.5$','$55$','$0.55$','$15.125$'], ans:0,
+    hint:R`$30.25=\dfrac{3025}{100}$，再把 3025 做質因數分解。`,
+    steps:[R`$30.25=\dfrac{3025}{100}$，而 $3025=5^2\times11^2$，$100=2^2\times5^2$`, R`$\sqrt{30.25}=\sqrt{\dfrac{5^2\times11^2}{2^2\times5^2}}=\sqrt{\left(\dfrac{11}{2}\right)^2}$`, R`$=\dfrac{11}{2}=5.5$`],
+    v:['sqrt(Rational(3025,100))',['Rational(11,2)','55','Rational(55,100)','Rational(15125,1000)']] },
+  { src:'基礎題4(1)', lvl:'易', skill:'十分逼近法',
+    stem:R`以十分逼近法求 $\sqrt{15}$ 的近似值。首先，$\sqrt{15}$ 介於哪兩個連續整數之間？`,
+    opts:['3 與 4','4 與 5','7 與 8','14 與 16'], ans:0,
+    steps:[R`$3^2=9$，$4^2=16$`, R`$9<15<16$，所以 $3<\sqrt{15}<4$`] },
+  { src:'基礎題4(2)', lvl:'中', skill:'十分逼近法',
+    stem:R`已知 $3.7^2=13.69$，$3.8^2=14.44$，$3.9^2=15.21$，則 $\sqrt{15}$ 介於哪兩數之間？`,
+    opts:['3.8 與 3.9','3.7 與 3.8','3.9 與 4.0','3.6 與 3.7'], ans:0,
+    steps:[R`$14.44<15<15.21$`, R`所以 $3.8<\sqrt{15}<3.9$`] },
+  { src:'基礎題4(3)', lvl:'中', skill:'十分逼近法',
+    stem:R`已知 $3.85^2=14.8225$，則 $\sqrt{15}$ ＿＿ $3.85$`, opts:['$>$','$=$','$<$'], ans:0,
+    steps:[R`$15>14.8225=3.85^2$`, R`所以 $\sqrt{15}>3.85$`] },
+  { src:'基礎題4(4)', lvl:'中', skill:'十分逼近法',
+    stem:R`承上，$\sqrt{15}$ 的近似值以四捨五入法取到小數點後第一位為何？`, opts:['$3.9$','$3.8$','$3.85$','$4.0$'], ans:0,
+    hint:R`$\sqrt{15}$ 比 3.85 大還是小？`,
+    steps:[R`$3.85<\sqrt{15}<3.9$`, R`小數點後第二位 $\ge5$，四捨五入得 $3.9$`],
+    tip:R`判斷四捨五入，就看它和「中間值」3.85 比誰大。` },
+  { src:'基礎題5(1)', lvl:'易', skill:'求平方根',
+    stem:R`求 39 的平方根。`, opts:[R`$\pm\sqrt{39}$`,R`$\sqrt{39}$`,R`$\pm19.5$`,R`$-\sqrt{39}$`], ans:0,
+    steps:[R`39 不是完全平方數，平方根直接寫成 $\pm\sqrt{39}$`] },
+  { src:'基礎題5(2)', lvl:'中', skill:'求平方根',
+    stem:R`求 1024 的平方根。`, opts:[R`$\pm32$`,'$32$',R`$\pm512$`,R`$\pm34$`], ans:0,
+    hint:R`$1024=2^{10}$。`,
+    steps:[R`$1024=2^{10}=(2^5)^2=32^2$`, R`1024 的平方根為 $\pm\sqrt{32^2}=\pm32$`] },
+  { src:'基礎題5(3)', lvl:'中', skill:'求平方根（小數）',
+    stem:R`求 0.64 的平方根。`, opts:[R`$\pm0.8$`,'$0.8$',R`$\pm0.08$`,R`$\pm0.32$`], ans:0,
+    steps:[R`$0.64=0.8^2$`, R`0.64 的平方根為 $\pm0.8$`] },
+  { src:'基礎題5(4)', lvl:'中', skill:'求平方根（帶分數）',
+    stem:R`求 $1\dfrac{25}{144}$ 的平方根。`, opts:[R`$\pm\dfrac{13}{12}$`,R`$\pm1\dfrac{5}{12}$`,R`$\dfrac{13}{12}$`,R`$\pm\dfrac{169}{144}$`], ans:0,
+    hint:R`先化成假分數。`,
+    steps:[R`$1\dfrac{25}{144}=\dfrac{169}{144}$`, R`平方根為 $\pm\sqrt{\dfrac{169}{144}}=\pm\dfrac{13}{12}$`],
+    tip:R`$\pm1\dfrac{5}{12}$ 是把整數和分數分開開根號，這是常見錯誤。` },
+  { src:'基礎題6', lvl:'中', skill:'平方根的應用',
+    stem:R`若 $2x+5$ 的負平方根是 $-1$，求 $x$ 的值。`, opts:['$-2$','$-3$','$2$','$-4$'], ans:0,
+    hint:R`負平方根是 $-1$，代表 $2x+5=(-1)^2$。`,
+    steps:[R`$2x+5=(-1)^2=1$`, R`$2x=-4$，$x=-2$`],
+    tip:R`寫成 $2x+5=-1$ 會得到 $-3$，那是忘了平方。` },
+  { src:'精熟題1', lvl:'難', skill:'根號範圍與整數',
+    stem:R`若 $x$ 為正整數，則滿足 $\sqrt{101}<x<\sqrt{201}$ 的 $x$ 值共有幾個？`, opts:['4 個','100 個','5 個','3 個'], ans:0,
+    hint:R`估算 $\sqrt{101}$、$\sqrt{201}$ 各介於哪兩個整數之間。`,
+    steps:[R`$10^2=100$，$11^2=121$，所以 $\sqrt{101}=10.\cdots$`, R`$14^2=196$，$15^2=225$，所以 $\sqrt{201}=14.\cdots$`, R`$x$ 介於 $10.\cdots$ 與 $14.\cdots$ 之間，$x=11,12,13,14$，共 4 個`],
+    tip:R`注意：這題是 $x$ 本身在兩個根號之間，不是 $\sqrt{x}$。` },
+  { src:'精熟題2(1)', lvl:'難', skill:'乘法公式與平方根',
+    stem:R`傑克想求 $51\dfrac{1}{49}$ 的正平方根，他寫出：$51\dfrac{1}{49}=\dfrac{51\times49+1}{49}=\dfrac{(50+1)(50-1)+1}{49}$。利用平方差公式繼續算，$51\dfrac{1}{49}$ 的正平方根為何？`,
+    opts:[R`$\dfrac{50}{7}$`,R`$\dfrac{51}{7}$`,R`$\dfrac{52}{7}$`,'$7$'], ans:0,
+    hint:R`$(50+1)(50-1)=50^2-1^2$。`,
+    steps:[R`$(50+1)(50-1)+1=50^2-1+1=50^2$`, R`$51\dfrac{1}{49}=\dfrac{50^2}{7^2}=\left(\dfrac{50}{7}\right)^2$`, R`正平方根為 $\dfrac{50}{7}$`] },
+  { src:'精熟題2(2)', lvl:'難', skill:'乘法公式與平方根',
+    stem:R`妙麗把 $51\dfrac{1}{49}$ 寫成 $49+2+\dfrac{1}{49}=7^2+2+\left(\dfrac{1}{7}\right)^2$。利用和的平方公式，它可以整理成下列哪一個數的平方？`,
+    opts:[R`$\left(7+\dfrac{1}{7}\right)^2$`,R`$\left(7+\dfrac{2}{7}\right)^2$`,R`$\left(49+\dfrac{1}{49}\right)^2$`,R`$(7+2)^2$`], ans:0,
+    hint:R`中間的 2 可以寫成 $2\times7\times\dfrac{1}{7}$。`,
+    steps:[R`$7^2+2+\left(\dfrac{1}{7}\right)^2=7^2+2\times7\times\dfrac{1}{7}+\left(\dfrac{1}{7}\right)^2$`, R`$=\left(7+\dfrac{1}{7}\right)^2=\left(\dfrac{50}{7}\right)^2$`, R`所以正平方根同樣是 $\dfrac{50}{7}$`],
+    fin:R`$\left(7+\dfrac{1}{7}\right)^2=\left(\dfrac{50}{7}\right)^2$，正平方根為 $\dfrac{50}{7}$`,
+    v:['Rational(2500,49)',['(7+Rational(1,7))**2','(7+Rational(2,7))**2','(49+Rational(1,49))**2','(7+2)**2']] }
+]);
+
+/* ================= 2-2 根式的運算 ================= */
+addSet('2-2','book',[
+  { src:'例1(1)', lvl:'易', skill:'根式的乘法',
+    stem:R`求 $\sqrt{3}\times\sqrt{7}=$？`, opts:[R`$\sqrt{21}$`,R`$\sqrt{10}$`,'$21$',R`$3\sqrt{7}$`], ans:0,
+    hint:R`$\sqrt{a}\times\sqrt{b}=\sqrt{a\times b}$。`,
+    steps:[R`$\sqrt{3}\times\sqrt{7}=\sqrt{3\times7}=\sqrt{21}$`],
+    tip:R`根號相乘是「裡面相乘」，不是相加；選 $\sqrt{10}$ 就是加起來了。`,
+    v:['sqrt(3)*sqrt(7)',['sqrt(21)','sqrt(10)','21','3*sqrt(7)']] },
+  { src:'例1(2)', lvl:'易', skill:'根式的乘法',
+    stem:R`求 $3\sqrt{3}\times(-2\sqrt{5})=$？`, opts:[R`$-6\sqrt{15}$`,R`$6\sqrt{15}$`,R`$-\sqrt{15}$`,R`$-6\sqrt{8}$`], ans:0,
+    hint:R`根號外的數和外面相乘，根號內的數和裡面相乘。`,
+    steps:[R`$=3\times(-2)\times\sqrt{3}\times\sqrt{5}$`, R`$=-6\sqrt{15}$`],
+    v:['3*sqrt(3)*(-2*sqrt(5))',['-6*sqrt(15)','6*sqrt(15)','-sqrt(15)','-6*sqrt(8)']] },
+  { src:'例2', lvl:'中', skill:'比較根式的大小',
+    stem:R`比較 $3\sqrt{2}$ 與 $2\sqrt{3}$ 的大小關係。`, opts:[R`$3\sqrt{2}>2\sqrt{3}$`,R`$3\sqrt{2}=2\sqrt{3}$`,R`$3\sqrt{2}<2\sqrt{3}$`], ans:0,
+    hint:R`把根號外的數「搬進」根號：$3=\sqrt{9}$。`,
+    steps:[R`$3\sqrt{2}=\sqrt{9}\times\sqrt{2}=\sqrt{18}$`, R`$2\sqrt{3}=\sqrt{4}\times\sqrt{3}=\sqrt{12}$`, R`$\sqrt{18}>\sqrt{12}$，所以 $3\sqrt{2}>2\sqrt{3}$`],
+    tip:R`也可以兩邊平方比較：$(3\sqrt{2})^2=18$，$(2\sqrt{3})^2=12$。` },
+  { src:'例3(1)', lvl:'易', skill:'根式的除法',
+    stem:R`計算 $\sqrt{35}\div\sqrt{7}=$？`, opts:[R`$\sqrt{5}$`,'$5$',R`$\sqrt{28}$`,R`$\sqrt{42}$`], ans:0,
+    hint:R`$\sqrt{a}\div\sqrt{b}=\sqrt{a\div b}$。`,
+    steps:[R`$\sqrt{35}\div\sqrt{7}=\sqrt{35\div7}=\sqrt{5}$`],
+    v:['sqrt(35)/sqrt(7)',['sqrt(5)','5','sqrt(28)','sqrt(42)']] },
+  { src:'例3(2)', lvl:'中', skill:'根式的除法',
+    stem:R`計算 $\sqrt{\dfrac{7}{2}}\div\dfrac{\sqrt{3}}{\sqrt{6}}=$？`, opts:[R`$\sqrt{7}$`,R`$\dfrac{\sqrt{7}}{2}$`,'$7$',R`$\sqrt{14}$`], ans:0,
+    hint:R`先把 $\dfrac{\sqrt{3}}{\sqrt{6}}$ 合成 $\sqrt{\dfrac{3}{6}}$。`,
+    steps:[R`$=\sqrt{\dfrac{7}{2}}\div\sqrt{\dfrac{3}{6}}=\sqrt{\dfrac{7}{2}\div\dfrac{3}{6}}$`, R`$=\sqrt{\dfrac{7}{2}\times\dfrac{6}{3}}=\sqrt{7}$`],
+    tip:R`除以一個分數 = 乘以它的倒數，在根號裡也一樣。`,
+    v:['sqrt(Rational(7,2))/(sqrt(3)/sqrt(6))',['sqrt(7)','sqrt(7)/2','7','sqrt(14)']] },
+  { src:'例4(1)', lvl:'易', skill:'化為最簡根式',
+    stem:R`將 $\sqrt{2^5}$ 化為最簡根式。`, opts:[R`$4\sqrt{2}$`,R`$2\sqrt{2}$`,'$8$',R`$16\sqrt{2}$`], ans:0,
+    hint:R`$2^5=2^4\times2$，把能開的平方先拿出來。`,
+    steps:[R`$\sqrt{2^5}=\sqrt{2^4\times2}=\sqrt{2^4}\times\sqrt{2}$`, R`$=2^2\times\sqrt{2}=4\sqrt{2}$`],
+    tip:R`最簡根式：根號內不能再有大於 1 的平方因數。`,
+    v:['sqrt(2**5)',['4*sqrt(2)','2*sqrt(2)','8','16*sqrt(2)']] },
+  { src:'例4(2)', lvl:'易', skill:'化為最簡根式',
+    stem:R`將 $\sqrt{24}$ 化為最簡根式。`, opts:[R`$2\sqrt{6}$`,R`$4\sqrt{6}$`,R`$6\sqrt{2}$`,R`$3\sqrt{8}$`], ans:0,
+    steps:[R`$24=2^2\times6$`, R`$\sqrt{24}=\sqrt{2^2}\times\sqrt{6}=2\sqrt{6}$`],
+    v:['sqrt(24)',['2*sqrt(6)','4*sqrt(6)','6*sqrt(2)','3*sqrt(8)']] },
+  { src:'例5(1)', lvl:'中', skill:'有理化分母',
+    stem:R`將 $\dfrac{4}{3\sqrt{5}}$ 化為最簡根式。`, opts:[R`$\dfrac{4\sqrt{5}}{15}$`,R`$\dfrac{4\sqrt{5}}{5}$`,R`$\dfrac{4\sqrt{5}}{3}$`,R`$\dfrac{12\sqrt{5}}{5}$`], ans:0,
+    hint:R`分子、分母同乘 $\sqrt{5}$。`,
+    steps:[R`$\dfrac{4}{3\sqrt{5}}=\dfrac{4\times\sqrt{5}}{3\sqrt{5}\times\sqrt{5}}$`, R`$=\dfrac{4\sqrt{5}}{3\times5}=\dfrac{4\sqrt{5}}{15}$`],
+    tip:R`分母的 3 不要忘了乘進去：$3\times5=15$。`,
+    v:['4/(3*sqrt(5))',['4*sqrt(5)/15','4*sqrt(5)/5','4*sqrt(5)/3','12*sqrt(5)/5']] },
+  { src:'例5(2)', lvl:'中', skill:'有理化分母',
+    stem:R`將 $\sqrt{\dfrac{7}{18}}$ 化為最簡根式。`, opts:[R`$\dfrac{\sqrt{14}}{6}$`,R`$\dfrac{\sqrt{7}}{18}$`,R`$\dfrac{\sqrt{14}}{18}$`,R`$\dfrac{\sqrt{7}}{6}$`], ans:0,
+    hint:R`$\sqrt{18}=3\sqrt{2}$，分子分母再同乘 $\sqrt{2}$。`,
+    steps:[R`$\sqrt{\dfrac{7}{18}}=\dfrac{\sqrt{7}}{\sqrt{18}}=\dfrac{\sqrt{7}}{3\sqrt{2}}$`, R`$=\dfrac{\sqrt{7}\times\sqrt{2}}{3\sqrt{2}\times\sqrt{2}}=\dfrac{\sqrt{14}}{6}$`],
+    tip:R`先化簡分母再有理化，數字會小很多。`,
+    v:['sqrt(Rational(7,18))',['sqrt(14)/6','sqrt(7)/18','sqrt(14)/18','sqrt(7)/6']] },
+  { src:'例5(3)', lvl:'中', skill:'有理化分母',
+    stem:R`將 $\sqrt{0.7}$ 化為最簡根式。`, opts:[R`$\dfrac{\sqrt{70}}{10}$`,R`$\dfrac{\sqrt{7}}{10}$`,R`$\dfrac{\sqrt{70}}{100}$`,R`$\dfrac{7\sqrt{10}}{10}$`], ans:0,
+    hint:R`$0.7=\dfrac{7}{10}$。`,
+    steps:[R`$\sqrt{0.7}=\sqrt{\dfrac{7}{10}}=\dfrac{\sqrt{7}}{\sqrt{10}}$`, R`$=\dfrac{\sqrt{7}\times\sqrt{10}}{\sqrt{10}\times\sqrt{10}}=\dfrac{\sqrt{70}}{10}$`],
+    tip:R`$\sqrt{0.7}\neq\dfrac{\sqrt{7}}{10}$：$0.7=\dfrac{7}{10}$，分母是 $\sqrt{10}$ 不是 10。`,
+    v:['sqrt(Rational(7,10))',['sqrt(70)/10','sqrt(7)/10','sqrt(70)/100','7*sqrt(10)/10']] },
+  { src:'例6(1)', lvl:'中', skill:'乘除運算與有理化',
+    stem:R`計算 $\sqrt{\dfrac{8}{3}}\times\sqrt{\dfrac{27}{16}}$ 並化為最簡根式。`, opts:[R`$\dfrac{3\sqrt{2}}{2}$`,R`$\dfrac{3}{2}$`,R`$\dfrac{9}{2}$`,R`$\dfrac{2\sqrt{3}}{3}$`], ans:0,
+    steps:[R`$=\sqrt{\dfrac{8}{3}\times\dfrac{27}{16}}=\sqrt{\dfrac{9}{2}}$`, R`$=\dfrac{3}{\sqrt{2}}=\dfrac{3\times\sqrt{2}}{\sqrt{2}\times\sqrt{2}}=\dfrac{3\sqrt{2}}{2}$`],
+    tip:R`先約分再開根號：$\dfrac{8}{3}\times\dfrac{27}{16}=\dfrac{9}{2}$。`,
+    v:['sqrt(Rational(8,3))*sqrt(Rational(27,16))',['3*sqrt(2)/2','Rational(3,2)','Rational(9,2)','2*sqrt(3)/3']] },
+  { src:'例6(2)', lvl:'中', skill:'乘除運算與有理化',
+    stem:R`計算 $\sqrt{45}\div\sqrt{30}$ 並化為最簡根式。`, opts:[R`$\dfrac{\sqrt{6}}{2}$`,R`$\dfrac{\sqrt{6}}{3}$`,R`$\dfrac{3}{2}$`,R`$\dfrac{\sqrt{3}}{2}$`], ans:0,
+    steps:[R`$\sqrt{45}\div\sqrt{30}=\sqrt{\dfrac{45}{30}}=\sqrt{\dfrac{3}{2}}$`, R`$=\dfrac{\sqrt{3}}{\sqrt{2}}=\dfrac{\sqrt{3}\times\sqrt{2}}{\sqrt{2}\times\sqrt{2}}=\dfrac{\sqrt{6}}{2}$`],
+    v:['sqrt(45)/sqrt(30)',['sqrt(6)/2','sqrt(6)/3','Rational(3,2)','sqrt(3)/2']] },
+  { src:'例7(1)', lvl:'易', skill:'同類方根的合併',
+    stem:R`計算 $7\sqrt{3}-3\sqrt{3}$ 並化為最簡根式。`, opts:[R`$4\sqrt{3}$`,'$4$',R`$10\sqrt{3}$`,R`$2\sqrt{3}$`], ans:0,
+    steps:[R`$7\sqrt{3}$ 和 $3\sqrt{3}$ 是同類方根，可以合併`, R`$=(7-3)\sqrt{3}=4\sqrt{3}$`],
+    tip:R`就像 $7x-3x=4x$，根號部分保持不變。`,
+    v:['7*sqrt(3)-3*sqrt(3)',['4*sqrt(3)','4','10*sqrt(3)','2*sqrt(3)']] },
+  { src:'例7(2)', lvl:'易', skill:'同類方根的合併',
+    stem:R`計算 $\sqrt{2}-5\sqrt{2}+\sqrt{3}$ 並化為最簡根式。`, opts:[R`$-4\sqrt{2}+\sqrt{3}$`,R`$-4\sqrt{5}$`,R`$-5\sqrt{2}+\sqrt{3}$`,R`$4\sqrt{2}+\sqrt{3}$`], ans:0,
+    steps:[R`$\sqrt{2}-5\sqrt{2}=(1-5)\sqrt{2}=-4\sqrt{2}$`, R`$-4\sqrt{2}$ 和 $\sqrt{3}$ 不是同類方根，不能合併：答案 $-4\sqrt{2}+\sqrt{3}$`],
+    tip:R`$\sqrt{2}$ 前面的係數是 1，不是 0。`,
+    v:['sqrt(2)-5*sqrt(2)+sqrt(3)',['-4*sqrt(2)+sqrt(3)','-4*sqrt(5)','-5*sqrt(2)+sqrt(3)','4*sqrt(2)+sqrt(3)']] },
+  { src:'例8(1)', lvl:'中', skill:'化簡後合併同類方根',
+    stem:R`計算 $\sqrt{48}-5\sqrt{12}+\sqrt{45}$ 並化為最簡根式。`, opts:[R`$-6\sqrt{3}+3\sqrt{5}$`,R`$14\sqrt{3}+3\sqrt{5}$`,R`$-\sqrt{3}+3\sqrt{5}$`,R`$-3\sqrt{8}$`], ans:0,
+    hint:R`每一項先化成最簡根式：$\sqrt{48}=4\sqrt{3}$。`,
+    steps:[R`$\sqrt{48}=4\sqrt{3}$，$5\sqrt{12}=5\times2\sqrt{3}=10\sqrt{3}$，$\sqrt{45}=3\sqrt{5}$`, R`原式 $=4\sqrt{3}-10\sqrt{3}+3\sqrt{5}$`, R`$=-6\sqrt{3}+3\sqrt{5}$`],
+    tip:R`$5\sqrt{12}=5\times\sqrt{12}$，化簡後要乘上 5：$5\times2\sqrt{3}=10\sqrt{3}$。`,
+    v:['sqrt(48)-5*sqrt(12)+sqrt(45)',['-6*sqrt(3)+3*sqrt(5)','14*sqrt(3)+3*sqrt(5)','-sqrt(3)+3*sqrt(5)','-3*sqrt(8)']] },
+  { src:'例8(2)', lvl:'中', skill:'化簡後合併同類方根',
+    stem:R`計算 $\dfrac{3}{\sqrt{2}}+\dfrac{7}{2}\sqrt{2}$ 並化為最簡根式。`, opts:[R`$5\sqrt{2}$`,R`$10\sqrt{2}$`,R`$\dfrac{13\sqrt{2}}{2}$`,'$5$'], ans:0,
+    hint:R`先把 $\dfrac{3}{\sqrt{2}}$ 有理化。`,
+    steps:[R`$\dfrac{3}{\sqrt{2}}=\dfrac{3\sqrt{2}}{2}$`, R`原式 $=\dfrac{3}{2}\sqrt{2}+\dfrac{7}{2}\sqrt{2}=\dfrac{10}{2}\sqrt{2}=5\sqrt{2}$`],
+    v:['3/sqrt(2)+Rational(7,2)*sqrt(2)',['5*sqrt(2)','10*sqrt(2)','13*sqrt(2)/2','5']] },
+  { src:'例9(1)', lvl:'中', skill:'根式的四則運算',
+    stem:R`計算 $-2\sqrt{3}(\sqrt{6}-\sqrt{2})$ 並化為最簡根式。`, opts:[R`$-6\sqrt{2}+2\sqrt{6}$`,R`$-6\sqrt{2}-2\sqrt{6}$`,R`$6\sqrt{2}-2\sqrt{6}$`,R`$-4\sqrt{3}$`], ans:0,
+    hint:R`用分配律，負號要一起乘進去。`,
+    steps:[R`$=-2\sqrt{3}\times\sqrt{6}+2\sqrt{3}\times\sqrt{2}$`, R`$=-2\sqrt{18}+2\sqrt{6}$`, R`$=-6\sqrt{2}+2\sqrt{6}$`],
+    tip:R`$-2\sqrt{3}\times(-\sqrt{2})=+2\sqrt{6}$，負負得正。`,
+    v:['-2*sqrt(3)*(sqrt(6)-sqrt(2))',['-6*sqrt(2)+2*sqrt(6)','-6*sqrt(2)-2*sqrt(6)','6*sqrt(2)-2*sqrt(6)','-4*sqrt(3)']] },
+  { src:'例9(2)', lvl:'中', skill:'根式的四則運算',
+    stem:R`計算 $(\sqrt{3}-\sqrt{2})(\sqrt{6}+1)$ 並化為最簡根式。`, opts:[R`$2\sqrt{2}-\sqrt{3}$`,R`$2\sqrt{2}+\sqrt{3}$`,R`$3\sqrt{2}-2\sqrt{3}$`,R`$2\sqrt{2}$`], ans:0,
+    hint:R`兩個括號相乘，共有 4 項要展開。`,
+    steps:[R`$=\sqrt{3}\times\sqrt{6}+\sqrt{3}-\sqrt{2}\times\sqrt{6}-\sqrt{2}$`, R`$=\sqrt{18}+\sqrt{3}-\sqrt{12}-\sqrt{2}$`, R`$=3\sqrt{2}+\sqrt{3}-2\sqrt{3}-\sqrt{2}=2\sqrt{2}-\sqrt{3}$`],
+    v:['(sqrt(3)-sqrt(2))*(sqrt(6)+1)',['2*sqrt(2)-sqrt(3)','2*sqrt(2)+sqrt(3)','3*sqrt(2)-2*sqrt(3)','2*sqrt(2)']] },
+  { src:'例10(1)', lvl:'中', skill:'根式的四則運算',
+    stem:R`計算 $\sqrt{\dfrac{1}{3}}\times\sqrt{\dfrac{2}{3}}\div\sqrt{\dfrac{1}{4}}$ 並化為最簡根式。`, opts:[R`$\dfrac{2\sqrt{2}}{3}$`,R`$\dfrac{\sqrt{2}}{6}$`,R`$\dfrac{2\sqrt{2}}{9}$`,R`$\dfrac{4\sqrt{2}}{3}$`], ans:0,
+    hint:R`除以 $\dfrac{1}{4}$ 等於乘以 4。`,
+    steps:[R`$=\sqrt{\dfrac{1}{3}\times\dfrac{2}{3}\div\dfrac{1}{4}}=\sqrt{\dfrac{1}{3}\times\dfrac{2}{3}\times4}=\sqrt{\dfrac{8}{9}}$`, R`$=\dfrac{\sqrt{8}}{3}=\dfrac{2\sqrt{2}}{3}$`],
+    tip:R`選 $\dfrac{\sqrt{2}}{6}$ 的同學把「÷」當成「×」了。`,
+    v:['sqrt(Rational(1,3))*sqrt(Rational(2,3))/sqrt(Rational(1,4))',['2*sqrt(2)/3','sqrt(2)/6','2*sqrt(2)/9','4*sqrt(2)/3']] },
+  { src:'例10(2)', lvl:'中', skill:'根式的四則運算',
+    stem:R`計算 $(4\sqrt{2}+\sqrt{6})\div\sqrt{3}$ 並化為最簡根式。`, opts:[R`$\dfrac{4\sqrt{6}+3\sqrt{2}}{3}$`,R`$\dfrac{4\sqrt{6}+\sqrt{2}}{3}$`,R`$\dfrac{4\sqrt{6}+3\sqrt{2}}{9}$`,R`$4\sqrt{6}+3\sqrt{2}$`], ans:0,
+    hint:R`寫成分數 $\dfrac{4\sqrt{2}+\sqrt{6}}{\sqrt{3}}$，分子分母同乘 $\sqrt{3}$。`,
+    steps:[R`$=\dfrac{(4\sqrt{2}+\sqrt{6})\times\sqrt{3}}{\sqrt{3}\times\sqrt{3}}$`, R`$=\dfrac{4\sqrt{6}+\sqrt{18}}{3}=\dfrac{4\sqrt{6}+3\sqrt{2}}{3}$`],
+    tip:R`也可寫成 $\dfrac{4\sqrt{6}}{3}+\sqrt{2}$，兩種寫法都對。`,
+    v:['(4*sqrt(2)+sqrt(6))/sqrt(3)',['(4*sqrt(6)+3*sqrt(2))/3','(4*sqrt(6)+sqrt(2))/3','(4*sqrt(6)+3*sqrt(2))/9','4*sqrt(6)+3*sqrt(2)']] },
+  { src:'例11', lvl:'中', skill:'完全平方公式化簡根式',
+    stem:R`利用 $(a+b)^2=a^2+2ab+b^2$ 展開 $(3+2\sqrt{5})^2$，並化簡其結果。`, opts:[R`$29+12\sqrt{5}$`,'$29$',R`$29+6\sqrt{5}$`,R`$19+12\sqrt{5}$`], ans:0,
+    hint:R`$a=3$，$b=2\sqrt{5}$，$b^2=(2\sqrt{5})^2=?$`,
+    steps:[R`$=3^2+2\times3\times2\sqrt{5}+(2\sqrt{5})^2$`, R`$=9+12\sqrt{5}+20$`, R`$=29+12\sqrt{5}$`],
+    tip:R`$(2\sqrt{5})^2=4\times5=20$；只寫 $3^2+(2\sqrt{5})^2=29$ 就漏了中間項。`,
+    v:['(3+2*sqrt(5))**2',['29+12*sqrt(5)','29','29+6*sqrt(5)','19+12*sqrt(5)']] },
+  { src:'例12', lvl:'易', skill:'平方差公式化簡根式',
+    stem:R`利用 $(a+b)(a-b)=a^2-b^2$ 展開 $(3+\sqrt{5})(3-\sqrt{5})$，並化簡其結果。`, opts:['$4$','$14$',R`$9-\sqrt{5}$`,'$-4$'], ans:0,
+    steps:[R`$=3^2-(\sqrt{5})^2$`, R`$=9-5=4$`],
+    v:['(3+sqrt(5))*(3-sqrt(5))',['4','14','9-sqrt(5)','-4']] },
+  { src:'例13(1)', lvl:'中', skill:'平方差公式有理化分母',
+    stem:R`化簡 $\dfrac{3}{\sqrt{7}-2}$。`, opts:[R`$\sqrt{7}+2$`,R`$\sqrt{7}-2$`,R`$\dfrac{3(\sqrt{7}+2)}{11}$`,R`$\dfrac{\sqrt{7}+2}{3}$`], ans:0,
+    hint:R`分母是 $\sqrt{7}-2$，分子分母同乘 $(\sqrt{7}+2)$。`,
+    steps:[R`$=\dfrac{3(\sqrt{7}+2)}{(\sqrt{7}-2)(\sqrt{7}+2)}$`, R`分母 $=(\sqrt{7})^2-2^2=7-4=3$`, R`$=\dfrac{3(\sqrt{7}+2)}{3}=\sqrt{7}+2$`],
+    tip:R`分母 $7-4=3$，不是 $7+4=11$。`,
+    v:['3/(sqrt(7)-2)',['sqrt(7)+2','sqrt(7)-2','3*(sqrt(7)+2)/11','(sqrt(7)+2)/3']] },
+  { src:'例13(2)', lvl:'中', skill:'平方差公式有理化分母',
+    stem:R`化簡 $\dfrac{\sqrt{2}}{\sqrt{6}+\sqrt{5}}$。`, opts:[R`$2\sqrt{3}-\sqrt{10}$`,R`$2\sqrt{3}+\sqrt{10}$`,R`$\dfrac{2\sqrt{3}-\sqrt{10}}{11}$`,R`$\dfrac{\sqrt{2}}{11}$`], ans:0,
+    hint:R`分子分母同乘 $(\sqrt{6}-\sqrt{5})$。`,
+    steps:[R`$=\dfrac{\sqrt{2}(\sqrt{6}-\sqrt{5})}{(\sqrt{6}+\sqrt{5})(\sqrt{6}-\sqrt{5})}$`, R`分母 $=6-5=1$`, R`$=\sqrt{12}-\sqrt{10}=2\sqrt{3}-\sqrt{10}$`],
+    v:['sqrt(2)/(sqrt(6)+sqrt(5))',['2*sqrt(3)-sqrt(10)','2*sqrt(3)+sqrt(10)','(2*sqrt(3)-sqrt(10))/11','sqrt(2)/11']] }
+]);
+
+addSet('2-2','work',[
+  { src:'暖身題1(1)', lvl:'易', skill:'根式的乘法', mc:1,
+    stem:R`若 $a\ge0$，$b\ge0$，則 $\sqrt{a}\times\sqrt{b}=\sqrt{a\times b}$。$\sqrt{5}\times\sqrt{7}$ 的結果為下列何者？`,
+    opts:[R`$\sqrt{35}$`,R`$\sqrt{57}$`], ans:0, steps:[R`$\sqrt{5}\times\sqrt{7}=\sqrt{5\times7}=\sqrt{35}$`] },
+  { src:'暖身題1(2)', lvl:'易', skill:'根式的除法', mc:1,
+    stem:R`若 $a\ge0$，$b>0$，則 $\sqrt{a}\div\sqrt{b}=\sqrt{a\div b}$。$\sqrt{12}\div\sqrt{2}$ 的結果為下列何者？`,
+    opts:['$6$',R`$\sqrt{6}$`], ans:1, steps:[R`$\sqrt{12}\div\sqrt{2}=\sqrt{12\div2}=\sqrt{6}$`] },
+  { src:'暖身題2', lvl:'易', skill:'同類方根', mc:1,
+    stem:R`根式做加減運算時，同類方根要合併。下列何者為 $2\sqrt{3}+5\sqrt{3}+3$ 化簡後的結果？`,
+    opts:[R`$7\sqrt{3}+3$`,R`$10\sqrt{3}$`], ans:0, steps:[R`$2\sqrt{3}+5\sqrt{3}=7\sqrt{3}$`, R`3 不是 $\sqrt{3}$ 的同類方根，不能合併，答案 $7\sqrt{3}+3$`] },
+  { src:'暖身題3', lvl:'易', skill:'有理化分母', mc:1,
+    stem:R`若 $a>0$，化簡分母為 $\sqrt{a}$ 的根式時，可將分母、分子同乘以 $\sqrt{a}$。下列何者為 $\dfrac{2}{\sqrt{3}}$ 化簡後的結果？`,
+    opts:[R`$\dfrac{\sqrt{6}}{3}$`,R`$\dfrac{2\sqrt{3}}{3}$`], ans:1, steps:[R`$\dfrac{2}{\sqrt{3}}=\dfrac{2\times\sqrt{3}}{\sqrt{3}\times\sqrt{3}}=\dfrac{2\sqrt{3}}{3}$`] },
+  { src:'基礎題1(1)', lvl:'易', skill:'化為最簡根式',
+    stem:R`將 $\sqrt{5^3}$ 化為最簡根式。`, opts:[R`$5\sqrt{5}$`,R`$25\sqrt{5}$`,'$15$','$5$'], ans:0,
+    steps:[R`$\sqrt{5^3}=\sqrt{5^2\times5}=5\sqrt{5}$`],
+    v:['sqrt(5**3)',['5*sqrt(5)','25*sqrt(5)','15','5']] },
+  { src:'基礎題1(2)', lvl:'易', skill:'化為最簡根式',
+    stem:R`將 $\sqrt{48}$ 化為最簡根式。`, opts:[R`$4\sqrt{3}$`,R`$2\sqrt{3}$`,R`$16\sqrt{3}$`,R`$6\sqrt{2}$`], ans:0,
+    hint:R`$48=16\times3$。`,
+    steps:[R`$48=2^2\times2^2\times3=4^2\times3$`, R`$\sqrt{48}=4\sqrt{3}$`],
+    tip:R`若寫成 $2\sqrt{12}$，根號內還有 $4=2^2$，還不是最簡根式。`,
+    v:['sqrt(48)',['4*sqrt(3)','2*sqrt(3)','16*sqrt(3)','6*sqrt(2)']] },
+  { src:'基礎題2(1)', lvl:'中', skill:'有理化分母',
+    stem:R`將 $\dfrac{2}{\sqrt{98}}$ 化為最簡根式。`, opts:[R`$\dfrac{\sqrt{2}}{7}$`,R`$\dfrac{2\sqrt{2}}{7}$`,R`$\dfrac{\sqrt{2}}{14}$`,R`$\dfrac{1}{7}$`], ans:0,
+    hint:R`先化簡 $\sqrt{98}=7\sqrt{2}$。`,
+    steps:[R`$\dfrac{2}{\sqrt{98}}=\dfrac{2}{7\sqrt{2}}=\dfrac{2\times\sqrt{2}}{7\sqrt{2}\times\sqrt{2}}$`, R`$=\dfrac{2\sqrt{2}}{14}=\dfrac{\sqrt{2}}{7}$`],
+    v:['2/sqrt(98)',['sqrt(2)/7','2*sqrt(2)/7','sqrt(2)/14','Rational(1,7)']] },
+  { src:'基礎題2(2)', lvl:'中', skill:'有理化分母',
+    stem:R`將 $\sqrt{\dfrac{2}{15}}$ 化為最簡根式。`, opts:[R`$\dfrac{\sqrt{30}}{15}$`,R`$\dfrac{\sqrt{2}}{15}$`,R`$\dfrac{\sqrt{30}}{30}$`,R`$\dfrac{2\sqrt{15}}{15}$`], ans:0,
+    steps:[R`$\sqrt{\dfrac{2}{15}}=\dfrac{\sqrt{2}}{\sqrt{15}}$`, R`$=\dfrac{\sqrt{2}\times\sqrt{15}}{\sqrt{15}\times\sqrt{15}}=\dfrac{\sqrt{30}}{15}$`],
+    v:['sqrt(Rational(2,15))',['sqrt(30)/15','sqrt(2)/15','sqrt(30)/30','2*sqrt(15)/15']] },
+  { src:'基礎題3(1)', lvl:'中', skill:'乘除運算與最簡根式',
+    stem:R`計算 $\sqrt{90}\times\sqrt{2}$ 並化為最簡根式。`, opts:[R`$6\sqrt{5}$`,R`$3\sqrt{10}$`,R`$18\sqrt{5}$`,R`$\sqrt{92}$`], ans:0,
+    steps:[R`$=\sqrt{90\times2}=\sqrt{180}$`, R`$180=2^2\times3^2\times5$，$\sqrt{180}=2\times3\times\sqrt{5}=6\sqrt{5}$`],
+    v:['sqrt(90)*sqrt(2)',['6*sqrt(5)','3*sqrt(10)','18*sqrt(5)','sqrt(92)']] },
+  { src:'基礎題3(2)', lvl:'中', skill:'乘除運算與最簡根式',
+    stem:R`計算 $\sqrt{30}\div\sqrt{45}$ 並化為最簡根式。`, opts:[R`$\dfrac{\sqrt{6}}{3}$`,R`$\dfrac{\sqrt{6}}{2}$`,R`$\dfrac{2}{3}$`,R`$\dfrac{\sqrt{2}}{3}$`], ans:0,
+    steps:[R`$=\sqrt{\dfrac{30}{45}}=\sqrt{\dfrac{2}{3}}=\dfrac{\sqrt{2}}{\sqrt{3}}$`, R`$=\dfrac{\sqrt{2}\times\sqrt{3}}{\sqrt{3}\times\sqrt{3}}=\dfrac{\sqrt{6}}{3}$`],
+    v:['sqrt(30)/sqrt(45)',['sqrt(6)/3','sqrt(6)/2','Rational(2,3)','sqrt(2)/3']] },
+  { src:'基礎題4', lvl:'難', skill:'根式的應用：長方體',
+    stem:R`若一個長方體的體積為 $\sqrt{21}$ 立方公分，其長為 $\dfrac{\sqrt{5}}{\sqrt{2}}$ 公分，寬為 $\sqrt{\dfrac{14}{25}}$ 公分，求此長方體的高。（答案以最簡根式表示）`,
+    opts:[R`$\sqrt{15}$ 公分`,R`$\dfrac{7\sqrt{15}}{5}$ 公分`,R`$\dfrac{\sqrt{35}}{5}$ 公分`,'15 公分'], ans:0,
+    hint:R`高 = 體積 ÷（長 × 寬）。`,
+    steps:[R`長 × 寬 $=\sqrt{\dfrac{5}{2}}\times\sqrt{\dfrac{14}{25}}=\sqrt{\dfrac{5}{2}\times\dfrac{14}{25}}=\sqrt{\dfrac{7}{5}}$`, R`高 $=\sqrt{21}\div\sqrt{\dfrac{7}{5}}=\sqrt{21\times\dfrac{5}{7}}=\sqrt{15}$（公分）`],
+    tip:R`選 $\dfrac{\sqrt{35}}{5}$ 的同學只算了「長 × 寬」，還沒用體積去除。`,
+    v:['sqrt(21)/(sqrt(5)/sqrt(2)*sqrt(Rational(14,25)))',['sqrt(15)','7*sqrt(15)/5','sqrt(35)/5','15']] },
+  { src:'基礎題5(1)', lvl:'中', skill:'化簡後合併同類方根',
+    stem:R`計算 $\sqrt{18}-5\sqrt{3}+\sqrt{12}$ 並化為最簡根式。`, opts:[R`$3\sqrt{2}-3\sqrt{3}$`,R`$3\sqrt{2}-7\sqrt{3}$`,R`$3\sqrt{2}+3\sqrt{3}$`,'$0$'], ans:0,
+    steps:[R`$\sqrt{18}=3\sqrt{2}$，$\sqrt{12}=2\sqrt{3}$`, R`原式 $=3\sqrt{2}-5\sqrt{3}+2\sqrt{3}=3\sqrt{2}-3\sqrt{3}$`],
+    tip:R`$3\sqrt{2}$ 和 $3\sqrt{3}$ 不是同類方根，不能相消成 0。`,
+    v:['sqrt(18)-5*sqrt(3)+sqrt(12)',['3*sqrt(2)-3*sqrt(3)','3*sqrt(2)-7*sqrt(3)','3*sqrt(2)+3*sqrt(3)','0']] },
+  { src:'基礎題5(2)', lvl:'中', skill:'根式的四則運算',
+    stem:R`計算 $\sqrt{2}(\sqrt{10}-\sqrt{3})$ 並化為最簡根式。`, opts:[R`$2\sqrt{5}-\sqrt{6}$`,R`$2\sqrt{5}+\sqrt{6}$`,R`$\sqrt{14}$`,R`$\sqrt{5}$`], ans:0,
+    steps:[R`$=\sqrt{20}-\sqrt{6}$`, R`$=2\sqrt{5}-\sqrt{6}$`],
+    tip:R`$\sqrt{10}-\sqrt{3}\neq\sqrt{7}$，要用分配律逐項相乘。`,
+    v:['sqrt(2)*(sqrt(10)-sqrt(3))',['2*sqrt(5)-sqrt(6)','2*sqrt(5)+sqrt(6)','sqrt(14)','sqrt(5)']] },
+  { src:'基礎題5(3)', lvl:'難', skill:'根式的四則運算',
+    stem:R`計算 $\left(-\sqrt{\dfrac{1}{7}}\right)\times\sqrt{28}\div(-\sqrt{3})$ 並化為最簡根式。`, opts:[R`$\dfrac{2\sqrt{3}}{3}$`,R`$-\dfrac{2\sqrt{3}}{3}$`,R`$\dfrac{2}{3}$`,R`$2\sqrt{3}$`], ans:0,
+    hint:R`兩個負號相乘得正，再把根號合在一起算。`,
+    steps:[R`負 × 負 = 正：原式 $=\sqrt{\dfrac{1}{7}\times28\div3}=\sqrt{\dfrac{4}{3}}$`, R`$=\dfrac{2}{\sqrt{3}}=\dfrac{2\sqrt{3}}{3}$`],
+    v:['(-sqrt(Rational(1,7)))*sqrt(28)/(-sqrt(3))',['2*sqrt(3)/3','-2*sqrt(3)/3','Rational(2,3)','2*sqrt(3)']] },
+  { src:'基礎題5(4)', lvl:'中', skill:'完全平方公式化簡根式',
+    stem:R`計算 $(\sqrt{6}+3\sqrt{2})^2$ 並化為最簡根式。`, opts:[R`$24+12\sqrt{3}$`,'$24$',R`$24+6\sqrt{3}$`,R`$12+12\sqrt{3}$`], ans:0,
+    steps:[R`$=(\sqrt{6})^2+2\times\sqrt{6}\times3\sqrt{2}+(3\sqrt{2})^2$`, R`$=6+6\sqrt{12}+18$`, R`$=24+12\sqrt{3}$`],
+    v:['(sqrt(6)+3*sqrt(2))**2',['24+12*sqrt(3)','24','24+6*sqrt(3)','12+12*sqrt(3)']] },
+  { src:'基礎題5(5)', lvl:'易', skill:'平方差公式化簡根式',
+    stem:R`計算 $(4+2\sqrt{2})(4-2\sqrt{2})$。`, opts:['$8$','$12$','$14$','$24$'], ans:0,
+    steps:[R`$=4^2-(2\sqrt{2})^2$`, R`$=16-8=8$`],
+    tip:R`$(2\sqrt{2})^2=4\times2=8$；算成 $16-2=14$ 或 $16-4=12$ 都是常見錯誤。`,
+    v:['(4+2*sqrt(2))*(4-2*sqrt(2))',['8','12','14','24']] },
+  { src:'基礎題5(6)', lvl:'中', skill:'平方差公式有理化分母',
+    stem:R`化簡 $\dfrac{1}{\sqrt{7}+\sqrt{2}}$。`, opts:[R`$\dfrac{\sqrt{7}-\sqrt{2}}{5}$`,R`$\dfrac{\sqrt{7}+\sqrt{2}}{5}$`,R`$\dfrac{\sqrt{7}-\sqrt{2}}{9}$`,R`$\sqrt{7}-\sqrt{2}$`], ans:0,
+    steps:[R`$=\dfrac{\sqrt{7}-\sqrt{2}}{(\sqrt{7}+\sqrt{2})(\sqrt{7}-\sqrt{2})}$`, R`$=\dfrac{\sqrt{7}-\sqrt{2}}{7-2}=\dfrac{\sqrt{7}-\sqrt{2}}{5}$`],
+    v:['1/(sqrt(7)+sqrt(2))',['(sqrt(7)-sqrt(2))/5','(sqrt(7)+sqrt(2))/5','(sqrt(7)-sqrt(2))/9','sqrt(7)-sqrt(2)']] },
+  { src:'精熟題1', lvl:'難', skill:'有理化分母綜合',
+    stem:R`計算並化簡 $\dfrac{6}{\sqrt{7}-\sqrt{5}}-\dfrac{12}{3-\sqrt{5}}$。`, opts:[R`$3\sqrt{7}-9$`,R`$3\sqrt{7}+6\sqrt{5}-9$`,R`$3\sqrt{7}-3$`,R`$3\sqrt{7}+9$`], ans:0,
+    hint:R`兩個分數各自有理化：分別乘 $(\sqrt{7}+\sqrt{5})$ 與 $(3+\sqrt{5})$。`,
+    steps:[R`$\dfrac{6}{\sqrt{7}-\sqrt{5}}=\dfrac{6(\sqrt{7}+\sqrt{5})}{7-5}=3(\sqrt{7}+\sqrt{5})$`, R`$\dfrac{12}{3-\sqrt{5}}=\dfrac{12(3+\sqrt{5})}{9-5}=3(3+\sqrt{5})$`, R`原式 $=3\sqrt{7}+3\sqrt{5}-9-3\sqrt{5}=3\sqrt{7}-9$`],
+    v:['6/(sqrt(7)-sqrt(5))-12/(3-sqrt(5))',['3*sqrt(7)-9','3*sqrt(7)+6*sqrt(5)-9','3*sqrt(7)-3','3*sqrt(7)+9']] },
+  { src:'精熟題2(1)', lvl:'難', skill:'根號內湊成平方數',
+    stem:R`已知 $a$ 為正整數，若 $\sqrt{72\times a}$ 的值是正整數，求 $a$ 的最小值，以及此時 $\sqrt{72\times a}$ 的值。`,
+    opts:[R`$a=2$，值為 $12$`,R`$a=8$，值為 $24$`,R`$a=1$，值為 $6\sqrt{2}$`,R`$a=72$，值為 $72$`], ans:0,
+    hint:R`$72=2^3\times3^2$，還差什麼才能每個質因數都是偶數次方？`,
+    steps:[R`$72=2^3\times3^2$，2 的次方是奇數`, R`乘上 2 後：$72\times2=2^4\times3^2=(2^2\times3)^2$`, R`$a$ 最小為 2，此時 $\sqrt{144}=12$`],
+    tip:R`$a=8$ 也能讓根號變整數，但題目要的是「最小值」。` },
+  { src:'精熟題2(2)', lvl:'難', skill:'根號內湊成平方數',
+    stem:R`已知 $b$ 為正整數，若 $\sqrt{\dfrac{96}{b}}$ 的值是正整數，求 $b$ 的最小值，以及此時 $\sqrt{\dfrac{96}{b}}$ 的值。`,
+    opts:[R`$b=6$，值為 $4$`,R`$b=24$，值為 $2$`,R`$b=2$，值為 $4\sqrt{3}$`,R`$b=96$，值為 $1$`], ans:0,
+    hint:R`$96=2^5\times3$，要除掉哪些因數，剩下的才是平方數？`,
+    steps:[R`$96=2^5\times3$`, R`除以 $2\times3=6$ 後：$\dfrac{96}{6}=2^4=16$`, R`$b$ 最小為 6，此時 $\sqrt{16}=4$`] },
+  { src:'精熟題3', lvl:'難', skill:'平方差公式求根號',
+    stem:R`利用平方差公式 $a^2-b^2=(a+b)(a-b)$，計算 $\sqrt{57^2-32^2-25^2}$ 的值。`, opts:['$40$','$0$','$20$','$50$'], ans:0,
+    hint:R`先算 $57^2-32^2=(57+32)(57-32)$。`,
+    steps:[R`$57^2-32^2=(57+32)(57-32)=89\times25$`, R`$89\times25-25^2=(89-25)\times25=64\times25$`, R`$\sqrt{64\times25}=\sqrt{8^2\times5^2}=8\times5=40$`],
+    tip:R`$\sqrt{57^2-32^2-25^2}\neq57-32-25$，根號不能逐項拆開。`,
+    v:['sqrt(57**2-32**2-25**2)',['40','0','20','50']] }
+]);
+
+/* ================= 2-3 畢氏定理 ================= */
+addSet('2-3','book',[
+  { src:'例1(1)', lvl:'易', skill:'斜邊長的計算',
+    stem:R`已知直角三角形的兩股長為 5 與 12，求斜邊 $c$ 的長。`, figure:()=>rightTri({ra:'bl',v:'5',b:'12',c:'c',w:180,h:76}),
+    opts:['$13$','$17$',R`$\sqrt{119}$`,'$169$'], ans:0,
+    hint:R`畢氏定理：$c^2=a^2+b^2$。`,
+    steps:[R`$c^2=5^2+12^2=25+144=169$`, R`因為 $c>0$，所以 $c=\sqrt{169}=13$`],
+    tip:R`斜邊不是兩股相加（$5+12=17$），而是「平方相加再開根號」。`,
+    v:['sqrt(5**2+12**2)',['13','17','sqrt(119)','169']] },
+  { src:'例1(2)', lvl:'易', skill:'斜邊長的計算',
+    stem:R`已知直角三角形的兩股長皆為 5，求斜邊 $x$ 的長。`, figure:()=>rightTri({ra:'br',v:'5',b:'5',c:'x',w:100,h:100}),
+    opts:[R`$5\sqrt{2}$`,'$10$','$50$',R`$2\sqrt{5}$`], ans:0,
+    steps:[R`$x^2=5^2+5^2=50$`, R`$x=\sqrt{50}=5\sqrt{2}$`],
+    v:['sqrt(50)',['5*sqrt(2)','10','50','2*sqrt(5)']] },
+  { src:'例2(1)', lvl:'易', skill:'股長的計算',
+    stem:R`已知直角三角形的斜邊長為 17，一股長為 15，求另一股 $a$ 的長。`, figure:()=>rightTri({ra:'bl',v:'a',b:'15',c:'17',w:190,h:70}),
+    opts:['$8$','$2$',R`$\sqrt{514}$`,'$64$'], ans:0,
+    hint:R`求股：$a^2=c^2-b^2$。`,
+    steps:[R`$a^2+15^2=17^2$`, R`$a^2=289-225=64$`, R`因為 $a>0$，所以 $a=8$`],
+    tip:R`求「股」用減的，求「斜邊」用加的。`,
+    v:['sqrt(17**2-15**2)',['8','2','sqrt(514)','64']] },
+  { src:'例2(2)', lvl:'中', skill:'股長的計算',
+    stem:R`已知直角三角形的斜邊長為 4，一股長為 3，求另一股 $b$ 的長。`, figure:()=>rightTri({ra:'bl',v:'3',b:'b',c:'4',w:120,h:80}),
+    opts:[R`$\sqrt{7}$`,'$5$','$1$','$7$'], ans:0,
+    steps:[R`$3^2+b^2=4^2$`, R`$b^2=16-9=7$`, R`因為 $b>0$，所以 $b=\sqrt{7}$`],
+    tip:R`看到 3 和 4 不要直覺想到 5！4 是斜邊時，另一股是 $\sqrt{7}$。`,
+    v:['sqrt(4**2-3**2)',['sqrt(7)','5','1','7']] },
+  { src:'例3(1)', lvl:'中', skill:'直角三角形的複合圖形',
+    stem:R`如圖，快遞業者將貨物從 $A$ 點送到 $B$ 點，有兩條路線分別在轉運中心 $C$、$D$ 轉運。已知 $\angle C$ 與 $\angle D$ 皆為 $90^\circ$，求 $\overline{AB}$ 的長。`, figure:routeQuadFig,
+    opts:['$13$','$17$',R`$\sqrt{119}$`,'$25$'], ans:0,
+    steps:[R`在直角三角形 $ACB$ 中：$\overline{AB}^2=5^2+12^2=169$`, R`$\overline{AB}=13$`],
+    v:['sqrt(5**2+12**2)',['13','17','sqrt(119)','25']] },
+  { src:'例3(2)', lvl:'中', skill:'直角三角形的複合圖形',
+    stem:R`承上題，貨物從 $A$ 點送到 $D$ 點的距離（$\overline{AD}$）為何？`, figure:routeQuadFig,
+    opts:[R`$\sqrt{105}$`,R`$\sqrt{233}$`,'$5$',R`$\sqrt{89}$`], ans:0,
+    hint:R`$\overline{AB}$ 也是直角三角形 $ADB$ 的斜邊。`,
+    steps:[R`在直角三角形 $ADB$ 中：$\overline{AB}^2=\overline{AD}^2+8^2$`, R`$169=\overline{AD}^2+64$，$\overline{AD}^2=105$`, R`$\overline{AD}=\sqrt{105}$`],
+    v:['sqrt(13**2-8**2)',['sqrt(105)','sqrt(233)','5','sqrt(89)']] },
+  { src:'例4', lvl:'中', skill:'斜邊上的高',
+    stem:R`右圖是溜滑梯的側面圖，滑道與樓梯成直角，直角三角形三邊長分別為 5、12、13，求溜滑梯的高 $h$。`, figure:()=>hypAlt({l:12,r:5,L:'12',R:'5',C:'13',H:'h'}),
+    opts:[R`$\dfrac{60}{13}$`,R`$\dfrac{30}{13}$`,R`$\dfrac{65}{12}$`,'$6$'], ans:0,
+    hint:R`同一個三角形的面積可以用兩種方式算。`,
+    steps:[R`以斜邊為底：面積 $=\dfrac{1}{2}\times13\times h$`, R`以兩股為底和高：面積 $=\dfrac{1}{2}\times5\times12$`, R`$13h=60$，$h=\dfrac{60}{13}$`],
+    tip:R`直角三角形斜邊上的高 $=\dfrac{\text{兩股乘積}}{\text{斜邊}}$。`,
+    v:['Rational(60,13)',['Rational(60,13)','Rational(30,13)','Rational(65,12)','6']] },
+  { src:'例5(1)', lvl:'易', skill:'畢氏定理的應用',
+    stem:R`翰翰把長 2.5 公尺的竹竿斜放在牆上，竹竿底部離牆腳 0.7 公尺。竹竿頂端離地面多少公尺？`, figure:()=>wallFig({c:'2.5',b:'0.7',v:'x',w:56,h:120}),
+    opts:['2.4 公尺','1.8 公尺','3.2 公尺','5.76 公尺'], ans:0,
+    steps:[R`竹竿、地面、牆壁圍成直角三角形，竹竿是斜邊`, R`$x^2=2.5^2-0.7^2=6.25-0.49=5.76$`, R`$x=2.4$（公尺）`],
+    tip:R`記得開根號：5.76 是 $x^2$，不是 $x$。`,
+    v:['sqrt(Rational(625,100)-Rational(49,100))',['Rational(24,10)','Rational(18,10)','Rational(32,10)','Rational(576,100)']] },
+  { src:'例5(2)', lvl:'中', skill:'畢氏定理的應用',
+    stem:R`承上題，翰翰覺得竹竿架得太高，想把頂端降低 0.4 公尺，則應將竹竿底部放在離牆腳幾公尺處？`, figure:()=>wallFig({c:'2.5',b:'y',v:'2',w:80,h:100}),
+    opts:['1.5 公尺','1.1 公尺','2.25 公尺','0.5 公尺'], ans:0,
+    hint:R`降低後頂端離地 $2.4-0.4=2$ 公尺，竹竿長度不變。`,
+    steps:[R`頂端離地 $2.4-0.4=2$（公尺）`, R`$y^2=2.5^2-2^2=6.25-4=2.25$`, R`$y=1.5$（公尺）`],
+    tip:R`頂端降 0.4，底部不是剛好往外移 0.4（$0.7+0.4=1.1$ 是錯的）。`,
+    v:['sqrt(Rational(625,100)-4)',['Rational(3,2)','Rational(11,10)','Rational(9,4)','Rational(1,2)']] },
+  { src:'例6', lvl:'中', skill:'畢氏定理的應用：螢幕尺寸',
+    stem:R`一款長方形摺疊手機，合起來時長 6 吋、寬 3 吋；展開時長 6 吋、寬 6 吋。展開後的螢幕尺寸（對角線長）是合起來時的兩倍嗎？`, figure:phoneFig,
+    opts:[R`不是：合起來 $3\sqrt{5}$ 吋、展開 $6\sqrt{2}$ 吋，而 $3\sqrt{5}\times2\neq6\sqrt{2}$`, R`是：面積變成兩倍，對角線也變成兩倍`, R`是：合起來 $3\sqrt{5}$ 吋、展開 $6\sqrt{5}$ 吋`, R`不是：展開後的對角線是合起來的 4 倍`], ans:0,
+    steps:[R`合起來：對角線 $=\sqrt{6^2+3^2}=\sqrt{45}=3\sqrt{5}$（吋）`, R`展開：對角線 $=\sqrt{6^2+6^2}=\sqrt{72}=6\sqrt{2}$（吋）`, R`$3\sqrt{5}\times2=6\sqrt{5}\neq6\sqrt{2}$，所以不是兩倍`],
+    tip:R`面積變兩倍，對角線並不會跟著變兩倍。`,
+    fin:R`不是兩倍（$3\sqrt{5}$ 吋 → $6\sqrt{2}$ 吋）` },
+  { src:'例7(1)', lvl:'易', skill:'水平線或鉛垂線上兩點的距離',
+    stem:R`如圖，已知坐標平面上 $A(3,2)$、$B(-5,2)$、$C(3,-4)$ 三點，求 $\overline{AB}$ 與 $\overline{AC}$ 的長。`, figure:ex7Fig,
+    opts:[R`$\overline{AB}=8$，$\overline{AC}=6$`,R`$\overline{AB}=2$，$\overline{AC}=2$`,R`$\overline{AB}=8$，$\overline{AC}=2$`,R`$\overline{AB}=-8$，$\overline{AC}=6$`], ans:0,
+    hint:R`$A$、$B$ 的 $y$ 坐標相同，距離就是 $x$ 坐標相減取絕對值。`,
+    steps:[R`$\overline{AB}=|3-(-5)|=8$`, R`$\overline{AC}=|2-(-4)|=6$`],
+    tip:R`距離一定是正的；減負數要變加號。` },
+  { src:'例7(2)', lvl:'中', skill:'坐標平面上兩點距離',
+    stem:R`承上題，求 $\overline{BC}$ 的長。`, figure:ex7Fig,
+    opts:['$10$','$14$',R`$2\sqrt{7}$`,'$100$'], ans:0,
+    steps:[R`$\triangle ABC$ 中 $\angle A=90^\circ$`, R`$\overline{BC}^2=\overline{AB}^2+\overline{AC}^2=8^2+6^2=100$`, R`$\overline{BC}=10$`],
+    v:['sqrt(8**2+6**2)',['10','14','2*sqrt(7)','100']] },
+  { src:'例8', lvl:'中', skill:'坐標平面上兩點距離',
+    stem:R`已知坐標平面上 $A(2,1)$、$B(-4,9)$ 兩點，求 $\overline{AB}$ 的長。`,
+    opts:['$10$','$14$',R`$2\sqrt{26}$`,R`$2\sqrt{7}$`], ans:0,
+    hint:R`$\overline{AB}=\sqrt{(x\text{ 坐標的差})^2+(y\text{ 坐標的差})^2}$。`,
+    steps:[R`$x$ 坐標的差：$-4-2=-6$；$y$ 坐標的差：$9-1=8$`, R`$\overline{AB}=\sqrt{(-6)^2+8^2}=\sqrt{100}=10$`],
+    tip:R`坐標要「相減」不是相加；差是負的也沒關係，平方後就變正。`,
+    v:['sqrt((-4-2)**2+(9-1)**2)',['10','14','2*sqrt(26)','2*sqrt(7)']] }
+]);
+
+addSet('2-3','work',[
+  { src:'暖身題1', lvl:'易', skill:'畢氏定理', mc:1,
+    stem:R`直角三角形兩股長的平方和等於斜邊長的平方（畢氏定理）。如圖，已知直角三角形的兩股長分別為 8、6，則斜邊長 $x=$？`, figure:()=>rightTri({ra:'bl',v:'6',b:'8',c:'x',w:140,h:105}),
+    opts:['$10$','$14$'], ans:0, steps:[R`$x^2=6^2+8^2=100$，$x=10$`] },
+  { src:'暖身題2', lvl:'易', skill:'斜邊上的高', mc:1,
+    stem:R`直角三角形的面積 $=\dfrac{1}{2}ab=\dfrac{1}{2}ch$，所以斜邊上的高 $h=\dfrac{a\times b}{c}$。如圖，斜邊長 5、兩股長 3 與 4，則斜邊上的高 $h=$？`, figure:()=>hypAlt({l:4,r:3,L:'4',R:'3',C:'5',H:'h',S:200}),
+    opts:[R`$\dfrac{15}{4}$`,R`$\dfrac{12}{5}$`], ans:1, steps:[R`$h=\dfrac{3\times4}{5}=\dfrac{12}{5}$`] },
+  { src:'暖身題3', lvl:'易', skill:'坐標平面上兩點距離', mc:1,
+    stem:R`坐標平面上兩點距離 $\overline{AB}=\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}$。已知 $A(3,14)$、$B(-2,2)$，則 $\overline{AB}$ 的長為何？`,
+    opts:['$13$','$17$'], ans:0, steps:[R`$\overline{AB}=\sqrt{(3+2)^2+(14-2)^2}=\sqrt{25+144}=13$`] },
+  { src:'基礎題1(1)', lvl:'易', skill:'求未知邊長',
+    stem:R`如圖，利用畢氏定理求直角三角形的未知邊長 $x$。`, figure:()=>rightTri({ra:'bl',v:'√6',b:'x',c:'√15',w:110,h:72}),
+    opts:['$3$',R`$\sqrt{21}$`,'$9$','$21$'], ans:0,
+    steps:[R`$x^2+(\sqrt{6})^2=(\sqrt{15})^2$`, R`$x^2=15-6=9$，$x=3$`],
+    v:['sqrt(15-6)',['3','sqrt(21)','9','21']] },
+  { src:'基礎題1(2)', lvl:'中', skill:'求未知邊長（兩個三角形）',
+    stem:R`如圖，兩個直角三角形相接，求未知邊長 $x$。`, figure:twoTriFig,
+    opts:['$3$',R`$\sqrt{7}$`,R`$2\sqrt{2}$`,R`$\sqrt{5}$`], ans:0,
+    hint:R`先在左下的三角形算出共用邊 $y$。`,
+    steps:[R`$y^2=2^2+2^2=8$`, R`$x^2=y^2+1^2=8+1=9$`, R`$x=3$`],
+    v:['sqrt(2**2+2**2+1)',['3','sqrt(7)','2*sqrt(2)','sqrt(5)']] },
+  { src:'基礎題1(3)', lvl:'中', skill:'求未知邊長（作高）',
+    stem:R`如圖，三角形的高為 12，兩邊分別為 15、13，求底邊長 $x$。`, figure:()=>altTri({bl:9,br:5,h:12,L:'15',R:'13',H:'12',base:'x'}),
+    opts:['$14$','$28$','$9$','$4$'], ans:0,
+    hint:R`高把底邊分成兩段，分別在兩個直角三角形中求。`,
+    steps:[R`左段：$y^2=15^2-12^2=81$，$y=9$`, R`右段：$z^2=13^2-12^2=25$，$z=5$`, R`$x=y+z=9+5=14$`],
+    v:['sqrt(15**2-12**2)+sqrt(13**2-12**2)',['14','28','9','4']] },
+  { src:'基礎題1(4)', lvl:'難', skill:'求未知邊長（三個三角形）',
+    stem:R`如圖，三個直角三角形相接，求未知邊長 $x$。`, figure:threeTriFig,
+    opts:['$20$','$15$','$12$',R`$\sqrt{337}$`], ans:0,
+    hint:R`依序求出 $y$、$z$，再求 $x$。`,
+    steps:[R`$y^2=17^2-8^2=225$，$y=15$`, R`$z^2=y^2-9^2=225-81=144$，$z=12$`, R`$x^2=z^2+16^2=144+256=400$，$x=20$`],
+    v:['sqrt((17**2-8**2-9**2)+16**2)',['20','15','12','sqrt(337)']] },
+  { src:'基礎題2', lvl:'中', skill:'斜邊上的高',
+    stem:R`如圖，直角三角形 $ABC$ 中，$\angle BAC=90^\circ$，$\overline{AD}\perp\overline{BC}$，$\overline{AB}=6$，$\overline{AC}=8$，求 $\overline{AD}$ 的長。`,
+    figure:()=>hypAlt({l:6,r:8,L:'6',R:'8',C:'',H:'',letters:{A:'A',B:'B',C:'C',D:'D'}}),
+    opts:[R`$\dfrac{24}{5}$`,'$5$',R`$\dfrac{48}{5}$`,'$10$'], ans:0,
+    steps:[R`$\overline{BC}^2=6^2+8^2=100$，$\overline{BC}=10$`, R`$\overline{AD}$ 是斜邊上的高：$\overline{AD}=\dfrac{6\times8}{10}=\dfrac{24}{5}$`],
+    v:['Rational(6*8,10)',['Rational(24,5)','5','Rational(48,5)','10']] },
+  { src:'基礎題3', lvl:'中', skill:'畢氏定理的應用',
+    stem:R`如圖，雲梯原長 26 公尺，雲梯底部與建築物水平距離為 10 公尺。若雲梯長縮短為 20 公尺（底部位置不變），則雲梯所能到達建築物的高度比原來少幾公尺？`, figure:()=>wallFig({c:'26',b:'10',v:'h',w:46,h:120}),
+    opts:[R`$(24-10\sqrt{3})$ 公尺`,'6 公尺',R`$(24-10\sqrt{2})$ 公尺`,R`$(10\sqrt{3}-24)$ 公尺`], ans:0,
+    steps:[R`原高度 $=\sqrt{26^2-10^2}=\sqrt{576}=24$（公尺）`, R`縮短後高度 $=\sqrt{20^2-10^2}=\sqrt{300}=10\sqrt{3}$（公尺）`, R`少了 $(24-10\sqrt{3})$ 公尺`],
+    tip:R`梯子少 6 公尺，高度不會剛好少 6 公尺。` },
+  { src:'基礎題4', lvl:'中', skill:'畢氏定理的應用：螢幕面積',
+    stem:R`某款平板電腦的螢幕是長方形，長寬比為 $4:3$，對角線長為 10 吋，則螢幕面積是多少平方吋？`, figure:tabletFig,
+    opts:['48 平方吋','12 平方吋','100 平方吋','24 平方吋'], ans:0,
+    hint:R`設長為 $4k$、寬為 $3k$。`,
+    steps:[R`設長 $4k$、寬 $3k$：$(4k)^2+(3k)^2=10^2$`, R`$25k^2=100$，$k^2=4$`, R`面積 $=4k\times3k=12k^2=48$（平方吋）`],
+    tip:R`其實 $k=2$，長 8、寬 6，也是 3-4-5 家族！` },
+  { src:'基礎題5(1)', lvl:'易', skill:'水平線上兩點的距離',
+    stem:R`求坐標平面上 $A(2,-3)$、$B(-5,-3)$ 兩點的距離。`, opts:['$7$','$3$','$-7$',R`$\sqrt{58}$`], ans:0,
+    steps:[R`$A$、$B$ 的 $y$ 坐標相同，$\overline{AB}$ 平行 $x$ 軸`, R`$\overline{AB}=|2-(-5)|=7$`] },
+  { src:'基礎題5(2)', lvl:'中', skill:'坐標平面上兩點距離',
+    stem:R`求坐標平面上 $C(-6,-4)$、$D(3,-2)$ 兩點的距離。`, opts:[R`$\sqrt{85}$`,R`$\sqrt{77}$`,'$11$',R`$3\sqrt{5}$`], ans:0,
+    steps:[R`$x$ 坐標的差：$-6-3=-9$；$y$ 坐標的差：$-4-(-2)=-2$`, R`$\overline{CD}=\sqrt{(-9)^2+(-2)^2}=\sqrt{85}$`],
+    v:['sqrt(9**2+2**2)',['sqrt(85)','sqrt(77)','11','3*sqrt(5)']] },
+  { src:'精熟題1', lvl:'難', skill:'摺紙與畢氏定理',
+    stem:R`如圖，將正方形 $ABCD$ 摺疊，使得 $C$ 點落在 $\overline{AD}$ 上的 $E$ 點處，$\overline{MN}$ 為摺痕。若 $\overline{DE}=24$，$\overline{DN}=10$，求此正方形的邊長。`, figure:foldSquareFig,
+    opts:['$36$','$34$','$26$','$30$'], ans:0,
+    hint:R`摺疊前後，$\overline{NC}$ 會和 $\overline{NE}$ 一樣長。`,
+    steps:[R`在直角三角形 $EDN$ 中：$\overline{EN}^2=24^2+10^2=676$，$\overline{EN}=26$`, R`摺疊後 $\overline{NC}=\overline{EN}=26$`, R`邊長 $\overline{DC}=\overline{DN}+\overline{NC}=10+26=36$`],
+    tip:R`摺紙題的關鍵：摺過去的線段長度不變。` },
+  { src:'精熟題2', lvl:'難', skill:'摺紙與畢氏定理',
+    stem:R`如圖，$\triangle ABC$ 中，$\overline{AB}=25$，$\overline{AD}\perp\overline{BC}$。沿著 $\overline{AD}$ 將 $\triangle ABD$ 向右摺，使 $B$ 點落在 $E$ 點上，其中 $\overline{AD}=15$，且 $\overline{DE}:\overline{EC}=5:4$，求 $\overline{AC}$ 的長。`, figure:foldTriFig,
+    opts:['$39$','$36$','$41$','$45$'], ans:0,
+    hint:R`摺疊後 $\overline{AE}=\overline{AB}=25$，先求 $\overline{DE}$。`,
+    steps:[R`$\overline{AE}=\overline{AB}=25$，$\overline{DE}^2=25^2-15^2=400$，$\overline{DE}=20$`, R`$20:\overline{EC}=5:4$，$\overline{EC}=16$，所以 $\overline{DC}=36$`, R`$\overline{AC}^2=15^2+36^2=1521$，$\overline{AC}=39$`],
+    v:['sqrt(15**2+36**2)',['39','36','41','45']] }
+]);
+
+/* ================= 第 2 章 總習題 ================= */
+const OX=['○（正確）','×（不正確）'];
+addSet('ch2','review',[
+  { src:'核心概念1(1)', lvl:'易', skill:'√ 的意義', mc:1, stem:R`判斷正誤：$\sqrt{121}=\pm11$。`, opts:OX, ans:1,
+    steps:[R`符號 $\sqrt{\;}$ 只表示正平方根：$\sqrt{121}=11$`] },
+  { src:'核心概念1(2)', lvl:'易', skill:'√ 的意義', mc:1, stem:R`判斷正誤：$-\sqrt{16}=-4$。`, opts:OX, ans:0,
+    steps:[R`$\sqrt{16}=4$，所以 $-\sqrt{16}=-4$ ✔`] },
+  { src:'核心概念1(3)', lvl:'易', skill:'平方根的意義', mc:1, stem:R`判斷正誤：$-2$ 是 4 的負平方根。`, opts:OX, ans:0,
+    steps:[R`4 的平方根是 $\pm2$，負平方根是 $-2$ ✔`] },
+  { src:'核心概念1(4)', lvl:'易', skill:'最簡根式', mc:1, stem:R`判斷正誤：已知 $525=3\times5^2\times7$，則 $\sqrt{525}$ 為最簡根式。`, opts:OX, ans:1,
+    steps:[R`根號內有平方因數 $5^2$，可以提出：$\sqrt{525}=5\sqrt{21}$，所以不是最簡根式`] },
+  { src:'核心概念1(5)', lvl:'易', skill:'平方根的意義', mc:1, stem:R`判斷正誤：因為 $-25=-5^2$，所以 $-5$ 是 $-25$ 的平方根。`, opts:OX, ans:1,
+    steps:[R`$(-5)^2=25\neq-25$`, R`負數沒有平方根`] },
+  { src:'核心概念1(6)', lvl:'易', skill:'最簡根式', mc:1, stem:R`判斷正誤：$\dfrac{\sqrt{5}}{2}$ 不是最簡根式。`, opts:OX, ans:1,
+    steps:[R`根號內 5 沒有平方因數，分母也沒有根號`, R`所以 $\dfrac{\sqrt{5}}{2}$ 是最簡根式`] },
+  { src:'核心概念1(7)', lvl:'易', skill:'根式的乘法', mc:1, stem:R`判斷正誤：$\sqrt{3}\times\sqrt{7}=\sqrt{3\times7}$。`, opts:OX, ans:0,
+    steps:[R`$\sqrt{a}\times\sqrt{b}=\sqrt{a\times b}$ ✔`] },
+  { src:'核心概念1(8)', lvl:'易', skill:'同類方根', mc:1, stem:R`判斷正誤：$\sqrt{3}+\sqrt{7}=\sqrt{10}$。`, opts:OX, ans:1,
+    steps:[R`$\sqrt{3}$ 與 $\sqrt{7}$ 不是同類方根，不能合併`] },
+  { src:'核心概念1(9)', lvl:'易', skill:'根式的乘法', mc:1, stem:R`判斷正誤：$2\sqrt{3}\times4\sqrt{5}=8\sqrt{15}$。`, opts:OX, ans:0,
+    steps:[R`$2\times4=8$，$\sqrt{3}\times\sqrt{5}=\sqrt{15}$ ✔`] },
+  { src:'核心概念1(10)', lvl:'易', skill:'平方根的意義', mc:1, stem:R`判斷正誤：因為找不到一個整數、分數或小數的平方等於 30，所以 30 沒有平方根。`, opts:OX, ans:1,
+    steps:[R`30 的平方根為 $\pm\sqrt{30}$，只是它們不是有理數`] },
+  { src:'核心概念1(11)', lvl:'易', skill:'畢氏定理', mc:1, stem:R`判斷正誤：在直角三角形 $ABC$ 中，以各邊為邊長作正方形甲、乙、丙（丙在斜邊上），則甲、乙面積的和等於丙的面積。`, opts:OX, ans:0,
+    steps:[R`兩股的平方和等於斜邊的平方，正是畢氏定理 ✔`] },
+  { src:'綜合演練1', lvl:'中', skill:'根式比大小', mc:1,
+    stem:R`若 $a=\dfrac{11}{5}$，$b=2.3$，$c=\sqrt{5}$，則 $a$、$b$、$c$ 三數的大小關係為何？`,
+    opts:['$a<b<c$','$a<c<b$','$b<a<c$','$c<a<b$'], ans:1,
+    steps:[R`$a=2.2$，$a^2=4.84$；$b^2=5.29$；$c^2=5$`, R`$a^2<c^2<b^2$，三數皆為正，所以 $a<c<b$`] },
+  { src:'綜合演練2', lvl:'中', skill:'估算根號', mc:1,
+    stem:R`如圖，$9-2\sqrt{10}$ 在數線上的位置應在哪兩點之間？`, figure:numLineFig,
+    opts:[R`$A$ 點和 $B$ 點`,R`$B$ 點和 $C$ 點`,R`$C$ 點和 $D$ 點`,R`$D$ 點和 $E$ 點`], ans:2,
+    steps:[R`$3.1<\sqrt{10}<3.2$，所以 $6.2<2\sqrt{10}<6.4$`, R`$2.6<9-2\sqrt{10}<2.8$，在 $C(2)$ 與 $D(3)$ 之間`] },
+  { src:'綜合演練3', lvl:'中', skill:'√(a²) 的值', mc:1,
+    stem:R`下列哪一個選項中的等式[[不成立]]？`,
+    opts:[R`$\sqrt{(-3)^8}=(-3)^4$`,R`$\sqrt{(-5)^{10}}=(-5)^5$`,R`$\sqrt{3^4\times5^{10}}=3^2\times5^5$`,R`$\sqrt{(-3)^8(-5)^4}=(-3)^4\times(-5)^2$`], ans:1,
+    steps:[R`根號的結果不能是負數`, R`$(-5)^5$ 是負數，正確應為 $\sqrt{(-5)^{10}}=5^5$`] },
+  { src:'綜合演練4', lvl:'易', skill:'估算根號', mc:1,
+    stem:R`下列 4 個數中，哪一個[[不]]介於 13 與 14 之間？`,
+    opts:[R`$\sqrt{160}$`,R`$\sqrt{170}$`,R`$\sqrt{180}$`,R`$\sqrt{190}$`], ans:0,
+    steps:[R`$13^2=169$，$14^2=196$`, R`只有 160 不在 169 與 196 之間，所以 $\sqrt{160}$ 不介於 13 與 14 之間`] },
+  { src:'綜合演練5(1)', lvl:'中', skill:'利用近似值計算',
+    stem:R`已知 $\sqrt{3}\approx1.732$，$\sqrt{30}\approx5.477$，求 $\sqrt{300}$ 的近似值。`, opts:['$17.32$','$54.77$','$173.2$','$5.477$'], ans:0,
+    steps:[R`$\sqrt{300}=\sqrt{100\times3}=10\sqrt{3}$`, R`$\approx10\times1.732=17.32$`] },
+  { src:'綜合演練5(2)', lvl:'中', skill:'利用近似值計算',
+    stem:R`已知 $\sqrt{3}\approx1.732$，$\sqrt{30}\approx5.477$，求 $\sqrt{3000}$ 的近似值。`, opts:['$54.77$','$17.32$','$547.7$','$173.2$'], ans:0,
+    steps:[R`$\sqrt{3000}=\sqrt{100\times30}=10\sqrt{30}$`, R`$\approx10\times5.477=54.77$`],
+    tip:R`根號內乘以 100，結果只乘以 10。` },
+  { src:'綜合演練5(3)', lvl:'中', skill:'利用近似值計算',
+    stem:R`已知 $\sqrt{3}\approx1.732$，$\sqrt{30}\approx5.477$，求 $\sqrt{0.3}$ 的近似值。`, opts:['$0.5477$','$0.1732$','$0.05477$','$1.732$'], ans:0,
+    steps:[R`$\sqrt{0.3}=\sqrt{\dfrac{30}{100}}=\dfrac{\sqrt{30}}{10}$`, R`$\approx\dfrac{5.477}{10}=0.5477$`],
+    tip:R`$0.3=\dfrac{30}{100}$，所以要用 $\sqrt{30}$，不是 $\sqrt{3}$。` },
+  { src:'綜合演練5(4)', lvl:'中', skill:'利用近似值計算',
+    stem:R`已知 $\sqrt{3}\approx1.732$，$\sqrt{30}\approx5.477$，求 $\sqrt{0.03}$ 的近似值。`, opts:['$0.1732$','$0.5477$','$0.01732$','$0.05477$'], ans:0,
+    steps:[R`$\sqrt{0.03}=\sqrt{\dfrac{3}{100}}=\dfrac{\sqrt{3}}{10}$`, R`$\approx\dfrac{1.732}{10}=0.1732$`] },
+  { src:'綜合演練6', lvl:'中', skill:'估算根號',
+    stem:R`若一正方形的面積為 20 平方公分，周長為 $x$ 公分，則 $x$ 介於哪兩個連續整數之間？`, opts:['17 與 18','4 與 5','8 與 9','19 與 20'], ans:0,
+    hint:R`周長 = 4 × 邊長，邊長 $=\sqrt{20}$。`,
+    steps:[R`邊長 $=\sqrt{20}=2\sqrt{5}$，周長 $x=4\times2\sqrt{5}=8\sqrt{5}=\sqrt{320}$`, R`$17^2=289$，$18^2=324$，$289<320<324$`, R`所以 $x$ 介於 17 與 18 之間`],
+    tip:R`選「4 與 5」的同學只估了邊長，題目問的是周長。` },
+  { src:'綜合演練7(1)', lvl:'中', skill:'根式的四則運算',
+    stem:R`計算 $\dfrac{\sqrt{5}}{\sqrt{2}}\times\dfrac{2}{\sqrt{3}}\div\dfrac{\sqrt{12}}{\sqrt{5}}$ 並化為最簡根式。`, opts:[R`$\dfrac{5\sqrt{2}}{6}$`,R`$2\sqrt{2}$`,R`$\dfrac{5\sqrt{2}}{12}$`,R`$\dfrac{5}{6}$`], ans:0,
+    steps:[R`$=\dfrac{\sqrt{5}}{\sqrt{2}}\times\dfrac{2}{\sqrt{3}}\times\dfrac{\sqrt{5}}{\sqrt{12}}=\dfrac{10}{\sqrt{72}}$`, R`$=\dfrac{10}{6\sqrt{2}}=\dfrac{10\sqrt{2}}{12}=\dfrac{5\sqrt{2}}{6}$`],
+    v:['sqrt(5)/sqrt(2)*2/sqrt(3)/(sqrt(12)/sqrt(5))',['5*sqrt(2)/6','2*sqrt(2)','5*sqrt(2)/12','Rational(5,6)']] },
+  { src:'綜合演練7(2)', lvl:'難', skill:'根式的四則運算',
+    stem:R`計算 $\sqrt{12}+\dfrac{1}{\sqrt{3}-1}-\sqrt{27}$ 並化為最簡根式。`, opts:[R`$\dfrac{1-\sqrt{3}}{2}$`,R`$\dfrac{1+\sqrt{3}}{2}$`,R`$\dfrac{\sqrt{3}-1}{2}$`,R`$\dfrac{1-3\sqrt{3}}{2}$`], ans:0,
+    steps:[R`$\sqrt{12}=2\sqrt{3}$，$\sqrt{27}=3\sqrt{3}$，$\dfrac{1}{\sqrt{3}-1}=\dfrac{\sqrt{3}+1}{2}$`, R`原式 $=2\sqrt{3}+\dfrac{\sqrt{3}+1}{2}-3\sqrt{3}=\dfrac{\sqrt{3}+1}{2}-\sqrt{3}$`, R`$=\dfrac{1-\sqrt{3}}{2}$`],
+    v:['sqrt(12)+1/(sqrt(3)-1)-sqrt(27)',['(1-sqrt(3))/2','(1+sqrt(3))/2','(sqrt(3)-1)/2','(1-3*sqrt(3))/2']] },
+  { src:'綜合演練8', lvl:'中', skill:'畢氏定理（分情況）',
+    stem:R`已知一個直角三角形的兩邊長分別為 3、4，則第三邊的長可以是哪些數值？`, opts:[R`5 或 $\sqrt{7}$`,'只有 5',R`只有 $\sqrt{7}$`,'5 或 7'], ans:0,
+    hint:R`題目沒說 4 是股還是斜邊！`,
+    steps:[R`若第三邊是斜邊：$x^2=3^2+4^2=25$，$x=5$`, R`若 4 是斜邊：$x^2=4^2-3^2=7$，$x=\sqrt{7}$`, R`所以第三邊是 5 或 $\sqrt{7}$`],
+    tip:R`「兩邊」不一定是「兩股」，要分情況討論。` },
+  { src:'綜合演練9', lvl:'中', skill:'畢氏定理的應用：路線',
+    stem:R`小寶開車前往車站，須先向東 12 公里，再向北 5 公里，再向西 8 公里，再向北 7 公里，最後向東 1 公里才到達。小寶家與車站的直線距離是多少公里？`, figure:drivePathFig,
+    opts:['13 公里','33 公里','17 公里',R`$\sqrt{74}$ 公里`], ans:0,
+    hint:R`算出總共往東走了多少、往北走了多少。`,
+    steps:[R`東西方向：$12-8+1=5$（公里）`, R`南北方向：$5+7=12$（公里）`, R`直線距離 $=\sqrt{5^2+12^2}=13$（公里）`],
+    tip:R`33 公里是開車走的路程，題目問的是直線距離。` },
+  { src:'綜合演練10', lvl:'中', skill:'平方根的應用',
+    stem:R`若 $-7$ 是 $2x+39$ 的負平方根，求 $x$ 的值。`, opts:['$5$','$-23$','$-16$','$44$'], ans:0,
+    steps:[R`$2x+39=(-7)^2=49$`, R`$2x=10$，$x=5$`] },
+  { src:'綜合演練11(1)', lvl:'易', skill:'坐標平面上兩點距離',
+    stem:R`求坐標平面上 $E(0,0)$、$F(3,-4)$ 兩點的距離。`, opts:['$5$','$7$','$1$',R`$\sqrt{7}$`], ans:0,
+    steps:[R`$\overline{EF}=\sqrt{(0-3)^2+(0+4)^2}=\sqrt{9+16}=5$`] },
+  { src:'綜合演練11(2)', lvl:'中', skill:'坐標平面上兩點距離',
+    stem:R`求坐標平面上 $G(-7,-3)$、$H(-2,-8)$ 兩點的距離。`, opts:[R`$5\sqrt{2}$`,'$10$',R`$\sqrt{202}$`,'$0$'], ans:0,
+    steps:[R`$x$ 坐標的差：$-7-(-2)=-5$；$y$ 坐標的差：$-3-(-8)=5$`, R`$\overline{GH}=\sqrt{25+25}=\sqrt{50}=5\sqrt{2}$`],
+    v:['sqrt(50)',['5*sqrt(2)','10','sqrt(202)','0']] },
+  { src:'綜合演練12(1)', lvl:'難', skill:'估算根號的應用',
+    stem:R`已知 $\sqrt{360}\approx18.974$，且 $a$ 為正整數。若 $\sqrt{360+a}$ 的值是正整數，則 $a$ 的最小值為何？此時 $\sqrt{360+a}$ 為多少？`,
+    opts:[R`$a=1$，值為 19`,R`$a=41$，值為 20`,R`$a=19$，值為 $\sqrt{379}$`,R`$a=2$，值為 19`], ans:0,
+    steps:[R`比 18.974 大的最小整數是 19，$19^2=361$`, R`$360+a=361$，$a=1$`] },
+  { src:'綜合演練12(2)', lvl:'難', skill:'估算根號的應用',
+    stem:R`已知 $\sqrt{360}\approx18.974$，且 $b$ 為正整數。若 $\sqrt{360-b}$ 的值是正整數，則 $b$ 的最小值為何？此時 $\sqrt{360-b}$ 為多少？`,
+    opts:[R`$b=36$，值為 18`,R`$b=1$，值為 $\sqrt{359}$`,R`$b=71$，值為 17`,R`$b=18$，值為 18`], ans:0,
+    steps:[R`比 18.974 小的最大整數是 18，$18^2=324$`, R`$360-b=324$，$b=36$`],
+    tip:R`$b=71$ 也能使根號為整數（$\sqrt{289}=17$），但不是最小值。` },
+  { src:'數學閱讀1', lvl:'中', skill:'畢氏定理的應用：足球場',
+    stem:R`五人制足球場中，$P$ 是球門中間的位置，$R$ 是罰球點，$\overline{PR}=10$ 公尺，$\overline{ST}\perp\overline{PR}$，$\overline{RS}=5$ 公尺。$P$、$S$ 兩點的距離為多少公尺？`, figure:()=>fieldFig(1),
+    opts:[R`$5\sqrt{5}$ 公尺`,'15 公尺',R`$5\sqrt{3}$ 公尺`,'125 公尺'], ans:0,
+    steps:[R`$\triangle PRS$ 為直角三角形，$\overline{PS}^2=10^2+5^2=125$`, R`$\overline{PS}=\sqrt{125}=5\sqrt{5}$（公尺）`],
+    v:['sqrt(125)',['5*sqrt(5)','15','5*sqrt(3)','125']] },
+  { src:'數學閱讀2', lvl:'難', skill:'畢氏定理的應用：足球場',
+    stem:R`承上題，$A$ 是中央點，$P$、$R$、$A$ 在同一直線上。若 $\overline{AS}$ 比 $\overline{AR}$ 多 $\dfrac{5}{4}$ 公尺，則足球場長邊為多少公尺？依規定長邊需介於 38～42 公尺，是否符合規定？`, figure:()=>fieldFig(2),
+    opts:['38.75 公尺，符合規定','38.75 公尺，不符合規定','37.5 公尺，不符合規定','19.375 公尺，不符合規定'], ans:0,
+    hint:R`設 $\overline{AR}=x$，則 $\overline{AS}=x+\dfrac{5}{4}$，在直角三角形 $SRA$ 用畢氏定理。`,
+    steps:[R`$\left(x+\dfrac{5}{4}\right)^2=x^2+5^2$，展開：$\dfrac{5}{2}x+\dfrac{25}{16}=25$`, R`$x=\dfrac{75}{8}=9.375$`, R`長邊 $=2(\overline{PR}+\overline{AR})=2(10+9.375)=38.75$（公尺），介於 38～42，符合規定`],
+    tip:R`$A$ 是中央點，所以整個長邊是半場長度的 2 倍。` }
+]);
+
+/* ================= 3-1 提公因式與乘法公式作因式分解 ================= */
+addSet('3-1','book',[
+  { src:'例1', lvl:'中', skill:'利用多項式除法判別因式',
+    stem:R`判別 $x+1$ 是否為 $x^2-5x-6$ 的因式。如果是，將 $x^2-5x-6$ 因式分解。`,
+    opts:[R`是，$x^2-5x-6=(x+1)(x-6)$`,R`是，$x^2-5x-6=(x+1)(x-5)$`,R`不是，因為無法整除`,R`是，$x^2-5x-6=(x-1)(x+6)$`], ans:0,
+    hint:R`計算 $(x^2-5x-6)\div(x+1)$，看餘式是不是 0。`,
+    steps:[R`$(x^2-5x-6)\div(x+1)$：商 $x$，$x(x+1)=x^2+x$，相減得 $-6x-6$`, R`再商 $-6$：$-6(x+1)=-6x-6$，相減得餘式 0`, R`可以整除，所以 $x+1$ 是因式，$x^2-5x-6=(x+1)(x-6)$`],
+    tip:R`餘式為 0 ⇔ 可以整除 ⇔ 除式是因式。`,
+    v:['x**2-5*x-6',['(x+1)*(x-6)','(x+1)*(x-5)','None','(x-1)*(x+6)']] },
+  { src:'例2(1)', lvl:'易', skill:'提單項公因式',
+    stem:R`因式分解 $11x^2+9x$。`, opts:['$x(11x+9)$','$11x(x+9)$','$x(11+9x)$','$3(x^2-x)$'], ans:0,
+    steps:[R`$11x^2+9x=11x\cdot x+9\cdot x$`, R`提出公因式 $x$：$=x(11x+9)$`],
+    v:['11*x**2+9*x',['x*(11*x+9)','11*x*(x+9)','x*(11+9*x)','3*(x**2-x)']] },
+  { src:'例2(2)', lvl:'易', skill:'提單項公因式',
+    stem:R`因式分解 $2x^2+x(x+1)$。`, opts:['$x(3x+1)$','$x(2x+1)$','$2x(x+1)$','$x(3x+2)$'], ans:0,
+    steps:[R`$2x^2+x(x+1)=2x\cdot x+x\cdot(x+1)$`, R`$=x[2x+(x+1)]=x(3x+1)$`],
+    v:['2*x**2+x*(x+1)',['x*(3*x+1)','x*(2*x+1)','2*x*(x+1)','x*(3*x+2)']] },
+  { src:'例2(3)', lvl:'中', skill:'提單項公因式',
+    stem:R`因式分解 $x(3x+1)-x(x+3)$。`, opts:['$2x(x-1)$','$2x(x+2)$','$x(2x+4)$','$2x(x+1)$'], ans:0,
+    hint:R`提出 $x$ 後，中括號內 $-(x+3)$ 要變號。`,
+    steps:[R`$=x[(3x+1)-(x+3)]$`, R`$=x(3x+1-x-3)=x(2x-2)$`, R`$=2x(x-1)$`],
+    tip:R`$x(2x-2)$ 括號內還有公因數 2，通常寫成 $2x(x-1)$。`,
+    v:['x*(3*x+1)-x*(x+3)',['2*x*(x-1)','2*x*(x+2)','x*(2*x+4)','2*x*(x+1)']] },
+  { src:'例3(1)', lvl:'易', skill:'提公因式',
+    stem:R`因式分解 $x(2x+1)+3(2x+1)$。`, opts:['$(2x+1)(x+3)$','$(2x+1)\\cdot3x$','$(2x+1)^2(x+3)$','$(x+1)(2x+3)$'], ans:0,
+    hint:R`把 $(2x+1)$ 看成一整包，它就是公因式。`,
+    steps:[R`$=x\cdot(2x+1)+3\cdot(2x+1)$`, R`提出 $(2x+1)$：$=(2x+1)(x+3)$`],
+    v:['x*(2*x+1)+3*(2*x+1)',['(2*x+1)*(x+3)','(2*x+1)*3*x','(2*x+1)**2*(x+3)','(x+1)*(2*x+3)']] },
+  { src:'例3(2)', lvl:'易', skill:'提公因式',
+    stem:R`因式分解 $3x(4x-5)-2(4x-5)$。`, opts:['$(4x-5)(3x-2)$','$(4x-5)(3x+2)$','$(4x+5)(3x-2)$','$x(4x-5)$'], ans:0,
+    steps:[R`$=3x\cdot(4x-5)-2\cdot(4x-5)$`, R`提出 $(4x-5)$：$=(4x-5)(3x-2)$`],
+    v:['3*x*(4*x-5)-2*(4*x-5)',['(4*x-5)*(3*x-2)','(4*x-5)*(3*x+2)','(4*x+5)*(3*x-2)','x*(4*x-5)']] },
+  { src:'例4(1)', lvl:'中', skill:'提公因式',
+    stem:R`因式分解 $(x+3)(5x-2)+(5x-2)$。`, opts:['$(5x-2)(x+4)$','$(5x-2)(x+3)$','$(5x-2)^2(x+3)$','$(5x+2)(x+4)$'], ans:0,
+    hint:R`後面的 $(5x-2)$ 可以看成 $1\cdot(5x-2)$。`,
+    steps:[R`$=(x+3)\cdot(5x-2)+1\cdot(5x-2)$`, R`$=(5x-2)(x+3+1)=(5x-2)(x+4)$`],
+    tip:R`提出公因式後，留下的 1 不能忘記！`,
+    v:['(x+3)*(5*x-2)+(5*x-2)',['(5*x-2)*(x+4)','(5*x-2)*(x+3)','(5*x-2)**2*(x+3)','(5*x+2)*(x+4)']] },
+  { src:'例4(2)', lvl:'中', skill:'提公因式',
+    stem:R`因式分解 $(3x-2)(x-1)-(x-1)(x+1)$。`, opts:['$(x-1)(2x-3)$','$(x-1)(2x-1)$','$(x-1)(4x-1)$','$(x+1)(2x-3)$'], ans:0,
+    steps:[R`$=(x-1)[(3x-2)-(x+1)]$`, R`$=(x-1)(3x-2-x-1)=(x-1)(2x-3)$`],
+    tip:R`$-(x+1)=-x-1$，常有人寫成 $-x+1$ 而得到 $2x-1$。`,
+    v:['(3*x-2)*(x-1)-(x-1)*(x+1)',['(x-1)*(2*x-3)','(x-1)*(2*x-1)','(x-1)*(4*x-1)','(x+1)*(2*x-3)']] },
+  { src:'例5(1)', lvl:'中', skill:'變號提公因式',
+    stem:R`因式分解 $2x(x-1)+3(1-x)$。`, opts:['$(x-1)(2x-3)$','$(x-1)(2x+3)$','$(1-x)(2x+3)$','$(x+1)(2x-3)$'], ans:0,
+    hint:R`$(1-x)=-(x-1)$。`,
+    steps:[R`$3(1-x)=-3(x-1)$`, R`原式 $=2x(x-1)-3(x-1)=(x-1)(2x-3)$`],
+    v:['2*x*(x-1)+3*(1-x)',['(x-1)*(2*x-3)','(x-1)*(2*x+3)','(1-x)*(2*x+3)','(x+1)*(2*x-3)']] },
+  { src:'例5(2)', lvl:'難', skill:'變號提公因式',
+    stem:R`因式分解 $(5-2x)^2-(2x-5)(x-5)$。`, opts:['$x(2x-5)$','$(2x-5)(x-10)$','$(2x-5)(3x-10)$','$-x(2x-5)$'], ans:0,
+    hint:R`$(5-2x)^2=[-(2x-5)]^2=(2x-5)^2$。`,
+    steps:[R`$(5-2x)^2=(2x-5)^2$`, R`原式 $=(2x-5)(2x-5)-(2x-5)(x-5)=(2x-5)[(2x-5)-(x-5)]$`, R`$=(2x-5)(2x-5-x+5)=x(2x-5)$`],
+    tip:R`平方會把負號吃掉：$(5-2x)^2=(2x-5)^2$。`,
+    v:['(5-2*x)**2-(2*x-5)*(x-5)',['x*(2*x-5)','(2*x-5)*(x-10)','(2*x-5)*(3*x-10)','-x*(2*x-5)']] },
+  { src:'例6(1)', lvl:'易', skill:'平方差公式因式分解',
+    stem:R`利用平方差公式，因式分解 $x^2-4$。`, opts:['$(x+2)(x-2)$','$(x-2)^2$','$(x+4)(x-4)$','$(x+2)^2$'], ans:0,
+    steps:[R`$x^2-4=x^2-2^2$`, R`$=(x+2)(x-2)$`],
+    v:['x**2-4',['(x+2)*(x-2)','(x-2)**2','(x+4)*(x-4)','(x+2)**2']] },
+  { src:'例6(2)', lvl:'易', skill:'平方差公式因式分解',
+    stem:R`利用平方差公式，因式分解 $36x^2-1$。`, opts:['$(6x+1)(6x-1)$','$(36x+1)(36x-1)$','$(18x+1)(18x-1)$','$(6x-1)^2$'], ans:0,
+    hint:R`$36x^2=(6x)^2$，$1=1^2$。`,
+    steps:[R`$36x^2-1=(6x)^2-1^2$`, R`$=(6x+1)(6x-1)$`],
+    v:['36*x**2-1',['(6*x+1)*(6*x-1)','(36*x+1)*(36*x-1)','(18*x+1)*(18*x-1)','(6*x-1)**2']] },
+  { src:'例7(1)', lvl:'中', skill:'平方差公式的應用',
+    stem:R`利用平方差公式，因式分解 $(x+2)^2-9$。`, opts:['$(x+5)(x-1)$','$(x+5)(x+1)$','$(x-1)(x-5)$','$(x+11)(x-7)$'], ans:0,
+    hint:R`把 $(x+2)$ 看成 $a$，$9=3^2$ 看成 $b^2$。`,
+    steps:[R`$=(x+2)^2-3^2$`, R`$=[(x+2)+3][(x+2)-3]$`, R`$=(x+5)(x-1)$`],
+    v:['(x+2)**2-9',['(x+5)*(x-1)','(x+5)*(x+1)','(x-1)*(x-5)','(x+11)*(x-7)']] },
+  { src:'例7(2)', lvl:'中', skill:'平方差公式的應用',
+    stem:R`利用平方差公式，因式分解 $4-(y-1)^2$。`, opts:['$(y+1)(3-y)$','$(y+1)(y-3)$','$(1-y)(y+3)$','$(y+1)(y+3)$'], ans:0,
+    steps:[R`$=2^2-(y-1)^2$`, R`$=[2+(y-1)][2-(y-1)]$`, R`$=(y+1)(3-y)$，也可寫成 $-(y+1)(y-3)$`],
+    tip:R`$2-(y-1)=2-y+1=3-y$，括號前是減號要變號。`,
+    v:['4-(y-1)**2',['(y+1)*(3-y)','(y+1)*(y-3)','(1-y)*(y+3)','(y+1)*(y+3)']] },
+  { src:'例8(1)', lvl:'易', skill:'和的平方公式因式分解',
+    stem:R`利用和的平方公式，因式分解 $x^2+8x+16$。`, opts:['$(x+4)^2$','$(x+8)^2$','$(x+4)(x-4)$','$(x+2)(x+8)$'], ans:0,
+    steps:[R`$x^2+8x+16=x^2+2\cdot x\cdot4+4^2$`, R`$=(x+4)^2$`],
+    v:['x**2+8*x+16',['(x+4)**2','(x+8)**2','(x+4)*(x-4)','(x+2)*(x+8)']] },
+  { src:'例8(2)', lvl:'中', skill:'和的平方公式因式分解',
+    stem:R`利用和的平方公式，因式分解 $9x^2+12x+4$。`, opts:['$(3x+2)^2$','$(9x+2)^2$','$(3x+4)^2$','$(9x+4)(x+1)$'], ans:0,
+    hint:R`$9x^2=(3x)^2$，$4=2^2$，檢查中間項是不是 $2\cdot3x\cdot2$。`,
+    steps:[R`$9x^2+12x+4=(3x)^2+2\cdot3x\cdot2+2^2$`, R`$=(3x+2)^2$`],
+    tip:R`$9x^2=(3x)^2$，不是 $(9x)^2$。`,
+    v:['9*x**2+12*x+4',['(3*x+2)**2','(9*x+2)**2','(3*x+4)**2','(9*x+4)*(x+1)']] },
+  { src:'例9(1)', lvl:'易', skill:'差的平方公式因式分解',
+    stem:R`利用差的平方公式，因式分解 $x^2-10x+25$。`, opts:['$(x-5)^2$','$(x+5)^2$','$(x+5)(x-5)$','$(x-25)^2$'], ans:0,
+    steps:[R`$x^2-10x+25=x^2-2\cdot x\cdot5+5^2$`, R`$=(x-5)^2$`],
+    v:['x**2-10*x+25',['(x-5)**2','(x+5)**2','(x+5)*(x-5)','(x-25)**2']] },
+  { src:'例9(2)', lvl:'中', skill:'差的平方公式因式分解',
+    stem:R`利用差的平方公式，因式分解 $4x^2-12x+9$。`, opts:['$(2x-3)^2$','$(4x-3)^2$','$(2x+3)^2$','$(2x-9)^2$'], ans:0,
+    steps:[R`$4x^2-12x+9=(2x)^2-2\cdot2x\cdot3+3^2$`, R`$=(2x-3)^2$`],
+    v:['4*x**2-12*x+9',['(2*x-3)**2','(4*x-3)**2','(2*x+3)**2','(2*x-9)**2']] }
+]);
+
+addSet('3-1','work',[
+  { src:'暖身題1', lvl:'易', skill:'因式與倍式', mc:1,
+    stem:R`已知 $(x^2-3x-4)\div(x-4)=x+1$，餘式為 0。下列敘述何者正確？`,
+    opts:[R`$x+1$ 與 $x-4$ 是 $x^2-3x-4$ 的因式`, R`$x^2-3x-4$ 是 $x+1$ 與 $x-4$ 的因式`], ans:0,
+    steps:[R`$x^2-3x-4=(x+1)(x-4)$`, R`所以 $x+1$、$x-4$ 是因式；$x^2-3x-4$ 是它們的倍式`] },
+  { src:'暖身題2', lvl:'易', skill:'提公因式', mc:1,
+    stem:R`形如 $A\times C+B\times C$ 的多項式，可提出公因式 $C$。下列何者為 $2x(x+3)+5(x+3)$ 的因式分解？`,
+    opts:['$2(x+3)(x+5)$','$(x+3)(2x+5)$'], ans:1, steps:[R`提出 $(x+3)$：$=(x+3)(2x+5)$`] },
+  { src:'暖身題3(1)', lvl:'易', skill:'平方差公式因式分解', mc:1,
+    stem:R`下列何者為 $x^2-5^2$ 的因式分解？`, opts:['$(x+5)(x-5)$','$(x-5)^2$'], ans:0,
+    steps:[R`平方差公式：$a^2-b^2=(a+b)(a-b)$`] },
+  { src:'暖身題3(2)', lvl:'易', skill:'差的平方公式因式分解', mc:1,
+    stem:R`下列何者為 $x^2-14x+49$ 的因式分解？`, opts:['$(x+7)(x-7)$','$(x-7)^2$'], ans:1,
+    steps:[R`$x^2-14x+49=x^2-2\cdot x\cdot7+7^2=(x-7)^2$`] },
+  { src:'基礎題1', lvl:'易', skill:'因式的判別', mc:1,
+    stem:R`已知 $3x^2-21x-24=3(x+1)(x-8)$，則下列何者是 $3x^2-21x-24$ 的因式？`,
+    opts:['$x-1$','$x+8$','$3x+3$','$3x-8$'], ans:2,
+    steps:[R`$3(x+1)=3x+3$，所以 $3x+3$ 是因式`, R`$x-1$、$x+8$、$3x-8$ 都不是`] },
+  { src:'基礎題2(1)', lvl:'易', skill:'提公因式',
+    stem:R`因式分解 $3x^2-x$。`, opts:['$x(3x-1)$','$3x(x-1)$','$x(3x+1)$','$3(x^2-x)$'], ans:0,
+    steps:[R`$3x^2-x=3x\cdot x-1\cdot x=x(3x-1)$`],
+    tip:R`提出 $x$ 後，留下的是 $-1$，不能變成 0。`,
+    v:['3*x**2-x',['x*(3*x-1)','3*x*(x-1)','x*(3*x+1)','3*(x**2-x)']] },
+  { src:'基礎題2(2)', lvl:'中', skill:'提公因式',
+    stem:R`因式分解 $x(2x+5)-x(x-1)$。`, opts:['$x(x+6)$','$x(x+4)$','$x(3x+4)$','$x(x-6)$'], ans:0,
+    steps:[R`$=x[(2x+5)-(x-1)]$`, R`$=x(2x+5-x+1)=x(x+6)$`],
+    v:['x*(2*x+5)-x*(x-1)',['x*(x+6)','x*(x+4)','x*(3*x+4)','x*(x-6)']] },
+  { src:'基礎題2(3)', lvl:'中', skill:'提公因式',
+    stem:R`因式分解 $2(x-3)+(x-3)^2$。`, opts:['$(x-3)(x-1)$','$(x-3)(x+1)$','$(x-3)(x-5)$','$2(x-3)^3$'], ans:0,
+    steps:[R`$=2(x-3)+(x-3)(x-3)$`, R`$=(x-3)[2+(x-3)]=(x-3)(x-1)$`],
+    v:['2*(x-3)+(x-3)**2',['(x-3)*(x-1)','(x-3)*(x+1)','(x-3)*(x-5)','2*(x-3)**3']] },
+  { src:'基礎題2(4)', lvl:'難', skill:'變號提公因式',
+    stem:R`因式分解 $(5x-2)^2-4x(2-5x)$。`, opts:['$(5x-2)(9x-2)$','$(5x-2)(x-2)$','$(5x-2)(9x+2)$','$(5x-2)(-9x+2)$'], ans:0,
+    hint:R`$-4x(2-5x)=+4x(5x-2)$。`,
+    steps:[R`$-4x(2-5x)=4x(5x-2)$`, R`原式 $=(5x-2)(5x-2)+4x(5x-2)$`, R`$=(5x-2)[(5x-2)+4x]=(5x-2)(9x-2)$`],
+    v:['(5*x-2)**2-4*x*(2-5*x)',['(5*x-2)*(9*x-2)','(5*x-2)*(x-2)','(5*x-2)*(9*x+2)','(5*x-2)*(-9*x+2)']] },
+  { src:'基礎題2(5)', lvl:'易', skill:'平方差公式因式分解',
+    stem:R`因式分解 $81x^2-25$。`, opts:['$(9x+5)(9x-5)$','$(9x-5)^2$','$(81x+25)(81x-25)$','$(3x+5)(3x-5)$'], ans:0,
+    steps:[R`$=(9x)^2-5^2$`, R`$=(9x+5)(9x-5)$`],
+    v:['81*x**2-25',['(9*x+5)*(9*x-5)','(9*x-5)**2','(81*x+25)*(81*x-25)','(3*x+5)*(3*x-5)']] },
+  { src:'基礎題2(6)', lvl:'中', skill:'平方差公式的應用',
+    stem:R`因式分解 $9-(x+3)^2$。`, opts:['$-x(x+6)$','$x(x+6)$','$x(6-x)$','$(3+x)(3-x)$'], ans:0,
+    steps:[R`$=3^2-(x+3)^2=[3+(x+3)][3-(x+3)]$`, R`$=(x+6)(-x)=-x(x+6)$`],
+    tip:R`$3-(x+3)=-x$，不是 $x$。`,
+    v:['9-(x+3)**2',['-x*(x+6)','x*(x+6)','x*(6-x)','(3+x)*(3-x)']] },
+  { src:'基礎題2(7)', lvl:'易', skill:'和的平方公式因式分解',
+    stem:R`因式分解 $9x^2+6x+1$。`, opts:['$(3x+1)^2$','$(9x+1)^2$','$(3x+1)(3x-1)$','$(x+3)^2$'], ans:0,
+    steps:[R`$=(3x)^2+2\cdot3x\cdot1+1^2$`, R`$=(3x+1)^2$`],
+    v:['9*x**2+6*x+1',['(3*x+1)**2','(9*x+1)**2','(3*x+1)*(3*x-1)','(x+3)**2']] },
+  { src:'基礎題2(8)', lvl:'易', skill:'差的平方公式因式分解',
+    stem:R`因式分解 $4x^2-20x+25$。`, opts:['$(2x-5)^2$','$(4x-5)^2$','$(2x+5)^2$','$(2x-5)(2x+5)$'], ans:0,
+    steps:[R`$=(2x)^2-2\cdot2x\cdot5+5^2$`, R`$=(2x-5)^2$`],
+    v:['4*x**2-20*x+25',['(2*x-5)**2','(4*x-5)**2','(2*x+5)**2','(2*x-5)*(2*x+5)']] },
+  { src:'基礎題3', lvl:'中', skill:'提公因式的應用',
+    stem:R`已知 $(13x-9)(23x-11)-(13x-9)(11x-7)$ 可因式分解成 $(ax+b)(12x+c)$，其中 $a$、$b$、$c$ 皆為整數，求 $a+b+c$ 的值。`,
+    opts:['$0$','$-14$','$8$','$26$'], ans:0,
+    hint:R`先提出公因式 $(13x-9)$。`,
+    steps:[R`$=(13x-9)[(23x-11)-(11x-7)]$`, R`$=(13x-9)(12x-4)$`, R`$a=13$，$b=-9$，$c=-4$，$a+b+c=0$`],
+    tip:R`$-(11x-7)=-11x+7$，所以常數是 $-11+7=-4$。` },
+  { src:'基礎題4', lvl:'中', skill:'平方差公式的應用：面積',
+    stem:R`如圖，將一張邊長為 $3x+1$ 的正方形色紙，中間剪去一個邊長為 $2x$ 的正方形，剩餘的面積會與一個長方形的面積相等。若此長方形的一個邊長為 $x+1$，則另一邊長為多少？`, figure:squareCutFig,
+    opts:['$5x+1$','$x+1$','$5x-1$','$9x+1$'], ans:0,
+    hint:R`剩下的面積 $=(3x+1)^2-(2x)^2$，用平方差公式。`,
+    steps:[R`$(3x+1)^2-(2x)^2=[(3x+1)+2x][(3x+1)-2x]$`, R`$=(5x+1)(x+1)$`, R`另一邊長為 $5x+1$`],
+    v:['(3*x+1)**2-(2*x)**2',['(5*x+1)*(x+1)','(x+1)*(x+1)','(5*x-1)*(x+1)','(9*x+1)*(x+1)']] },
+  { src:'精熟題1', lvl:'難', skill:'因式與倍式',
+    stem:R`若 $6x^2-mx-6$ 是 $2x-3$ 的倍式，求 $m$ 的值，並完成因式分解。`,
+    opts:[R`$m=5$，$(2x-3)(3x+2)$`,R`$m=-5$，$(2x+3)(3x-2)$`,R`$m=13$，$(2x-3)(3x-2)$`,R`$m=5$，$(2x+3)(3x-2)$`], ans:0,
+    hint:R`設 $6x^2-mx-6=(2x-3)(3x+k)$，比較常數項。`,
+    steps:[R`設 $6x^2-mx-6=(2x-3)(3x+k)$，常數項 $-3k=-6$，$k=2$`, R`$(2x-3)(3x+2)=6x^2+4x-9x-6=6x^2-5x-6$`, R`$-m=-5$，$m=5$`] },
+  { src:'精熟題2', lvl:'中', skill:'提公因式',
+    stem:R`已知 $(2x-1)+(2x^2-x)$ 可因式分解為 $(2x-1)(x+a)$，求 $a$ 的值。`, opts:['$1$','$-1$','$0$','$2$'], ans:0,
+    steps:[R`$2x^2-x=x(2x-1)$`, R`原式 $=(2x-1)+x(2x-1)=(2x-1)(x+1)$`, R`所以 $a=1$`],
+    tip:R`第一個 $(2x-1)$ 提出後留下的是 1。` },
+  { src:'精熟題3', lvl:'難', skill:'完全平方公式',
+    stem:R`已知因式分解 $9x^2-ax+4$ 可得 $(3x+b)^2$ 的形式。若 $a$ 為整數，$b$ 為正整數，則 $a+b$ 的值為何？`,
+    opts:['$-10$','$14$','$10$','$-14$'], ans:0,
+    hint:R`$b^2=4$ 且 $b$ 為正，所以 $b=2$。`,
+    steps:[R`$b$ 為正整數且 $b^2=4$，所以 $b=2$`, R`$(3x+2)^2=9x^2+12x+4$，所以 $-a=12$，$a=-12$`, R`$a+b=-12+2=-10$`],
+    tip:R`題目寫的是 $-ax$，所以 $-a=12$，$a$ 是負的。` }
+]);
+
+/* ================= 3-2 利用十字交乘法因式分解 ================= */
+addSet('3-2','book',[
+  { src:'例1', lvl:'易', skill:'二次項係數為 1、常數項為正',
+    stem:R`利用十字交乘法，因式分解 $x^2+10x+21$。`, opts:['$(x+3)(x+7)$','$(x+1)(x+21)$','$(x-3)(x-7)$','$(x+3)(x-7)$'], ans:0,
+    hint:R`找兩個數，相乘是 21、相加是 10。`,
+    steps:[R`21 可拆成 $1\times21$、$3\times7$（及兩數皆負）`, ()=>cross('x','+3','x','+7',R`$3x+7x=10x$`), R`所以 $x^2+10x+21=(x+3)(x+7)$`],
+    v:['x**2+10*x+21',['(x+3)*(x+7)','(x+1)*(x+21)','(x-3)*(x-7)','(x+3)*(x-7)']] },
+  { src:'例2', lvl:'易', skill:'二次項係數為 1、常數項為正',
+    stem:R`利用十字交乘法，因式分解 $x^2-6x+8$。`, opts:['$(x-2)(x-4)$','$(x+2)(x+4)$','$(x-1)(x-8)$','$(x-2)(x+4)$'], ans:0,
+    hint:R`常數為正、一次項為負：兩個數都是負的。`,
+    steps:[R`8 拆成兩個負數相乘：$(-1)(-8)$ 或 $(-2)(-4)$`, ()=>cross('x','-2','x','-4',R`$-2x-4x=-6x$`), R`所以 $x^2-6x+8=(x-2)(x-4)$`],
+    v:['x**2-6*x+8',['(x-2)*(x-4)','(x+2)*(x+4)','(x-1)*(x-8)','(x-2)*(x+4)']] },
+  { src:'例3', lvl:'中', skill:'二次項係數為 1、常數項為負',
+    stem:R`利用十字交乘法，因式分解 $x^2-x-6$。`, opts:['$(x+2)(x-3)$','$(x-2)(x+3)$','$(x+1)(x-6)$','$(x-2)(x-3)$'], ans:0,
+    hint:R`哪兩個整數相乘為 $-6$、相加為 $-1$？`,
+    steps:[R`$-6=2\times(-3)$，且 $2+(-3)=-1$`, ()=>cross('x','+2','x','-3',R`$2x-3x=-x$`), R`所以 $x^2-x-6=(x+2)(x-3)$`],
+    tip:R`常數為負：兩數一正一負；一次項為負，負數的絕對值較大。`,
+    v:['x**2-x-6',['(x+2)*(x-3)','(x-2)*(x+3)','(x+1)*(x-6)','(x-2)*(x-3)']] },
+  { src:'例4', lvl:'中', skill:'二次項係數不為 1',
+    stem:R`利用十字交乘法，因式分解 $5x^2-17x+6$。`, opts:['$(x-3)(5x-2)$','$(x-2)(5x-3)$','$(x-6)(5x-1)$','$(5x-6)(x-1)$'], ans:0,
+    hint:R`$5x^2=x\cdot5x$；常數 6 拆成兩個負數，逐一試試交叉相加是否為 $-17x$。`,
+    steps:[R`試 $(-1,-6)$、$(-6,-1)$、$(-2,-3)$、$(-3,-2)$ 等組合`, ()=>cross('x','-3','5x','-2',R`$-15x-2x=-17x$`), R`所以 $5x^2-17x+6=(x-3)(5x-2)$`],
+    v:['5*x**2-17*x+6',['(x-3)*(5*x-2)','(x-2)*(5*x-3)','(x-6)*(5*x-1)','(5*x-6)*(x-1)']] },
+  { src:'例5', lvl:'中', skill:'二次項係數不為 1',
+    stem:R`利用十字交乘法，因式分解 $4x^2+11x-3$。`, opts:['$(4x-1)(x+3)$','$(4x+1)(x-3)$','$(2x-1)(2x+3)$','$(4x+3)(x-1)$'], ans:0,
+    hint:R`$4x^2$ 可拆成 $2x\cdot2x$ 或 $4x\cdot x$；常數 $-3$ 一正一負。`,
+    steps:[R`逐一嘗試，檢查交叉相加是否為 $11x$`, ()=>cross('4x','-1','x','+3',R`$-x+12x=11x$`), R`所以 $4x^2+11x-3=(4x-1)(x+3)$`],
+    v:['4*x**2+11*x-3',['(4*x-1)*(x+3)','(4*x+1)*(x-3)','(2*x-1)*(2*x+3)','(4*x+3)*(x-1)']] },
+  { src:'例6', lvl:'中', skill:'先提公因數',
+    stem:R`利用十字交乘法，因式分解 $2x^2+4x-16$。`, opts:['$2(x-2)(x+4)$','$2(x+2)(x-4)$','$(x-2)(x+4)$','$(2x-2)(x+8)$'], ans:0,
+    hint:R`三項都是 2 的倍數，先提出 2。`,
+    steps:[R`$2x^2+4x-16=2(x^2+2x-8)$`, ()=>cross('x','-2','x','+4',R`$-2x+4x=2x$`), R`所以 $2x^2+4x-16=2(x-2)(x+4)$`],
+    tip:R`$(2x-4)(x+4)$、$(x-2)(2x+8)$ 也是正確答案，只是 2 放的位置不同。`,
+    v:['2*x**2+4*x-16',['2*(x-2)*(x+4)','2*(x+2)*(x-4)','(x-2)*(x+4)','(2*x-2)*(x+8)']] },
+  { src:'例7', lvl:'中', skill:'二次項係數為負數',
+    stem:R`利用十字交乘法，因式分解 $-3x^2+4x-1$。`, opts:['$-(3x-1)(x-1)$','$(3x-1)(x-1)$','$-(3x+1)(x+1)$','$-(3x-1)(x+1)$'], ans:0,
+    hint:R`先提出負號：$-(3x^2-4x+1)$。`,
+    steps:[R`$-3x^2+4x-1=-(3x^2-4x+1)$`, ()=>cross('3x','-1','x','-1',R`$-x-3x=-4x$`), R`所以 $-3x^2+4x-1=-(3x-1)(x-1)$`],
+    tip:R`也可寫成 $(-3x+1)(x-1)$ 或 $(3x-1)(-x+1)$。`,
+    v:['-3*x**2+4*x-1',['-(3*x-1)*(x-1)','(3*x-1)*(x-1)','-(3*x+1)*(x+1)','-(3*x-1)*(x+1)']] },
+  { src:'例8', lvl:'中', skill:'十字交乘法與乘法公式',
+    stem:R`因式分解 $9x^2-24x+16$。`, opts:['$(3x-4)^2$','$(3x+4)^2$','$(9x-4)^2$','$(3x-8)(3x-2)$'], ans:0,
+    steps:[()=>cross('3x','-4','3x','-4',R`$-12x-12x=-24x$`), R`所以 $9x^2-24x+16=(3x-4)(3x-4)=(3x-4)^2$`, R`也可以用差的平方公式：$(3x)^2-2\cdot3x\cdot4+4^2=(3x-4)^2$`],
+    v:['9*x**2-24*x+16',['(3*x-4)**2','(3*x+4)**2','(9*x-4)**2','(3*x-8)*(3*x-2)']] }
+]);
+
+addSet('3-2','work',[
+  { src:'暖身題1', lvl:'易', skill:'十字交乘法', mc:1,
+    stem:R`$x^2+(a+b)x+ab$ 可因式分解為 $(x+a)(x+b)$。利用十字交乘法作 $x^2+7x+12$ 的因式分解，下列過程何者正確？`, figure:crossChoice,
+    opts:['(A)','(B)'], ans:0,
+    steps:[R`(A)：$3\times4=12$，交叉相加 $4x+3x=7x$ ✔`, R`(B)：$2\times6=12$，但交叉相加 $6x+2x=8x$ ✘`] },
+  { src:'暖身題2(1)', lvl:'易', skill:'十字交乘法', mc:1,
+    stem:R`利用十字交乘法將 $2x^2+5x+3$ 因式分解的過程如圖，則 □＝？`, figure:()=>cross(R`\square x`,'+3','x','+1',''),
+    opts:['$1$','$2$'], ans:1, steps:[R`左邊兩數相乘要得到 $2x^2$：$\square x\cdot x=2x^2$，所以 □$=2$`, R`檢查：$2x\cdot1+x\cdot3=5x$ ✔`] },
+  { src:'暖身題2(2)', lvl:'易', skill:'十字交乘法', mc:1,
+    stem:R`利用十字交乘法將 $3x^2+7x+4$ 因式分解的過程如圖，其結果為下列何者？`, figure:()=>cross('3x','+4','x','+1',R`$4x+3x=7x$`),
+    opts:['$(3x+4)(x+1)$','$(3x+1)(x+4)$'], ans:0, steps:[R`十字交乘要「橫著讀」：第一列 $(3x+4)$，第二列 $(x+1)$`] },
+  { src:'基礎題1(1)', lvl:'易', skill:'十字交乘法',
+    stem:R`因式分解 $x^2+7x+10$。`, opts:['$(x+2)(x+5)$','$(x+1)(x+10)$','$(x-2)(x-5)$','$(x+3)(x+4)$'], ans:0,
+    steps:[()=>cross('x','+2','x','+5',R`$2x+5x=7x$`), R`$x^2+7x+10=(x+2)(x+5)$`],
+    v:['x**2+7*x+10',['(x+2)*(x+5)','(x+1)*(x+10)','(x-2)*(x-5)','(x+3)*(x+4)']] },
+  { src:'基礎題1(2)', lvl:'易', skill:'十字交乘法',
+    stem:R`因式分解 $x^2-5x+6$。`, opts:['$(x-3)(x-2)$','$(x+3)(x+2)$','$(x-6)(x+1)$','$(x-1)(x-6)$'], ans:0,
+    steps:[()=>cross('x','-3','x','-2',R`$-3x-2x=-5x$`), R`$x^2-5x+6=(x-3)(x-2)$`],
+    v:['x**2-5*x+6',['(x-3)*(x-2)','(x+3)*(x+2)','(x-6)*(x+1)','(x-1)*(x-6)']] },
+  { src:'基礎題1(3)', lvl:'中', skill:'十字交乘法',
+    stem:R`因式分解 $x^2+3x-40$。`, opts:['$(x+8)(x-5)$','$(x-8)(x+5)$','$(x+10)(x-4)$','$(x+4)(x-10)$'], ans:0,
+    steps:[()=>cross('x','+8','x','-5',R`$8x-5x=3x$`), R`$x^2+3x-40=(x+8)(x-5)$`],
+    v:['x**2+3*x-40',['(x+8)*(x-5)','(x-8)*(x+5)','(x+10)*(x-4)','(x+4)*(x-10)']] },
+  { src:'基礎題1(4)', lvl:'中', skill:'十字交乘法',
+    stem:R`因式分解 $3x^2-14x+15$。`, opts:['$(3x-5)(x-3)$','$(3x-3)(x-5)$','$(3x+5)(x+3)$','$(3x-15)(x-1)$'], ans:0,
+    steps:[()=>cross('3x','-5','x','-3',R`$-9x-5x=-14x$`), R`$3x^2-14x+15=(3x-5)(x-3)$`],
+    v:['3*x**2-14*x+15',['(3*x-5)*(x-3)','(3*x-3)*(x-5)','(3*x+5)*(x+3)','(3*x-15)*(x-1)']] },
+  { src:'基礎題1(5)', lvl:'中', skill:'十字交乘法',
+    stem:R`因式分解 $6x^2-19x+10$。`, opts:['$(2x-5)(3x-2)$','$(2x-2)(3x-5)$','$(6x-5)(x-2)$','$(6x-1)(x-10)$'], ans:0,
+    steps:[()=>cross('2x','-5','3x','-2',R`$-4x-15x=-19x$`), R`$6x^2-19x+10=(2x-5)(3x-2)$`],
+    v:['6*x**2-19*x+10',['(2*x-5)*(3*x-2)','(2*x-2)*(3*x-5)','(6*x-5)*(x-2)','(6*x-1)*(x-10)']] },
+  { src:'基礎題1(6)', lvl:'中', skill:'先提公因數',
+    stem:R`因式分解 $4x^2+20x-56$。`, opts:['$4(x+7)(x-2)$','$4(x-7)(x+2)$','$(x+7)(x-2)$','$(4x+7)(x-2)$'], ans:0,
+    steps:[R`$=4(x^2+5x-14)$`, ()=>cross('x','+7','x','-2',R`$7x-2x=5x$`), R`$=4(x+7)(x-2)$`],
+    v:['4*x**2+20*x-56',['4*(x+7)*(x-2)','4*(x-7)*(x+2)','(x+7)*(x-2)','(4*x+7)*(x-2)']] },
+  { src:'基礎題1(7)', lvl:'中', skill:'二次項係數為負數',
+    stem:R`因式分解 $-16x^2+2x+3$。`, opts:['$-(2x-1)(8x+3)$','$-(2x+1)(8x-3)$','$(2x-1)(8x+3)$','$-(4x-3)(4x+1)$'], ans:0,
+    steps:[R`$=-(16x^2-2x-3)$`, ()=>cross('2x','-1','8x','+3',R`$6x-8x=-2x$`), R`$=-(2x-1)(8x+3)$`],
+    v:['-16*x**2+2*x+3',['-(2*x-1)*(8*x+3)','-(2*x+1)*(8*x-3)','(2*x-1)*(8*x+3)','-(4*x-3)*(4*x+1)']] },
+  { src:'基礎題1(8)', lvl:'易', skill:'十字交乘法與乘法公式',
+    stem:R`因式分解 $x^2-10x+25$。`, opts:['$(x-5)^2$','$(x+5)^2$','$(x-5)(x+5)$','$(x-25)(x-1)$'], ans:0,
+    steps:[()=>cross('x','-5','x','-5',R`$-5x-5x=-10x$`), R`$=(x-5)(x-5)=(x-5)^2$`],
+    v:['x**2-10*x+25',['(x-5)**2','(x+5)**2','(x-5)*(x+5)','(x-25)*(x-1)']] },
+  { src:'基礎題2', lvl:'中', skill:'十字交乘法的應用',
+    stem:R`已知 $12x^2-5x-3$ 可因式分解成 $(ax-b)(cx+d)$，其中 $a$、$b$、$c$、$d$ 皆為正整數，求 $a+b+c+d$ 的值。`, opts:['$11$','$9$','$13$','$7$'], ans:0,
+    steps:[()=>cross('4x','-3','3x','+1',R`$4x-9x=-5x$`), R`$12x^2-5x-3=(4x-3)(3x+1)$`, R`$a=4$，$b=3$，$c=3$，$d=1$，和為 11`] },
+  { src:'基礎題3', lvl:'中', skill:'公因式',
+    stem:R`若 $6x^2+7x-5$ 與 $4x^2-16x+7$ 的公因式為一次式 $ax-1$，則 $a$ 的值為何？`, opts:['$2$','$3$','$4$','$1$'], ans:0,
+    hint:R`兩個式子各自因式分解，再找共同的因式。`,
+    steps:[R`$6x^2+7x-5=(3x+5)(2x-1)$`, R`$4x^2-16x+7=(2x-1)(2x-7)$`, R`公因式為 $2x-1$，所以 $a=2$`] },
+  { src:'精熟題1', lvl:'難', skill:'十字交乘法的應用',
+    stem:R`威利分解一個 $x$ 的多項式，得到 $(x+4)(x+6)$。後來發現他把題目多項式中的常數項正負號看錯了，請求出正確的因式分解結果。`,
+    opts:['$(x+12)(x-2)$','$(x-12)(x+2)$','$(x+4)(x-6)$','$(x-4)(x-6)$'], ans:0,
+    hint:R`先展開 $(x+4)(x+6)$，再把常數項變號。`,
+    steps:[R`$(x+4)(x+6)=x^2+10x+24$`, R`正確的多項式為 $x^2+10x-24$`, ()=>cross('x','+12','x','-2',R`$12x-2x=10x$`), R`$x^2+10x-24=(x+12)(x-2)$`],
+    v:['x**2+10*x-24',['(x+12)*(x-2)','(x-12)*(x+2)','(x+4)*(x-6)','(x-4)*(x-6)']] },
+  { src:'精熟題2(1)', lvl:'中', skill:'十字交乘法的應用：拼圖',
+    stem:R`有一個長方形是由 1 個邊長為 $x$ 的正方形、5 個長為 $x$ 寬為 1 的長方形、6 個邊長為 1 的正方形所拼成。求此長方形的周長。`, figure:()=>tileSet(['','',''],['1 個','5 個','6 個']),
+    opts:['$4x+10$','$2x+5$','$4x+12$','$x^2+5x+6$'], ans:0,
+    steps:[R`面積 $=x^2+5x+6$`, ()=>cross('x','+2','x','+3',R`$2x+3x=5x$`), R`$=(x+2)(x+3)$，周長 $=2[(x+2)+(x+3)]=4x+10$`],
+    tip:R`$x^2+5x+6$ 是面積，不是周長。` },
+  { src:'精熟題2(2)', lvl:'難', skill:'十字交乘法的應用：拼圖',
+    stem:R`承上題，若拿掉幾個邊長為 1 的正方形後，仍可拼成一個長方形，則至少需拿掉幾個邊長為 1 的正方形？`, figure:()=>tileSet(['','',''],['1 個','5 個','6 個']),
+    opts:['2 個','1 個','3 個','6 個'], ans:0,
+    hint:R`拿掉 $k$ 個後面積是 $x^2+5x+(6-k)$，什麼時候能因式分解？`,
+    steps:[R`拿掉 1 個：$x^2+5x+5$ 找不到兩個整數相乘 5、相加 5，無法拼成長方形`, R`拿掉 2 個：$x^2+5x+4=(x+1)(x+4)$，可以拼成長方形`, R`所以至少拿掉 2 個`] }
+]);
+
+/* ================= 第 3 章 總習題 ================= */
+addSet('ch3','review',[
+  { src:'核心概念1(1)', lvl:'易', skill:'因式', mc:1, stem:R`判斷正誤：$x-2$ 是 $(x-2)(2x+3)$ 的因式。`, opts:OX, ans:0, steps:[R`$(x-2)(2x+3)$ 可被 $x-2$ 整除 ✔`] },
+  { src:'核心概念1(2)', lvl:'易', skill:'因式', mc:1, stem:R`判斷正誤：$x$ 是 $(x-2)(2x+3)$ 的因式。`, opts:OX, ans:1, steps:[R`$(x-2)(2x+3)=2x^2-x-6$，常數項 $-6$，不能被 $x$ 整除`] },
+  { src:'核心概念1(3)', lvl:'易', skill:'提公因式', mc:1, stem:R`判斷正誤：因式分解 $x(x+3)+4(x+3)=(x+4)(x+3)$。`, opts:OX, ans:0, steps:[R`提出 $(x+3)$：$(x+3)(x+4)$ ✔`] },
+  { src:'核心概念1(4)', lvl:'易', skill:'平方差公式', mc:1, stem:R`判斷正誤：因式分解 $x^2-9=(x-3)^2$。`, opts:OX, ans:1, steps:[R`$x^2-9=x^2-3^2=(x+3)(x-3)$`] },
+  { src:'核心概念1(5)', lvl:'易', skill:'差的平方公式', mc:1, stem:R`判斷正誤：因式分解 $x^2-4x+4=(x-4)^2$。`, opts:OX, ans:1, steps:[R`$x^2-4x+4=x^2-2\cdot x\cdot2+2^2=(x-2)^2$`] },
+  { src:'核心概念1(6)', lvl:'易', skill:'十字交乘法', mc:1, stem:R`判斷正誤：因式分解 $x^2+2x-3=(x-3)(x-1)$。`, opts:OX, ans:1, steps:[R`$(x-3)(x-1)=x^2-4x+3$，不對`, R`正確：$x^2+2x-3=(x+3)(x-1)$`] },
+  { src:'核心概念1(7)', lvl:'易', skill:'十字交乘法', mc:1, stem:R`判斷正誤：因式分解 $6x^2+5x-1=(2x+1)(3x+1)$。`, opts:OX, ans:1, steps:[R`$(2x+1)(3x+1)=6x^2+5x+1$，常數項不對`, R`正確：$6x^2+5x-1=(6x-1)(x+1)$`] },
+  { src:'核心概念1(8)', lvl:'易', skill:'平方差公式', mc:1, stem:R`判斷正誤：若因式分解 $x^2-a=(x-5)(x+5)$，則 $a=25$。`, opts:OX, ans:0, steps:[R`$(x-5)(x+5)=x^2-25$，所以 $a=25$ ✔`] },
+  { src:'核心概念2(1)', lvl:'易', skill:'提公因式',
+    stem:R`在空格中填入適當的式子：$x^2+x=x($ ＿＿ $)$`, opts:['$x+1$','$x$','$x^2+1$','$2x$'], ans:0,
+    steps:[R`$x^2+x=x\cdot x+x\cdot1=x(x+1)$`],
+    v:['x**2+x',['x*(x+1)','x*x','x*(x**2+1)','x*2*x']] },
+  { src:'核心概念2(2)', lvl:'易', skill:'十字交乘法',
+    stem:R`在空格中填入適當的式子：$x^2-3x+2=(x-2)($ ＿＿ $)$`, opts:['$x-1$','$x+1$','$x-3$','$x+2$'], ans:0,
+    steps:[R`$(-2)\times(-1)=2$，$-2x-x=-3x$`, R`所以填 $x-1$`],
+    v:['x**2-3*x+2',['(x-2)*(x-1)','(x-2)*(x+1)','(x-2)*(x-3)','(x-2)*(x+2)']] },
+  { src:'核心概念2(3)', lvl:'中', skill:'十字交乘法',
+    stem:R`在空格中填入適當的式子：$3x^2-7x-6=(x-3)($ ＿＿ $)$`, opts:['$3x+2$','$3x-2$','$x+2$','$3x+3$'], ans:0,
+    hint:R`首項 $x\cdot3x=3x^2$，常數 $(-3)\times?=-6$。`,
+    steps:[R`首項：$x\cdot3x$；常數：$(-3)\times2=-6$`, R`檢查：$x\cdot2+3x\cdot(-3)=2x-9x=-7x$ ✔，填 $3x+2$`],
+    v:['3*x**2-7*x-6',['(x-3)*(3*x+2)','(x-3)*(3*x-2)','(x-3)*(x+2)','(x-3)*(3*x+3)']] },
+  { src:'核心概念2(4)', lvl:'中', skill:'十字交乘法',
+    stem:R`在空格中填入適當的式子：$6x^2+x-15=(3x+5)($ ＿＿ $)$`, opts:['$2x-3$','$2x+3$','$3x-3$','$2x-5$'], ans:0,
+    steps:[R`首項：$3x\cdot2x=6x^2$；常數：$5\times(-3)=-15$`, R`檢查：$3x\cdot(-3)+2x\cdot5=-9x+10x=x$ ✔，填 $2x-3$`],
+    v:['6*x**2+x-15',['(3*x+5)*(2*x-3)','(3*x+5)*(2*x+3)','(3*x+5)*(3*x-3)','(3*x+5)*(2*x-5)']] },
+  { src:'綜合演練1', lvl:'易', skill:'公因式', mc:1,
+    stem:R`下列何者為多項式 $(x+5)(x-3)$ 與 $(x-3)(x-5)$ 的公因式？`, opts:['$x+5$','$x-5$','$x-3$','$(x-5)(x-1)$'], ans:2,
+    steps:[R`兩式都有因式 $(x-3)$`] },
+  { src:'綜合演練2', lvl:'易', skill:'因式', mc:1,
+    stem:R`下列何者[[不是]]多項式 $(x-1)(x+1)$ 的因式？`, opts:['$x+1$','$x-1$','$(x-1)(x+1)$','$(x+1)^2$'], ans:3,
+    steps:[R`$(x-1)(x+1)$ 只有一個 $(x+1)$，所以 $(x+1)^2$ 不是它的因式`] },
+  { src:'綜合演練3', lvl:'中', skill:'因式與倍式', mc:1,
+    stem:R`已知 $x-3$ 是 $2x^2-x-k$ 的因式，則下列何者也是 $2x^2-x-k$ 的因式？`, opts:['$2x+5$','$2x-1$','$x-2$','$x+5$'], ans:0,
+    hint:R`設 $2x^2-x-k=(x-3)(2x+m)$，比較 $x$ 項係數。`,
+    steps:[R`設 $2x^2-x-k=(x-3)(2x+m)=2x^2+(m-6)x-3m$`, R`$m-6=-1$，$m=5$`, R`所以另一個因式是 $2x+5$（此時 $k=15$）`] },
+  { src:'綜合演練4', lvl:'中', skill:'提公因式', mc:1,
+    stem:R`下列何者為多項式 $3x(3x-4)-2(3x-4)^2$ 的因式分解？`, opts:['$(3x-4)(3x-2)$','$(3x-4)(-3x+8)$','$(3x-4)(-3x-8)$','$(3x-4)(9x+8)$'], ans:1,
+    steps:[R`$=(3x-4)[3x-2(3x-4)]$`, R`$=(3x-4)(3x-6x+8)=(3x-4)(-3x+8)$`] },
+  { src:'綜合演練5', lvl:'中', skill:'十字交乘法', mc:1,
+    stem:R`多項式 $39x^2+5x-14$ 可因式分解成 $(3x+a)(bx+c)$，其中 $a$、$b$、$c$ 皆為整數，則 $a+b+c$ 的值為何？`, opts:['$-8$','$8$','$18$','$22$'], ans:1,
+    steps:[()=>cross('3x','+2','13x','-7',R`$26x-21x=5x$`), R`$39x^2+5x-14=(3x+2)(13x-7)$`, R`$a=2$，$b=13$，$c=-7$，$a+b+c=8$`] },
+  { src:'綜合演練6(1)', lvl:'易', skill:'提公因式',
+    stem:R`因式分解 $3x^2+6x$。`, opts:['$3x(x+2)$','$3x(x+6)$','$3(x^2+6x)$','$x(x+2)$'], ans:0,
+    steps:[R`公因式是 $3x$：$3x^2+6x=3x(x+2)$`],
+    tip:R`寫成 $x(3x+6)$ 還沒分解完全，括號內還有公因數 3。`,
+    v:['3*x**2+6*x',['3*x*(x+2)','3*x*(x+6)','3*(x**2+6*x)','x*(x+2)']] },
+  { src:'綜合演練6(2)', lvl:'易', skill:'平方差公式',
+    stem:R`因式分解 $9x^2-1$。`, opts:['$(3x+1)(3x-1)$','$(3x-1)^2$','$(9x+1)(9x-1)$','$(3x+1)^2$'], ans:0,
+    steps:[R`$=(3x)^2-1^2=(3x+1)(3x-1)$`],
+    v:['9*x**2-1',['(3*x+1)*(3*x-1)','(3*x-1)**2','(9*x+1)*(9*x-1)','(3*x+1)**2']] },
+  { src:'綜合演練6(3)', lvl:'中', skill:'十字交乘法',
+    stem:R`因式分解 $3x^2+14x-5$。`, opts:['$(3x-1)(x+5)$','$(3x+1)(x-5)$','$(3x+5)(x-1)$','$(3x-5)(x+1)$'], ans:0,
+    steps:[()=>cross('3x','-1','x','+5',R`$15x-x=14x$`), R`$=(3x-1)(x+5)$`],
+    v:['3*x**2+14*x-5',['(3*x-1)*(x+5)','(3*x+1)*(x-5)','(3*x+5)*(x-1)','(3*x-5)*(x+1)']] },
+  { src:'綜合演練6(4)', lvl:'難', skill:'變號提公因式',
+    stem:R`因式分解 $(2x-1)^2-2(2x-1)(1-x)$。`, opts:['$(2x-1)(4x-3)$','$-3(2x-1)$','$3(2x-1)(x-1)$','$(2x-1)(4x+1)$'], ans:0,
+    steps:[R`$=(2x-1)[(2x-1)-2(1-x)]$`, R`$=(2x-1)(2x-1-2+2x)=(2x-1)(4x-3)$`],
+    tip:R`$-2(1-x)=-2+2x$，兩項都要變號。`,
+    v:['(2*x-1)**2-2*(2*x-1)*(1-x)',['(2*x-1)*(4*x-3)','-3*(2*x-1)','3*(2*x-1)*(x-1)','(2*x-1)*(4*x+1)']] },
+  { src:'綜合演練7', lvl:'難', skill:'平方差公式的應用',
+    stem:R`天靖一直無法將 $x^2+60x+899$ 因式分解，老師提示「$899=900-1$」。請依老師的提示因式分解 $x^2+60x+899$。`,
+    opts:['$(x+31)(x+29)$','$(x+31)(x-29)$','$(x+899)(x+1)$','$(x+30)(x+29)$'], ans:0,
+    steps:[R`$x^2+60x+899=x^2+60x+900-1$`, R`$=(x+30)^2-1^2$`, R`$=[(x+30)+1][(x+30)-1]=(x+31)(x+29)$`],
+    v:['x**2+60*x+899',['(x+31)*(x+29)','(x+31)*(x-29)','(x+899)*(x+1)','(x+30)*(x+29)']] },
+  { src:'綜合演練8', lvl:'難', skill:'因式分解的應用：質數',
+    stem:R`一個質數只能分解成 1 與本身的乘積。若 $x$ 為正整數，$4x^2-3x-10$ 為一個質數，求 $x$ 與此質數。`,
+    opts:[R`$x=3$，質數為 17`,R`$x=2$，質數為 3`,R`$x=4$，質數為 42`,R`$x=5$，質數為 75`], ans:0,
+    hint:R`先因式分解，兩個因式中必須有一個等於 1。`,
+    steps:[R`$4x^2-3x-10=(4x+5)(x-2)$`, R`$4x+5=1$ 時 $x=-1$（不合，$x$ 為正整數）`, R`$x-2=1$ 時 $x=3$，質數為 $(4\times3+5)\times1=17$`] },
+  { src:'數學閱讀1', lvl:'中', skill:'因式分解的應用：拼布',
+    stem:R`安琪拿了 12 塊甲（$x^2$）、16 塊乙（$x$）、5 塊丙（1），將它們全部縫製成一個長方形，求此長方形的面積與周長。`, figure:()=>tileSet(['甲','乙','丙'],['12 塊','16 塊','5 塊']),
+    opts:[R`面積 $12x^2+16x+5$，周長 $16x+12$`,R`面積 $12x^2+16x+5$，周長 $8x+6$`,R`面積 $33x^2$，周長 $16x+12$`,R`面積 $12x^2+16x+5$，周長 $14x+12$`], ans:0,
+    steps:[R`面積 $=12x^2+16x+5$`, ()=>cross('2x','+1','6x','+5',R`$10x+6x=16x$`), R`$=(2x+1)(6x+5)$，周長 $=2[(2x+1)+(6x+5)]=16x+12$`] },
+  { src:'數學閱讀2', lvl:'難', skill:'因式分解的應用：拼布',
+    stem:R`安琪把某一塊甲（邊長 $x$ 的正方形）剪成丁的形狀（剪去兩塊 $1\times(x-1)$ 的長方形），再拿 8 塊乙、6 塊丙與此塊丁拼成另一個長方形，求此長方形的面積與周長。`, figure:dingFig,
+    opts:[R`面積 $x^2+6x+8$，周長 $4x+12$`,R`面積 $x^2+8x+6$，周長 $4x+14$`,R`面積 $x^2+6x+8$，周長 $2x+6$`,R`面積 $x^2+6x+10$，周長 $4x+14$`], ans:0,
+    hint:R`丁的面積 $=x^2-2(x-1)$。`,
+    steps:[R`丁的面積 $=x^2-2(x-1)=x^2-2x+2$`, R`總面積 $=x^2-2x+2+8x+6=x^2+6x+8$`, R`$=(x+2)(x+4)$，周長 $=2[(x+2)+(x+4)]=4x+12$`] }
+]);
+const QUIZ = [
 { id:'2-1', title:'平方根的意義', review:true, color:'#8a96ad', qs:[
   { lvl:'中', skill:'平方根的範圍',
     stem:R`滿足 $3\le\sqrt{x}<6$ 的正整數 $x$ 有幾個？`,
@@ -736,100 +1998,136 @@ const UNITS = [
     tip:R`周長是「(長＋寬) × 2」，別只算一半。` }
 ]}
 ];
-UNITS.forEach(u=>u.qs.forEach((q,i)=>{q.unit=u; q.no=i+1;}));
+QUIZ.forEach(u=>addSet(u.id,"quiz",u.qs,{mcOnly:true}));
+
+/* ============ 常數 ============ */
 const PTS = {'易':10,'中':15,'難':20};
 const LETTERS = ['A','B','C','D'];
 const KEY = 'math1150102-';
+const PART_LABEL = {2:['上','下'],3:['上','中','下'],4:['一','二','三','四']};
+const secOf = id => SECTIONS.find(s=>s.id===id);
 
 /* ============ 數學排版 ============ */
 function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function texFallback(t){
   let s=t;
-  for(let i=0;i<4;i++) s=s.replace(/\\dfrac\{([^{}]*)\}\{([^{}]*)\}/g,'($1)/($2)').replace(/\\sqrt\{([^{}]*)\}/g,'√$1').replace(/\\overline\{([^{}]*)\}/g,'$1');
-  return esc(s.replace(/\\times/g,'×').replace(/\\neq/g,'≠').replace(/\\le/g,'≤').replace(/\\pm/g,'±').replace(/\\cdot/g,'·')
-    .replace(/\\angle/g,'∠').replace(/\\triangle/g,'△').replace(/\^\\circ/g,'°').replace(/\\left|\\right|\\,|\\;/g,'')
-    .replace(/\^2/g,'²').replace(/[{}]/g,''));
+  for(let i=0;i<4;i++) s=s.replace(/\\dfrac\{([^{}]*)\}\{([^{}]*)\}/g,'($1)/($2)').replace(/\\sqrt\{([^{}]*)\}/g,'√$1').replace(/\\overline\{([^{}]*)\}/g,'$1').replace(/\\text\{([^{}]*)\}/g,'$1');
+  return esc(s.replace(/\\times/g,'×').replace(/\\neq/g,'≠').replace(/\\le/g,'≤').replace(/\\ge/g,'≥').replace(/\\pm/g,'±').replace(/\\cdot(s)?/g,'·')
+    .replace(/\\angle/g,'∠').replace(/\\triangle/g,'△').replace(/\\perp/g,'⊥').replace(/\\approx/g,'≈').replace(/\\square/g,'□').replace(/\^\\circ/g,'°')
+    .replace(/\\left|\\right|\\,|\\;/g,'').replace(/\^2/g,'²').replace(/[{}]/g,''));
 }
 function rich(str){
-  return str.split('$').map((seg,i)=>{
+  return String(str).split('$').map((seg,i)=>{
     if(i%2===0) return esc(seg).replace(/\[\[(.+?)\]\]/g,'<span class="em">$1</span>');
     if(window.katex){ try{return katex.renderToString(seg,{throwOnError:false,strict:false});}catch(e){} }
     return texFallback(seg);
   }).join('');
 }
 const fig = q => q.figure ? q.figure() : '';
-const stepHTML = (s,k,anim) => typeof s==='function'
-  ? `<li class="figstep" ${anim?`style="animation-delay:${k*0.25}s"`:''}>${s()}</li>`
-  : `<li ${anim?`style="animation-delay:${k*0.25}s"`:''}>${rich(s)}</li>`;
+const stepHTML = (s,k,anim) => {
+  const st = anim?`style="animation-delay:${k*0.25}s"`:'style="opacity:1;transform:none;animation:none"';
+  return typeof s==='function' ? `<li class="figstep" ${st}>${s()}</li>` : `<li ${st}>${rich(s)}</li>`;
+};
+const finOf = q => q.fin || q.opts[q.ans];
+
+/* ============ 題組切分 ============ */
+const PLAY = {}, SETMAP = {};
+function buildPlay(){
+  SETS.sort((a,b)=>SECTIONS.findIndex(s=>s.id===a.sec)-SECTIONS.findIndex(s=>s.id===b.sec) || KIND_ORDER.indexOf(a.kind)-KIND_ORDER.indexOf(b.kind));
+  SETS.forEach(st=>{
+    st.qs.forEach((q,i)=>{ q.set=st; if(!q.src) q.src=`第 ${i+1} 題`; });
+    const n=st.qs.length, parts=Math.ceil(n/12), size=Math.ceil(n/parts);
+    st.key=`${st.sec}-${st.kind}`; st.parts=[]; SETMAP[st.key]=st;
+    for(let p=0;p<parts;p++){
+      const id = parts>1 ? `${st.key}-${p+1}` : st.key;
+      const part = {id, set:st, p, parts, qs:st.qs.slice(p*size,(p+1)*size)};
+      st.parts.push(part); PLAY[id]=part;
+    }
+  });
+}
+function partName(part){
+  const sec=secOf(part.set.sec), k=KINDS[part.set.kind];
+  const lbl = part.parts>1 ? `（${PART_LABEL[part.parts][part.p]}）` : '';
+  return `${sec.chapter?sec.title:sec.id+' '+sec.title}｜${k.name}${lbl}`;
+}
 
 /* ============ 紀錄 ============ */
 function readRec(id){try{return JSON.parse(localStorage.getItem(KEY+id))||null;}catch(e){return null;}}
 function saveRec(id,score,stars){
-  try{
-    const r=readRec(id)||{score:0,stars:0};
-    localStorage.setItem(KEY+id,JSON.stringify({score:Math.max(r.score,score),stars:Math.max(r.stars,stars)}));
-  }catch(e){}
+  try{ const r=readRec(id)||{score:0,stars:0};
+    localStorage.setItem(KEY+id,JSON.stringify({score:Math.max(r.score,score),stars:Math.max(r.stars,stars)})); }catch(e){}
 }
+function readStyle(){try{return localStorage.getItem(KEY+'style')||'mc';}catch(e){return 'mc';}}
+function saveStyle(v){try{localStorage.setItem(KEY+'style',v);}catch(e){}}
+const starStr = r => r ? `<span class="on">${'★'.repeat(r.stars)}</span>${'☆'.repeat(3-r.stars)}` : '';
 
 /* ============ 畫面切換 ============ */
 const $ = id=>document.getElementById(id);
 let S=null;
+const HOME_SUB='第二次段考｜2-2 根式的運算 ～ 3-2 十字交乘法';
 function show(id){
   ['home','game','result','overview'].forEach(s=>$(s).classList.toggle('hidden',s!==id));
   $('chips').style.visibility = (id==='game'||id==='result') ? 'visible':'hidden';
   $('homeBtn').classList.toggle('hidden', id==='home');
-  if(id==='home') $('brandSub').textContent='第二次段考｜2-2 根式的運算 ～ 3-2 十字交乘法';
+  if(id==='home') $('brandSub').textContent=HOME_SUB;
   window.scrollTo({top:0});
 }
 function setHash(h){ try{ history.replaceState(null,'',h?('#'+h):location.pathname+location.search); }catch(e){} }
 
 /* ============ 入口頁 ============ */
-function lvlCount(qs){const c={'易':0,'中':0,'難':0}; qs.forEach(q=>c[q.lvl]++); return c;}
-function unitCard(u){
-  const c=lvlCount(u.qs), rec=readRec(u.id);
-  const best = rec ? `最佳：<span class="st">${'⭐'.repeat(rec.stars)}${'☆'.repeat(3-rec.stars)}</span>　${rec.score} 分` : '尚未挑戰';
-  return `<div class="unit ${u.review?'review':''}" style="--u:${u.color}">
-    <div class="unit-head"><span class="unit-no">${u.id}</span><h3>${u.title}</h3></div>
-    <div class="unit-meta">${u.review?'<span class="mini rv">複習・非段考範圍</span>':''}
-      <span class="mini e">易 ${c['易']}</span><span class="mini m">中 ${c['中']}</span>${c['難']?`<span class="mini h">難 ${c['難']}</span>`:''}</div>
-    <div class="unit-best">${best}</div>
-    <div class="btn-row">
-      <button class="btn btn-primary btn-sm" data-play="${u.id}">開始闖關 ➜</button>
-      <button class="btn btn-ghost btn-sm" data-ov="${u.id}">題目總覽</button>
-    </div></div>`;
+function setRow(st){
+  const k=KINDS[st.kind];
+  const btns=st.parts.map((p,i)=>{
+    const lbl = st.parts.length>1 ? PART_LABEL[st.parts.length][i] : '開始';
+    return `<button class="pbtn" data-play="${p.id}" title="${p.qs.length} 題"><b>${lbl}</b><span class="pst">${starStr(readRec(p.id))}</span></button>`;
+  }).join('');
+  return `<div class="set-row"><div class="set-name">${k.ico} ${k.name}<small>${st.qs.length} 題</small></div>
+    <div class="set-btns">${btns}<button class="ovbtn" data-ov="${st.key}" title="題目總覽（投影用）">📋</button></div></div>`;
+}
+function secCard(sec){
+  const sets=SETS.filter(s=>s.sec===sec.id);
+  return `<div class="unit ${sec.review?'review':''}" style="--u:${sec.color}">
+    <div class="unit-head"><span class="unit-no">${sec.short||sec.id}</span><h3>${sec.chapter?sec.sub:sec.title}</h3></div>
+    ${sec.review?'<div class="unit-meta"><span class="mini rv">複習・非段考範圍</span></div>':''}
+    <div class="set-list">${sets.map(setRow).join('')}</div></div>`;
 }
 function renderHome(){
-  $('reviewUnits').innerHTML = UNITS.filter(u=>u.review).map(unitCard).join('');
-  $('examUnits').innerHTML = UNITS.filter(u=>!u.review).map(unitCard).join('');
-  const exam=UNITS.filter(u=>!u.review);
-  const cleared=exam.filter(u=>{const r=readRec(u.id);return r&&r.stars>=1;}).length;
-  $('progTxt').textContent=`${cleared} / ${exam.length}`;
-  $('progBar').style.width=(cleared/exam.length*100)+'%';
+  $('reviewUnits').innerHTML = SECTIONS.filter(s=>s.review).map(secCard).join('');
+  $('examUnits').innerHTML = SECTIONS.filter(s=>EXAM.includes(s.id)).map(secCard).join('');
+  $('chapterUnits').innerHTML = SECTIONS.filter(s=>s.chapter).map(secCard).join('');
+  const parts=SETS.filter(s=>EXAM.includes(s.sec)).flatMap(s=>s.parts);
+  const cleared=parts.filter(p=>{const r=readRec(p.id);return r&&r.stars>=1;}).length;
+  $('progTxt').textContent=`${cleared} / ${parts.length} 關卡組`;
+  $('progBar').style.width=(cleared/parts.length*100)+'%';
+  const total=SETS.reduce((a,s)=>a+s.qs.length,0);
+  $('totalTxt').textContent=`全站共 ${total} 題`;
   const b=readRec('boss');
-  $('bossBest').textContent = b ? `最佳紀錄：${'⭐'.repeat(b.stars)}${'☆'.repeat(3-b.stars)}　${b.score} 分` : '';
-  document.querySelectorAll('[data-play]').forEach(btn=>btn.onclick=()=>startUnit(btn.dataset.play));
+  $('bossBest').innerHTML = b ? `最佳紀錄：${starStr(b)}　${b.score} 分` : '';
+  document.querySelectorAll('[data-play]').forEach(btn=>btn.onclick=()=>startPart(btn.dataset.play));
   document.querySelectorAll('[data-ov]').forEach(btn=>btn.onclick=()=>openOverview(btn.dataset.ov,'home'));
   show('home'); setHash('');
 }
 
 /* ============ 開始闖關 ============ */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function newState(id,title,items){
-  return {id,title,items,mode:'game',queue:items.map((_,i)=>i),pos:0,score:0,combo:0,maxCombo:0,
-          results:items.map(()=>null),fixed:new Set(),hinted:false,locked:false};
+function newState(id,title,items,mcOnly){
+  return {id,title,items,mcOnly,mode:'game',queue:items.map((_,i)=>i),pos:0,score:0,combo:0,maxCombo:0,
+          results:items.map(()=>null),fixed:new Set(),hinted:false,locked:false,style:readStyle(),revealed:0,saved:false};
 }
-function startUnit(id){
-  const u=UNITS.find(x=>x.id===id); if(!u) return renderHome();
-  S=newState(u.id,`${u.id} ${u.title}`,u.qs.slice());
-  $('brandSub').textContent=`${u.review?'暖身複習':'第二次段考'}｜${u.id} ${u.title}`;
-  setHash(u.id); show('game'); renderQuestion();
+function startPart(id){
+  const part=PLAY[id]; if(!part) return renderHome();
+  S=newState(id,partName(part),part.qs.slice(),part.set.mcOnly);
+  $('brandSub').textContent=partName(part);
+  setHash(id); show('game'); renderQuestion();
 }
 function startBoss(){
-  const exam=UNITS.filter(u=>!u.review);
   let pick=[], rest=[];
-  exam.forEach(u=>{const s=shuffle(u.qs.slice()); pick.push(...s.slice(0,2)); rest.push(...s.slice(2));});
+  EXAM.forEach(sec=>{
+    const pool=shuffle(SETS.filter(s=>s.sec===sec).flatMap(s=>s.qs));
+    pick.push(...pool.slice(0,2)); rest.push(...pool.slice(2));
+  });
   pick.push(...shuffle(rest).slice(0,10-pick.length));
-  S=newState('boss','魔王關：段考模擬',shuffle(pick));
+  S=newState('boss','👾 魔王關：段考模擬',shuffle(pick),false);
   $('brandSub').textContent='👾 魔王關｜段考模擬（2-2 ～ 3-2 隨機 10 題）';
   setHash('boss'); show('game'); renderQuestion();
 }
@@ -852,32 +2150,70 @@ function renderMap(){
 }
 
 /* ============ 題目 ============ */
-function renderQuestion(){
-  S.hinted=false; S.locked=false;
-  const qi=S.queue[S.pos], q=S.items[qi];
+const isOrig = q => S.style==='orig' && !S.mcOnly && !q.mc && !q.set.mcOnly;
+function srcTag(q){
+  const k=KINDS[q.set.kind].name, sec=secOf(q.set.sec);
+  return S.id==='boss' ? `${sec.short||sec.id} ${k} ${q.src}` : `${k} ${q.src}`;
+}
+function renderQuestion(keepHint){
+  if(!keepHint) S.hinted=false;
+  S.locked=false; S.revealed=0;
+  const qi=S.queue[S.pos], q=S.items[qi], orig=isOrig(q);
   const worth = S.mode==='game' ? `答對 +${PTS[q.lvl]} 分` : `錯題重練（${S.pos+1}/${S.queue.length}）`;
-  const utag = S.id==='boss' ? `<span class="tag u">${q.unit.id} 第 ${q.no} 題</span>` : '';
+  const toggle = S.mcOnly ? '' : `<div class="mode-tg" role="group" aria-label="作答方式">
+      <button data-style="mc" class="${S.style==='mc'?'on':''}">選擇題</button><button data-style="orig" class="${S.style==='orig'?'on':''}">原題型</button></div>`;
+  const body = orig
+    ? `<div class="orig-box"><p class="orig-tip">✏️ 先在紙上算算看，算好再按「看解答」一步一步對答案。</p>
+         <ol class="steps" id="origSteps"></ol><div id="origFinal"></div>
+         <button class="btn btn-ghost" id="revealBtn">看解答（第 1 步）</button></div>`
+    : `<div class="opts">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="L">${LETTERS[i]}</span><span>${rich(o)}</span></button>`).join('')}</div>
+       ${q.mc&&S.style==='orig'&&!S.mcOnly?'<p class="mc-note">這題原本就是選擇（或是非）題。</p>':''}`;
   $('qCard').innerHTML=`
-    <div class="q-meta"><span class="stage">第 ${qi+1} 關</span>${utag}<span class="tag">${q.skill}</span>
-      <span class="lvl lvl-${q.lvl}">${q.lvl}</span><span class="worth">${worth}</span></div>
+    <div class="q-top">
+      <div class="q-meta"><span class="stage">第 ${qi+1} 關</span><span class="tag src">${srcTag(q)}</span><span class="tag">${q.skill}</span>
+        <span class="lvl lvl-${q.lvl}">${q.lvl}</span><span class="worth">${worth}</span></div>
+      ${toggle}
+    </div>
     <div class="stem">${rich(q.stem)}</div>
     ${fig(q)}
-    <div class="opts">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="L">${LETTERS[i]}</span><span>${rich(o)}</span></button>`).join('')}</div>
-    <div class="tools"><button class="hint-btn" id="hintBtn">💡 看提示${S.mode==='game'?'（本關得分減半）':''}</button></div>
-    <div class="hint-box hidden" id="hintBox">${rich(q.hint)}</div>
+    ${body}
+    ${q.hint?`<div class="tools"><button class="hint-btn" id="hintBtn" ${S.hinted?'disabled':''}>💡 看提示${S.mode==='game'?'（本關得分減半）':''}</button></div>
+    <div class="hint-box ${S.hinted?'':'hidden'}" id="hintBox">${rich(q.hint)}</div>`:''}
     <div id="fb"></div>`;
-  $('qCard').querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.i))));
-  $('hintBtn').addEventListener('click',()=>{ if(S.locked) return; S.hinted=true; $('hintBox').classList.remove('hidden'); $('hintBtn').disabled=true; });
+  $('qCard').querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>finish(Number(b.dataset.i)===q.ans,Number(b.dataset.i))));
+  $('qCard').querySelectorAll('[data-style]').forEach(b=>b.addEventListener('click',()=>setStyle(b.dataset.style)));
+  if($('hintBtn')) $('hintBtn').addEventListener('click',()=>{ if(S.locked) return; S.hinted=true; $('hintBox').classList.remove('hidden'); $('hintBtn').disabled=true; });
+  if($('revealBtn')) $('revealBtn').addEventListener('click',revealStep);
   renderMap(); updateChips();
 }
-function choose(i){
+function setStyle(v){
+  S.style=v; saveStyle(v);
+  if(!S.locked) renderQuestion(true);
+  else $('qCard').querySelectorAll('[data-style]').forEach(b=>b.classList.toggle('on',b.dataset.style===v));
+}
+function revealStep(){
+  if(S.locked) return;
+  const q=S.items[S.queue[S.pos]], n=q.steps.length;
+  if(S.revealed<n){
+    $('origSteps').insertAdjacentHTML('beforeend',stepHTML(q.steps[S.revealed],0,true));
+    S.revealed++;
+  }
+  if(S.revealed<n){ $('revealBtn').textContent=`下一步（${S.revealed+1}/${n}）`; return; }
+  $('revealBtn').remove();
+  $('origFinal').innerHTML=`<div class="final"><b>答案：</b>${rich(finOf(q))}</div>
+    <div class="self"><span>你算對了嗎？</span><button class="btn btn-ok" id="selfOk">✔ 我算對了</button><button class="btn btn-no" id="selfNo">✘ 我算錯了</button></div>`;
+  $('selfOk').onclick=()=>finish(true,null);
+  $('selfNo').onclick=()=>finish(false,null);
+}
+function finish(correct,chosen){
   if(S.locked) return; S.locked=true;
-  const qi=S.queue[S.pos], q=S.items[qi], correct=(i===q.ans);
-  $('hintBtn').disabled=true;
-  $('qCard').querySelectorAll('.opt').forEach((b,k)=>{
+  const qi=S.queue[S.pos], q=S.items[qi], mcMode=chosen!==null;
+  if($('hintBtn')) $('hintBtn').disabled=true;
+  if(mcMode) $('qCard').querySelectorAll('.opt').forEach((b,k)=>{
     b.disabled=true;
-    if(k===q.ans) b.classList.add('right'); else if(k===i) b.classList.add('wrong'); else b.classList.add('dim');
+    if(k===q.ans) b.classList.add('right'); else if(k===chosen) b.classList.add('wrong'); else b.classList.add('dim');
   });
+  else $('qCard').querySelectorAll('.self button').forEach(b=>b.disabled=true);
   let head;
   if(S.mode==='game'){
     let pts=0,bonus=0;
@@ -889,16 +2225,16 @@ function choose(i){
     } else S.combo=0;
     S.results[qi]={correct,hinted:S.hinted,pts:pts+bonus};
     head = correct ? `🎉 答對了！+${pts} 分${S.hinted?'（使用提示）':''}${bonus?`　🔥 連擊加成 +${bonus}`:''}`
-                   : `😵 差一點！正確答案是 (${LETTERS[q.ans]})，連擊中斷`;
+                   : (mcMode?`😵 差一點！正確答案是 (${LETTERS[q.ans]})，連擊中斷`:'😵 沒關係，看懂解答最重要！連擊中斷');
   } else {
     if(correct) S.fixed.add(qi);
-    head = correct ? `✅ 訂正成功！正確答案是 (${LETTERS[q.ans]})` : `再想想看，正確答案是 (${LETTERS[q.ans]})`;
+    head = correct ? '✅ 訂正成功！' : (mcMode?`再想想看，正確答案是 (${LETTERS[q.ans]})`:'再看一次解答，下次一定會！');
   }
   const last = S.pos===S.queue.length-1;
   $('fb').innerHTML=`<div class="feedback ${correct?'ok':'bad'}">
       <div class="fb-head">${head}</div>
-      <ol class="steps">${q.steps.map((s,k)=>stepHTML(s,k,true)).join('')}</ol>
-      <div class="tip"><b>觀念小叮嚀：</b>${rich(q.tip)}</div>
+      ${mcMode?`<ol class="steps">${q.steps.map((s,k)=>stepHTML(s,k,true)).join('')}</ol>`:''}
+      ${q.tip?`<div class="tip"><b>觀念小叮嚀：</b>${rich(q.tip)}</div>`:''}
       <div class="next-row"><button class="btn btn-primary" id="nextBtn">${last?'查看結算 🏁':'下一關 ➜'}</button></div>
     </div>`;
   $('nextBtn').addEventListener('click',next);
@@ -913,9 +2249,9 @@ function next(){
 
 /* ============ 結算 ============ */
 function showResult(){
-  const n=S.items.length, correct=S.results.filter(r=>r&&r.correct).length;
-  const stars = correct===n?3 : correct>=8?2 : correct>=6?1 : 0;
-  const rank = correct===n?'👑 數學大師' : correct>=8?'🥇 數學達人' : correct>=6?'🥈 數學見習生' : '🌱 數學新手（再挑戰一次！）';
+  const n=S.items.length, correct=S.results.filter(r=>r&&r.correct).length, ratio=correct/n;
+  const stars = ratio===1?3 : ratio>=0.8?2 : ratio>=0.6?1 : 0;
+  const rank = ratio===1?'👑 數學大師' : ratio>=0.8?'🥇 數學達人' : ratio>=0.6?'🥈 數學見習生' : '🌱 數學新手（再挑戰一次！）';
   const wrong = S.items.map((_,i)=>i).filter(i=>!S.results[i].correct && !S.fixed.has(i));
   if(!S.saved){ saveRec(S.id,S.score,stars); S.saved=true; }
   const rec=readRec(S.id), boss=S.id==='boss';
@@ -929,41 +2265,48 @@ function showResult(){
         <span class="stat">最高紀錄 ${rec?rec.score:S.score} 分</span></div>
     </div>
     <div class="tbl-wrap"><table>
-      <thead><tr><th>關卡</th>${boss?'<th>出處</th>':''}<th>考的觀念</th><th class="c">結果</th><th class="c">得分</th></tr></thead>
+      <thead><tr><th>關卡</th><th>出處</th><th>考的觀念</th><th class="c">結果</th><th class="c">得分</th></tr></thead>
       <tbody>${S.items.map((q,i)=>{
         const r=S.results[i];
         const mark = r.correct ? '<span class="yes">✔</span>' : S.fixed.has(i) ? '<span class="fix">✘ → 已訂正</span>' : '<span class="no">✘</span>';
-        return `<tr><td>第 ${i+1} 關</td>${boss?`<td>${q.unit.id} 第 ${q.no} 題</td>`:''}<td>${q.skill}${r.hinted?' 💡':''}</td><td class="c">${mark}</td><td class="c">${r.pts}</td></tr>`;
+        return `<tr><td>第 ${i+1} 關</td><td>${srcTag(q)}</td><td>${q.skill}${r.hinted?' 💡':''}</td><td class="c">${mark}</td><td class="c">${r.pts}</td></tr>`;
       }).join('')}</tbody>
     </table></div>
     <div class="btn-row" style="justify-content:center">
       ${wrong.length?`<button class="btn btn-accent" id="retryBtn">🔁 錯題重練（${wrong.length} 題）</button>`:''}
       <button class="btn btn-primary" id="againBtn">${boss?'再抽一次魔王':'重新闖關'}</button>
+      ${nextPartBtn()}
       ${boss?'':'<button class="btn btn-ghost" id="resOvBtn">題目總覽</button>'}
       <button class="btn btn-ghost" id="resHomeBtn">🏠 回入口頁</button>
     </div>`;
   if(wrong.length) $('retryBtn').onclick=()=>{ S.mode='retry'; S.queue=wrong; S.pos=0; show('game'); renderQuestion(); };
-  $('againBtn').onclick=()=> boss?startBoss():startUnit(S.id);
-  if(!boss) $('resOvBtn').onclick=()=>openOverview(S.id,'result');
+  $('againBtn').onclick=()=> boss?startBoss():startPart(S.id);
+  if($('nextPartBtn')) $('nextPartBtn').onclick=()=>startPart($('nextPartBtn').dataset.id);
+  if(!boss) $('resOvBtn').onclick=()=>openOverview(PLAY[S.id].set.key,'result');
   $('resHomeBtn').onclick=renderHome;
   show('result');
 }
+function nextPartBtn(){
+  const part=PLAY[S.id]; if(!part || part.p>=part.parts-1) return '';
+  const nx=part.set.parts[part.p+1];
+  return `<button class="btn btn-primary" id="nextPartBtn" data-id="${nx.id}">下一組（${PART_LABEL[part.parts][part.p+1]}）➜</button>`;
+}
 
 /* ============ 總覽（投影用） ============ */
-function openOverview(id,from){
-  const u=UNITS.find(x=>x.id===id);
+function openOverview(key,from){
+  const st=SETMAP[key], sec=secOf(st.sec), k=KINDS[st.kind];
   $('overview').innerHTML=`
-    <div class="ov-head"><h2>${u.id} ${u.title}｜題目總覽</h2>
+    <div class="ov-head"><h2>${sec.chapter?sec.title:sec.id+' '+sec.title}｜${k.name}</h2>
       <div class="btn-row"><button class="btn btn-ghost btn-sm" id="ovToggle">全部顯示答案</button>
       <button class="btn btn-primary btn-sm" id="ovBack">返回</button></div></div>
-    ${u.qs.map((q,i)=>`<div class="ov-item">
-        <div class="q-meta"><span class="stage">第 ${i+1} 題</span><span class="tag">${q.skill}</span><span class="lvl lvl-${q.lvl}">${q.lvl}</span></div>
+    ${st.qs.map((q,i)=>`<div class="ov-item">
+        <div class="q-meta"><span class="stage">${q.src}</span><span class="tag">${q.skill}</span><span class="lvl lvl-${q.lvl}">${q.lvl}</span></div>
         <div class="stem">${rich(q.stem)}</div>${fig(q)}
-        <div class="ov-opts">${q.opts.map((o,k)=>`<div ${k===q.ans?'data-ans="1"':''}>(${LETTERS[k]}) ${rich(o)}</div>`).join('')}</div>
+        <div class="ov-opts">${q.opts.map((o,j)=>`<div ${j===q.ans?'data-ans="1"':''}>(${LETTERS[j]}) ${rich(o)}</div>`).join('')}</div>
         <button class="hint-btn ov-show" data-i="${i}">顯示答案與解析</button>
-        <div class="ov-ans hidden" id="ova${i}"><b>答案：(${LETTERS[q.ans]})</b>
-          <ol class="steps">${q.steps.map((s,k)=>stepHTML(s,k,false)).join('')}</ol>
-          <div class="tip"><b>觀念小叮嚀：</b>${rich(q.tip)}</div></div>
+        <div class="ov-ans hidden" id="ova${i}"><b>答案：</b>${rich(finOf(q))}　<span class="muted">（選項 ${LETTERS[q.ans]}）</span>
+          <ol class="steps">${q.steps.map((s,j)=>stepHTML(s,j,false)).join('')}</ol>
+          ${q.tip?`<div class="tip"><b>觀念小叮嚀：</b>${rich(q.tip)}</div>`:''}</div>
       </div>`).join('')}`;
   const setOne=(i,on)=>{
     const box=$('ova'+i), item=box.closest('.ov-item');
@@ -973,27 +2316,32 @@ function openOverview(id,from){
   };
   $('overview').querySelectorAll('.ov-show').forEach(b=>b.onclick=()=>{const i=+b.dataset.i; setOne(i,$('ova'+i).classList.contains('hidden'));});
   let all=false;
-  $('ovToggle').onclick=()=>{ all=!all; u.qs.forEach((_,i)=>setOne(i,all)); $('ovToggle').textContent= all?'全部隱藏答案':'全部顯示答案'; };
+  $('ovToggle').onclick=()=>{ all=!all; st.qs.forEach((_,i)=>setOne(i,all)); $('ovToggle').textContent= all?'全部隱藏答案':'全部顯示答案'; };
   $('ovBack').onclick=()=> from==='result' ? show('result') : renderHome();
-  $('brandSub').textContent=`題目總覽｜${u.id} ${u.title}`;
+  $('brandSub').textContent=`題目總覽｜${sec.chapter?sec.title:sec.id+' '+sec.title}｜${k.name}`;
   show('overview');
 }
 
 /* ============ 啟動 ============ */
 document.addEventListener('keydown',e=>{
   if(!S || $('game').classList.contains('hidden')) return;
-  const k=e.key.toUpperCase(), map={'1':0,'2':1,'3':2,'4':3,'A':0,'B':1,'C':2,'D':3};
-  if(!S.locked && k in map) choose(map[k]);
-  else if(S.locked && e.key==='Enter' && $('nextBtn') && document.activeElement!==$('nextBtn')){ e.preventDefault(); next(); }
+  const q=S.items[S.queue[S.pos]];
+  if(!S.locked){
+    if(isOrig(q)){ if(e.key==='Enter' && $('revealBtn')){ e.preventDefault(); revealStep(); } return; }
+    const k=e.key.toUpperCase(), map={'1':0,'2':1,'3':2,'4':3,'A':0,'B':1,'C':2,'D':3};
+    if(k in map && map[k]<q.opts.length) finish(map[k]===q.ans,map[k]);
+  } else if(e.key==='Enter' && $('nextBtn') && document.activeElement!==$('nextBtn')){ e.preventDefault(); next(); }
 });
 window.addEventListener('DOMContentLoaded',()=>{
+  buildPlay();
   $('homeBtn').onclick=renderHome;
   $('bossBtn').onclick=startBoss;
   const h=decodeURIComponent(location.hash.slice(1));
   if(h==='boss') startBoss();
-  else if(UNITS.some(u=>u.id===h)) startUnit(h);
+  else if(PLAY[h]) startPart(h);
   else renderHome();
 });
+
 </script>
 </body>
 </html>
