@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>八年級英文 第二次段考強化練習</title>
+<style>
+:root{
+  --bg:#f6f3ec; --card:#ffffff; --ink:#1f2328; --muted:#5f6670; --line:#e3ded3;
+  --ok:#1f8a4c; --okbg:#e3f5ea; --bad:#c43c2f; --badbg:#fbe6e3;
+  --accent:#2f7d4f; --soft:#e4f3ea; --gold:#e3a500;
+  --en:"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --zh:"Noto Sans TC","Microsoft JhengHei","PingFang TC","Heiti TC",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--en),var(--zh);font-size:19px;line-height:1.6;-webkit-text-size-adjust:100%}
+button{font:inherit;cursor:pointer}
+input{font:inherit}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 60px}
+.hidden{display:none!important}
+
+/* ---------- 首頁 ---------- */
+.hero{background:linear-gradient(135deg,#243b55,#3f5f8a);color:#fff;border-radius:22px;padding:28px 26px;position:relative;overflow:hidden}
+.hero h1{margin:0 0 4px;font-size:30px;letter-spacing:1px}
+.hero .sub{opacity:.9;font-size:17px}
+.hero .deco{position:absolute;right:-10px;bottom:-24px;font-size:120px;opacity:.12;font-family:var(--en);font-weight:800}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+.stat{background:rgba(255,255,255,.14);border-radius:12px;padding:8px 14px;font-size:16px}
+.stat b{font-size:22px;margin-right:4px}
+.rank{display:inline-block;background:var(--gold);color:#3a2a00;border-radius:999px;padding:2px 12px;font-weight:700;font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:20px}
+.lcard{background:var(--card);border-radius:18px;border:2px solid var(--line);padding:20px;text-align:left;position:relative;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;gap:6px;color:inherit}
+.lcard:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,0,.08)}
+.lcard .top{display:flex;align-items:center;gap:12px}
+.lcard .ico{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;font-size:30px;flex:none}
+.lcard .ttl{font-weight:800;font-size:22px}
+.lcard .en{font-family:var(--en);color:var(--muted);font-size:16px}
+.lcard .pts{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{font-size:14px;border-radius:999px;padding:2px 10px;background:#f1eee7;color:#4a4f57}
+.bar{height:10px;background:#eee8dc;border-radius:99px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;border-radius:99px}
+.lcard .meta{display:flex;justify-content:space-between;font-size:15px;color:var(--muted);margin-top:2px}
+.lcard.locked{opacity:.75}
+.lock{position:absolute;top:14px;right:16px;font-size:14px;background:#efe9dc;border-radius:999px;padding:2px 10px;color:#6b5d3c}
+.howto{margin-top:22px;background:var(--card);border-radius:16px;border:1px dashed #cfc6b3;padding:14px 18px;font-size:16px;color:#4a4f57}
+.howto b{color:var(--ink)}
+
+/* ---------- 課次頁 ---------- */
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.back{background:var(--card);border:2px solid var(--line);border-radius:12px;padding:6px 14px;font-size:16px}
+.banner{border-radius:20px;padding:22px 24px;color:#fff;position:relative;overflow:hidden}
+.banner h2{margin:0;font-size:26px}
+.banner .en{font-family:var(--en);font-size:19px;opacity:.95}
+.banner .pts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.banner .chip{background:rgba(255,255,255,.2);color:#fff}
+.banner .big{position:absolute;right:16px;top:8px;font-size:72px;opacity:.25}
+.units{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+.ucard{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:16px;text-align:left;display:flex;gap:14px;align-items:flex-start;color:inherit;transition:border-color .15s,transform .15s}
+.ucard:hover{border-color:var(--accent);transform:translateY(-2px)}
+.ucard .no{width:46px;height:46px;border-radius:12px;background:var(--soft);display:grid;place-items:center;font-size:24px;flex:none}
+.ucard .t{font-weight:800;font-size:19px}
+.ucard .d{font-size:15px;color:var(--muted);line-height:1.45}
+.ucard .s{margin-top:6px;font-size:15px;color:var(--muted)}
+.stars{color:var(--gold);letter-spacing:2px;font-size:18px}
+.stars .off{color:#d9d2c3}
+
+/* ---------- 作答頁 ---------- */
+.qhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qhead .name{font-weight:800;font-size:18px;flex:1;min-width:150px}
+.pill{background:var(--card);border:2px solid var(--line);border-radius:999px;padding:3px 12px;font-size:15px;white-space:nowrap}
+.combo{background:#fff1e0;border-color:#ffc98a;color:#a04d00}
+.prog{height:12px;background:#e6e0d3;border-radius:99px;overflow:hidden;margin:12px 0 16px}
+.prog i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.psg{background:#fffdf7;border:2px solid #e8dfc8;border-radius:16px;padding:14px 18px;margin-bottom:14px;font-family:var(--en)}
+.psg .ph{display:flex;justify-content:space-between;align-items:center;gap:10px;font-family:var(--zh)}
+.psg .ph b{font-family:var(--en);font-size:18px}
+.psg .tog{background:none;border:1px solid #d8cdb2;border-radius:999px;padding:2px 12px;font-size:14px;color:#6b5d3c}
+.psg .body{max-height:46vh;overflow:auto;margin-top:8px;padding-right:4px}
+.psg p{margin:0 0 10px}
+.psg .notes{font-family:var(--zh);font-size:15px;color:#6b5d3c;border-top:1px dashed #e0d5ba;padding-top:8px;margin-top:4px}
+.bl{display:inline-block;min-width:54px;text-align:center;border-bottom:2px solid #888;font-weight:700;color:#555;margin:0 3px;font-family:var(--en)}
+.bl.cur{background:var(--accent);color:#fff;border-radius:6px;border-bottom-color:transparent;padding:0 6px}
+table.sch{border-collapse:collapse;width:100%;max-width:520px;font-size:17px}
+table.sch th,table.sch td{border:1px solid #e0d5ba;padding:4px 10px;text-align:left}
+table.sch th{background:#f6efdc}
+.notice{border:3px double #d1c39d;border-radius:12px;padding:10px 16px;background:#fff}
+.notice h4{margin:4px 0 8px;font-size:19px;text-align:center}
+.notice ul{padding-left:20px;margin:6px 0}
+.diary{font-style:italic;color:#6b5d3c}
+.qcard{background:var(--card);border-radius:18px;border:2px solid var(--line);padding:20px 22px}
+.tag{display:inline-block;background:var(--soft);color:var(--accent);font-weight:700;font-size:14px;border-radius:8px;padding:2px 10px;margin-bottom:10px;font-family:var(--zh)}
+.stem{font-size:22px;line-height:1.7;font-family:var(--en),var(--zh)}
+.stem u{text-decoration-thickness:2px;text-underline-offset:4px;font-weight:700}
+.hint2{margin-top:6px;font-size:16px;color:var(--muted)}
+.gap{display:inline-block;min-width:70px;border-bottom:2px solid #555;margin:0 4px}
+.opts{display:grid;gap:10px;margin-top:16px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;background:#fbfaf7;border:2px solid var(--line);border-radius:14px;padding:12px 14px;font-size:19px;font-family:var(--en),var(--zh);color:inherit}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;width:32px;height:32px;border-radius:9px;background:#eee9df;display:grid;place-items:center;font-weight:800;font-size:16px}
+.opt.sel{border-color:var(--accent);background:var(--soft)}
+.opt.sel .k{background:var(--accent);color:#fff}
+.opt.right{border-color:var(--ok);background:var(--okbg)}
+.opt.right .k{background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.opt.wrong .k{background:var(--bad);color:#fff}
+.opt:disabled{cursor:default}
+.inp{border:2px solid #b9b2a3;border-radius:10px;padding:4px 10px;font-size:20px;font-family:var(--en);background:#fffef9;color:var(--ink);min-width:90px;max-width:100%}
+.inp:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--soft)}
+.inp.right{border-color:var(--ok);background:var(--okbg)}
+.inp.wrong{border-color:var(--bad);background:var(--badbg)}
+.inp.long{width:100%;margin-top:14px;padding:10px 12px}
+.orig{background:#f7f4ee;border-left:5px solid var(--accent);border-radius:8px;padding:8px 14px;margin-top:6px;font-family:var(--en)}
+.zh{font-family:var(--zh);font-size:22px}
+.ans-area{min-height:62px;border:2px dashed #c9c1b0;border-radius:14px;padding:10px;margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;background:#fffef9}
+.ans-area.empty::before{content:"點選下方字卡，排出正確的句子";color:#a39b8a;font-size:16px;font-family:var(--zh);padding:6px}
+.ans-area.blk{flex-direction:column;align-items:stretch}
+.ans-area.blk.empty::before{content:"依順序點選下方的事件"}
+.bank{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.bank.blk{flex-direction:column}
+.wc{background:#fff;border:2px solid #cfc7b6;border-bottom-width:4px;border-radius:10px;padding:6px 12px;font-size:19px;font-family:var(--en);color:inherit}
+.wc:hover:not(:disabled){border-color:var(--accent)}
+.wc.used{visibility:hidden}
+.wc.blk.used{display:none}
+.wc.blk{text-align:left}
+.wc .n{display:inline-block;background:var(--accent);color:#fff;border-radius:6px;padding:0 7px;margin-right:8px;font-size:15px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.btn{border:none;border-radius:12px;padding:10px 22px;font-weight:700;font-size:18px;background:var(--accent);color:#fff}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.btn.small{padding:6px 14px;font-size:15px}
+.fb{margin-top:16px;border-radius:14px;padding:12px 16px;font-size:17px}
+.fb.ok{background:var(--okbg);border:2px solid #9fd7b5}
+.fb.no{background:var(--badbg);border:2px solid #efb3aa}
+.fb .h{font-weight:800;font-size:19px}
+.fb .ca{font-family:var(--en);font-weight:700;margin-top:4px}
+.fb .ex{margin-top:6px;color:#3d434a}
+.clock{display:block;margin:6px auto 4px;width:190px;height:190px}
+.xp-pop{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);font-size:34px;font-weight:900;color:var(--ok);pointer-events:none;animation:pop .9s ease forwards;text-shadow:0 2px 0 #fff}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-30%) scale(.7)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}100%{opacity:0;transform:translate(-50%,-90%) scale(1)}}
+
+/* ---------- 結果頁 ---------- */
+.result{background:var(--card);border-radius:22px;border:2px solid var(--line);padding:26px;text-align:center}
+.result .bigstars{font-size:58px;letter-spacing:8px;color:var(--gold)}
+.result .bigstars .off{color:#e2dccf}
+.result h2{margin:6px 0}
+.result .score{font-size:44px;font-weight:900;color:var(--accent)}
+.secs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0;text-align:left}
+.sec{background:#faf7f1;border-radius:12px;padding:8px 12px;font-size:15px}
+.sec b{display:block;font-size:18px}
+.review{margin-top:22px;text-align:left}
+.ritem{border:2px solid var(--line);border-radius:14px;padding:12px 16px;margin-top:10px;background:#fff}
+.ritem .rq{font-family:var(--en),var(--zh);font-size:17px}
+.ritem .ry{color:var(--bad);font-size:16px;margin-top:4px}
+.ritem .rc{color:var(--ok);font-weight:700;font-size:16px;font-family:var(--en),var(--zh)}
+.ritem .re{color:#4a4f57;font-size:15px;margin-top:2px}
+.ritem.okk{border-color:#bfe3cc}
+.navx{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.navx button{width:36px;height:36px;border-radius:9px;border:2px solid var(--line);background:#fff;font-size:14px}
+.navx button.done{background:var(--soft);border-color:var(--accent)}
+.navx button.cur{background:var(--accent);color:#fff;border-color:var(--accent)}
+footer{margin-top:28px;text-align:center;color:#8b8577;font-size:14px}
+
+@media (max-width:720px){
+  body{font-size:17px}
+  .grid,.units{grid-template-columns:1fr}
+  .hero h1{font-size:24px}
+  .stem{font-size:19px}
+  .opt{font-size:17px;padding:10px 12px}
+  .qcard{padding:16px}
+  .secs{grid-template-columns:repeat(2,1fr)}
+  .wc{font-size:17px;padding:5px 10px}
+  .zh{font-size:19px}
+  .qhead .name{font-size:16px;min-width:0;flex-basis:60%}
+}
+</style>
+</head>
+<body>
+<div id="app" class="wrap"></div>
+<script>
+/* ================= 題目建構工具 ================= */
+const LESSONS = [];
+let _gid = 0;
+const MC  = (q, opts, exp, tag) => ({ t: "mc", q, opts, exp, tag });
+const SP  = (q, zh, exp) => ({ t: "sp", q, zh, exp, tag: "文意字彙" });
+const FI  = (q, ans, exp, tag) => ({ t: "fi", q, ans, exp, tag });
+const RW  = (q, hint, ans, exp) => ({ t: "rw", q, hint, ans, exp, tag: "依提示改寫" });
+const OR  = (zh, en, alts, exp) => ({ t: "or", zh, en, alts: alts || [], exp, tag: "整句翻譯（字卡重組）" });
+const SQ  = (q, items, exp) => ({ t: "sq", q, items, exp, tag: "事件排序" });
+const CZ  = (b, opts, exp) => ({ t: "mc", q: "空格 " + b, b, opts, exp });
+const CLK = (o, h, m) => Object.assign(o, { clk: [h, m], tag: o.tag || "時間說法" });
+const GR  = (kind, title, html, notes, qs) => { const id = "p" + (++_gid); return qs.map(x => Object.assign(x, { psg: { id, kind, title, html, notes }, tag: x.tag || (kind === "cloze" ? "克漏字" : "閱讀測驗") })); };
+</script>
+<script>
+/* ===== L3 Tina and Billy Were Looking for Water ===== */
+LESSONS.push({
+  id: "L3", icon: "🐦", color: "#2f7d4f", soft: "#e4f3ea",
+  title: "Lesson 3", en: "Tina and Billy Were Looking for Water",
+  badge: "森林探險家",
+  points: ["when / before / after", "過去進行式 was / were + V-ing", "時間說法 a quarter / half / to / past", "動物與故事單字"],
+  units: [
+  {
+    id: "L3-1", icon: "🔤", title: "單字闖關", desc: "文意字彙・字彙選擇・一字多義",
+    qs: [
+      SP("It was a sunny day, and the sky was [clear]. We could see the mountains far away.", "晴朗的", "sky 天空很「晴朗」，所以看得到遠方的山。"),
+      SP("My cat is too small. It can't [reach] the fish on the table.", "伸手拿到；達到", "貓太小，「搆不到」桌上的魚。can't 後面接原形動詞 reach。"),
+      SP("Please [pick] up the trash on the floor and put it in the trash can.", "撿起（pick up）", "pick up 撿起。"),
+      SP("Ken [dropped] his phone, and now it doesn't work.", "丟下；落下（過去式）", "drop 的過去式要重複字尾 p 再加 ed：dropped。"),
+      SP("Grandpa keeps some [geese] on his farm. They are white and very loud.", "鵝（複數）", "goose 的複數是不規則的 geese（some ＋複數）。"),
+      MC("Mom put the cake ___ the box and closed it.", ["along", "*into", "past", "until"], "into 到……裡面。把蛋糕放「進」盒子裡。"),
+      MC("The dog ran back and ___ in the yard. It was very excited.", ["*forth", "top", "middle", "close"], "back and forth 來回地。"),
+      MC("Lisa was ___ of her brother because he won first place in the race.", ["*proud", "ugly", "dry", "clear"], "be proud of 以……為榮。"),
+      MC("A: How much ___ do you want for dinner?<br>B: Just a little, please.", ["*chicken", "chickens", "a chicken", "two chickens"], "chicken 當「雞肉」時不可數，用 How much 問。", "名詞"),
+      MC("Judy was sad because she didn't <u>pass</u> the math test.<br>畫線字的意思是？", ["經過", "*通過", "過去", "最好的"], "pass 一字多義：經過／通過。沒有「通過」考試，所以難過。", "一字多義"),
+      MC("Please write your name at the <u>top</u> of the paper.<br>畫線字的意思是？", ["*頂端", "最好的", "後面", "中間"], "top 名詞「頂端」；形容詞「最好的」（the top five movies）。", "一字多義"),
+      MC("Don't get too <u>close</u> to the fire. It's dangerous.<br>畫線字的意思是？", ["關上", "*接近地", "清楚的", "晴朗的"], "close 副詞「接近地」；動詞是「關上」（close the window）。", "一字多義"),
+      MC("Lily cut the pizza into <u>quarters</u> and shared it with three friends.<br>畫線字的意思是？", ["十五分鐘", "*四分之一", "一半", "中間"], "quarter 一字多義：十五分鐘／四分之一。披薩切成四等分。", "一字多義")
+    ]
+  },
+  {
+    id: "L3-2", icon: "🕒", title: "時間說法", desc: "看時鐘說英文：a quarter・half・to・past",
+    qs: [
+      CLK(MC("看時鐘，選出正確的英文說法。", ["*a quarter to nine", "a quarter past eight", "a quarter to eight", "half past eight"], "8:45 → 再 15 分鐘就 9 點 → a quarter to nine。"), 8, 45),
+      CLK(MC("看時鐘，選出正確的英文說法。", ["*half past ten", "half past eleven", "ten past thirty", "a quarter to eleven"], "10:30 → 過了十點半小時 → half past ten。"), 10, 30),
+      CLK(MC("看時鐘，選出正確的英文說法。", ["*ten to ten", "ten to nine", "ten past nine", "ten past ten"], "9:50 → 差 10 分鐘就 10 點 → ten to ten（逆讀法：先說分，再說時）。"), 9, 50),
+      CLK(MC("看時鐘，選出正確的英文說法。", ["*a quarter past three", "a quarter to three", "a quarter to four", "half past three"], "3:15 → 過了三點 15 分鐘 → a quarter past / after three。"), 3, 15),
+      CLK(MC("看時鐘，選出正確的英文說法。", ["*five past six", "five to six", "five past five", "six past five"], "6:05 → 過了六點 5 分鐘 → five past / after six。"), 6, 5),
+      MC("“It was twenty after twelve.” 是幾點？", ["11:40", "*12:20", "12:40", "11:20"], "after = past，表「過了」。twenty after twelve → 12:20。", "時間說法"),
+      MC("“It was a quarter to twelve.” 是幾點？", ["*11:45", "12:15", "12:45", "11:15"], "to 表「差……到」。差 15 分鐘到 12 點 → 11:45。", "時間說法"),
+      CLK(FI("The movie starts at this time. It starts at ___ ___ seven.", ["half", "past"], "7:30 → half past seven。表達「幾點半」多用 past。"), 7, 30),
+      CLK(FI("Hurry up! It's a ___ ___ five. The bus leaves at five.", ["quarter", "to"], "4:45 → a quarter to five。"), 4, 45),
+      MC("A: Is it seven o'clock?<br>B: Almost. It's five ___ seven.", ["*to", "past", "after", "half"], "Almost（快要）→ 還沒到 7 點 → five to seven（6:55）。", "時間說法")
+    ]
+  },
+  {
+    id: "L3-3", icon: "🔗", title: "文法：when / before / after", desc: "連接詞選擇・合併句子・逗號位置",
+    qs: [
+      MC("Brush your teeth ___ you go to bed. It's good for your teeth.", ["*before", "after", "so", "but"], "「睡覺之前」刷牙 → before。"),
+      MC("Amy felt very full ___ she ate three hamburgers.", ["*after", "before", "so", "or"], "吃了三個漢堡「之後」覺得很飽 → after。"),
+      MC("___ I got home, my dog ran to me and jumped on me.", ["*When", "Before", "Because", "So"], "「當」我到家時，狗跑向我 → When。"),
+      MC("Ryan put on his shoes ___ he went out.", ["*before", "after", "so", "because"], "先穿鞋，「然後」出門 → 穿鞋發生在出門之前 → before。"),
+      MC("___ Billy couldn't fly, he picked up small rocks close to the jar.", ["*Because", "Before", "After", "So"], "「因為」不會飛，所以撿罐子旁邊的小石頭 → Because。"),
+      FI("Eric did his homework ___ he finished dinner. Then he played video games.", ["after"], "先吃完晚餐，再寫作業 → 寫作業在晚餐「之後」→ after。"),
+      FI("I always turn off the lights ___ I leave the classroom.", ["before|when"], "離開教室「之前／的時候」關燈，before 或 when 都合理。"),
+      MC("下列哪一句的標點正確？", ["*When it rains, I stay home.", "When it rains I stay home,", "I stay home, when it rains.", "I stay home when, it rains."], "when 子句放句首，句中要加逗號；放句尾則不加逗號。", "標點"),
+      OR("Kevin 看到老師時，他說了聲哈囉。", "When Kevin saw his teacher, he said hello.", ["Kevin said hello when he saw his teacher."], "When 子句可放句首（加逗號）或句尾。"),
+      RW("Linda read a book before she went to sleep.", "用 After… 開頭改寫", ["After Linda read a book, she went to sleep.", "After she read a book, Linda went to sleep."], "before 改成 after 時，兩件事要對調：先看書，after 看書之後去睡。"),
+      RW("Jenny got to school. She saw her best friend.", "用 … when … 合併句子", ["Jenny saw her best friend when she got to school.", "When Jenny got to school, she saw her best friend.", "When she got to school, Jenny saw her best friend."], "「當 Jenny 到學校時」→ when she got to school。")
+    ]
+  },
+  {
+    id: "L3-4", icon: "⏳", title: "文法：過去進行式", desc: "was / were + V-ing・時間線索・問句與簡答",
+    qs: [
+      MC("Look! The frogs ___ around the pool.", ["*are jumping", "were jumping", "jump", "jumped"], "Look! 表示「現在正在」→ 現在進行式 are jumping。"),
+      MC("I ___ TV at eight last night.", ["*was watching", "am watching", "watch", "were watching"], "at eight last night 過去某個時間點正在做 → 過去進行式；主詞 I 用 was。"),
+      MC("A: What ___ you and your sister doing at 7 p.m. yesterday?<br>B: We ___ dinner.", ["*were; were having", "did; had", "are; are having", "was; were having"], "doing → 進行式；yesterday → 過去。you and your sister 複數 → were。"),
+      MC("When Mom ___ home, Dad ___ the dishes.", ["*got; was doing", "gets; is doing", "was getting; did", "got; does"], "媽媽回家（瞬間發生）用過去簡單式；爸爸當時「正在」洗碗用過去進行式。"),
+      MC("A: Was Tom sleeping when you called him?<br>B: ___ He was taking a shower.", ["*No, he wasn't.", "Yes, he was.", "No, he didn't.", "Yes, he did."], "Was 開頭的問句用 was / wasn't 回答；後面說他在洗澡 → 否定。"),
+      MC("I wasn't playing video games then, and Ben ___.", ["*wasn't, either", "was, too", "didn't, either", "was, either"], "否定句的附和用 either：wasn't, either（也沒有）。"),
+      MC("My brother ___ to school by bike every morning.", ["*rides", "is riding", "was riding", "rode"], "every morning 表習慣 → 現在簡單式；主詞第三人稱單數 → rides。"),
+      FI("It ___ (rain) when we left the house this morning.", ["was raining"], "離開家「當時」正在下雨 → 過去進行式 was raining。"),
+      FI("Tina and Billy ___ (look) for water when Billy saw something.", ["were looking"], "主詞複數 → were looking。"),
+      FI("Tina ___ (fly) back to the jar and dropped the big rock into it.", ["flew"], "fly 的過去式是不規則的 flew。"),
+      RW("Sara was <u>walking her dog</u> at six.", "依畫線部分造原問句", ["What was Sara doing at six?", "What was Sara doing at six o'clock?"], "問「正在做什麼」→ What was ＋主詞＋doing…？"),
+      OR("當你打電話給我時，我正在洗澡。", "I was taking a shower when you called me.", ["When you called me, I was taking a shower."], "打電話（瞬間）用過去簡單式，正在洗澡用過去進行式。")
+    ]
+  },
+  {
+    id: "L3-5", icon: "✍️", title: "翻譯練習", desc: "引導式翻譯（打字）・整句翻譯（字卡重組）",
+    qs: [
+      FI("Tina 撿起一顆大石頭，並把它丟進罐子裡。<br>Tina ___ ___ a big rock and ___ it ___ the jar.", ["picked", "up", "dropped", "into"], "pick up 撿起（過去式 picked）；drop…into 把……丟進（過去式 dropped）。", "引導式翻譯"),
+      FI("我真以你為榮！<br>I am so ___ ___ you.", ["proud", "of"], "be proud of 以……為榮。", "引導式翻譯"),
+      FI("那隻狗在院子裡來回地跑。<br>The dog ran ___ ___ ___ in the yard.", ["back", "and", "forth"], "back and forth 來回地。", "引導式翻譯"),
+      FI("我們穿過森林之前先休息一下吧。<br>Let's take a ___ before we ___ through the ___.", ["break", "pass", "forest"], "take a break 休息一下；pass through 穿越。", "引導式翻譯"),
+      FI("我的嘴巴太短了，我搆不到水。<br>My beak is too short. I can't ___ the water.", ["reach"], "reach 達到；伸出手臂拿。", "引導式翻譯"),
+      OR("你昨晚九點在做什麼？", "What were you doing at nine last night?", [], "過去某時間點正在做什麼 → What were you doing…？"),
+      OR("當 Billy 看到那個罐子時，他非常開心。", "Billy was very happy when he saw the jar.", ["When Billy saw the jar, he was very happy."], "when 子句可放句首或句尾。"),
+      OR("他每天睡覺前都會刷牙。", "He brushes his teeth before he goes to bed every day.", ["Before he goes to bed every day, he brushes his teeth."], "every day 是習慣 → 現在簡單式，主詞 he 動詞加 s / es。")
+    ]
+  },
+  {
+    id: "L3-6", icon: "📖", title: "克漏字與閱讀", desc: "故事克漏字・行程表・故事排序",
+    qs: [].concat(
+      GR("cloze", "A Duck in Trouble",
+        "<p>Last Saturday, Kevin and his little sister Amy went to the park. It was a quarter past ten, and the sun {1}. They {2} along the river when Amy saw a little duck in the water.</p><p>“It can't get out!” Amy shouted. The duck's foot was in a plastic bag. Kevin {3} a long stick and used it to help the duck. {4} the duck got out of the water, it shook its body and walked away.</p><p>Amy was very happy, {5} she jumped with joy. “Good job, Kevin! I'm proud of you.”</p>",
+        "trouble 麻煩　plastic bag 塑膠袋　stick 樹枝　shake / shook 搖動",
+        [
+          CZ(1, ["shines", "*was shining", "is shining", "shine"], "故事發生在過去（Last Saturday），描述當時的背景 → 過去進行式 was shining。"),
+          CZ(2, ["walk", "are walking", "*were walking", "was walking"], "看到鴨子「當時」他們正在散步；主詞 They → were walking。"),
+          CZ(3, ["*picked up", "dropped", "shouted", "passed"], "「撿起」一根長樹枝來幫鴨子 → picked up。"),
+          CZ(4, ["Before", "*After", "Because", "So"], "鴨子離開水「之後」，抖抖身體走開 → After。"),
+          CZ(5, ["*so", "but", "before", "or"], "很開心，「所以」高興得跳起來 → so 連接結果。")
+        ]),
+      GR("read", "Jenny's Sunday",
+        "<p>This was Jenny's schedule last Sunday.</p><table class='sch'><tr><th>Time</th><th>What to do</th></tr><tr><td>7:00–7:45</td><td>Walk the dog along the river</td></tr><tr><td>7:45–8:30</td><td>Have breakfast with Grandma</td></tr><tr><td>8:30–11:30</td><td>Study English at the library</td></tr><tr><td>11:30–12:30</td><td>Have lunch</td></tr><tr><td>12:30–2:00</td><td>Take a nap</td></tr><tr><td>2:00–5:00</td><td>Play basketball with friends</td></tr><tr><td>5:00–6:15</td><td>Help Mom cook dinner</td></tr><tr><td>6:15–7:00</td><td>Have dinner</td></tr><tr><td>7:00–9:30</td><td>Watch a movie with her family</td></tr></table>",
+        "schedule 行程表　nap 午睡",
+        [
+          MC("What was Jenny doing at a quarter past eight?", ["*She was having breakfast with her grandma.", "She was walking the dog.", "She was studying English.", "She was taking a nap."], "a quarter past eight = 8:15，在 7:45–8:30 → 和奶奶吃早餐。"),
+          MC("What was Jenny doing at half past three?", ["*She was playing basketball.", "She was taking a nap.", "She was cooking dinner.", "She was watching a movie."], "half past three = 3:30，在 2:00–5:00 → 打籃球。"),
+          MC("Which is true?", ["Jenny took a nap before she had lunch.", "*Jenny helped her mom after she played basketball.", "Jenny studied English for two hours.", "Jenny was watching a movie at 6:30."], "(A) 午睡在午餐之後；(C) 讀英文 3 小時；(D) 6:30 正在吃晚餐。")
+        ]),
+      GR("read", "Sam's Treasure Map",
+        "<p>On Saturday morning, Sam found an old map in his grandpa's room. In the middle of the map, there was a big red X. “Maybe there's something under the old tree!” Sam thought.</p><p>After he had breakfast, he took the map and walked to the back of the house. He was digging under the tree when his grandpa came out. “What are you looking for?” Grandpa asked. “Treasure!” Sam said.</p><p>Grandpa laughed. “I drew that map for your dad when he was a little boy. The treasure is a box of his old toys.” Finally, Sam found the box. There was a toy car and a picture of Dad inside. Sam was very happy, and he shouted with joy.</p>",
+        "treasure 寶藏　dig 挖　laugh 笑　draw / drew 畫",
+        [
+          SQ("依故事發生的先後順序排列。", ["Sam found an old map.", "Sam had breakfast.", "Sam was digging under the tree.", "Grandpa told Sam about the map.", "Sam found the box."], "找到地圖 → 吃早餐 → 在樹下挖 → 爺爺說明地圖由來 → 找到盒子。"),
+          MC("What does “that map” refer to?", ["*The map Sam found in Grandpa's room.", "A map of the park.", "A map in Sam's dad's book.", "A map of a treasure island."], "爺爺說的 that map 就是 Sam 在爺爺房間找到的那張舊地圖。"),
+          MC("Which is NOT true?", ["The map had a red X in the middle.", "Grandpa drew the map for Sam's dad.", "*Sam found the map after he had breakfast.", "There was a toy car in the box."], "Sam 是在吃早餐「之前」找到地圖的（On Saturday morning… After he had breakfast, he took the map…）。")
+        ])
+    )
+  }
+  ]
+});
+
+/* ===== L4 I Want to Be a YouTuber ===== */
+LESSONS.push({
+  id: "L4", icon: "🎬", color: "#d4532c", soft: "#fbe9e2",
+  title: "Lesson 4", en: "I Want to Be a YouTuber",
+  badge: "夢想職人",
+  points: ["want / need / plan / learn + to V", "enjoy / keep / finish / practice + V-ing", "動名詞當主詞・虛主詞 It", "職業單字與 -er / -or / -r"],
+  units: [
+  {
+    id: "L4-1", icon: "🔤", title: "單字闖關", desc: "職業單字・字尾變化・一字多義・過去式",
+    qs: [
+      SP("Ms. Wang works in an office. She is a [secretary]. She answers the phone and writes emails for her boss.", "祕書", "在辦公室接電話、幫老闆寫信 → secretary 祕書。"),
+      SP("Jolin is a famous [singer]. Many people love her songs.", "歌手", "sing ＋ er = singer。"),
+      SP("Bubble tea is very [popular] in Taiwan. You can find it on almost every street.", "受歡迎的", "be popular 受歡迎的。"),
+      SP("Without hard work, your [dream] can't come true.", "夢想", "dream come true 夢想成真。"),
+      SP("What do you want to be in the [future]?", "未來", "in the future 在未來。"),
+      MC("A ___ brings letters to our homes every day.", ["*mailman", "waiter", "reporter", "actor"], "每天送信到家裡的是 mailman（mail carrier）郵差。"),
+      MC("Hank wants to be a news ___. He likes to tell people what is happening in the world.", ["*reporter", "waitress", "housewife", "factory worker"], "告訴大家世界上發生的事 → reporter 記者。"),
+      MC("My friends and I ___ up with Jeff and won the basketball game.", ["*teamed", "trained", "fought", "told"], "team up with 跟……組隊。"),
+      MC("下列哪一組字尾變化是<b>錯誤</b>的？", ["act → actor", "report → reporter", "write → writer", "*sing → singger"], "sing ＋ er = singer，不需要重複 g。", "字尾變化"),
+      MC("Joe has a <u>gift</u> for music. He can play five instruments.<br>畫線字的意思是？", ["*天分", "禮物", "明星", "夢想"], "have a gift for… 有……的天分。instrument 樂器", "一字多義"),
+      MC("There are lots of <u>stars</u> in the sky tonight.<br>畫線字的意思是？", ["明星", "*星星", "夢想", "火車"], "天空中的 stars → 星星。", "一字多義"),
+      MC("Jack <u>trained</u> hard for the race.<br>畫線字的意思是？", ["*訓練", "火車", "對抗", "告訴"], "train 動詞「訓練」；名詞「火車」。", "一字多義"),
+      FI("Last night, Grandma ___ (tell) us a funny story.", ["told"], "tell 的過去式是 told。", "過去式"),
+      FI("Ella ___ (sing) a beautiful song at the party yesterday.", ["sang"], "sing 的過去式是 sang。", "過去式")
+    ]
+  },
+  {
+    id: "L4-2", icon: "🎯", title: "文法：不定詞當受詞", desc: "want / need / plan / learn + to V",
+    qs: [
+      MC("Jerry wants ___ a new bike.", ["*to buy", "buying", "buy", "bought"], "want ＋ to V。"),
+      MC("We plan ___ Tainan this summer.", ["*to visit", "visiting", "visit", "visited"], "plan ＋ to V，表達未來的計畫。"),
+      MC("Does your brother need ___ his room?", ["*to clean", "clean", "cleans", "cleaned"], "need ＋ to V。"),
+      MC("Amy is learning ___ the guitar.", ["*to play", "play", "plays", "played"], "learn ＋ to V。"),
+      MC("A: What do you want to do in the future?<br>B: ___", ["*I want to be a writer.", "I want being a writer.", "I wanted be a writer.", "I want writing."], "want ＋ to V → I want to be a writer."),
+      FI("Grace plans ___ (go) to Japan next month.", ["to go"], "plan ＋ to V。"),
+      FI("I need ___ (finish) my homework before dinner.", ["to finish"], "need ＋ to V。"),
+      FI("Mia learned ___ (swim) when she was six.", ["to swim"], "learn ＋ to V；learned 已經表示過去，後面仍是 to ＋原形。"),
+      OR("我計畫明年要學做影片。", "I plan to learn to make videos next year.", [], "plan to V ＋ learn to V 連用。"),
+      RW("Sally will be a nurse in the future.", "用 want 改寫句子", ["Sally wants to be a nurse in the future."], "want ＋ to V；主詞 Sally 第三人稱單數 → wants。")
+    ]
+  },
+  {
+    id: "L4-3", icon: "🎮", title: "文法：動名詞當受詞", desc: "enjoy / keep / finish / practice + V-ing・兩者皆可・try / stop / forget",
+    qs: [
+      MC("Wendy enjoys ___ in the rain.", ["*walking", "to walk", "walk", "walked"], "enjoy ＋ V-ing。"),
+      MC("Please keep ___. You're doing a great job!", ["*practicing", "to practice", "practice", "practiced"], "keep ＋ V-ing（持續做）。"),
+      MC("Did you finish ___ the book?", ["*reading", "to read", "read", "reads"], "finish ＋ V-ing。"),
+      MC("Tim began ___ the drums last year.", ["*to play", "play", "played", "plays"], "begin ＋ to V 或 V-ing 皆可；選項中只有 to play。"),
+      MC("下列哪一句是<b>錯誤</b>的？", ["I like singing.", "I like to sing.", "*I enjoy to sing.", "I love singing."], "enjoy 只能接 V-ing → I enjoy singing.", "找錯誤"),
+      MC("The bus driver was tired, so he stopped ___ a cup of coffee.", ["*to drink", "drinking", "drink", "drank"], "stop ＋ to V：停下來「去做」某事。司機累了，停下來去喝咖啡。"),
+      MC("You talk too much in class. Please stop ___.", ["*talking", "to talk", "talk", "talked"], "stop ＋ V-ing：停止正在做的事。"),
+      MC("I forgot ___ my umbrella, so I got wet in the rain.", ["*to bring", "bringing", "bring", "brought"], "forget ＋ to V：忘記「要」做某事 → 忘了帶傘。"),
+      MC("Jason is good at ___ stories.", ["*telling", "to tell", "tell", "told"], "介系詞（at）後面接動詞 → V-ing。"),
+      FI("Eric won the race by ___ (practice) running every day.", ["practicing"], "介系詞 by 後面接 V-ing。"),
+      FI("You can't learn English well without ___ (read) a lot.", ["reading"], "介系詞 without 後面接 V-ing。"),
+      FI("My dad started ___ (cook) last year.", ["cooking|to cook"], "start ＋ to V 或 V-ing 皆可。"),
+      FI("My sister kept ___ (cry) after she lost her cat.", ["crying"], "keep ＋ V-ing。")
+    ]
+  },
+  {
+    id: "L4-4", icon: "🧩", title: "文法：動名詞當主詞・虛主詞 It", desc: "V-ing 當主詞（單數）・It is + adj. + to V",
+    qs: [
+      MC("___ videos is fun for John.", ["*Making", "Make", "Makes", "Made"], "動詞當主詞要改成動名詞 Making。"),
+      MC("Getting up early ___ easy for me.", ["*isn't", "aren't", "don't", "doesn't"], "動名詞當主詞視為單數 → is / isn't；easy 是形容詞，用 be 動詞。"),
+      MC("Playing basketball and swimming ___ my favorite sports.", ["*are", "is", "be", "being"], "兩個動名詞用 and 連接 → 複數 → are。"),
+      MC("It is not easy ___ a good YouTuber.", ["*to be", "be", "is", "was"], "虛主詞 It ＋ be ＋形容詞 ＋ to V（真主詞）。"),
+      MC("___ is important to drink enough water every day.", ["*It", "This", "They", "There"], "虛主詞 It 代替後面的 to drink enough water。"),
+      FI("___ (stay) up late is bad for your health.", ["Staying"], "動名詞當主詞 → Staying up late。"),
+      FI("It is fun ___ (play) board games with friends.", ["to play"], "虛主詞 It 句型：It is ＋形容詞＋ to V。"),
+      RW("It is exciting to watch baseball games.", "以動名詞為句首改寫", ["Watching baseball games is exciting."], "把 to watch 改成 Watching 放句首，動名詞主詞用 is。"),
+      RW("Learning English is interesting for me.", "以 It 開頭改寫", ["It is interesting for me to learn English.", "It is interesting to learn English for me."], "It is ＋形容詞＋(for 人)＋ to V。"),
+      OR("對我來說，當一個好歌手很難。", "It is hard for me to be a good singer.", [], "虛主詞句型：It is hard for me to V。")
+    ]
+  },
+  {
+    id: "L4-5", icon: "✍️", title: "翻譯練習", desc: "引導式翻譯（打字）・整句翻譯（字卡重組）",
+    qs: [
+      FI("當 YouTuber 很適合你。<br>Being a YouTuber is ___ ___ you.", ["right", "for"], "be right for 適合……。", "引導式翻譯"),
+      FI("他們擅長唱歌和說故事。<br>They are good ___ singing and ___ stories.", ["at", "telling"], "be good at ＋ V-ing；tell stories 說故事。", "引導式翻譯"),
+      FI("我只是為了好玩才做這些事。<br>I only do those ___ ___.", ["for", "fun"], "for fun 為了好玩。", "引導式翻譯"),
+      FI("沒有第一步，夢想就只是夢想。<br>___ the first step, a dream is just a ___.", ["without", "dream"], "without 沒有（介系詞）。", "引導式翻譯"),
+      FI("職業玩家必須大量訓練，而且常常熬夜。<br>Pro gamers ___ ___ train a lot, and they often ___ ___.", ["have", "to", "stay", "up"], "have to 必須；stay up 熬夜。", "引導式翻譯"),
+      OR("你未來想當什麼？", "What do you want to be in the future?", [], "want to be… in the future。"),
+      OR("我喜歡跟朋友們一起拍好笑的影片。", "I like making funny videos with my friends.", [], "like ＋ V-ing。"),
+      OR("要成為一位有名的演員不容易。", "It is not easy to become a famous actor.", [], "虛主詞 It ＋ is not easy ＋ to V。")
+    ]
+  },
+  {
+    id: "L4-6", icon: "📖", title: "克漏字與閱讀", desc: "人物故事克漏字・職業對話・YouTuber 的一天",
+    qs: [].concat(
+      GR("cloze", "Leo's Dream",
+        "<p>When Leo was a little boy, he loved {1} pictures. He drew on everything—his books, the walls, and even his dad's newspaper! {2} he was twelve, he started to make short cartoons on his computer.</p><p>His parents didn't like it at first because they wanted him {3} a doctor. But Leo kept practicing. Last year, he put his cartoons on the Internet, and many people loved them. {4}.</p><p>Now Leo is a famous cartoonist, and {5} is still his favorite thing in the world.</p>",
+        "cartoon 卡通　cartoonist 漫畫家　newspaper 報紙",
+        [
+          CZ(1, ["*drawing", "draw", "drew", "draws"], "love ＋ V-ing（或 to V）→ drawing。"),
+          CZ(2, ["*When", "Before", "So", "Because"], "「當」他十二歲時，開始做卡通 → When。"),
+          CZ(3, ["*to be", "being", "be", "is"], "want ＋人＋ to V：希望某人做某事。"),
+          CZ(4, ["*His cartoons became very popular", "He stopped drawing pictures", "His parents told him to be a doctor", "He never used a computer again"], "上一句說很多人喜歡他的卡通 → 卡通變得很受歡迎。"),
+          CZ(5, ["*making cartoons", "make cartoons", "made cartoons", "makes cartoons"], "動名詞當主詞 → making cartoons is…")
+        ]),
+      GR("read", "Career Day",
+        "<p><b>Ms. Chen:</b> Tomorrow is Career Day. What do you want to be in the future?</p><p><b>Ryan:</b> I want to be a police officer. It's exciting to catch bad guys.</p><p><b>Ms. Chen:</b> Good! But police officers have to work at night sometimes.</p><p><b>Ryan:</b> I know. I'm OK with that. I enjoy helping people.</p><p><b>Nina:</b> I plan to be a writer. I love telling stories, and I can work at home.</p><p><b>Ms. Chen:</b> That sounds great. But writing a book isn't easy. You need to read a lot.</p><p><b>Nina:</b> Don't worry. Reading is my favorite thing to do! I read three books every week.</p><p><b>Ms. Chen:</b> How about you, Owen?</p><p><b>Owen:</b> I'm not sure. Maybe a YouTuber? I like making funny videos, but I'm shy in front of people.</p><p><b>Ms. Chen:</b> Then Career Day is a good chance for you. Go and talk to the people there.</p>",
+        "career day 職業探索日　catch 抓　shy 害羞的　chance 機會",
+        [
+          MC("Why does Ryan want to be a police officer?", ["*He thinks it's exciting to catch bad guys.", "He wants to work at home.", "He likes making videos.", "He wants to work at night."], "Ryan：It's exciting to catch bad guys."),
+          MC("In “I'm OK with that,” what does “that” mean?", ["*Working at night sometimes.", "Catching bad guys.", "Helping people.", "Going to Career Day."], "that 指陳老師前一句說的「警察有時必須晚上工作」。", "指涉"),
+          MC("Which is true?", ["Nina doesn't like reading.", "*Owen isn't sure about his dream job.", "Ms. Chen wants to be a writer.", "Ryan has to work at home."], "Owen 說 I'm not sure. Maybe a YouTuber?")
+        ]),
+      GR("read", "Hi, I'm Kiki!",
+        "<p>Hi, I'm Kiki, a YouTuber. Three years ago, I started making cooking videos for fun. Now about 500,000 people watch my videos!</p><p>Being a YouTuber is fun, but it's not easy. Every week, I need to plan, cook, shoot, and edit two videos. Sometimes I stay up until 2 a.m. to finish the work. Some people leave mean messages under my videos, and that makes me sad.</p><p>But when people tell me, “I made your cake for my mom, and she loved it!” I feel so happy. That's why I keep doing it.</p>",
+        "shoot 拍攝　edit 剪輯　message 留言",
+        [
+          MC("What are Kiki's videos about?", ["*Cooking.", "Singing.", "Playing games.", "Acting."], "I started making cooking videos。"),
+          MC("What does “mean” mean in the reading?", ["*Not nice.", "Very funny.", "Very famous.", "Very important."], "留言讓她難過 → mean 在這裡是「刻薄的；不友善的」。", "字義推測"),
+          MC("Which is NOT a hard part of Kiki's job?", ["Staying up late.", "Reading mean messages.", "Making two videos a week.", "*Hearing that people made her cake."], "聽到觀眾做了她的蛋糕讓她很開心，是她持續當 YouTuber 的原因。")
+        ])
+    )
+  }
+  ]
+});
+
+/* ===== Review 2 ===== */
+LESSONS.push({
+  id: "R2", icon: "🔁", color: "#4453c9", soft: "#e7e9fb",
+  title: "Review 2", en: "L3 + L4 綜合複習",
+  badge: "時態大師",
+  points: ["四種時態整合", "不定詞 vs. 動名詞", "依提示改寫句子", "Email・公告・日記閱讀"],
+  units: [
+  {
+    id: "R2-1", icon: "🔤", title: "單字總複習", desc: "L3 + L4 單字混合挑戰",
+    qs: [
+      SP("The baby duck was [ugly] at first, but it became a beautiful bird.", "醜陋的", "ugly 醜陋的，反義字 beautiful。"),
+      SP("There's a [map] on the wall. It shows all the countries in the world.", "地圖", "牆上顯示所有國家的是 map 地圖。"),
+      SP("At the [beginning] of the movie, the boy lost his dog.", "開頭", "at the beginning of… 在……的開頭。"),
+      SP("[Finally], after three hours, we got to the top of the mountain.", "最後；終於", "finally 最後；終於。"),
+      MC("The ___ in the restaurant gave us the menu.", ["*waiter", "mailman", "housewife", "secretary"], "餐廳裡拿菜單給客人的是 waiter 服務生。"),
+      MC("Tom can't ___ the book on the top shelf. He's too short.", ["*reach", "drop", "pass", "pick"], "太矮了「搆不到」→ reach。shelf 架子"),
+      MC("Ann ___ up her bag and left the classroom.", ["*picked", "dropped", "reached", "passed"], "pick up 拿起 → picked up。"),
+      MC("Don't ___ in the library. People are reading.", ["*shout", "train", "finish", "pass"], "圖書館裡不要「大叫」→ shout。"),
+      MC("This movie is so ___. Everyone in the theater laughed.", ["*funny", "ugly", "dry", "clear"], "大家都笑了 → funny 好笑的。"),
+      MC("It's dark here. I can't see ___.", ["*anything", "something", "joy", "future"], "否定句中用 anything（任何東西）。"),
+      FI("The bird ___ (fly) away when I opened the window.", ["flew"], "fly → flew。", "過去式"),
+      FI("The two boys ___ (fight) for the last cookie yesterday.", ["fought"], "fight → fought。", "過去式")
+    ]
+  },
+  {
+    id: "R2-2", icon: "⏱️", title: "四種時態整合", desc: "現在簡單・現在進行・過去簡單・過去進行",
+    qs: [].concat([
+      MC("Listen! Somebody ___ the piano next door.", ["*is playing", "plays", "was playing", "played"], "Listen! 表示「現在正在」→ 現在進行式。"),
+      MC("Kelly ___ her grandparents every Sunday.", ["*visits", "is visiting", "was visiting", "visit"], "every Sunday 習慣 → 現在簡單式，Kelly 單數 → visits。"),
+      MC("We ___ to Kenting last summer.", ["*went", "go", "are going", "goes"], "last summer 過去 → 過去簡單式 went。"),
+      MC("At this time yesterday, I ___ on the bus.", ["*was sleeping", "am sleeping", "sleep", "sleeps"], "昨天的這個時候「正在」→ 過去進行式。"),
+      MC("A: Where's Dad?<br>B: He ___ the car in the garage now.", ["*is washing", "was washing", "washes", "washed"], "now → 現在進行式。garage 車庫"),
+      MC("When the earthquake happened, the students ___ a test.", ["*were taking", "are taking", "take", "takes"], "地震發生（過去）時，學生「正在」考試 → were taking。earthquake 地震"),
+      FI("Ben usually ___ (walk) to school, but yesterday he ___ (take) the bus.", ["walks", "took"], "usually 習慣 → walks；yesterday 過去 → took。"),
+      FI("A: What ___ you ___ (do) at ten last night?<br>B: I ___ (read) a comic book.", ["were", "doing", "was reading"], "at ten last night 過去時間點 → 過去進行式。"),
+      FI("Look! Those kids ___ (fly) kites in the park.", ["are flying"], "Look! → 現在進行式 are flying。")
+    ],
+    GR("cloze", "A Scary Night",
+      "<p>Last night, it was ten to eleven. I {1} home alone. The street was dark and quiet. Suddenly, I {2} a strange sound behind me. I {3} scared, so I started to run.</p><p>When I got home, my brother {4} in front of the door with a big smile. “Did I scare you?” he asked. He {5} fun of me again!</p>",
+      "suddenly 突然　strange 奇怪的　scared 害怕的　make fun of 取笑",
+      [
+        CZ(1, ["*was walking", "am walking", "walks", "were walking"], "在過去某個時間點（10:50）「正在」走路回家 → was walking。"),
+        CZ(2, ["*heard", "hear", "am hearing", "hears"], "突然聽到（瞬間動作、過去）→ heard。"),
+        CZ(3, ["*felt", "feel", "am feeling", "feels"], "過去 → feel 的過去式 felt。"),
+        CZ(4, ["*was standing", "is standing", "stands", "stand"], "我到家時，哥哥「正站在」門口 → was standing。"),
+        CZ(5, ["*was making", "is making", "makes", "make"], "他當時「正在」取笑我 → was making fun of。")
+      ]))
+  },
+  {
+    id: "R2-3", icon: "⚖️", title: "不定詞 vs. 動名詞", desc: "to V 還是 V-ing？混合大挑戰",
+    qs: [
+      MC("Why does Kevin keep ___? He wants ___ his teacher a question.", ["*raising his hand; to ask", "to raise his hand; asking", "raising his hand; asking", "raise his hand; to ask"], "keep ＋ V-ing；want ＋ to V。"),
+      MC("Sam enjoys ___ pictures, and he plans ___ an art class.", ["*taking; to take", "to take; taking", "take; to take", "taking; taking"], "enjoy ＋ V-ing；plan ＋ to V。"),
+      MC("___ songs is Ella's favorite thing. She wants ___ a singer.", ["*Writing; to be", "Write; to be", "To writing; being", "Writes; be"], "動名詞當主詞；want ＋ to V。"),
+      MC("It's important ___ breakfast every morning.", ["*to eat", "eat", "ate", "eats"], "虛主詞 It ＋ is important ＋ to V。"),
+      MC("Don't forget ___ the door when you go out.", ["*to lock", "locking", "lock", "locked"], "forget ＋ to V：忘記「要」做。lock 鎖上"),
+      MC("Mr. Lee stopped ___ because it was bad for his health.", ["*smoking", "to smoke", "smoke", "smoked"], "stop ＋ V-ing：戒掉、停止原本在做的事。smoke 抽菸"),
+      MC("下列哪一句是正確的？", ["*Doing exercise every day is good for you.", "Do exercise every day is good for you.", "Doing exercise every day are good for you.", "To doing exercise every day is good for you."], "動名詞 Doing 當主詞，視為單數 → is。", "找正確"),
+      FI("My sister hates ___ (wash) the dishes.", ["washing|to wash"], "hate ＋ to V 或 V-ing 皆可。"),
+      FI("Tom practiced ___ (shoot) the ball for two hours.", ["shooting"], "practice ＋ V-ing。"),
+      FI("We need ___ (save) water.", ["to save"], "need ＋ to V。"),
+      FI("Thank you for ___ (invite) me to your party.", ["inviting"], "介系詞 for ＋ V-ing。invite 邀請"),
+      FI("Vicky is afraid of ___ (swim) in the sea.", ["swimming"], "介系詞 of ＋ V-ing；swim 要重複 m。")
+    ]
+  },
+  {
+    id: "R2-4", icon: "🛠️", title: "依提示改寫", desc: "合併句子・改寫句首・造原問句",
+    qs: [
+      RW("Jason did his homework. Then he went to bed.", "用 before 合併句子", ["Jason did his homework before he went to bed.", "Before Jason went to bed, he did his homework.", "Before he went to bed, Jason did his homework."], "先寫作業，before 睡覺之前。"),
+      RW("Kelly cleaned her room after she ate lunch.", "用 Before… 開頭改寫", ["Before Kelly cleaned her room, she ate lunch.", "Before she cleaned her room, Kelly ate lunch."], "先吃午餐，再打掃 → Before 打掃之前，她吃了午餐。"),
+      RW("Mom called me. I was playing basketball.", "用 when 合併句子", ["I was playing basketball when Mom called me.", "When Mom called me, I was playing basketball."], "媽媽打電話（瞬間）時，我正在打籃球（進行）。"),
+      RW("The kids were singing <u>in the classroom</u>.", "依畫線部分造原問句", ["Where were the kids singing?"], "問地點 → Where ＋ were ＋主詞＋ singing？"),
+      RW("Mike was <u>watching a movie</u> at eight last night.", "依畫線部分造原問句", ["What was Mike doing at eight last night?", "What was Mike doing at eight o'clock last night?"], "問正在做什麼 → What was Mike doing…？"),
+      RW("It is fun to make new friends.", "以動名詞為句首改寫", ["Making new friends is fun."], "to make → Making 放句首，用 is。"),
+      RW("Cooking dinner for my family is interesting for me.", "以 It 開頭改寫", ["It is interesting for me to cook dinner for my family."], "It is ＋形容詞＋ for me ＋ to V。"),
+      RW("My cousin plays the drums every day.", "加入 practice 改寫", ["My cousin practices playing the drums every day."], "practice ＋ V-ing；主詞單數 → practices。"),
+      RW("Nina reads comic books in her free time.", "加入 enjoy 改寫", ["Nina enjoys reading comic books in her free time."], "enjoy ＋ V-ing；主詞單數 → enjoys。")
+    ]
+  },
+  {
+    id: "R2-5", icon: "📖", title: "克漏字與閱讀", desc: "Email 克漏字・社團公告・日記",
+    qs: [].concat(
+      GR("cloze", "An Email to Grandma",
+        "<p>Dear Grandma,</p><p>How are you? I miss you a lot. Last Sunday, I {1} a cooking class with Mom. It was fun {2} cookies with her. At first, I wasn't good at it, but I kept {3}. {4} I took the cookies out of the oven, everyone in my family ran into the kitchen!</p><p>I plan {5} some for you next weekend. I hope you like them.</p><p>Love,<br>Penny</p>",
+        "oven 烤箱　hope 希望　bake 烘烤",
+        [
+          CZ(1, ["*took", "take", "am taking", "takes"], "Last Sunday → 過去式 took。"),
+          CZ(2, ["*to make", "make", "made", "makes"], "虛主詞 It was fun ＋ to V。"),
+          CZ(3, ["*trying", "to try", "try", "tried"], "keep ＋ V-ing。"),
+          CZ(4, ["*When", "So", "But", "Or"], "「當」我把餅乾拿出烤箱時，大家都跑進廚房 → When。"),
+          CZ(5, ["*to bake", "baking", "bake", "baked"], "plan ＋ to V。")
+        ]),
+      GR("read", "Club Fair",
+        "<div class='notice'><h4>Sunny Junior High Club Fair</h4><p>Want to try something new? Come to our Club Fair!</p><p><b>Date:</b> Friday, November 6<br><b>Time:</b> a quarter past one to half past three<br><b>Place:</b> School gym</p><ul><li><b>Guitar Club:</b> Love playing music? Learn to play your favorite songs.</li><li><b>Video Club:</b> Enjoy making videos? Learn to shoot and edit like a YouTuber.</li><li><b>Cooking Club:</b> Making food is fun! You can eat what you make.</li><li><b>Basketball Club:</b> Practice with our school team every Wednesday after school.</li></ul><p><b>Note:</b> Each student can join only TWO clubs.</p></div>",
+        "club fair 社團博覽會　gym 體育館　join 加入",
+        [
+          MC("When does the Club Fair end?", ["*At 3:30.", "At 1:15.", "At 3:15.", "At 2:45."], "half past three = 3:30。"),
+          MC("Lily enjoys making videos and wants to be a YouTuber. Which club is good for her?", ["*Video Club.", "Guitar Club.", "Cooking Club.", "Basketball Club."], "Video Club：Enjoy making videos? Learn to shoot and edit like a YouTuber."),
+          MC("Which is true?", ["The fair is in a classroom.", "*Students can't join three clubs.", "The Basketball Club practices every Friday.", "The Cooking Club teaches students to play songs."], "Each student can join only TWO clubs → 不能參加三個。")
+        ]),
+      GR("read", "Mia's Diary",
+        "<p class='diary'>Oct. 10, Saturday　Rainy</p><p>This morning, I was sleeping when my phone rang. It was my friend Jade. “Do you want to watch a movie this afternoon?” she asked. I said yes.</p><p>At two o'clock, we met at the theater. Before the movie started, we bought some popcorn. The movie was a funny story about a dog. The dog wanted to be a police officer! We laughed and laughed.</p><p>After the movie, it was still raining, so Jade's dad drove us home. What a great day!</p>",
+        "ring / rang（電話）響　theater 電影院　popcorn 爆米花　drive / drove 開車",
+        [
+          MC("What was Mia doing when Jade called?", ["*She was sleeping.", "She was watching a movie.", "She was eating popcorn.", "She was walking in the rain."], "I was sleeping when my phone rang."),
+          MC("What did they do before the movie started?", ["*They bought some popcorn.", "They walked home.", "They called Jade's dad.", "They went to a police station."], "Before the movie started, we bought some popcorn."),
+          MC("Which is true?", ["It was sunny that day.", "Mia went home by bus.", "*The movie was about a dog.", "Jade watched the movie alone."], "The movie was a funny story about a dog.")
+        ])
+    )
+  }
+  ]
+});
+
+/* ===== 模擬段考（配分比照第二次段考題庫卷）===== */
+const MOCK = {
+  id: "MOCK", icon: "🏆", color: "#b07800", soft: "#fbf1d6",
+  title: "模擬段考", en: "第二次段考 L3–L4 模擬卷",
+  sections: [
+    { name: "一、字彙測驗", pts: 2, qs: [
+      MC("Look! The sky is so ___. There are no clouds today.", ["*clear", "dry", "ugly", "proud"], "沒有雲 → 天空很 clear（晴朗的）。"),
+      MC("Mandy put her phone ___ her bag and left.", ["*into", "along", "past", "until"], "把手機放「進」包包 → into。"),
+      MC("Our classroom is in the ___ of the building. There are two classrooms on its left and two on its right.", ["*middle", "top", "beginning", "back"], "左右各兩間 → 在中間 middle。"),
+      MC("My father is a ___ worker. He makes car parts there.", ["*factory", "secretary", "reporter", "waiter"], "在工廠做汽車零件 → factory worker。"),
+      MC("After three months of hard ___, Eddie became a good runner.", ["*training", "fighting", "shouting", "dreaming"], "努力「訓練」三個月後成為好跑者 → training。"),
+      MC("Kids, ___ up your toys and put them back in the box.", ["*pick", "drop", "reach", "pass"], "pick up 撿起。")
+    ]},
+    { name: "二、文法測驗", pts: 2, qs: [
+      MC("My mom ___ yoga every morning.", ["*does", "is doing", "did", "was doing"], "every morning 習慣 → 現在簡單式 does。"),
+      MC("It's dangerous ___ in this river.", ["*to swim", "swim", "swam", "swims"], "虛主詞 It ＋ is ＋形容詞＋ to V。"),
+      MC("A: Why is Leo saving money?<br>B: He wants ___ a new camera.", ["*to buy", "buying", "buy", "bought"], "want ＋ to V。"),
+      MC("A: Why do Amy and Joe like ___?<br>B: Because reading comic books ___ fun.", ["*reading comic books; is", "reading comic books; are", "read comic books; is", "to reading comic books; is"], "like ＋ V-ing；動名詞當主詞視為單數 → is。"),
+      MC("Sorry, I didn't see your message. When you ___ it, I ___ basketball.", ["*sent; was playing", "send; play", "were sending; was playing", "sent; play"], "傳訊息（瞬間）用過去簡單式；當時正在打球用過去進行式。"),
+      MC("A: What ___ you and Mark doing at 4 p.m. yesterday?<br>B: We ___ the dog.", ["*were; were walking", "did; walked", "are; are walking", "was; were walking"], "yesterday ＋ doing → 過去進行式，主詞複數 → were。"),
+      MC("Kate tried ___ the box, but it was too heavy.", ["*to move", "move", "moved", "moves"], "try ＋ to V：試著做（結果未知／沒成功）。"),
+      MC("Tom practices ___ the guitar every night.", ["*playing", "to play", "play", "played"], "practice ＋ V-ing。"),
+      MC("___ Ben finished his homework, he went out to play.", ["*After", "Before", "So", "But"], "寫完功課「之後」出去玩 → After。"),
+      MC("I wasn't sleeping at midnight, and my sister ___.", ["*wasn't, either", "was, too", "didn't, either", "wasn't, too"], "否定附和用 either → wasn't, either。")
+    ]},
+    { name: "三、克漏字選擇", pts: 2, qs: [].concat(
+      GR("cloze", "A Card from My Brother",
+        "<p><b>Mia:</b> You look happy today, Ken. What happened?</p><p><b>Ken:</b> My little brother made me a card. {1} I got home yesterday, he gave it to me.</p><p><b>Mia:</b> How sweet! Why did he do that?</p><p><b>Ken:</b> Last week, he was crying because he couldn't {2} his kite. It was in a tree. So I got it down for him.</p><p><b>Mia:</b> You're a good big brother.</p><p><b>Ken:</b> Thanks. {3}</p>",
+        "sweet 貼心的　kite 風箏",
+        [
+          CZ(1, ["*When", "Because", "So", "Or"], "「當」我昨天回到家時，他把卡片給我 → When。"),
+          CZ(2, ["*reach", "drop", "pass", "finish"], "風箏卡在樹上，「搆不到」→ reach。"),
+          CZ(3, ["*I'm proud of him, too. He's a sweet boy.", "I don't like my brother at all.", "He was flying his kite yesterday.", "I want to buy a card for him."], "Ken 被稱讚後，順勢稱讚弟弟最合理。")
+        ]),
+      GR("cloze", "Grace's Dream Job",
+        "<p>When Grace was young, she {1} in a small town. She loved animals, and she often helped sick dogs and cats on the street. {2} she was fifteen, her cat Coco got very sick. Grace took Coco to an animal doctor, and the doctor saved Coco's life.</p><p>After that, Grace planned {3} an animal doctor. She studied very hard, {4} she went to a good college. Now she works at an animal hospital. {5}</p>",
+        "save 拯救　college 大學",
+        [
+          CZ(1, ["*lived", "lives", "is living", "live"], "When Grace was young → 過去式 lived。"),
+          CZ(2, ["*When", "So", "But", "Or"], "「當」她十五歲時 → When。"),
+          CZ(3, ["*to be", "being", "be", "is"], "plan ＋ to V。"),
+          CZ(4, ["*so", "but", "because", "before"], "努力讀書，「所以」上了好大學 → so。"),
+          CZ(5, ["*She is happy to help animals every day.", "She doesn't like cats anymore.", "She wants to live in a big city.", "She was a sick girl when she was young."], "她實現了當獸醫的夢想 → 每天開心地幫助動物。")
+        ]))
+    },
+    { name: "四、閱讀測驗", pts: 2, qs: [].concat(
+      GR("read", "A Day on the Farm",
+        "<p><b>Ivy:</b> I called you at three yesterday afternoon, but you didn't answer.</p><p><b>Sean:</b> Sorry. I was helping my grandpa on his farm.</p><p><b>Ivy:</b> A farm? What did you do there?</p><p><b>Sean:</b> First, I fed the chickens and ducks. Then Grandpa and I picked up eggs. When we were walking back to the house, a goose ran after me!</p><p><b>Ivy:</b> Ha-ha! Did it hurt you?</p><p><b>Sean:</b> No, but I was scared, and I dropped all the eggs.</p><p><b>Ivy:</b> Oh, no! What did your grandpa say?</p><p><b>Sean:</b> He just laughed. He said, “Don't worry. The chickens can give us more tomorrow.”</p>",
+        "feed / fed 餵　run after 追趕　hurt 傷害",
+        [
+          MC("Why didn't Sean answer Ivy's call?", ["*He was busy on his grandpa's farm.", "He was sleeping.", "He dropped his phone.", "He was at school."], "I was helping my grandpa on his farm."),
+          MC("What happened when Sean and his grandpa were walking back to the house?", ["*A goose ran after Sean.", "A chicken hurt Sean.", "Grandpa dropped the eggs.", "Sean fed the ducks."], "When we were walking back to the house, a goose ran after me!"),
+          MC("Which is true?", ["Sean's grandpa was angry.", "*Sean dropped the eggs.", "Ivy was on the farm, too.", "The goose hurt Sean."], "I dropped all the eggs；爺爺只是笑，鵝也沒有傷到他。")
+        ]),
+      GR("read", "Class 802 Field Trip",
+        "<p>Class 802 went to Taipei Zoo last Friday. Here is their schedule.</p><table class='sch'><tr><th>Time</th><th>What to do</th></tr><tr><td>8:00–9:00</td><td>Take the bus to the zoo</td></tr><tr><td>9:00–10:30</td><td>Visit the animals in the Africa area</td></tr><tr><td>10:30–10:45</td><td>Take a break</td></tr><tr><td>10:45–12:00</td><td>See the pandas</td></tr><tr><td>12:00–1:00</td><td>Have lunch</td></tr><tr><td>1:00–2:30</td><td>Visit the Insect House</td></tr><tr><td>2:30–3:30</td><td>Take the bus back to school</td></tr></table>",
+        "field trip 校外教學　insect 昆蟲　panda 貓熊",
+        [
+          MC("What were the students doing at a quarter past eleven?", ["*They were seeing the pandas.", "They were having lunch.", "They were taking a break.", "They were visiting the Insect House."], "a quarter past eleven = 11:15，在 10:45–12:00 → 看貓熊。"),
+          MC("When did the students take a break?", ["*From half past ten to a quarter to eleven.", "From a quarter to ten to half past ten.", "From half past nine to a quarter past ten.", "From eleven to twelve."], "10:30–10:45 = half past ten 到 a quarter to eleven。"),
+          MC("Which is true?", ["The students had lunch before they saw the pandas.", "*The students visited the Insect House after lunch.", "The students took the train to the zoo.", "The trip ended at half past two."], "(A) 先看貓熊再吃午餐；(C) 搭公車；(D) 3:30 才回到學校。")
+        ]),
+      GR("read", "Yu-ting's Dance Dream",
+        "<p>Lin Yu-ting was not good at studying when she was in junior high school, but she had a gift for dancing. She practiced dancing every day after school, and she often danced until nine at night.</p><p>In 2015, when she was sixteen, she entered a dance contest on TV. Sadly, she fell during the show and didn't win. She felt sad, but she didn't stop dancing.</p><p>Two years later, she entered the contest again, and this time she won first place. Now she has her own dance school, and teaching kids to dance is her favorite thing.</p>",
+        "enter 參加　contest 比賽　fall / fell 跌倒　own 自己的",
+        [
+          MC("How old was Yu-ting when she won first place?", ["15.", "16.", "*18.", "20."], "2015 年 16 歲，兩年後（2017）得到第一名 → 18 歲。", "推算"),
+          MC("What does “she had a gift for dancing” mean?", ["*She was very good at dancing.", "Someone gave her a present.", "She bought new dancing shoes.", "She didn't like dancing."], "gift 在這裡是「天分」。", "字義推測"),
+          MC("Which is NOT true?", ["Yu-ting practiced dancing after school.", "Yu-ting fell during her first TV contest.", "*Yu-ting stopped dancing after she lost.", "Yu-ting teaches kids to dance now."], "文中說 she didn't stop dancing。")
+        ]),
+      GR("read", "Summer Helpers Wanted",
+        "<div class='notice'><h4>Lucky Café Is Looking for Summer Helpers!</h4><ul><li><b>Waiter / Waitress:</b> Work from 11:00 a.m. to 3:00 p.m. You need to be friendly and enjoy talking with people.</li><li><b>Kitchen helper:</b> Work from 7:00 a.m. to 11:00 a.m. Washing dishes and cutting vegetables are your main jobs.</li><li><b>Social media helper:</b> Work at home two hours a day. You need to be good at taking pictures and making short videos.</li></ul><p><b>Pay:</b> NT$200 an hour<br>Call Ms. Chang at 02-2345-6789 before July 1.</p></div>",
+        "friendly 友善的　main 主要的　pay 工資",
+        [
+          MC("What is this ad for?", ["*Finding people to work at the café.", "Selling coffee and cakes.", "A cooking class.", "A summer party."], "Looking for Summer Helpers → 徵求暑期幫手。", "主旨"),
+          MC("Jack is good at making videos, but he has to stay home and take care of his little sister. Which job is good for him?", ["*Social media helper.", "Waiter.", "Kitchen helper.", "None of them."], "Social media helper 可以在家工作，而且需要會拍照、做影片。"),
+          MC("How much does a kitchen helper make a day?", ["NT$200.", "NT$400.", "*NT$800.", "NT$1,000."], "7:00–11:00 共 4 小時 × NT$200 = NT$800。", "推算"),
+          MC("Which is true?", ["Waiters work in the morning only.", "*Kitchen helpers need to wash dishes.", "Ms. Chang is a reporter.", "You can call after July 1."], "Washing dishes and cutting vegetables are your main jobs.")
+        ]),
+      GR("read", "Being a Child Star",
+        "<p>Many kids dream of being stars. Being a child star looks exciting. Child stars can be on TV, meet famous people, and make a lot of money. People know their names, and fans take pictures with them.</p><p>However, there are two sides to everything. Child stars often have to work long hours. They sometimes stay up to finish their work, so they feel tired at school. Also, it is hard for them to go out with friends because people always look at them. Some child stars even stop going to school.</p><p>So, do you still want to be a child star? Think about it before you make your choice.</p>",
+        "child star 童星　fan 粉絲　choice 選擇",
+        [
+          MC("What is the reading mainly about?", ["*The good and bad sides of being a child star.", "How to become a child star.", "The names of famous child stars.", "Why kids love watching TV."], "第一段寫好處，第二段寫壞處 → 童星的優缺點。", "主旨"),
+          MC("Which is a good thing about being a child star?", ["*They can make a lot of money.", "They feel tired at school.", "They work long hours.", "They can't go out with friends."], "Child stars can… make a lot of money。"),
+          MC("Why is it hard for child stars to go out with friends?", ["*People always look at them.", "They don't have any friends.", "Their parents say no.", "They have to go to school."], "because people always look at them。"),
+          MC("Which is NOT mentioned in the reading?", ["Child stars can meet famous people.", "Child stars sometimes stay up.", "*Child stars have to learn many languages.", "Some child stars stop going to school."], "文中沒有提到學很多語言。")
+        ]))
+    },
+    { name: "五、依提示改寫", pts: 3, qs: [
+      RW("My sister sings songs every night.", "加入 enjoy 改寫", ["My sister enjoys singing songs every night."], "enjoy ＋ V-ing；主詞單數 → enjoys。"),
+      RW("Peter took a shower after he played tennis.", "用 … before … 改寫", ["Peter played tennis before he took a shower.", "Before Peter took a shower, he played tennis.", "Before he took a shower, Peter played tennis."], "先打網球再洗澡 → 打網球 before 洗澡。"),
+      RW("It is important for us to protect the earth.", "以動名詞為句首改寫", ["Protecting the earth is important for us."], "to protect → Protecting 放句首，用 is。protect 保護")
+    ]},
+    { name: "六、整句式翻譯", pts: 3, qs: [
+      OR("你昨天晚上八點半在做什麼？", "What were you doing at half past eight last night?", [], "過去時間點正在做 → What were you doing…？8:30 = half past eight。"),
+      OR("當 Amy 看到那隻小狗時，她很開心。", "Amy was happy when she saw the little dog.", ["When Amy saw the little dog, she was happy."], "when 子句可放句首或句尾。"),
+      OR("Ken 想要成為一位記者，因為他喜歡寫故事。", "Ken wants to be a reporter because he likes writing stories.", [], "want ＋ to V；like ＋ V-ing。")
+    ]}
+  ]
+};
+
+</script>
+<script>
+/* ================= 練習引擎 ================= */
+const KEY = "eng1150102_progress";
+const TOTAL_UNITS = LESSONS.reduce((s, l) => s + l.units.length, 0);
+let P = loadP();
+let Q = null;           // 目前作答中的測驗
+const $app = document.getElementById("app");
+
+function loadP() {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+  return Object.assign({ units: {}, xp: 0, mock: null }, d || {});
+}
+function saveP() { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} }
+
+/* ---------- 小工具 ---------- */
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const strip = s => String(s).replace(/<br\s*\/?>/gi, " ").replace(/<[^>]+>/g, "");
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const CONTR = { "it's": "it is", "isn't": "is not", "aren't": "are not", "wasn't": "was not", "weren't": "were not", "don't": "do not", "doesn't": "does not", "didn't": "did not", "can't": "cannot", "couldn't": "could not", "i'm": "i am", "you're": "you are", "we're": "we are", "they're": "they are", "he's": "he is", "she's": "she is", "that's": "that is", "what's": "what is", "where's": "where is", "there's": "there is" };
+function norm(s) {
+  s = String(s || "").toLowerCase().replace(/[’‘`´]/g, "'").replace(/[“”"]/g, " ").replace(/[.,!?;:()（）。，！？、]/g, " ").replace(/\bcan not\b/g, "cannot");
+  return s.split(/\s+/).filter(Boolean).map(w => CONTR[w] || w).join(" ");
+}
+const alts = a => String(a).split("|");
+const tokensOf = en => en.split(/\s+/).map(w => w.replace(/[,.!?]+$/, ""));
+function starsOf(pct) { return pct >= 0.9 ? 3 : pct >= 0.7 ? 2 : pct >= 0.5 ? 1 : 0; }
+function starHTML(n, max = 3) { let h = ""; for (let i = 0; i < max; i++) h += i < n ? "★" : '<span class="off">★</span>'; return '<span class="stars">' + h + "</span>"; }
+function lessonStars(L) { return L.units.reduce((s, u) => s + ((P.units[u.id] || {}).stars || 0), 0); }
+function totalStars() { return LESSONS.reduce((s, L) => s + lessonStars(L), 0); }
+function rankOf(st) {
+  const max = TOTAL_UNITS * 3;
+  if (st >= max) return "👑 英文王者";
+  if (st >= 40) return "🏅 段考達人";
+  if (st >= 25) return "⚔️ 闖關高手";
+  if (st >= 10) return "🧭 英文探險家";
+  return "🌱 見習生";
+}
+function mockUnlocked() {
+  if (/unlock/.test(location.search + location.hash)) return true;
+  return LESSONS.every(L => L.units.filter(u => ((P.units[u.id] || {}).stars || 0) >= 1).length >= 3);
+}
+function setTheme(c, soft) { document.documentElement.style.setProperty("--accent", c); document.documentElement.style.setProperty("--soft", soft); }
+
+/* ---------- 時鐘 ---------- */
+function clockSVG(h, m) {
+  const ha = ((h % 12) + m / 60) * 30, ma = m * 6;
+  let nums = "";
+  for (let i = 1; i <= 12; i++) {
+    const a = (i * 30 - 90) * Math.PI / 180;
+    nums += `<text x="${100 + 72 * Math.cos(a)}" y="${100 + 72 * Math.sin(a) + 7}" text-anchor="middle" font-size="19" font-weight="700" fill="#33373d" font-family="Arial">${i}</text>`;
+  }
+  let ticks = "";
+  for (let i = 0; i < 60; i++) {
+    const a = (i * 6 - 90) * Math.PI / 180, r1 = i % 5 ? 88 : 84;
+    ticks += `<line x1="${100 + r1 * Math.cos(a)}" y1="${100 + r1 * Math.sin(a)}" x2="${100 + 92 * Math.cos(a)}" y2="${100 + 92 * Math.sin(a)}" stroke="#555" stroke-width="${i % 5 ? 1 : 2.5}"/>`;
+  }
+  return `<svg class="clock" viewBox="0 0 200 200" role="img" aria-label="時鐘"><circle cx="100" cy="100" r="96" fill="#fffdf6" stroke="var(--accent)" stroke-width="6"/>${ticks}${nums}
+  <line x1="100" y1="100" x2="100" y2="52" stroke="#1f2328" stroke-width="7" stroke-linecap="round" transform="rotate(${ha} 100 100)"/>
+  <line x1="100" y1="100" x2="100" y2="24" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" transform="rotate(${ma} 100 100)"/>
+  <circle cx="100" cy="100" r="6" fill="#1f2328"/></svg>`;
+}
+
+/* ================= 首頁 ================= */
+function showHome() {
+  Q = null;
+  setTheme("#2f7d4f", "#e4f3ea");
+  const st = totalStars(), max = TOTAL_UNITS * 3, unlocked = mockUnlocked();
+  let cards = LESSONS.map(L => {
+    const s = lessonStars(L), m = L.units.length * 3;
+    return `<button class="lcard" onclick="showLesson('${L.id}')">
+      <div class="top"><div class="ico" style="background:${L.soft}">${L.icon}</div>
+      <div><div class="ttl" style="color:${L.color}">${L.title}</div><div class="en">${L.en}</div></div></div>
+      <div class="pts">${L.points.map(p => `<span class="chip">${p}</span>`).join("")}</div>
+      <div class="bar"><i style="width:${s / m * 100}%;background:${L.color}"></i></div>
+      <div class="meta"><span>${L.units.length} 個小單元</span><span>★ ${s} / ${m}${s === m ? "　🎖️ " + L.badge : ""}</span></div>
+    </button>`;
+  }).join("");
+  const mb = P.mock ? `最佳成績 ${P.mock} 分` : "尚未挑戰";
+  cards += `<button class="lcard ${unlocked ? "" : "locked"}" onclick="${unlocked ? "startMock()" : "lockedMsg()"}">
+    ${unlocked ? "" : '<span class="lock">🔒 未解鎖</span>'}
+    <div class="top"><div class="ico" style="background:${MOCK.soft}">${MOCK.icon}</div>
+    <div><div class="ttl" style="color:${MOCK.color}">${MOCK.title}</div><div class="en">${MOCK.en}</div></div></div>
+    <div class="pts"><span class="chip">字彙 12%</span><span class="chip">文法 20%</span><span class="chip">克漏字 16%</span><span class="chip">閱讀 34%</span><span class="chip">改寫 9%</span><span class="chip">翻譯 9%</span></div>
+    <div class="meta" style="margin-top:10px"><span>47 題・滿分 100</span><span>${unlocked ? mb : "L3、L4、R2 各完成 3 個小單元即可解鎖"}</span></div>
+  </button>`;
+  $app.innerHTML = `
+    <div class="hero"><div class="deco">ABC</div>
+      <h1>八年級英文 第二次段考強化練習</h1>
+      <div class="sub">範圍：Lesson 3・Lesson 4・Review 2</div>
+      <div class="stats">
+        <div class="stat"><b>★ ${st}</b>/ ${max}</div>
+        <div class="stat"><b>${P.xp}</b>XP</div>
+        <div class="stat"><span class="rank">${rankOf(st)}</span></div>
+      </div>
+    </div>
+    <div class="grid">${cards}</div>
+    <div class="howto"><b>闖關規則</b>　每個小單元答對率 50% 得 ★、70% 得 ★★、90% 得 ★★★。答對 +10 XP，連續答對還有 🔥 連擊加分；文意字彙用了 💡 提示只拿 +5 XP。三課都完成 3 個小單元後，就能挑戰 🏆 模擬段考！</div>
+    <footer>八年級英文 第二次段考 L3–L4・R2 練習</footer>`;
+  scrollTo(0, 0);
+}
+function lockedMsg() { alertBox("🔒 模擬段考尚未解鎖", "L3、L4、R2 每一課都至少要在 3 個小單元拿到 ★，才能挑戰模擬段考。加油！"); }
+function alertBox(t, m) {
+  const d = document.createElement("div");
+  d.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.35);display:grid;place-items:center;z-index:9;padding:16px";
+  d.innerHTML = `<div style="background:#fff;border-radius:18px;padding:22px;max-width:420px;text-align:center"><div style="font-weight:800;font-size:20px">${t}</div><p>${m}</p><button class="btn">知道了</button></div>`;
+  d.onclick = () => d.remove();
+  document.body.appendChild(d);
+}
+
+/* ================= 課次頁 ================= */
+function showLesson(id) {
+  Q = null;
+  const L = LESSONS.find(x => x.id === id);
+  setTheme(L.color, L.soft);
+  const us = L.units.map((u, i) => {
+    const r = P.units[u.id] || {};
+    return `<button class="ucard" onclick="startUnit('${L.id}','${u.id}')">
+      <div class="no">${u.icon}</div>
+      <div><div class="t">${i + 1}. ${u.title}</div><div class="d">${u.desc}</div>
+      <div class="s">${starHTML(r.stars || 0)}　${u.qs.length} 題${r.best != null ? "・最佳 " + Math.round(r.best * 100) + "%" : ""}</div></div>
+    </button>`;
+  }).join("");
+  const s = lessonStars(L), m = L.units.length * 3;
+  $app.innerHTML = `
+    <div class="topbar"><button class="back" onclick="showHome()">← 回首頁</button><span class="pill">★ ${s} / ${m}</span>${s === m ? `<span class="pill">🎖️ ${L.badge}</span>` : ""}</div>
+    <div class="banner" style="background:linear-gradient(135deg,${L.color},${L.color}cc)"><div class="big">${L.icon}</div>
+      <h2>${L.title}</h2><div class="en">${L.en}</div>
+      <div class="pts">${L.points.map(p => `<span class="chip">${p}</span>`).join("")}</div></div>
+    <div class="units">${us}</div>`;
+  scrollTo(0, 0);
+}
+
+/* ================= 建立測驗 ================= */
+function prep(q) {
+  const o = Object.assign({}, q);
+  if (o.t === "mc") {
+    const raw = o.opts.map(s => ({ txt: s.replace(/^\*/, ""), ok: s[0] === "*" }));
+    const sh = shuffle(raw);
+    o.o = sh.map(x => x.txt); o.ci = sh.findIndex(x => x.ok);
+  } else if (o.t === "or") {
+    o.tok = tokensOf(o.en);
+    o.order = shuffleNot(o.tok.map((_, i) => i));
+  } else if (o.t === "sq") {
+    o.order = shuffleNot(o.items.map((_, i) => i));
+  }
+  return o;
+}
+function shuffleNot(idx) { let s; let n = 0; do { s = shuffle(idx); n++; } while (idx.length > 1 && s.every((v, i) => v === i) && n < 20); return s; }
+
+function startUnit(lid, uid) {
+  const L = LESSONS.find(x => x.id === lid), U = L.units.find(x => x.id === uid);
+  setTheme(L.color, L.soft);
+  const singles = U.qs.filter(q => !q.psg), grouped = U.qs.filter(q => q.psg);
+  const items = shuffle(singles).concat(grouped).map(prep);
+  Q = { mode: "practice", L, U, title: `${L.title}｜${U.title}`, items, i: 0, ans: items.map(() => null), res: items.map(() => null), xp: 0, combo: 0, best: 0, hint: {}, psgOpen: true };
+  renderQ();
+}
+function startMock() {
+  setTheme(MOCK.color, MOCK.soft);
+  const items = [];
+  MOCK.sections.forEach((s, si) => s.qs.forEach(q => { const o = prep(q); o.sec = si; o.pts = s.pts; items.push(o); }));
+  Q = { mode: "exam", L: MOCK, title: "🏆 模擬段考", items, i: 0, ans: items.map(() => null), res: items.map(() => null), xp: 0, combo: 0, best: 0, hint: {}, psgOpen: true };
+  renderQ();
+}
+
+/* ================= 判斷對錯 ================= */
+function isRight(q, a) {
+  if (a == null) return false;
+  switch (q.t) {
+    case "mc": return a === q.ci;
+    case "sp": return norm(a[0]) === norm(q.q.match(/\[(.+?)\]/)[1]);
+    case "fi": return q.ans.every((x, k) => alts(x).some(v => norm(v) === norm(a[k])));
+    case "rw": return q.ans.some(v => norm(v) === norm(a[0]));
+    case "or": { const g = norm(a.map(k => q.tok[k]).join(" ")); return a.length === q.tok.length && [q.en].concat(q.alts).some(v => norm(v) === g); }
+    case "sq": return a.length === q.items.length && a.every((v, k) => v === k);
+  }
+  return false;
+}
+function corrText(q) {
+  switch (q.t) {
+    case "mc": return `(${"ABCD"[q.ci]}) ${q.o[q.ci]}`;
+    case "sp": return q.q.match(/\[(.+?)\]/)[1];
+    case "fi": return q.ans.map(x => alts(x).join(" / ")).join("　｜　");
+    case "rw": return q.ans[0] + (q.ans.length > 1 ? `<br><span style="font-weight:400;font-size:15px">也可以：${q.ans.slice(1).join("　/　")}</span>` : "");
+    case "or": return q.en + (q.alts.length ? `<br><span style="font-weight:400;font-size:15px">也可以：${q.alts.join("　/　")}</span>` : "");
+    case "sq": return q.items.map((x, k) => `${k + 1}. ${x}`).join("<br>");
+  }
+}
+function givenText(q, a) {
+  if (a == null) return "（未作答）";
+  switch (q.t) {
+    case "mc": return `(${"ABCD"[a]}) ${q.o[a]}`;
+    case "sp": case "rw": return esc(a[0] || "（空白）");
+    case "fi": return a.map(x => esc(x || "＿")).join("　｜　");
+    case "or": return esc(a.map(k => q.tok[k]).join(" ")) || "（空白）";
+    case "sq": return a.map(k => q.items[k]).join(" → ");
+  }
+}
+function stemText(q) {
+  if (q.t === "or") return q.zh;
+  if (q.t === "sq") return `【${q.psg.title}】${q.q}`;
+  if (q.psg) return `【${q.psg.title}】${q.b ? "空格 " + q.b : strip(q.q)}`;
+  if (q.t === "sp") return strip(q.q.replace(/\[(.+?)\]/, (m, w) => w[0] + "＿".repeat(Math.max(w.length - 2, 1)) + w.slice(-1)));
+  if (q.t === "rw") return strip(q.q) + `（${q.hint}）`;
+  return strip(q.q).replace(/___/g, "＿＿");
+}
+
+/* ================= 作答畫面 ================= */
+function renderQ() {
+  const q = Q.items[Q.i], n = Q.items.length, done = Q.res[Q.i] != null, exam = Q.mode === "exam";
+  const a = Q.ans[Q.i];
+  const correct = Q.res.filter(r => r && r.ok).length;
+  let head = `<div class="qhead"><button class="back" onclick="quitQ()">✕</button><div class="name">${Q.title}</div>
+    <span class="pill">${Q.i + 1} / ${n}</span>`;
+  if (exam) head += `<span class="pill">${MOCK.sections[q.sec].name}（每題 ${q.pts} 分）</span>`;
+  else head += `<span class="pill">✔ ${correct}</span><span class="pill">${Q.xp} XP</span>${Q.combo >= 2 ? `<span class="pill combo">🔥 ${Q.combo} 連擊</span>` : ""}`;
+  head += `</div><div class="prog"><i style="width:${(exam ? Q.ans.filter(x => x != null).length : Q.res.filter(Boolean).length) / n * 100}%"></i></div>`;
+
+  let psg = "";
+  if (q.psg) {
+    const body = q.psg.html.replace(/\{(\d+)\}/g, (m, b) => `<span class="bl ${+b === q.b ? "cur" : ""}">${b}</span>`);
+    psg = `<div class="psg"><div class="ph"><span>${q.psg.kind === "cloze" ? "📝 克漏字" : "📖 閱讀"}　<b>${q.psg.title}</b></span><button class="tog" onclick="Q.psgOpen=!Q.psgOpen;renderQ()">${Q.psgOpen ? "收合文章 ▲" : "展開文章 ▼"}</button></div>
+      <div class="body ${Q.psgOpen ? "" : "hidden"}">${body}${q.psg.notes ? `<div class="notes">${q.psg.notes}</div>` : ""}</div></div>`;
+  }
+
+  let card = `<div class="qcard"><span class="tag">${q.tag || tagOf(q)}</span>`;
+  if (q.clk) card += clockSVG(q.clk[0], q.clk[1]);
+  const lock = done && !exam;
+
+  if (q.t === "mc") {
+    card += `<div class="stem">${q.b ? `請選出文章中 <span class="bl cur">${q.b}</span> 的最佳答案。` : q.q}</div><div class="opts">`;
+    q.o.forEach((t, k) => {
+      let cls = "";
+      if (lock) { if (k === q.ci) cls = "right"; else if (k === a) cls = "wrong"; }
+      else if (a === k) cls = "sel";
+      card += `<button class="opt ${cls}" ${lock ? "disabled" : ""} onclick="pick(${k})"><span class="k">${"ABCD"[k]}</span><span>${t}</span></button>`;
+    });
+    card += `</div>`;
+  } else if (q.t === "sp") {
+    const w = q.q.match(/\[(.+?)\]/)[1], pat = w[0] + " " + "_ ".repeat(Math.max(w.length - 2, 1)) + w.slice(-1);
+    const cls = lock ? (Q.res[Q.i].ok ? "right" : "wrong") : "";
+    const inp = `<input class="inp ${cls}" id="in0" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${pat}" value="${esc(a ? a[0] : "")}" style="width:${Math.max(w.length * 15 + 40, 120)}px" ${lock ? "disabled" : ""}>`;
+    card += `<div class="stem">${q.q.replace(/\[(.+?)\]/, inp)}</div>
+      <div class="hint2">字首字尾提示：<b style="font-family:var(--en)">${pat}</b>（共 ${w.length} 個字母）
+      ${exam ? "" : Q.hint[Q.i] ? `　💡 中文：<b>${q.zh}</b>` : (lock ? "" : `　<button class="btn ghost small" onclick="useHint()">💡 看中文提示</button>`)}</div>`;
+  } else if (q.t === "fi") {
+    let k = -1;
+    const st = q.q.replace(/___/g, () => { k++; const len = Math.max(...alts(q.ans[k]).map(s => s.length)); const ok = lock ? alts(q.ans[k]).some(v => norm(v) === norm(a && a[k])) : null;
+      return `<input class="inp ${lock ? (ok ? "right" : "wrong") : ""}" id="in${k}" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(a && a[k] != null ? a[k] : "")}" style="width:${Math.max(len * 14 + 34, 90)}px" ${lock ? "disabled" : ""}>`; });
+    card += `<div class="stem">${st}</div>`;
+  } else if (q.t === "rw") {
+    card += `<div class="stem"><div class="orig">${q.q}</div><div class="hint2">✏️ 提示：<b>${q.hint}</b>　（請寫出完整句子）</div></div>
+      <input class="inp long ${lock ? (Q.res[Q.i].ok ? "right" : "wrong") : ""}" id="in0" autocomplete="off" spellcheck="false" placeholder="在這裡輸入完整的英文句子" value="${esc(a ? a[0] : "")}" ${lock ? "disabled" : ""}>`;
+  } else if (q.t === "or" || q.t === "sq") {
+    const blk = q.t === "sq", picked = a || [], src = blk ? q.items : q.tok;
+    card += blk ? `<div class="stem">${q.q}</div>` : `<div class="zh">${q.zh}</div><div class="hint2">把字卡排成正確的英文句子（標點符號已省略）</div>`;
+    card += `<div class="ans-area ${blk ? "blk" : ""} ${picked.length ? "" : "empty"}">${picked.map((k, j) => `<button class="wc ${blk ? "blk" : ""}" ${lock ? "disabled" : ""} onclick="untap(${j})">${blk ? `<span class="n">${j + 1}</span>` : ""}${esc(src[k])}</button>`).join("")}</div>
+      <div class="bank ${blk ? "blk" : ""}">${q.order.map(k => `<button class="wc ${blk ? "blk" : ""} ${picked.includes(k) ? "used" : ""}" ${lock ? "disabled" : ""} onclick="tap(${k})">${esc(src[k])}</button>`).join("")}</div>`;
+  }
+
+  // 按鈕與回饋
+  let tools = "";
+  if (exam) {
+    tools = `<div class="tools"><button class="btn ghost" ${Q.i === 0 ? "disabled" : ""} onclick="move(-1)">← 上一題</button>
+      ${(q.t === "or" || q.t === "sq") ? `<button class="btn ghost" onclick="resetOrder()">↺ 重排</button>` : ""}
+      ${Q.i < n - 1 ? `<button class="btn" onclick="move(1)">下一題 →</button>` : ""}
+      <button class="btn" style="background:#b07800" onclick="submitExam()">📮 交卷</button></div>
+      <div class="navx">${Q.items.map((_, k) => `<button class="${k === Q.i ? "cur" : (Q.ans[k] != null && (Q.ans[k].length === undefined || Q.ans[k].length)) ? "done" : ""}" onclick="jump(${k})">${k + 1}</button>`).join("")}</div>`;
+  } else if (!done) {
+    tools = `<div class="tools">${q.t !== "mc" ? `<button class="btn" onclick="check()">檢查答案 ✔</button>` : ""}
+      ${(q.t === "or" || q.t === "sq") ? `<button class="btn ghost" onclick="resetOrder()">↺ 重排</button>` : ""}</div>`;
+  } else {
+    const r = Q.res[Q.i];
+    tools = `<div class="fb ${r.ok ? "ok" : "no"}"><div class="h">${r.ok ? "✔ 答對了！" + (r.gain ? ` +${r.gain} XP` : "") : "✘ 再想想！正確答案是："}</div>
+      ${r.ok ? "" : `<div class="ca">${corrText(q)}</div>`}
+      <div class="ex">💬 ${q.exp}</div></div>
+      <div class="tools"><button class="btn" id="nextBtn" onclick="nextQ()">${Q.i < n - 1 ? "下一題 →" : "看結果 🏁"}</button></div>`;
+  }
+  card += tools + `</div>`;
+  $app.innerHTML = head + psg + card;
+  bindInputs();
+}
+function tagOf(q) { return { mc: "選擇題", sp: "文意字彙", fi: "填空", rw: "依提示改寫", or: "整句翻譯", sq: "事件排序" }[q.t]; }
+
+function bindInputs() {
+  const ins = $app.querySelectorAll("input.inp:not([disabled])");
+  ins.forEach((el, k) => {
+    el.addEventListener("input", saveInputs);
+    el.addEventListener("keydown", e => {
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      if (k < ins.length - 1) ins[k + 1].focus();
+      else if (Q.mode === "exam") move(1); else check();
+    });
+  });
+  if (ins.length && matchMedia("(pointer:fine)").matches) { const f = [...ins].find(x => !x.value) || ins[0]; f.focus(); }
+  const nb = document.getElementById("nextBtn"); if (nb) nb.focus();
+}
+function saveInputs() {
+  const ins = $app.querySelectorAll("input.inp");
+  const v = [...ins].map(x => x.value);
+  Q.ans[Q.i] = v.some(x => x.trim()) ? v : null;
+}
+
+/* ---------- 互動 ---------- */
+function pick(k) {
+  if (Q.mode === "exam") { Q.ans[Q.i] = k; renderQ(); return; }
+  if (Q.res[Q.i]) return;
+  Q.ans[Q.i] = k; check();
+}
+function tap(k) { const a = Q.ans[Q.i] || []; if (!a.includes(k)) a.push(k); Q.ans[Q.i] = a; renderQ(); }
+function untap(j) { const a = Q.ans[Q.i] || []; a.splice(j, 1); Q.ans[Q.i] = a.length ? a : null; renderQ(); }
+function resetOrder() { Q.ans[Q.i] = null; renderQ(); }
+function useHint() { saveInputs(); Q.hint[Q.i] = true; renderQ(); }
+function check() {
+  const q = Q.items[Q.i];
+  if (q.t === "sp" || q.t === "fi" || q.t === "rw") saveInputs();
+  const a = Q.ans[Q.i];
+  if (a == null) { flash("先作答再檢查喔！", "#a04d00"); return; }
+  if ((q.t === "or" || q.t === "sq") && a.length < (q.tok || q.items).length) { flash("還有字卡沒有用完喔！", "#a04d00"); return; }
+  const ok = isRight(q, a);
+  let gain = 0;
+  if (ok) { Q.combo++; gain = (Q.hint[Q.i] ? 5 : 10) + (Q.combo >= 3 ? Math.min(Q.combo - 2, 5) * 2 : 0); Q.xp += gain; Q.best = Math.max(Q.best, Q.combo); flash("+" + gain + " XP", null); }
+  else Q.combo = 0;
+  Q.res[Q.i] = { ok, gain };
+  renderQ();
+}
+function flash(t, color) { const d = document.createElement("div"); d.className = "xp-pop"; d.textContent = t; if (color) d.style.color = color; document.body.appendChild(d); setTimeout(() => d.remove(), 900); }
+function nextQ() { if (Q.i < Q.items.length - 1) { Q.i++; renderQ(); scrollTop(); } else finishPractice(); }
+function move(d) { saveIfText(); Q.i = Math.min(Math.max(Q.i + d, 0), Q.items.length - 1); renderQ(); scrollTop(); }
+function jump(k) { saveIfText(); Q.i = k; renderQ(); scrollTop(); }
+function saveIfText() { const t = Q.items[Q.i].t; if (t === "sp" || t === "fi" || t === "rw") saveInputs(); }
+function scrollTop() { scrollTo({ top: 0, behavior: "smooth" }); }
+function quitQ() {
+  const started = Q.ans.some(x => x != null);
+  if (started && !confirmBox()) return;
+  if (Q.mode === "exam") showHome(); else showLesson(Q.L.id);
+}
+function confirmBox() { return window.confirm("確定要離開嗎？這次的作答不會記錄。"); }
+
+/* ================= 結果 ================= */
+function reviewHTML(onlyWrong) {
+  return Q.items.map((q, k) => {
+    const ok = Q.res[k] && Q.res[k].ok;
+    if (onlyWrong && ok) return "";
+    return `<div class="ritem ${ok ? "okk" : ""}"><div class="rq"><b>${k + 1}.</b> ${stemText(q)}</div>
+      ${ok ? "" : `<div class="ry">你的答案：${givenText(q, Q.ans[k])}</div>`}
+      <div class="rc">${ok ? "✔ " : "正解："}${corrText(q)}</div><div class="re">💬 ${q.exp}</div></div>`;
+  }).join("");
+}
+function finishPractice() {
+  const n = Q.items.length, c = Q.res.filter(r => r && r.ok).length, pct = c / n, st = starsOf(pct);
+  const prev = P.units[Q.U.id] || {};
+  const newBest = st > (prev.stars || 0);
+  P.units[Q.U.id] = { stars: Math.max(st, prev.stars || 0), best: Math.max(pct, prev.best || 0) };
+  P.xp += Q.xp; saveP();
+  const idx = Q.L.units.findIndex(u => u.id === Q.U.id), nu = Q.L.units[idx + 1];
+  const msg = st === 3 ? "太強了！完美過關 🎉" : st === 2 ? "很不錯！再挑戰拿三顆星吧！" : st === 1 ? "過關了！把錯題看一遍再挑戰。" : "別灰心，看完詳解再試一次！";
+  const wrong = n - c;
+  $app.innerHTML = `<div class="topbar"><button class="back" onclick="showLesson('${Q.L.id}')">← 回 ${Q.L.title}</button></div>
+    <div class="result"><div class="bigstars">${starHTML(st).replace('class="stars"', "")}</div>
+      <h2>${Q.U.icon} ${Q.U.title}</h2><div class="score">${c} / ${n}</div>
+      <div>${msg}${newBest ? "　<b>（新紀錄！）</b>" : ""}</div>
+      <div style="margin-top:8px;color:var(--muted)">本次獲得 <b>${Q.xp} XP</b>・最高連擊 🔥 ${Q.best}</div>
+      <div class="tools" style="justify-content:center">
+        <button class="btn" onclick="startUnit('${Q.L.id}','${Q.U.id}')">↻ 再挑戰一次</button>
+        ${nu ? `<button class="btn ghost" onclick="startUnit('${Q.L.id}','${nu.id}')">下一單元：${nu.title} →</button>` : `<button class="btn ghost" onclick="showHome()">回首頁</button>`}
+      </div></div>
+    <div class="review"><h3>${wrong ? `📌 錯題回顧（${wrong} 題）` : "📌 全部答對！以下是本單元詳解"}</h3>${reviewHTML(wrong > 0)}</div>`;
+  scrollTo(0, 0);
+}
+function submitExam() {
+  saveIfText();
+  const blank = Q.ans.filter(x => x == null || (Array.isArray(x) && !x.length)).length;
+  if (blank && !window.confirm(`還有 ${blank} 題沒有作答，確定要交卷嗎？`)) return;
+  let score = 0; const secs = MOCK.sections.map(s => ({ name: s.name, c: 0, n: 0, pts: 0, max: 0 }));
+  Q.items.forEach((q, k) => { const ok = isRight(q, Q.ans[k]); Q.res[k] = { ok }; const s = secs[q.sec]; s.n++; s.max += q.pts; if (ok) { s.c++; s.pts += q.pts; score += q.pts; } });
+  const first = P.mock == null;
+  P.mock = Math.max(P.mock || 0, score); P.xp += score; saveP();
+  const lv = score >= 90 ? "A++ 段考神人 👑" : score >= 80 ? "A 準備充分 🏅" : score >= 60 ? "B 再加把勁 💪" : "C 先回各課複習 📚";
+  $app.innerHTML = `<div class="topbar"><button class="back" onclick="showHome()">← 回首頁</button></div>
+    <div class="result"><div style="font-size:52px">🏆</div><h2>模擬段考成績</h2>
+      <div class="score">${score} 分</div><div><b>${lv}</b>${!first && score >= P.mock ? "　（最佳紀錄）" : ""}</div>
+      <div class="secs">${secs.map(s => `<div class="sec">${s.name}<b>${s.pts} / ${s.max} 分</b>答對 ${s.c} / ${s.n}</div>`).join("")}</div>
+      <div class="tools" style="justify-content:center"><button class="btn" onclick="startMock()">↻ 重新作答</button><button class="btn ghost" onclick="showHome()">回首頁</button></div></div>
+    <div class="review"><h3>📌 錯題詳解（${Q.res.filter(r => !r.ok).length} 題）</h3>${reviewHTML(true)}</div>`;
+  scrollTo(0, 0);
+}
+
+showHome();
+
+</script>
+</body>
+</html>
