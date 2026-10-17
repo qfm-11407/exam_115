@@ -174,6 +174,15 @@ footer{margin-top:28px;text-align:center;color:#8b8577;font-size:14px}
   .qhead .name{font-size:16px;min-width:0;flex-basis:60%}
 }
 </style>
+<style id="pe-howto-css">
+.pe-howto{margin:16px 0;padding:12px 16px;border:1px dashed rgba(120,120,140,.45);border-radius:14px;
+  background:rgba(255,255,255,.55);text-align:left;color:inherit;font-size:15px;line-height:1.6}
+.pe-howto summary{cursor:pointer;font-weight:800;list-style:revert}
+.pe-howto ul{list-style:none;margin:10px 0 2px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 18px}
+.pe-howto li{margin:0}
+.pe-howto li b{white-space:nowrap}
+@media print{.pe-howto{display:none}}
+</style>
 </head>
 <body>
 <div id="app" class="wrap"></div>
@@ -739,12 +748,14 @@ function showHome() {
     <div class="hero"><div class="deco">ABC</div>
       <h1>八年級英文 第二次段考強化練習</h1>
       <div class="sub">範圍：Lesson 3・Lesson 4・Review 2</div>
+      <div class="sub">特色：課文闖關｜每課 3～6 個小單元，答對得 ★ 與 XP，三課達標解鎖模擬段考</div>
       <div class="stats">
         <div class="stat"><b>★ ${st}</b>/ ${max}</div>
         <div class="stat"><b>${P.xp}</b>XP</div>
         <div class="stat"><span class="rank">${rankOf(st)}</span></div>
       </div>
     </div>
+    <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先做該課的「單字闖關」，熟悉新單字。</li><li><b>✍️ 課後複習：</b>上完一課，做該課的文法單元（L3 時間說法、when / before / after；L4 不定詞、動名詞）。</li><li><b>🎯 自主練習：</b>到 Review 2 混合練習時態、改寫與閱讀；做完看「錯題回顧」，把錯的弄懂再挑戰。</li><li><b>🏆 段考衝刺：</b>三課各完成 3 個小單元後，挑戰模擬段考（47 題・滿分 100）。</li></ul></details>
     <div class="grid">${cards}</div>
     <div class="howto"><b>闖關規則</b>　每個小單元答對率 50% 得 ★、70% 得 ★★、90% 得 ★★★。答對 +10 XP，連續答對還有 🔥 連擊加分；文意字彙用了 💡 提示只拿 +5 XP。三課都完成 3 個小單元後，就能挑戰 🏆 模擬段考！</div>
     <footer>八年級英文 第二次段考 L3–L4・R2 練習</footer>`;
