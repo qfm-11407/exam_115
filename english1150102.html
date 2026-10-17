@@ -4,11 +4,79 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>八年級英文 第二次段考強化練習</title>
+<script id="pe115-level">
+/* 一一五上學期段考強化練習｜練習等級（共用元件，各練習頁相同）
+   100%＝★★★★★、90%＝★★★★、80%＝★★★、70%＝★★、60%＝★，未滿 60% 尚未評級
+   成績存在 localStorage「pe115:levels」，入口網站讀同一份資料顯示各科練習等級。 */
+window.PE115 = (function () {
+  var KEY = 'pe115:levels';
+  var m = location.pathname.match(/([a-z]+115010\d)\.html?$/i);
+  var FILE = m ? m[1].toLowerCase() + '.html' : null;
+  function stars(p) { p = +p || 0; return p >= 99.95 ? 5 : p >= 90 ? 4 : p >= 80 ? 3 : p >= 70 ? 2 : p >= 60 ? 1 : 0; }
+  function starStr(n) { return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+  function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} }
+  function get() { return FILE ? load()[FILE] || null : null; }
+  function label(p) { var s = stars(p); return s ? '練習等級 ' + starStr(s) : '尚未評級'; }
+  function commit(pct, note, thisRun) {
+    if (!FILE) return;
+    var d = load(), r = d[FILE] || { best: 0, tries: 0 };
+    var before = stars(r.best);
+    r.tries = (r.tries || 0) + 1; r.last = Math.round(pct); r.best = Math.max(r.best || 0, Math.round(pct));
+    r.stars = stars(r.best); r.at = Date.now(); if (note) r.note = note;
+    d[FILE] = r; save(d); paint();
+    toast(thisRun, r, before, note);
+  }
+  /* 單一段考衝刺測驗：pct 為 0–100 */
+  function report(pct, note) { commit(pct, note, Math.round(pct)); }
+  /* 由多份測驗合成（例：兩關取較低、三科模擬卷平均）；未做的部分以 0 計 */
+  function part(id, pct, allIds, mode, note) {
+    if (!FILE) return;
+    var d = load(), r = d[FILE] || { best: 0, tries: 0 };
+    r.parts = r.parts || {}; r.parts[id] = Math.max(r.parts[id] || 0, Math.round(pct));
+    d[FILE] = r; save(d);
+    var vals = allIds.map(function (k) { return r.parts[k] || 0; });
+    var agg = mode === 'min' ? Math.min.apply(null, vals) : vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+    commit(agg, note + ' ' + Math.round(agg) + '%', Math.round(pct));
+  }
+  function paint() {
+    var r = get(), els = document.querySelectorAll('.pe-level');
+    for (var i = 0; i < els.length; i++) {
+      var html = r && r.stars
+        ? '<b>' + label(r.best) + '</b>（段考衝刺最佳 ' + r.best + '%' + (r.note ? '・' + r.note.replace(/ \d+%$/, '') : '') + '）'
+        : '練習等級：尚未評級（段考衝刺答對 60% 以上就會評級）';
+      if (els[i].getAttribute('data-pe') !== html) { els[i].innerHTML = html; els[i].setAttribute('data-pe', html); }
+    }
+  }
+  function toast(thisRun, r, before, note) {
+    var t = document.getElementById('pe-toast');
+    if (!t) { t = document.createElement('div'); t.id = 'pe-toast'; document.body.appendChild(t); }
+    var up = r.stars > before;
+    t.innerHTML = '本次 ' + thisRun + '%' + (note ? '｜' + note : '') + '<br><b>' + (r.stars ? label(r.best) : '練習等級：尚未評級') + '</b>' + (up ? '　⬆ 升級！' : '');
+    t.className = 'show';
+    clearTimeout(t._h); t._h = setTimeout(function () { t.className = ''; }, 5000);
+  }
+  var css = document.createElement('style');
+  css.textContent = '#pe-toast{position:fixed;left:50%;bottom:64px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:2147483001;' +
+    'background:rgba(31,36,51,.94);color:#fff;padding:12px 20px;border-radius:14px;text-align:center;line-height:1.6;' +
+    'font:600 15px/1.6 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.25);transition:.3s}' +
+    '#pe-toast.show{opacity:1;transform:translate(-50%,0)}#pe-toast b{color:#ffd43b;font-size:17px}' +
+    '.pe-level b{letter-spacing:1px}@media print{#pe-toast{display:none}}';
+  document.head.appendChild(css);
+  function watch() {
+    paint();
+    try { new MutationObserver(function () { if (document.querySelector('.pe-level:not([data-pe])')) paint(); })
+      .observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch); else watch();
+  return { stars: stars, starStr: starStr, label: label, report: report, part: part, get: get, paint: paint };
+})();
+</script>
 <style>
 :root{
   --bg:#f6f3ec; --card:#ffffff; --ink:#1f2328; --muted:#5f6670; --line:#e3ded3;
   --ok:#1f8a4c; --okbg:#e3f5ea; --bad:#c43c2f; --badbg:#fbe6e3;
-  --accent:#2f7d4f; --soft:#e4f3ea; --gold:#e3a500;
+  --accent:#6741d9; --soft:#efeafd; --gold:#e3a500;
   --en:"Segoe UI","Helvetica Neue",Arial,sans-serif;
   --zh:"Noto Sans TC","Microsoft JhengHei","PingFang TC","Heiti TC",sans-serif;
 }
@@ -21,7 +89,7 @@ input{font:inherit}
 .hidden{display:none!important}
 
 /* ---------- 首頁 ---------- */
-.hero{background:linear-gradient(135deg,#243b55,#3f5f8a);color:#fff;border-radius:22px;padding:28px 26px;position:relative;overflow:hidden}
+.hero{background:linear-gradient(135deg,#3f2a8c,#6741d9);color:#fff;border-radius:22px;padding:28px 26px;position:relative;overflow:hidden}
 .hero h1{margin:0 0 4px;font-size:30px;letter-spacing:1px}
 .hero .sub{opacity:.9;font-size:17px}
 .hero .deco{position:absolute;right:-10px;bottom:-24px;font-size:120px;opacity:.12;font-family:var(--en);font-weight:800}
@@ -662,7 +730,7 @@ const MOCK = {
 /* ================= 練習引擎 ================= */
 const KEY = "eng1150102_progress";
 const TOTAL_UNITS = LESSONS.reduce((s, l) => s + l.units.length, 0);
-let P = loadP();
+let P = loadP(); migrateStars();
 let Q = null;           // 目前作答中的測驗
 const $app = document.getElementById("app");
 
@@ -684,16 +752,17 @@ function norm(s) {
 }
 const alts = a => String(a).split("|");
 const tokensOf = en => en.split(/\s+/).map(w => w.replace(/[,.!?]+$/, ""));
-function starsOf(pct) { return pct >= 0.9 ? 3 : pct >= 0.7 ? 2 : pct >= 0.5 ? 1 : 0; }
-function starHTML(n, max = 3) { let h = ""; for (let i = 0; i < max; i++) h += i < n ? "★" : '<span class="off">★</span>'; return '<span class="stars">' + h + "</span>"; }
+function starsOf(pct) { return PE115.stars(pct * 100); }
+function migrateStars() { Object.values(P.units || {}).forEach(u => { if (u && u.best != null) u.stars = starsOf(u.best); }); }
+function starHTML(n, max = 5) { let h = ""; for (let i = 0; i < max; i++) h += i < n ? "★" : '<span class="off">★</span>'; return '<span class="stars">' + h + "</span>"; }
 function lessonStars(L) { return L.units.reduce((s, u) => s + ((P.units[u.id] || {}).stars || 0), 0); }
 function totalStars() { return LESSONS.reduce((s, L) => s + lessonStars(L), 0); }
 function rankOf(st) {
-  const max = TOTAL_UNITS * 3;
+  const max = TOTAL_UNITS * 5;
   if (st >= max) return "👑 英文王者";
-  if (st >= 40) return "🏅 段考達人";
-  if (st >= 25) return "⚔️ 闖關高手";
-  if (st >= 10) return "🧭 英文探險家";
+  if (st >= 67) return "🏅 段考達人";
+  if (st >= 42) return "⚔️ 闖關高手";
+  if (st >= 17) return "🧭 英文探險家";
   return "🌱 見習生";
 }
 function mockUnlocked() {
@@ -725,9 +794,9 @@ function clockSVG(h, m) {
 function showHome() {
   Q = null;
   setTheme("#2f7d4f", "#e4f3ea");
-  const st = totalStars(), max = TOTAL_UNITS * 3, unlocked = mockUnlocked();
+  const st = totalStars(), max = TOTAL_UNITS * 5, unlocked = mockUnlocked();
   let cards = LESSONS.map(L => {
-    const s = lessonStars(L), m = L.units.length * 3;
+    const s = lessonStars(L), m = L.units.length * 5;
     return `<button class="lcard" onclick="showLesson('${L.id}')">
       <div class="top"><div class="ico" style="background:${L.soft}">${L.icon}</div>
       <div><div class="ttl" style="color:${L.color}">${L.title}</div><div class="en">${L.en}</div></div></div>
@@ -749,15 +818,16 @@ function showHome() {
       <h1>八年級英文 第二次段考強化練習</h1>
       <div class="sub">範圍：Lesson 3・Lesson 4・Review 2</div>
       <div class="sub">特色：課文闖關｜每課 5～6 個小單元，答對得 ★ 與 XP，三課達標解鎖模擬段考</div>
+      <div class="sub pe-level"></div>
       <div class="stats">
         <div class="stat"><b>★ ${st}</b>/ ${max}</div>
         <div class="stat"><b>${P.xp}</b>XP</div>
         <div class="stat"><span class="rank">${rankOf(st)}</span></div>
       </div>
     </div>
-    <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先做該課的「單字闖關」，熟悉新單字。</li><li><b>✍️ 課後複習：</b>上完一課，做該課的文法單元（L3 時間說法、when / before / after；L4 不定詞、動名詞）。</li><li><b>🎯 自主練習：</b>到 Review 2 混合練習時態、改寫與閱讀；做完看「錯題回顧」，把錯的弄懂再挑戰。</li><li><b>🏆 段考衝刺：</b>三課各完成 3 個小單元後，挑戰模擬段考（47 題・滿分 100）。</li></ul></details>
+    <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先做該課的「單字闖關」，熟悉新單字。</li><li><b>✍️ 課後複習：</b>上完一課，做該課的文法單元（L3 時間說法、when / before / after；L4 不定詞、動名詞）。</li><li><b>🎯 自主練習：</b>到 Review 2 混合練習時態、改寫與閱讀；做完看「錯題詳解」，把錯的弄懂再挑戰。</li><li><b>🏆 段考衝刺：</b>三課各完成 3 個小單元後，挑戰模擬段考（47 題・滿分 100）。</li></ul></details>
     <div class="grid">${cards}</div>
-    <div class="howto"><b>闖關規則</b>　每個小單元答對率 50% 得 ★、70% 得 ★★、90% 得 ★★★。答對 +10 XP，連續答對還有 🔥 連擊加分；文意字彙用了 💡 提示只拿 +5 XP。三課都完成 3 個小單元後，就能挑戰 🏆 模擬段考！</div>
+    <div class="howto"><b>闖關規則</b>　每個小單元依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★。模擬段考的成績就是本頁的「練習等級」。答對 +10 XP，連續答對還有 🔥 連擊加分；文意字彙用了 💡 提示只拿 +5 XP。三課都完成 3 個小單元後，就能挑戰 🏆 模擬段考！</div>
     <footer>八年級英文 第二次段考 L3–L4・R2 練習</footer>`;
   scrollTo(0, 0);
 }
@@ -783,7 +853,7 @@ function showLesson(id) {
       <div class="s">${starHTML(r.stars || 0)}　${u.qs.length} 題${r.best != null ? "・最佳 " + Math.round(r.best * 100) + "%" : ""}</div></div>
     </button>`;
   }).join("");
-  const s = lessonStars(L), m = L.units.length * 3;
+  const s = lessonStars(L), m = L.units.length * 5;
   $app.innerHTML = `
     <div class="topbar"><button class="back" onclick="showHome()">← 回首頁</button><span class="pill">★ ${s} / ${m}</span>${s === m ? `<span class="pill">🎖️ ${L.badge}</span>` : ""}</div>
     <div class="banner" style="background:linear-gradient(135deg,${L.color},${L.color}cc)"><div class="big">${L.icon}</div>
@@ -1018,7 +1088,7 @@ function finishPractice() {
   P.units[Q.U.id] = { stars: Math.max(st, prev.stars || 0), best: Math.max(pct, prev.best || 0) };
   P.xp += Q.xp; saveP();
   const idx = Q.L.units.findIndex(u => u.id === Q.U.id), nu = Q.L.units[idx + 1];
-  const msg = st === 3 ? "太強了！完美過關 🎉" : st === 2 ? "很不錯！再挑戰拿三顆星吧！" : st === 1 ? "過關了！把錯題看一遍再挑戰。" : "別灰心，看完詳解再試一次！";
+  const msg = st === 5 ? "太強了！全對五顆星 🎉" : st >= 3 ? "很不錯！再挑戰拿五顆星吧！" : st >= 1 ? "有星星了！把錯題看一遍再挑戰。" : "別灰心，看完詳解再試一次！";
   const wrong = n - c;
   $app.innerHTML = `<div class="topbar"><button class="back" onclick="showLesson('${Q.L.id}')">← 回 ${Q.L.title}</button></div>
     <div class="result"><div class="bigstars">${starHTML(st).replace('class="stars"', "")}</div>
@@ -1029,7 +1099,7 @@ function finishPractice() {
         <button class="btn" onclick="startUnit('${Q.L.id}','${Q.U.id}')">↻ 再挑戰一次</button>
         ${nu ? `<button class="btn ghost" onclick="startUnit('${Q.L.id}','${nu.id}')">下一單元：${nu.title} →</button>` : `<button class="btn ghost" onclick="showHome()">回首頁</button>`}
       </div></div>
-    <div class="review"><h3>${wrong ? `📌 錯題回顧（${wrong} 題）` : "📌 全部答對！以下是本單元詳解"}</h3>${reviewHTML(wrong > 0)}</div>`;
+    <div class="review"><h3>${wrong ? `📌 錯題詳解（${wrong} 題）` : "📌 全部答對！以下是本單元詳解"}</h3>${reviewHTML(wrong > 0)}</div>`;
   scrollTo(0, 0);
 }
 function submitExam() {
@@ -1040,7 +1110,8 @@ function submitExam() {
   Q.items.forEach((q, k) => { const ok = isRight(q, Q.ans[k]); Q.res[k] = { ok }; const s = secs[q.sec]; s.n++; s.max += q.pts; if (ok) { s.c++; s.pts += q.pts; score += q.pts; } });
   const first = P.mock == null;
   P.mock = Math.max(P.mock || 0, score); P.xp += score; saveP();
-  const lv = score >= 90 ? "A++ 段考神人 👑" : score >= 80 ? "A 準備充分 🏅" : score >= 60 ? "B 再加把勁 💪" : "C 先回各課複習 📚";
+  PE115.report(score);
+  const lv = PE115.label(score);
   $app.innerHTML = `<div class="topbar"><button class="back" onclick="showHome()">← 回首頁</button></div>
     <div class="result"><div style="font-size:52px">🏆</div><h2>模擬段考成績</h2>
       <div class="score">${score} 分</div><div><b>${lv}</b>${!first && score >= P.mock ? "　（最佳紀錄）" : ""}</div>

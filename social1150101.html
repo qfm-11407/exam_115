@@ -3,7 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>社會科互動式測驗系統｜一一五學年度上學期第一次段考</title>
+    <title>八年級社會 第一次段考強化練習</title>
+<script id="pe115-level">
+/* 一一五上學期段考強化練習｜練習等級（共用元件，各練習頁相同）
+   100%＝★★★★★、90%＝★★★★、80%＝★★★、70%＝★★、60%＝★，未滿 60% 尚未評級
+   成績存在 localStorage「pe115:levels」，入口網站讀同一份資料顯示各科練習等級。 */
+window.PE115 = (function () {
+  var KEY = 'pe115:levels';
+  var m = location.pathname.match(/([a-z]+115010\d)\.html?$/i);
+  var FILE = m ? m[1].toLowerCase() + '.html' : null;
+  function stars(p) { p = +p || 0; return p >= 99.95 ? 5 : p >= 90 ? 4 : p >= 80 ? 3 : p >= 70 ? 2 : p >= 60 ? 1 : 0; }
+  function starStr(n) { return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+  function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} }
+  function get() { return FILE ? load()[FILE] || null : null; }
+  function label(p) { var s = stars(p); return s ? '練習等級 ' + starStr(s) : '尚未評級'; }
+  function commit(pct, note, thisRun) {
+    if (!FILE) return;
+    var d = load(), r = d[FILE] || { best: 0, tries: 0 };
+    var before = stars(r.best);
+    r.tries = (r.tries || 0) + 1; r.last = Math.round(pct); r.best = Math.max(r.best || 0, Math.round(pct));
+    r.stars = stars(r.best); r.at = Date.now(); if (note) r.note = note;
+    d[FILE] = r; save(d); paint();
+    toast(thisRun, r, before, note);
+  }
+  /* 單一段考衝刺測驗：pct 為 0–100 */
+  function report(pct, note) { commit(pct, note, Math.round(pct)); }
+  /* 由多份測驗合成（例：兩關取較低、三科模擬卷平均）；未做的部分以 0 計 */
+  function part(id, pct, allIds, mode, note) {
+    if (!FILE) return;
+    var d = load(), r = d[FILE] || { best: 0, tries: 0 };
+    r.parts = r.parts || {}; r.parts[id] = Math.max(r.parts[id] || 0, Math.round(pct));
+    d[FILE] = r; save(d);
+    var vals = allIds.map(function (k) { return r.parts[k] || 0; });
+    var agg = mode === 'min' ? Math.min.apply(null, vals) : vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+    commit(agg, note + ' ' + Math.round(agg) + '%', Math.round(pct));
+  }
+  function paint() {
+    var r = get(), els = document.querySelectorAll('.pe-level');
+    for (var i = 0; i < els.length; i++) {
+      var html = r && r.stars
+        ? '<b>' + label(r.best) + '</b>（段考衝刺最佳 ' + r.best + '%' + (r.note ? '・' + r.note.replace(/ \d+%$/, '') : '') + '）'
+        : '練習等級：尚未評級（段考衝刺答對 60% 以上就會評級）';
+      if (els[i].getAttribute('data-pe') !== html) { els[i].innerHTML = html; els[i].setAttribute('data-pe', html); }
+    }
+  }
+  function toast(thisRun, r, before, note) {
+    var t = document.getElementById('pe-toast');
+    if (!t) { t = document.createElement('div'); t.id = 'pe-toast'; document.body.appendChild(t); }
+    var up = r.stars > before;
+    t.innerHTML = '本次 ' + thisRun + '%' + (note ? '｜' + note : '') + '<br><b>' + (r.stars ? label(r.best) : '練習等級：尚未評級') + '</b>' + (up ? '　⬆ 升級！' : '');
+    t.className = 'show';
+    clearTimeout(t._h); t._h = setTimeout(function () { t.className = ''; }, 5000);
+  }
+  var css = document.createElement('style');
+  css.textContent = '#pe-toast{position:fixed;left:50%;bottom:64px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:2147483001;' +
+    'background:rgba(31,36,51,.94);color:#fff;padding:12px 20px;border-radius:14px;text-align:center;line-height:1.6;' +
+    'font:600 15px/1.6 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.25);transition:.3s}' +
+    '#pe-toast.show{opacity:1;transform:translate(-50%,0)}#pe-toast b{color:#ffd43b;font-size:17px}' +
+    '.pe-level b{letter-spacing:1px}@media print{#pe-toast{display:none}}';
+  document.head.appendChild(css);
+  function watch() {
+    paint();
+    try { new MutationObserver(function () { if (document.querySelector('.pe-level:not([data-pe])')) paint(); })
+      .observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch); else watch();
+  return { stars: stars, starStr: starStr, label: label, report: report, part: part, get: get, paint: paint };
+})();
+</script>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
@@ -44,20 +112,31 @@
         .talk-bubble::before { content: ''; position: absolute; left: -9px; top: 14px; border: 8px solid transparent; border-right-color: #d1d5db; border-left: 0; }
         .fig-cap { text-align: center; font-size: 0.8rem; color: #6b7280; margin: 0.4rem 0 0.8rem; }
     </style>
+<style id="pe-howto-css">
+.pe-howto{margin:16px 0;padding:12px 16px;border:1px dashed rgba(120,120,140,.45);border-radius:14px;
+  background:rgba(255,255,255,.55);text-align:left;color:inherit;font-size:15px;line-height:1.6}
+.pe-howto summary{cursor:pointer;font-weight:800;list-style:revert}
+.pe-howto ul{list-style:none;margin:10px 0 2px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 18px}
+.pe-howto li{margin:0}
+.pe-howto li b{white-space:nowrap}
+@media print{.pe-howto{display:none}}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 py-10">
 
     <div id="app" class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden relative">
-        <div id="header-bar" class="h-2 bg-emerald-500 w-full absolute top-0 left-0"></div>
+        <div id="header-bar" class="h-2 bg-orange-600 w-full absolute top-0 left-0"></div>
 
         <div class="p-5 md:p-10">
 
             <div id="home-screen" class="text-center fade-in">
-                <div class="inline-block p-4 bg-emerald-50 rounded-full mb-4 text-5xl">🌏</div>
-                <h1 class="text-3xl md:text-4xl font-black text-gray-800 mb-2">社會科互動式測驗系統</h1>
-                <p class="text-lg md:text-xl font-bold text-indigo-600 tracking-wide mb-2">一一五學年度上學期第一次段考</p>
+                <div class="inline-block p-4 bg-orange-50 rounded-full mb-4 text-5xl">🌏</div>
+                <h1 class="text-3xl md:text-4xl font-black text-gray-800 mb-2">八年級社會 第一次段考強化練習</h1>
+                <p class="text-lg md:text-xl font-bold text-orange-700 tracking-wide mb-2">範圍：地理・歷史・公民 第 1～2 課</p>
                 
-                <p class="text-gray-500 mb-8 mt-4 max-w-lg mx-auto leading-relaxed">精選歷史、地理、公民素養題；地理科含地圖、圖表判讀與題組題。<br>請先選擇科目，再選擇章節單元。</p>
+                <p class="text-gray-500 mb-4 mt-4 max-w-lg mx-auto leading-relaxed">特色：互動式測驗系統｜依段考命題模式設計，含地圖、圖表判讀與題組題。<br>請先選擇科目，再選擇課次。</p>
+                <p class="text-gray-700 mb-4 pe-level"></p>
+                <div class="max-w-3xl mx-auto mb-8"><details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，選科目和課次先試做，每題都有解題剖析，可以邊做邊學。</li><li><b>✍️ 課後複習：</b>上完一課，做該課的題目，答完仔細看解題剖析。</li><li><b>🎯 自主練習：</b>用「錯題重練」把錯的題目練到會，再「從頭再測一次」確認。</li><li><b>🏆 段考衝刺：</b>三科每一課都練過一輪，錯題重練到全對再上考場。</li></ul></details></div>
                 <div id="subject-list" class="grid grid-cols-1 md:grid-cols-3 gap-5"></div>
             </div>
 
@@ -72,7 +151,7 @@
                     </div>
                     <button onclick="goHome()" class="text-gray-500 hover:text-gray-800 flex items-center text-sm font-medium bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl transition-colors">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                        返回主選單
+                        回首頁
                     </button>
                 </div>
                 <div id="chapter-list" class="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto"></div>
@@ -82,7 +161,7 @@
                 <div class="flex justify-between items-center mb-6">
                     <button onclick="goBackToChapters()" class="text-gray-400 hover:text-gray-700 flex items-center text-sm font-medium transition-colors">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                        返回課次
+                        回課次
                     </button>
                     <div class="text-sm font-bold bg-gray-50 border border-gray-200 px-4 py-1.5 rounded-full text-gray-700 flex items-center shadow-sm">
                         ⭐ 得分：<span id="score-display" class="ml-1 text-lg">0</span>
@@ -145,11 +224,11 @@
                 </div>
                 <div class="flex flex-col sm:flex-row justify-center gap-3">
                     <button id="retry-incorrect-btn" onclick="retryIncorrect()" class="hidden px-8 py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-medium rounded-xl transition-all shadow-md">
-                        錯題重測 <span id="incorrect-badge" class="bg-white text-rose-500 rounded-full px-2 py-0.5 ml-2 text-xs font-black">0</span>
+                        錯題重練 <span id="incorrect-badge" class="bg-white text-rose-500 rounded-full px-2 py-0.5 ml-2 text-xs font-black">0</span>
                     </button>
                     <button onclick="restartChapter()" class="px-8 py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-xl transition-all shadow-md">從頭再測一次</button>
                     <button onclick="goBackToChapters()" class="px-8 py-3.5 border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white font-medium rounded-xl transition-all">選其他課次</button>
-                    <button onclick="goHome()" class="px-8 py-3.5 border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white font-medium rounded-xl transition-all">回主選單</button>
+                    <button onclick="goHome()" class="px-8 py-3.5 border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white font-medium rounded-xl transition-all">回首頁</button>
                 </div>
             </div>
         </div>
@@ -1458,6 +1537,25 @@
         let score = 0, correctAnswersCount = 0, hasAnsweredCurrent = false, incorrectQuestions = [], isRetryMode = false;
         let currentSubjectId = 'geography', isExam = false;
         let subject = quizData.geography;
+
+        // ===== 學習進度：記在這台裝置的瀏覽器，重新開啟頁面不會歸零 =====
+        const PROG_KEY = ((location.pathname.match(/social115010\d/i) || ['social115'])[0]).toLowerCase() + ':progress-v1';
+        let PROG = {};
+        try { PROG = JSON.parse(localStorage.getItem(PROG_KEY)) || {}; } catch (e) { PROG = {}; }
+        function progOf(sid, ch) { return (PROG[sid] || {})[ch.name]; }
+        function saveProg(finalScore) {
+            const ch = subject.chapters[currentChapterIndex];
+            const p = (PROG[currentSubjectId] = PROG[currentSubjectId] || {});
+            const r = p[ch.name] || { best: 0, tries: 0 };
+            r.tries += 1; r.last = finalScore; r.best = Math.max(r.best, finalScore); r.at = Date.now();
+            p[ch.name] = r;
+            try { localStorage.setItem(PROG_KEY, JSON.stringify(PROG)); } catch (e) {}
+        }
+        function progBadge(ch) {
+            const r = progOf(currentSubjectId, ch);
+            if (!r) return '<span class="px-2 py-1 rounded bg-gray-50 text-gray-400">尚未練習</span>';
+            return `<span class="px-2 py-1 rounded ${r.best === 100 ? 'bg-yellow-100 text-yellow-700' : 'bg-sky-100 text-sky-700'}">${r.best === 100 ? '🏆 ' : ''}最佳 ${r.best} 分・練過 ${r.tries} 次</span>`;
+        }
         const $ = id => document.getElementById(id);
 
         function shuffleArray(array) {
@@ -1496,7 +1594,8 @@
                 btn.innerHTML = `
                     <div class="w-20 h-20 ${t.icon} rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-4xl shadow-inner">${sub.icon}</div>
                     <span class="text-2xl font-bold text-gray-800 mb-1">${sub.name}</span>
-                    <span class="text-sm font-medium mt-2 ${n ? 'text-gray-500' : 'text-gray-400'}">${n ? `共 ${n} 個課次${ne ? '＋模擬卷' : ''}` : '題庫準備中'}</span>`;
+                    <span class="text-sm font-medium mt-2 ${n ? 'text-gray-500' : 'text-gray-400'}">${n ? `共 ${n} 個課次${ne ? '＋模擬卷' : ''}` : '題庫準備中'}</span>
+                    ${(() => { const d = sub.chapters.filter(c => (PROG[id] || {})[c.name]).length; return d ? `<span class="text-xs font-bold mt-1 text-orange-700">已練 ${d} / ${sub.chapters.length}</span>` : ''; })()}`;
                 btn.onclick = () => showChapters(id);
                 list.appendChild(btn);
             });
@@ -1533,6 +1632,7 @@
                         <span class="px-2 py-1 rounded bg-gray-100 text-gray-600">依考卷題序作答</span>
                         ${figs ? `<span class="px-2 py-1 rounded bg-orange-100 text-orange-700">附圖表 ${figs} 題</span>` : ''}
                         ${groups ? `<span class="px-2 py-1 rounded bg-amber-100 text-amber-700">題組 ${groups} 組</span>` : ''}
+                        ${progBadge(ch)}
                     </div>`;
                     btn.onclick = () => startQuiz(i);
                     list.appendChild(btn);
@@ -1546,6 +1646,7 @@
                         <span class="px-2 py-1 rounded bg-gray-100 text-gray-600">${ch.data.length} 題</span>
                         ${figs ? `<span class="px-2 py-1 rounded bg-orange-100 text-orange-700">附圖表 ${figs} 題</span>` : ''}
                         ${groups ? `<span class="px-2 py-1 rounded bg-amber-100 text-amber-700">題組 ${groups} 組</span>` : ''}
+                        ${progBadge(ch)}
                     </div>`;
                 btn.onclick = () => startQuiz(i);
                 list.appendChild(btn);
@@ -1555,7 +1656,7 @@
 
         function goBackToChapters() { showChapters(currentSubjectId); }
 
-        function goHome() { $('header-bar').className = 'h-2 bg-emerald-500 w-full absolute top-0 left-0'; switchScreen('home'); }
+        function goHome() { $('header-bar').className = 'h-2 bg-orange-600 w-full absolute top-0 left-0'; renderHome(); switchScreen('home'); }
 
         function startQuiz(chapterIndex, retryData = null) {
             currentChapterIndex = chapterIndex;
@@ -1564,7 +1665,7 @@
             isRetryMode = !!retryData;
             const loaded = JSON.parse(JSON.stringify(source));
             isExam = !!chapter.exam;
-            $('quiz-header-title').innerHTML = `${subject.icon} ${isExam ? '📝 ' + chapter.name.replace(/^\S+ /, '') : chapter.name}` + (isRetryMode ? ' <span class="ml-2 px-2 py-0.5 bg-rose-100 text-rose-600 rounded text-xs">錯題重測</span>' : '');
+            $('quiz-header-title').innerHTML = `${subject.icon} ${isExam ? '📝 ' + chapter.name.replace(/^\S+ /, '') : chapter.name}` + (isRetryMode ? ' <span class="ml-2 px-2 py-0.5 bg-rose-100 text-rose-600 rounded text-xs">錯題重練</span>' : '');
             currentQuestions = isExam ? loaded : shuffleKeepGroups(loaded);
             currentQuestionIndex = 0; score = 0; correctAnswersCount = 0; incorrectQuestions = [];
             updateScoreDisplay();
@@ -1669,7 +1770,15 @@
             $('progress-bar').style.width = '100%';
             let finalScore = Math.round(score);
             if (finalScore > 100 || correctAnswersCount === currentQuestions.length) finalScore = 100;
-            $('result-subject').textContent = subject.name + '｜' + subject.chapters[currentChapterIndex].name.replace(isExam ? /^\S+ / : /^$/, '') + (isRetryMode ? '（錯題重測）' : '');
+            if (!isRetryMode) saveProg(finalScore);
+            if (!isRetryMode) {
+                const hasExam = Object.values(quizData).some(s => s.chapters.some(c => c.exam));
+                const parts = [];
+                Object.entries(quizData).forEach(([sid, s]) => s.chapters.forEach(c => { if (hasExam ? c.exam : true) parts.push(sid + "/" + c.name); }));
+                const me = currentSubjectId + "/" + subject.chapters[currentChapterIndex].name;
+                if (parts.includes(me)) PE115.part(me, finalScore, parts, "avg", hasExam ? "三科模擬卷平均" : "各課平均");
+            }
+            $('result-subject').textContent = subject.name + '｜' + subject.chapters[currentChapterIndex].name.replace(isExam ? /^\S+ / : /^$/, '') + (isRetryMode ? '（錯題重練）' : '');
             $('final-score').innerHTML = `${finalScore} <span class="text-2xl text-gray-400 font-medium">分</span>`;
             $('correct-count').textContent = correctAnswersCount;
             $('total-count').textContent = currentQuestions.length;
@@ -1681,7 +1790,7 @@
                 $('result-message').textContent = '表現不錯！把錯題的課本出處再讀一次會更棒。';
                 icon.textContent = '👍'; icon.className = 'w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg bg-blue-50 border-4 border-white';
             } else {
-                $('result-message').textContent = '再接再厲！多利用錯題重測，仔細看題目給的圖表與線索。';
+                $('result-message').textContent = '再接再厲！多利用錯題重練，仔細看題目給的圖表與線索。';
                 icon.textContent = '💪'; icon.className = 'w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg bg-gray-100 border-4 border-white';
             }
             const retryBtn = $('retry-incorrect-btn');
@@ -1692,5 +1801,18 @@
 
         renderHome();
     </script>
+<!-- 回段考入口按鈕（連到 periodicexam_115.html，依檔名自動帶到對應段考） -->
+<a id="pe115-home" href="periodicexam_115.html" aria-label="回到一一五上學期段考強化練習入口">🏠 段考入口</a>
+<style>
+#pe115-home{position:fixed;left:12px;bottom:12px;z-index:2147483000;display:inline-flex;align-items:center;gap:4px;
+  padding:8px 14px;border-radius:999px;background:rgba(31,36,51,.88);color:#fff !important;
+  font:600 14px/1.2 "Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
+  text-decoration:none !important;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+#pe115-home:hover{background:#3b5bdb}
+#pe115-home:focus-visible{outline:3px solid #748ffc;outline-offset:2px}
+body{padding-bottom:64px}
+@media print{#pe115-home{display:none}body{padding-bottom:0}}
+</style>
+<script>(function(){var m=location.pathname.match(/115010(\d)\.html?$/i),a=document.getElementById('pe115-home');if(m&&a)a.href='periodicexam_115.html#exam'+m[1];})();</script>
 </body>
 </html>

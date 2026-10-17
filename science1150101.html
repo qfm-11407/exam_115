@@ -3,9 +3,77 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#082f49">
+  <meta name="theme-color" content="#1b4d2e">
   <meta name="description" content="第1章基本測量與第2章物質的世界互動習作練習，選項每次隨機排列。">
-  <title>115學年度第一學期第一次段考理化習作練習</title>
+  <title>八年級理化 第一次段考強化練習</title>
+<script id="pe115-level">
+/* 一一五上學期段考強化練習｜練習等級（共用元件，各練習頁相同）
+   100%＝★★★★★、90%＝★★★★、80%＝★★★、70%＝★★、60%＝★，未滿 60% 尚未評級
+   成績存在 localStorage「pe115:levels」，入口網站讀同一份資料顯示各科練習等級。 */
+window.PE115 = (function () {
+  var KEY = 'pe115:levels';
+  var m = location.pathname.match(/([a-z]+115010\d)\.html?$/i);
+  var FILE = m ? m[1].toLowerCase() + '.html' : null;
+  function stars(p) { p = +p || 0; return p >= 99.95 ? 5 : p >= 90 ? 4 : p >= 80 ? 3 : p >= 70 ? 2 : p >= 60 ? 1 : 0; }
+  function starStr(n) { return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+  function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} }
+  function get() { return FILE ? load()[FILE] || null : null; }
+  function label(p) { var s = stars(p); return s ? '練習等級 ' + starStr(s) : '尚未評級'; }
+  function commit(pct, note, thisRun) {
+    if (!FILE) return;
+    var d = load(), r = d[FILE] || { best: 0, tries: 0 };
+    var before = stars(r.best);
+    r.tries = (r.tries || 0) + 1; r.last = Math.round(pct); r.best = Math.max(r.best || 0, Math.round(pct));
+    r.stars = stars(r.best); r.at = Date.now(); if (note) r.note = note;
+    d[FILE] = r; save(d); paint();
+    toast(thisRun, r, before, note);
+  }
+  /* 單一段考衝刺測驗：pct 為 0–100 */
+  function report(pct, note) { commit(pct, note, Math.round(pct)); }
+  /* 由多份測驗合成（例：兩關取較低、三科模擬卷平均）；未做的部分以 0 計 */
+  function part(id, pct, allIds, mode, note) {
+    if (!FILE) return;
+    var d = load(), r = d[FILE] || { best: 0, tries: 0 };
+    r.parts = r.parts || {}; r.parts[id] = Math.max(r.parts[id] || 0, Math.round(pct));
+    d[FILE] = r; save(d);
+    var vals = allIds.map(function (k) { return r.parts[k] || 0; });
+    var agg = mode === 'min' ? Math.min.apply(null, vals) : vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+    commit(agg, note + ' ' + Math.round(agg) + '%', Math.round(pct));
+  }
+  function paint() {
+    var r = get(), els = document.querySelectorAll('.pe-level');
+    for (var i = 0; i < els.length; i++) {
+      var html = r && r.stars
+        ? '<b>' + label(r.best) + '</b>（段考衝刺最佳 ' + r.best + '%' + (r.note ? '・' + r.note.replace(/ \d+%$/, '') : '') + '）'
+        : '練習等級：尚未評級（段考衝刺答對 60% 以上就會評級）';
+      if (els[i].getAttribute('data-pe') !== html) { els[i].innerHTML = html; els[i].setAttribute('data-pe', html); }
+    }
+  }
+  function toast(thisRun, r, before, note) {
+    var t = document.getElementById('pe-toast');
+    if (!t) { t = document.createElement('div'); t.id = 'pe-toast'; document.body.appendChild(t); }
+    var up = r.stars > before;
+    t.innerHTML = '本次 ' + thisRun + '%' + (note ? '｜' + note : '') + '<br><b>' + (r.stars ? label(r.best) : '練習等級：尚未評級') + '</b>' + (up ? '　⬆ 升級！' : '');
+    t.className = 'show';
+    clearTimeout(t._h); t._h = setTimeout(function () { t.className = ''; }, 5000);
+  }
+  var css = document.createElement('style');
+  css.textContent = '#pe-toast{position:fixed;left:50%;bottom:64px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:2147483001;' +
+    'background:rgba(31,36,51,.94);color:#fff;padding:12px 20px;border-radius:14px;text-align:center;line-height:1.6;' +
+    'font:600 15px/1.6 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.25);transition:.3s}' +
+    '#pe-toast.show{opacity:1;transform:translate(-50%,0)}#pe-toast b{color:#ffd43b;font-size:17px}' +
+    '.pe-level b{letter-spacing:1px}@media print{#pe-toast{display:none}}';
+  document.head.appendChild(css);
+  function watch() {
+    paint();
+    try { new MutationObserver(function () { if (document.querySelector('.pe-level:not([data-pe])')) paint(); })
+      .observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch); else watch();
+  return { stars: stars, starStr: starStr, label: label, report: report, part: part, get: get, paint: paint };
+})();
+</script>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23082f49'/%3E%3Cpath d='M24 12h16M28 12v15L17 48a5 5 0 0 0 4 7h22a5 5 0 0 0 4-7L36 27V12' fill='none' stroke='%2367e8f9' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M22 44h20' stroke='%23fbbf24' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
   <style>
     :root {
@@ -222,6 +290,26 @@
     }
     @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
   </style>
+<style id="pe-howto-css">
+.pe-howto{margin:16px 0;padding:12px 16px;border:1px dashed rgba(120,120,140,.45);border-radius:14px;
+  background:rgba(255,255,255,.55);text-align:left;color:inherit;font-size:15px;line-height:1.6}
+.pe-howto summary{cursor:pointer;font-weight:800;list-style:revert}
+.pe-howto ul{list-style:none;margin:10px 0 2px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 18px}
+.pe-howto li{margin:0}
+.pe-howto li b{white-space:nowrap}
+@media print{.pe-howto{display:none}}
+</style>
+<style id="pe-theme-sci">
+/* 理化代表色（綠）：與段考入口網站一致，只改頁首與主要按鈕 */
+.masthead{background:#1b4d2e !important}
+.masthead::after{border-color:rgba(140,233,154,.22) !important}
+.mark{background:#8ce99a !important;color:#1b4d2e !important}
+.segment[aria-pressed="true"],.primary,.course-btn.primary-btn{background:#2b8a3e !important;border-color:#2b8a3e !important;color:#fff !important}
+.course-btn{border-color:#2b8a3e}
+.course-main{background:linear-gradient(135deg,#ebfbee 0%,#fffbeb 100%) !important;border-color:#2b8a3e !important}
+.course-small:hover,.course-btn:hover{border-color:#2b8a3e !important}
+.tag,.learning-status strong,.finish .result{color:#2b8a3e !important}
+</style>
 </head>
 <body>
   <main class="shell">
@@ -229,12 +317,14 @@
       <div class="title-row">
         <div class="mark" aria-hidden="true">⚗</div>
         <div>
-          <h1>115學年度第一學期第一次段考理化習作練習</h1>
-          <p class="meta">第1章 基本測量・第2章 物質的世界</p>
-          <p class="meta">每次開啟、重新整理或重新開始，都會重排題目與選項。</p>
+          <h1>八年級理化 第一次段考強化練習</h1>
+          <p class="meta">範圍：第1章 基本測量・第2章 物質的世界</p>
+          <p class="meta">特色：習作練習｜每次開啟、重新整理或重新開始，都會重排題目與選項；一次全對可領通關證書</p>
+          <p class="meta pe-level"></p>
         </div>
       </div>
     </header>
+    <details class="pe-howto"><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新章節前，在上方選「第1章」或「第2章」先試做，看看會遇到哪些概念。</li><li><b>✍️ 課後複習：</b>上完一章，選該章做正式測驗，答完看解析，把每一題弄懂。</li><li><b>🎯 自主練習：</b>測驗結束後做錯題重練，直到錯題全部答對；按「重新開始」可換一組題序再練。</li><li><b>🏆 段考衝刺：</b>選「全部」範圍做正式測驗，一次全對就能領取通關證書。</li></ul></details>
 
     <section class="toolbar" aria-label="測驗範圍">
       <div class="segments" id="segments">
@@ -248,7 +338,7 @@
     <section class="learning-status" aria-label="通關進度" aria-live="polite">
       <strong id="modeLabel">正式測驗</strong><span id="streakStatus"></span>
       <p id="learningHint"></p>
-      <p>所選範圍一次正式測驗全對即可通關領證；錯題複習完成後，請重新挑戰完整範圍。</p>
+      <p>所選範圍一次正式測驗全對即可通關領證；錯題重練完成後，請重新挑戰完整範圍。</p>
     </section>
 
     <section class="workspace">
@@ -279,7 +369,7 @@
             <p class="certificate-course"><span id="certificateClass">807 班</span>・<span id="certificateSeat"></span></p>
             <p class="certificate-name" id="certificateName"></p>
             <p>完成以下正式測驗，所有題目皆答對</p>
-            <p class="certificate-course">115學年度第一學期第一次段考理化習作練習</p>
+            <p class="certificate-course">八年級理化 第一次段考強化練習</p>
             <p class="certificate-range" id="certificateRange"></p>
             <p class="certificate-result" id="certificateResult"></p>
             <p class="certificate-date" id="certificateDate"></p>
@@ -1102,7 +1192,7 @@ const EXTRA_QUESTIONS = [
       feedback.innerHTML = `<strong>${isCorrect ? '答對了' : '再想一下'}</strong><span>${item.explain}</span>${state.mode === 'review' ? `<p>${isCorrect ? '這題已答對，移出待複習清單。' : '這題會再次出現，答對後才會移出待複習清單。'}</p>` : ''}`;
       $('checkAnswer').hidden = true;
       $('nextQuestion').hidden = false;
-      $('nextQuestion').textContent = state.mode === 'review' ? (state.reviewPending.size === 0 ? '完成複習' : '繼續複習') : (state.index === state.queue.length - 1 ? (state.mistakes.length ? '查看結果並複習錯題' : '查看結果') : '下一題');
+      $('nextQuestion').textContent = state.mode === 'review' ? (state.reviewPending.size === 0 ? '完成複習' : '繼續複習') : (state.index === state.queue.length - 1 ? (state.mistakes.length ? '查看結果，進入錯題重練' : '查看結果') : '下一題');
       updateStats();
       $('nextQuestion').focus();
     }
@@ -1131,6 +1221,7 @@ const EXTRA_QUESTIONS = [
       if (state.mode !== 'exam' || state.completed || !state.locked || state.index !== state.queue.length - 1) return;
       state.completed = true;
       state.examResult = { total: state.queue.length, correct: state.correct, mistakes: [...state.mistakes] };
+      if (state.filter === 'all') PE115.report(state.correct / state.queue.length * 100);
       const perfect = state.correct === state.queue.length;
       if (!perfect) return startReview();
       $('quizArea').hidden = true;
@@ -1140,7 +1231,7 @@ const EXTRA_QUESTIONS = [
       $('restart').textContent = '開始下一次正式測驗';
       $('finalScore').textContent = `${state.correct} / ${state.queue.length}`;
       $('finalMessage').textContent = `${rangeName()}本次全部答對，恭喜通關！`;
-      $('review').innerHTML = state.mistakes.length ? `<h3>錯題回顧</h3>${state.mistakes.map((m, i) => `<div class="review-item"><b>第 ${i + 1} 題</b><div>${m.q}</div><small>你的答案：${m.chosen}<br>正確答案：${m.answer}</small></div>`).join('')}` : '<p>全部答對，太棒了！</p>';
+      $('review').innerHTML = state.mistakes.length ? `<h3>錯題詳解</h3>${state.mistakes.map((m, i) => `<div class="review-item"><b>第 ${i + 1} 題</b><div>${m.q}</div><small>你的答案：${m.chosen}<br>正確答案：${m.answer}</small></div>`).join('')}` : '<p>全部答對，太棒了！</p>';
       updateStats();
       if (isPassed()) {
         $('finalMessage').textContent = `${rangeName()}一次全對，恭喜通關！填寫座號與姓名，領取你的通關證書。`;
@@ -1175,7 +1266,7 @@ const EXTRA_QUESTIONS = [
       $('quizArea').hidden = true;
       $('finishArea').classList.add('show');
       $('progressBar').style.width = '100%';
-      $('finishHeading').textContent = '錯題複習完成';
+      $('finishHeading').textContent = '錯題重練完成';
       $('finalScore').textContent = `${state.reviewTotal}／${state.reviewTotal} 題已答對`;
       $('finalMessage').textContent = `正式測驗原成績：${state.examResult.correct}／${state.examResult.total}。錯題已全部答對！請重新挑戰完整範圍，一次正式測驗全對即可領取通關證書。`;
       $('restart').textContent = '開始新的正式測驗';
@@ -1245,7 +1336,7 @@ const EXTRA_QUESTIONS = [
         $('questionNo').textContent = `剩餘 ${state.reviewPending.size} 題待答對`;
         $('progressBar').style.width = `${done / total * 100}%`;
       }
-      $('modeLabel').textContent = reviewing ? '錯題複習' : '正式測驗';
+      $('modeLabel').textContent = reviewing ? '錯題重練' : '正式測驗';
       $('streakStatus').textContent = `${rangeName()}｜${isPassed() ? '全對通關' : '一次正式測驗全對即可領證'}`;
       $('learningHint').textContent = reviewing ? `正式測驗結果：${state.examResult.correct}／${state.examResult.total}。共 ${state.reviewTotal} 題錯題，尚有 ${state.reviewPending.size} 題待答對；答錯會再出現，答對才移出。` : `本輪包含所選範圍全部 ${total} 題，全部答對即可通關；有錯題則於測驗結束後進入複習。`;
     }

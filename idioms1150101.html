@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1d5b57">
+  <meta name="description" content="成語闖關之旅：第一關、第二關各 50 題，一次全對即可領取 807 班通關證書；附教育部成語圖鑑 148 詞條。">
+  <title>八年級成語 第一次段考強化練習</title>
+<script id="pe115-level">
+/* 一一五上學期段考強化練習｜練習等級（共用元件，各練習頁相同）
+   100%＝★★★★★、90%＝★★★★、80%＝★★★、70%＝★★、60%＝★，未滿 60% 尚未評級
+   成績存在 localStorage「pe115:levels」，入口網站讀同一份資料顯示各科練習等級。 */
+window.PE115 = (function () {
+  var KEY = 'pe115:levels';
+  var m = location.pathname.match(/([a-z]+115010\d)\.html?$/i);
+  var FILE = m ? m[1].toLowerCase() + '.html' : null;
+  function stars(p) { p = +p || 0; return p >= 99.95 ? 5 : p >= 90 ? 4 : p >= 80 ? 3 : p >= 70 ? 2 : p >= 60 ? 1 : 0; }
+  function starStr(n) { return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+  function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} }
+  function get() { return FILE ? load()[FILE] || null : null; }
+  function label(p) { var s = stars(p); return s ? '練習等級 ' + starStr(s) : '尚未評級'; }
+  function commit(pct, note, thisRun) {
+    if (!FILE) return;
+    var d = load(), r = d[FILE] || { best: 0, tries: 0 };
+    var before = stars(r.best);
+    r.tries = (r.tries || 0) + 1; r.last = Math.round(pct); r.best = Math.max(r.best || 0, Math.round(pct));
+    r.stars = stars(r.best); r.at = Date.now(); if (note) r.note = note;
+    d[FILE] = r; save(d); paint();
+    toast(thisRun, r, before, note);
+  }
+  /* 單一段考衝刺測驗：pct 為 0–100 */
+  function report(pct, note) { commit(pct, note, Math.round(pct)); }
+  /* 由多份測驗合成（例：兩關取較低、三科模擬卷平均）；未做的部分以 0 計 */
+  function part(id, pct, allIds, mode, note) {
+    if (!FILE) return;
+    var d = load(), r = d[FILE] || { best: 0, tries: 0 };
+    r.parts = r.parts || {}; r.parts[id] = Math.max(r.parts[id] || 0, Math.round(pct));
+    d[FILE] = r; save(d);
+    var vals = allIds.map(function (k) { return r.parts[k] || 0; });
+    var agg = mode === 'min' ? Math.min.apply(null, vals) : vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+    commit(agg, note + ' ' + Math.round(agg) + '%', Math.round(pct));
+  }
+  function paint() {
+    var r = get(), els = document.querySelectorAll('.pe-level');
+    for (var i = 0; i < els.length; i++) {
+      var html = r && r.stars
+        ? '<b>' + label(r.best) + '</b>（段考衝刺最佳 ' + r.best + '%' + (r.note ? '・' + r.note.replace(/ \d+%$/, '') : '') + '）'
+        : '練習等級：尚未評級（段考衝刺答對 60% 以上就會評級）';
+      if (els[i].getAttribute('data-pe') !== html) { els[i].innerHTML = html; els[i].setAttribute('data-pe', html); }
+    }
+  }
+  function toast(thisRun, r, before, note) {
+    var t = document.getElementById('pe-toast');
+    if (!t) { t = document.createElement('div'); t.id = 'pe-toast'; document.body.appendChild(t); }
+    var up = r.stars > before;
+    t.innerHTML = '本次 ' + thisRun + '%' + (note ? '｜' + note : '') + '<br><b>' + (r.stars ? label(r.best) : '練習等級：尚未評級') + '</b>' + (up ? '　⬆ 升級！' : '');
+    t.className = 'show';
+    clearTimeout(t._h); t._h = setTimeout(function () { t.className = ''; }, 5000);
+  }
+  var css = document.createElement('style');
+  css.textContent = '#pe-toast{position:fixed;left:50%;bottom:64px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:2147483001;' +
+    'background:rgba(31,36,51,.94);color:#fff;padding:12px 20px;border-radius:14px;text-align:center;line-height:1.6;' +
+    'font:600 15px/1.6 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.25);transition:.3s}' +
+    '#pe-toast.show{opacity:1;transform:translate(-50%,0)}#pe-toast b{color:#ffd43b;font-size:17px}' +
+    '.pe-level b{letter-spacing:1px}@media print{#pe-toast{display:none}}';
+  document.head.appendChild(css);
+  function watch() {
+    paint();
+    try { new MutationObserver(function () { if (document.querySelector('.pe-level:not([data-pe])')) paint(); })
+      .observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch); else watch();
+  return { stars: stars, starStr: starStr, label: label, report: report, part: part, get: get, paint: paint };
+})();
+</script>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231d5b57'/%3E%3Cpath d='M18 18h12a6 6 0 0 1 6 6v24a4 4 0 0 0-4-4H18zM46 18H36a6 6 0 0 0-6 6v24a4 4 0 0 1 4-4h12z' fill='none' stroke='%23f8e5a2' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --jade: #1d5b57;
+      --jade-deep: #17554f;
+      --jade-dark: #103e39;
+      --jade-soft: #e8f1ef;
+      --cream: #f7f3ea;
+      --paper: #fffdf8;
+      --line: #e4dccf;
+      --line-soft: #eee7da;
+      --gold: #ae8742;
+      --gold-soft: #f8e5a2;
+      --coral: #bd6248;
+      --ink: #1e293b;
+      --muted: #64748b;
+      --good: #047857;
+      --good-soft: #ecfdf5;
+      --good-line: #6ee7b7;
+      --bad-soft: #fff1f2;
+      --bad-line: #fda4af;
+      --warn-soft: #fffbeb;
+      --warn-line: #fcd34d;
+      --serif: "Noto Serif TC", "Source Han Serif TC", "PMingLiU", "Microsoft JhengHei", serif;
+      --sans: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { color-scheme: light; -webkit-text-size-adjust: 100%; }
+    body { margin: 0; min-height: 100vh; background: var(--cream); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.6; }
+    button, input { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; }
+    :focus-visible { outline: 3px solid var(--jade-deep); outline-offset: 2px; }
+    .serif { font-family: var(--serif); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    svg.icon { width: 1.15em; height: 1.15em; flex: none; vertical-align: -0.2em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .shell { width: min(1152px, 100% - 32px); margin: 0 auto; padding: 24px 0 48px; }
+    .topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 28px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 16px; background: var(--jade); color: var(--gold-soft); font-size: 20px; }
+    .brand-name { margin: 0; font-family: var(--serif); font-size: 1.25rem; font-weight: 700; color: #174944; line-height: 1.3; }
+    .brand-sub { margin: 0; font-size: .75rem; color: var(--muted); }
+    .exam-tag { padding: 6px 14px; border-radius: 999px; background: #fffdf8; border: 1px solid var(--line); color: #174944; font-size: .82rem; font-weight: 700; }
+
+    .hero { margin-bottom: 24px; padding: 28px 32px; border-radius: 28px; background: var(--jade); color: white; box-shadow: 0 12px 30px rgba(29,91,87,.22); display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-end; justify-content: space-between; }
+    .hero-kicker { margin: 0 0 8px; display: flex; align-items: center; gap: 8px; color: var(--gold-soft); font-size: .875rem; }
+    .hero h1 { margin: 0; font-family: var(--serif); font-size: clamp(1.75rem, 4.5vw, 2.25rem); line-height: 1.25; }
+    .hero-desc { margin: 12px 0 0; max-width: 36rem; font-size: .875rem; line-height: 1.75; color: rgba(236,253,245,.86); }
+    .hero-stats { display: flex; gap: 12px; }
+    .stat { min-width: 96px; padding: 12px 20px; border-radius: 16px; background: rgba(255,255,255,.12); text-align: center; }
+    .stat-label { margin: 0; font-size: .75rem; color: rgba(236,253,245,.72); }
+    .stat-value { margin: 4px 0 0; font-size: 1.5rem; font-weight: 700; color: var(--gold-soft); line-height: 1.2; }
+    .stat-value small { font-size: .85rem; font-weight: 400; color: rgba(255,255,255,.6); }
+
+    .map { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 28px; }
+    .tile { position: relative; width: 100%; min-height: 128px; padding: 16px; border-radius: 18px; border: 1px solid var(--line); background: #fbf8f1; text-align: left; transition: transform .15s ease, box-shadow .15s ease, background .15s ease; }
+    .tile:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(31,82,74,.08); }
+    .tile.active { border-color: var(--jade); background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+    .tile.passed { border-color: #a7f3d0; background: var(--good-soft); }
+    .tile.passed.active { background: white; border-color: var(--jade); }
+    .tile:disabled { opacity: .72; }
+    .tile-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; min-height: 28px; }
+    .badge { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; font-size: .78rem; font-weight: 700; }
+    .badge.jade { background: #d1fae5; color: #065f46; }
+    .badge.sun { background: #fef3c7; color: #92400e; }
+    .badge.gloss { background: #f3ddb0; color: #765727; }
+    .tile-note { font-size: .75rem; font-weight: 600; color: var(--good); }
+    .tile-title { margin: 0; font-family: var(--serif); font-weight: 700; color: #1e293b; }
+    .tile-sub { margin: 4px 0 0; font-size: .75rem; line-height: 1.6; color: var(--muted); }
+    .tile-status { margin: 8px 0 0; font-size: .75rem; color: var(--jade-deep); }
+    .tile.glossary { border-color: #c7a76a; background: #fffaf0; }
+    .tile.glossary .tile-note { color: #80612c; }
+
+    .notice { margin: 0 0 20px; padding: 12px 16px; border-radius: 12px; background: var(--warn-soft); color: #78350f; font-size: .875rem; }
+
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 24px; align-items: start; }
+    .card { overflow: hidden; border-radius: 28px; border: 1px solid #e2d9cb; background: white; box-shadow: 0 14px 34px rgba(71,58,38,.08); }
+    .card-head { padding: 20px 32px; border-bottom: 1px solid var(--line-soft); background: #fdfbf6; }
+    .card-head-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+    .pill { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: .75rem; font-weight: 700; }
+    .pill.jade { background: #d1fae5; color: #065f46; }
+    .pill.sun { background: #fef3c7; color: #92400e; }
+    .counter { font-size: .875rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .rail { height: 8px; border-radius: 999px; background: #ece6da; overflow: hidden; }
+    .rail-bar { height: 100%; width: 0; border-radius: inherit; background: var(--jade); transition: width .25s ease; }
+    .card-body { padding: 32px; }
+    .hint { margin: 0 0 12px; font-size: .875rem; font-weight: 600; color: var(--coral); }
+    .prompt { margin: 0; font-family: var(--serif); font-size: clamp(1.3rem, 3.2vw, 1.75rem); font-weight: 700; line-height: 1.75; color: #1e293b; }
+    .choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 28px; }
+    .choice { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 12px 16px; border-radius: 18px; border: 1px solid #e6ded1; background: white; text-align: left; transition: background .15s ease, border-color .15s ease; }
+    .choice:not(:disabled):hover { background: #f5faf9; }
+    .choice .letter { display: grid; place-items: center; width: 28px; height: 28px; flex: none; border-radius: 50%; background: #f1ece2; color: var(--muted); font-size: .75rem; font-weight: 700; }
+    .choice .text { font-family: var(--serif); font-size: 1.125rem; font-weight: 700; }
+    u.mark { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; text-decoration-color: var(--coral); }
+    .zhuyin { font-family: var(--sans); font-size: .82em; font-weight: 600; color: #475569; letter-spacing: .02em; }
+    .choice.selected { border-color: var(--jade-deep); background: var(--jade-soft); }
+    .choice.selected .letter { background: var(--jade-deep); color: white; }
+    .choice.correct { border-color: #34d399; background: var(--good-soft); }
+    .choice.wrong { border-color: var(--bad-line); background: var(--bad-soft); }
+    .choice:disabled { cursor: default; color: inherit; }
+    .feedback { margin-top: 24px; padding: 20px; border-radius: 18px; border: 1px solid var(--warn-line); background: var(--warn-soft); }
+    .feedback.ok { border-color: #a7f3d0; background: var(--good-soft); }
+    .feedback-title { margin: 0; font-weight: 700; color: var(--jade-deep); }
+    .feedback p { margin: 8px 0 0; font-size: .9rem; line-height: 1.75; color: #334155; }
+    .card-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line-soft); }
+    .foot-note { margin: 0; display: flex; align-items: center; gap: 8px; font-size: .75rem; color: var(--muted); }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 10px 20px; border-radius: 12px; border: 1px solid transparent; font-weight: 700; font-size: .95rem; transition: background .15s ease, transform .15s ease; }
+    .btn-primary { background: var(--jade-deep); color: white; }
+    .btn-primary:not(:disabled):hover { background: var(--jade-dark); }
+    .btn-primary:disabled { opacity: .45; }
+    .btn-lg { min-height: 50px; padding: 12px 26px; font-size: 1rem; }
+    .btn-outline { border-color: #d8cdbb; background: #fffdf8; color: #174944; }
+    .btn-outline:hover { background: #f4ede0; }
+    .btn-sm { min-height: 36px; padding: 6px 14px; font-size: .85rem; }
+    .btn-text { min-height: 36px; padding: 6px 10px; border: 0; background: none; color: var(--muted); font-size: .8rem; text-decoration: underline; text-underline-offset: 3px; }
+
+    .center { text-align: center; }
+    .big-icon { width: 56px; height: 56px; margin: 0 auto 18px; color: var(--gold); }
+    .big-icon.jade { color: var(--jade-deep); }
+    .result-title { margin: 0; font-family: var(--serif); font-size: clamp(1.6rem, 4vw, 1.9rem); font-weight: 700; color: var(--jade-deep); }
+    .result-score { margin: 16px 0 0; font-size: 2.25rem; font-weight: 700; color: var(--coral); }
+    .result-score small { font-size: 1.1rem; font-weight: 400; color: #94a3b8; }
+    .result-text { margin: 16px 0 0; line-height: 1.8; color: #475569; }
+    .wrong-box { margin-top: 24px; padding: 20px; border-radius: 18px; background: var(--warn-soft); }
+    .wrong-box h3 { margin: 0 0 12px; font-size: 1rem; color: #78350f; }
+    .wrong-box ol { margin: 0; padding-left: 1.4em; font-size: .9rem; line-height: 1.7; color: #334155; }
+    .wrong-box li + li { margin-top: 10px; }
+    .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 28px; }
+    .done-note { margin: 0; padding: 12px 20px; border-radius: 12px; background: var(--good-soft); color: #065f46; }
+
+    .aside { display: grid; gap: 16px; }
+    .panel { padding: 20px; border-radius: 24px; border: 1px solid #e2d9cb; background: var(--paper); }
+    .panel h2 { margin: 0; display: flex; align-items: center; gap: 8px; font-family: var(--serif); font-size: 1.1rem; color: var(--jade-deep); }
+    .panel dl { margin: 18px 0 0; display: grid; gap: 14px; font-size: .875rem; }
+    .panel dl div { display: flex; justify-content: space-between; gap: 12px; }
+    .panel dt { color: var(--muted); }
+    .panel dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .tip { padding: 20px; border-radius: 24px; background: #f1e5c9; color: #5d4a26; }
+    .tip p { margin: 0; }
+    .tip .tip-body { margin-top: 10px; font-size: .875rem; line-height: 1.8; }
+    .seal { display: grid; place-items: center; width: 40px; height: 40px; margin-top: 14px; border-radius: 50%; background: rgba(255,255,255,.6); color: #a09372; font-weight: 700; }
+    .seal.on { background: var(--jade-deep); color: var(--gold-soft); }
+    .kbd-tip { font-size: .75rem; color: var(--muted); line-height: 1.7; padding: 0 6px; }
+
+    .certificate-print { border-radius: 18px; background: #fff9ea; box-shadow: 0 14px 30px rgba(71,58,38,.16); }
+    .certificate-print img { display: block; width: 100%; height: auto; border-radius: 18px; }
+
+    .page-foot { margin-top: 36px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center; font-size: .75rem; color: var(--muted); }
+
+    /* Dialogs */
+    dialog { border: 0; padding: 0; color: inherit; max-width: calc(100vw - 32px); }
+    dialog::backdrop { background: rgba(15,23,42,.45); }
+    .modal { width: 440px; border-radius: 26px; background: #fffdf7; padding: 28px; box-shadow: 0 24px 60px rgba(0,0,0,.25); }
+    .modal h2 { margin: 6px 0 0; text-align: center; font-family: var(--serif); font-size: 1.5rem; color: var(--jade-deep); }
+    .modal .desc { margin: 10px 0 0; text-align: center; font-size: .9rem; line-height: 1.75; color: var(--muted); }
+    .field { display: grid; gap: 6px; margin-top: 18px; font-size: .9rem; font-weight: 600; }
+    .field input { width: 100%; min-height: 46px; padding: 10px 14px; border-radius: 12px; border: 1px solid #ded3c3; background: white; font-weight: 400; font-size: 1rem; }
+    .field-fixed { padding: 10px 14px; border-radius: 12px; background: #f1ece2; font-weight: 700; color: #174944; }
+    .field-error { margin: 10px 0 0; min-height: 1.4em; font-size: .85rem; color: #be123c; }
+    .modal-actions { display: grid; gap: 8px; margin-top: 10px; }
+    .modal-actions .btn { width: 100%; }
+
+    .drawer { position: fixed; inset: 0 0 0 auto; margin: 0 0 0 auto; height: 100%; max-height: 100%; width: min(576px, 100vw); max-width: 100vw; background: var(--paper); box-shadow: -12px 0 40px rgba(0,0,0,.18); }
+    .drawer[open] { display: flex; flex-direction: column; }
+    .drawer-head { position: relative; padding: 24px 24px 20px; border-bottom: 1px solid #eee5d6; }
+    .drawer-head h2 { margin: 0; font-family: var(--serif); font-size: 1.5rem; color: #174944; }
+    .drawer-head p { margin: 6px 0 0; padding-right: 32px; font-size: .875rem; line-height: 1.7; color: var(--muted); }
+    .close-x { position: absolute; top: 14px; right: 14px; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; border: 0; background: transparent; color: inherit; font-size: 1.4rem; line-height: 1; }
+    .close-x:hover { background: rgba(0,0,0,.06); }
+    .drawer-body { display: flex; flex-direction: column; min-height: 0; flex: 1; padding: 20px 24px 0; }
+    .gl-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .gl-tab { padding: 12px; border-radius: 16px; border: 1px solid #e6ded1; background: white; text-align: left; color: #475569; }
+    .gl-tab strong { display: block; font-family: var(--serif); }
+    .gl-tab span { display: block; margin-top: 2px; font-size: .75rem; opacity: .8; }
+    .gl-tab[aria-pressed="true"] { border-color: var(--jade); background: var(--jade-soft); color: #174944; }
+    .search { position: relative; display: block; margin-top: 18px; }
+    .search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+    .search input { width: 100%; min-height: 46px; padding: 10px 14px 10px 40px; border-radius: 12px; border: 1px solid #ded3c3; background: white; font-size: 1rem; }
+    .gl-count { margin: 14px 0 0; font-size: .875rem; color: var(--muted); }
+    .gl-list { flex: 1; min-height: 0; overflow-y: auto; margin-top: 10px; padding-bottom: 24px; display: grid; gap: 8px; align-content: start; }
+    .gl-item { width: 100%; padding: 16px; border-radius: 18px; border: 1px solid #e8dfd0; background: linear-gradient(135deg, #fff 0%, #fcfaf5 100%); text-align: left; transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+    .gl-item:hover { transform: translateY(-2px); border-color: #a2c6c0; box-shadow: 0 10px 22px rgba(31,82,74,.1); }
+    .gl-item-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+    .gl-item h3 { margin: 0; font-family: var(--serif); font-size: 1.25rem; letter-spacing: .04em; color: #1e293b; }
+    .page-chip { flex: none; padding: 3px 10px; border-radius: 999px; background: var(--jade-soft); color: #285a54; font-size: .75rem; font-weight: 600; }
+    .gl-def { margin: 8px 0 0; font-size: .875rem; line-height: 1.7; color: #475569; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .gl-src { margin: 8px 0 0; font-size: .75rem; color: #94a3b8; }
+    .gl-more { margin: 12px 0 0; padding-top: 12px; border-top: 1px solid #efe8dc; font-size: .875rem; font-weight: 600; color: var(--jade); }
+
+    .detail { width: 768px; max-height: calc(100vh - 32px); overflow-y: auto; border-radius: 22px; background: #f8f4ea; box-shadow: 0 24px 60px rgba(0,0,0,.28); }
+    .detail-head { position: relative; overflow: hidden; padding: 28px; background: var(--jade); color: white; }
+    .detail-head::before { content: ""; position: absolute; right: -32px; top: -40px; width: 176px; height: 176px; border: 20px solid rgba(255,255,255,.1); border-radius: 50%; }
+    .detail-head .close-x { color: white; }
+    .detail-head .close-x:hover { background: rgba(255,255,255,.12); }
+    .detail-kicker { position: relative; margin: 0; font-size: .75rem; letter-spacing: .18em; color: #d8e7de; }
+    .detail-title-row { position: relative; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 10px; padding-right: 36px; }
+    .detail-head h2 { margin: 0; font-family: var(--serif); font-size: clamp(2rem, 6vw, 2.4rem); letter-spacing: .12em; }
+    .detail-page { padding: 5px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.1); font-size: .75rem; }
+    .detail-sub { position: relative; margin: 14px 0 0; font-size: .875rem; color: #d8e7de; }
+    .detail-body { display: grid; gap: 16px; padding: 24px 28px 28px; }
+    .def-box { padding: 20px; border-radius: 18px; border: 1px solid #b7d1ca; background: linear-gradient(135deg, #e9f3ef 0%, #f8fbf9 100%); }
+    .def-box h3, .sec h3 { margin: 0; font-size: .875rem; color: #174944; display: flex; align-items: center; gap: 6px; }
+    .def-box p { margin: 12px 0 0; font-size: 1.05rem; line-height: 2; color: #334155; }
+    .def-box .def-src { margin-top: 12px; font-size: .75rem; color: #47736d; line-height: 1.6; }
+    .secs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .sec { padding: 16px; border-radius: 16px; border-left: 4px solid #cbd8d3; background: #f8fbfa; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+    .sec h3 { color: #315f58; }
+    .sec p { margin: 8px 0 0; white-space: pre-wrap; font-size: .875rem; line-height: 1.85; color: #334155; }
+    .sec.t-出處 { border-color: #c7a76a; background: #fffaf0; } .sec.t-出處 h3 { color: #80612c; }
+    .sec.t-例句 { border-color: #b8cfa9; background: #f7fbf3; } .sec.t-例句 h3 { color: #526f3f; }
+    .src-link { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-radius: 12px; border: 1px solid #b7d1ca; background: white; color: #174944; font-size: .875rem; font-weight: 600; text-decoration: none; }
+    .src-link:hover { background: #f1f8f5; }
+
+    @media (max-width: 960px) {
+      .workspace { grid-template-columns: 1fr; }
+      .aside { grid-template-columns: 1fr 1fr; }
+      .kbd-tip { display: none; }
+    }
+    @media (max-width: 640px) {
+      .shell { width: calc(100% - 32px); padding-top: 18px; }
+      .hero { padding: 24px 20px; border-radius: 22px; }
+      .hero-stats { width: 100%; }
+      .stat { flex: 1; }
+      .map { grid-template-columns: 1fr 1fr; }
+      .tile.glossary { grid-column: 1 / -1; min-height: 0; }
+      .card { border-radius: 22px; }
+      .card-head { padding: 16px 20px; }
+      .card-body { padding: 24px 20px; }
+      .choices { grid-template-columns: 1fr; }
+      .card-foot { flex-direction: column-reverse; align-items: stretch; }
+      .card-foot .btn { width: 100%; }
+      .aside { grid-template-columns: 1fr; }
+      .secs { grid-template-columns: 1fr; }
+      .detail-body { padding: 18px; }
+      .detail-head { padding: 24px 20px; }
+      .modal { padding: 24px 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+    @media print {
+      @page { size: A4 landscape; margin: 10mm; }
+      body { background: white; }
+      .topbar, .hero, .map, .notice, .aside, .page-foot, .card-head, .actions, dialog, .card-body > :not(section) { display: none !important; }
+      .shell, .workspace, .card, .card-body { display: block; width: auto; margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
+      .certificate-print { box-shadow: none; background: white; break-inside: avoid; }
+      .certificate-print img { max-height: 185mm; width: 100%; object-fit: contain; border-radius: 0; }
+    }
+  </style>
+<style id="pe-howto-css">
+.pe-howto{margin:16px 0;padding:12px 16px;border:1px dashed rgba(120,120,140,.45);border-radius:14px;
+  background:rgba(255,255,255,.55);text-align:left;color:inherit;font-size:15px;line-height:1.6}
+.pe-howto summary{cursor:pointer;font-weight:800;list-style:revert}
+.pe-howto ul{list-style:none;margin:10px 0 2px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 18px}
+.pe-howto li{margin:0}
+.pe-howto li b{white-space:nowrap}
+@media print{.pe-howto{display:none}}
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></symbol>
+    <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L17 22l-5-3-5 3 1.5-8.5"/></symbol>
+    <symbol id="i-retry" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></symbol>
+    <symbol id="i-mark" viewBox="0 0 24 24"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14L21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
+    <symbol id="i-scroll" viewBox="0 0 24 24"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4M19 17V5a2 2 0 0 0-2-2H4"/></symbol>
+  </svg>
+
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><svg class="icon"><use href="#i-book"/></svg></div>
+        <div><p class="brand-name">八年級成語</p><p class="brand-sub">成語闖關之旅・從字義出發，闖出你的成語路</p></div>
+      </div>
+      <span class="exam-tag">115 學年度第一學期・807 班</span>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="hero-kicker"><svg class="icon"><use href="#i-spark"/></svg>全對通關挑戰</p>
+        <h1 id="peTitle">八年級成語 第一次段考強化練習</h1>
+        <p class="hero-desc" id="peRange">範圍：第 13 回試卷・成語典 P.178–193、第 14 回試卷・成語典 P.194–209</p>
+        <p class="hero-desc">特色：成語闖關之旅｜每關 50 題，完成一次完整測驗全對就能通關，每關都有一張專屬證書</p>
+        <p class="hero-desc pe-level"></p>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><p class="stat-label">全對達成</p><p class="stat-value" id="heroStreak">0<small> / 1 次</small></p></div>
+        <div class="stat"><p class="stat-label">累積積分</p><p class="stat-value" id="heroScore">0</p></div>
+      </div>
+    </section>
+
+    <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>先翻「成語圖鑑」，看懂每個成語的意思和例句。</li><li><b>✍️ 課後複習：</b>依關卡順序闖關，測驗後做錯題重練。</li><li><b>🎯 自主練習：</b>錯題練會再挑戰，累積積分，把每一關練到一次全對。</li><li><b>🏆 段考衝刺：</b>每關完成一次 50 題全對，領取專屬通關證書。</li></ul></details>
+
+    <section class="map" aria-label="關卡地圖" id="levelMap"></section>
+    <p class="notice" id="notice" role="status" hidden></p>
+
+    <section class="workspace">
+      <article class="card" aria-live="polite">
+        <div class="card-head">
+          <div class="card-head-row"><span class="pill" id="runPill"></span><span class="counter" id="runCounter"></span></div>
+          <div class="rail" role="progressbar" aria-label="本輪進度" aria-valuemin="0" aria-valuemax="100" id="rail"><div class="rail-bar" id="railBar"></div></div>
+        </div>
+        <div class="card-body" id="cardBody"></div>
+      </article>
+      <aside class="aside" id="aside"></aside>
+    </section>
+
+    <footer class="page-foot">
+      <span>成語圖鑑資料：教育部《成語典》、《重編國語辭典修訂本》等正式辭典。學習紀錄只保存在這台裝置的瀏覽器。</span>
+      <button type="button" class="btn-text" id="resetBtn">清除本機紀錄</button>
+    </footer>
+  </div>
+
+  <dialog class="modal" id="certDialog" aria-labelledby="certTitle">
+    <form method="dialog" id="certForm" novalidate>
+      <svg class="icon big-icon" style="width:48px;height:48px;margin-bottom:4px" aria-hidden="true"><use href="#i-award"/></svg>
+      <h2 id="certTitle">恭喜通過！</h2>
+      <p class="desc">你已完成一次測驗全對。班級固定為 807 班，請填寫座號與姓名，領取專屬通關證書。</p>
+      <div class="field"><span>班級</span><div class="field-fixed">807 班</div></div>
+      <label class="field">座號<input id="seatInput" inputmode="numeric" autocomplete="off" maxlength="3" placeholder="例如：07" required></label>
+      <label class="field">姓名<input id="nameInput" autocomplete="off" maxlength="40" placeholder="請輸入姓名" required></label>
+      <p class="field-error" id="certError" role="alert"></p>
+      <div class="modal-actions">
+        <button type="submit" class="btn btn-primary btn-lg" value="create">製作我的通關證書</button>
+        <button type="button" class="btn btn-outline" id="certLater">稍後再填</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="drawer" id="glossary" aria-labelledby="glTitle">
+    <div class="drawer-head">
+      <h2 id="glTitle">成語圖鑑</h2>
+      <p id="glDesc"></p>
+      <button type="button" class="close-x" data-close="glossary" aria-label="關閉成語圖鑑">×</button>
+    </div>
+    <div class="drawer-body">
+      <div class="gl-tabs" id="glTabs" aria-label="選擇圖鑑關卡"></div>
+      <label class="search"><span class="sr-only">搜尋成語</span><svg class="icon"><use href="#i-search"/></svg><input id="glSearch" type="search" placeholder="輸入成語中的任一字" autocomplete="off"></label>
+      <p class="gl-count" id="glCount"></p>
+      <div class="gl-list" id="glList"></div>
+    </div>
+  </dialog>
+
+  <dialog class="detail" id="detail" aria-labelledby="dtTitle"></dialog>
+
+  <script>
+  'use strict';
+  const LEVELS = [{"id":1,"title":"第一關","subtitle":"第 13 回試卷・成語典 P.178–193","color":"jade"},{"id":2,"title":"第二關","subtitle":"第 14 回試卷・成語典 P.194–209","color":"sun"}];
+  const QUESTIONS = [{"id":"exam13-plan-gap","levelId":1,"prompt":"原以為計畫萬無一失，沒想到最後竟無法實行。最適合填入的是：","choices":[{"id":"a","text":"亡羊補牢"},{"id":"b","text":"百密一疏"},{"id":"c","text":"咫尺天涯"},{"id":"d","text":"千鈞一髮"}]},{"id":"exam13-cinderella","levelId":1,"prompt":"灰姑娘的姐姐為了讓腳能套進玻璃鞋，竟削掉腳趾。這種行為最適合用哪個成語形容？","choices":[{"id":"a","text":"冠冕堂皇"},{"id":"b","text":"咬文嚼字"},{"id":"c","text":"後來居上"},{"id":"d","text":"削足適履"}]},{"id":"exam13-teacher","levelId":1,"prompt":"下列哪個成語與「老師教化學生」最相關？","choices":[{"id":"a","text":"政通人和"},{"id":"b","text":"南柯一夢"},{"id":"c","text":"星羅棋布"},{"id":"d","text":"春風化雨"}]},{"id":"exam13-persevere","levelId":1,"prompt":"只要努力奮鬥、持之以恆，成功是□□□□的。最適合填入的是：","choices":[{"id":"a","text":"勉為其難"},{"id":"b","text":"後生可畏"},{"id":"c","text":"前功盡棄"},{"id":"d","text":"指日可待"}]},{"id":"exam13-focus","levelId":1,"prompt":"形容人專心致志、心神專一，最適合的是：","choices":[{"id":"a","text":"信口雌黃"},{"id":"b","text":"屏氣凝神"},{"id":"c","text":"既往不咎"},{"id":"d","text":"柔腸寸斷"}]},{"id":"exam13-use-correct","levelId":1,"prompt":"下列哪一句成語使用最恰當？","choices":[{"id":"a","text":"任憑理由冠冕堂皇，打人仍是不對的行為。"},{"id":"b","text":"地震造成大樓倒塌，是急公好義的違法情事。"},{"id":"c","text":"她免費送餐，是急功好利的行為。"},{"id":"d","text":"拾得金錢交警局，展現拾人牙慧的義舉。"}]},{"id":"exam13-later-generation","levelId":1,"prompt":"俗語「長江後浪推前浪」的意思最接近：","choices":[{"id":"a","text":"枯木逢春"},{"id":"b","text":"後生可畏"},{"id":"c","text":"哄堂大笑"},{"id":"d","text":"指鹿為馬"}]},{"id":"exam13-neighborhood","levelId":1,"prompt":"孟母多次搬家，希望孟子受到好的影響；這最符合哪個道理？","choices":[{"id":"a","text":"按部就班"},{"id":"b","text":"急公好義"},{"id":"c","text":"里仁為美"},{"id":"d","text":"厚此薄彼"}]},{"id":"exam13-anger-antonym","levelId":1,"prompt":"下列哪個成語不是「咬牙切齒」的相反詞？","choices":[{"id":"a","text":"怒髮衝冠"},{"id":"b","text":"泰然處之"},{"id":"c","text":"平心靜氣"},{"id":"d","text":"心平氣和"}]},{"id":"exam13-appetite","levelId":1,"prompt":"「令人食指大動」的意思可替換為：","choices":[{"id":"a","text":"待價而沽"},{"id":"b","text":"垂涎三尺"},{"id":"c","text":"後顧之憂"},{"id":"d","text":"怨聲載道"}]},{"id":"exam13-congratulations","levelId":1,"prompt":"下列哪個成語可作為祝賀長輩的賀辭？","choices":[{"id":"a","text":"豕狼扶危"},{"id":"b","text":"政通人和"},{"id":"c","text":"故弄玄虛"},{"id":"d","text":"松柏長青"}]},{"id":"exam13-synonym-pair","levelId":1,"prompt":"「無精打采」之於「垂頭喪氣」，如同下列哪一組關係？","choices":[{"id":"a","text":"怨天尤人／反求諸己"},{"id":"b","text":"持之以恆／一暴十寒"},{"id":"c","text":"南極星輝／茂如松柏"},{"id":"d","text":"故步自封／日新月異"}]},{"id":"exam13-incorrect-use","levelId":1,"prompt":"下列成語運用何者有誤？","choices":[{"id":"a","text":"談到寶貝兒子，她總是春風滿面。"},{"id":"b","text":"她擺出一副亭亭玉立的模樣，大家都不敢靠近。"},{"id":"c","text":"她珍餚名饌，覺得鄉下旅行不適應。"},{"id":"d","text":"小丑有趣的表演惹得觀眾哄堂大笑。"}]},{"id":"exam13-explain-govern","levelId":1,"prompt":"「不做什麼事而使天下太平」對應的成語是：","choices":[{"id":"a","text":"後起之秀"},{"id":"b","text":"急轉直下"},{"id":"c","text":"按圖索驥"},{"id":"d","text":"垂拱而治"}]},{"id":"exam13-explain-new-talent","levelId":1,"prompt":"「指後輩中的優秀人物」對應的成語是：","choices":[{"id":"a","text":"後起之秀"},{"id":"b","text":"昭然若揭"},{"id":"c","text":"急轉直下"},{"id":"d","text":"垂拱而治"}]},{"id":"exam13-explain-tax","levelId":1,"prompt":"「形容政府收稅急苛」對應的成語是：","choices":[{"id":"a","text":"拾遺補闕"},{"id":"b","text":"按圖索驥"},{"id":"c","text":"急征暴歛"},{"id":"d","text":"怡然大悟"}]},{"id":"exam13-explain-turn","levelId":1,"prompt":"「情況突然轉變，並且發展快速」對應的成語是：","choices":[{"id":"a","text":"急轉直下"},{"id":"b","text":"後起之秀"},{"id":"c","text":"垂拱而治"},{"id":"d","text":"按圖索驥"}]},{"id":"exam13-explain-clue","levelId":1,"prompt":"「比喻循線索去辦事」對應的成語是：","choices":[{"id":"a","text":"急征暴歛"},{"id":"b","text":"按圖索驥"},{"id":"c","text":"昭然若揭"},{"id":"d","text":"怡然大悟"}]},{"id":"exam13-pronunciation","levelId":1,"prompt":"【第 13 回・字音辨析】下列成語中，畫線字的讀音何者有誤？","choices":[{"id":"a","text":"拾人涕[唾]（ㄊㄨㄛˋ）"},{"id":"b","text":"[屏]氣凝神（ㄆㄧㄥˊ）"},{"id":"c","text":"披荊斬[棘]（ㄐㄧˊ）"},{"id":"d","text":"故態復[萌]（ㄇㄥˊ）"}]},{"id":"exam13-character","levelId":1,"prompt":"【第 13 回・字形辨析】下列哪一個成語的寫法正確？","choices":[{"id":"a","text":"營私舞蔽"},{"id":"b","text":"武功祕笈"},{"id":"c","text":"拭目以侍"},{"id":"d","text":"時代先驅"}]},{"id":"meaning-crowded","levelId":1,"prompt":"形容來的人很多，非常熱鬧。","choices":[{"id":"a","text":"金蘭之交"},{"id":"b","text":"門庭若市"},{"id":"c","text":"南柯一夢"},{"id":"d","text":"咫尺天涯"}]},{"id":"meaning-surpass","levelId":1,"prompt":"比喻後來的人勝過前人。","choices":[{"id":"a","text":"青出於藍"},{"id":"b","text":"前功盡棄"},{"id":"c","text":"信而有徵"},{"id":"d","text":"垂頭喪氣"}]},{"id":"meaning-rumor","levelId":1,"prompt":"不顧事實真相，隨便亂發議論。","choices":[{"id":"a","text":"信口雌黃"},{"id":"b","text":"信手拈來"},{"id":"c","text":"冠冕堂皇"},{"id":"d","text":"勉為其難"}]},{"id":"context-effort","levelId":1,"prompt":"小組已完成大半研究，卻因最後一週放棄整理，先前努力全白費了。最適合的是：","choices":[{"id":"a","text":"前功盡棄"},{"id":"b","text":"青雲直上"},{"id":"c","text":"冠蓋相望"},{"id":"d","text":"南腔北調"}]},{"id":"context-fit","levelId":1,"prompt":"為了讓每個人都穿同一種尺寸的制服，硬要大家遷就，不顧實際情況。最適合的是：","choices":[{"id":"a","text":"削足適履"},{"id":"b","text":"長驅直入"},{"id":"c","text":"南柯一夢"},{"id":"d","text":"信賞必罰"}]},{"id":"context-promotion","levelId":1,"prompt":"他憑藉實力迅速獲得重要職位，大家都替他高興。最適合的是：","choices":[{"id":"a","text":"青雲直上"},{"id":"b","text":"非池中物"},{"id":"c","text":"垂涎三尺"},{"id":"d","text":"哄堂大笑"}]},{"id":"understand-warning","levelId":1,"prompt":"看到其他社團因沒有備份資料而遺失成果，我們決定立刻建立備份制度。這個做法最符合：","choices":[{"id":"a","text":"前車之鑑"},{"id":"b","text":"金蘭之交"},{"id":"c","text":"南腔北調"},{"id":"d","text":"冠冕堂皇"}]},{"id":"understand-guests","levelId":1,"prompt":"展覽開幕後賓客接連到來，車子與人群絡繹不絕。最適合的是：","choices":[{"id":"a","text":"冠蓋相望"},{"id":"b","text":"信而有徵"},{"id":"c","text":"南橘北枳"},{"id":"d","text":"厚此薄彼"}]},{"id":"understand-distance","levelId":1,"prompt":"兩位好友住在同一棟大樓，卻因誤會多年不相見，好像相隔極遠。最適合的是：","choices":[{"id":"a","text":"咫尺天涯"},{"id":"b","text":"南柯一夢"},{"id":"c","text":"長袖善舞"},{"id":"d","text":"信手拈來"}]},{"id":"apply-environment","levelId":1,"prompt":"老師用「橘子生在淮南為橘、淮北為枳」說明環境會影響事物的發展。這是在說：","choices":[{"id":"a","text":"南橘北枳"},{"id":"b","text":"南腔北調"},{"id":"c","text":"南柯一夢"},{"id":"d","text":"南極星輝"}]},{"id":"apply-ambition","levelId":1,"prompt":"教練看著努力不懈、志向遠大的新隊員說：「他將來一定不會只安於平凡。」最適合的是：","choices":[{"id":"a","text":"非池中物"},{"id":"b","text":"門庭若市"},{"id":"c","text":"屋舍儼然"},{"id":"d","text":"哄堂大笑"}]},{"id":"apply-wording","levelId":1,"prompt":"討論報告時，他一直反覆挑剔個別字句，反而忽略文章主要意思。最適合的是：","choices":[{"id":"a","text":"咬文嚼字"},{"id":"b","text":"金蘭之交"},{"id":"c","text":"前呼後擁"},{"id":"d","text":"垂拱而治"}]},{"id":"practice-1-1","levelId":1,"prompt":"【延伸練習】比喻朋友間情誼深厚、志趣相投。最適合的成語是：","choices":[{"id":"a","text":"金蘭之交"},{"id":"b","text":"長袖善舞"},{"id":"c","text":"長驅直入"},{"id":"d","text":"門庭若市"}]},{"id":"practice-1-2","levelId":1,"prompt":"【延伸練習】比喻人善於交際、經營，容易有所成就。最適合的成語是：","choices":[{"id":"a","text":"長袖善舞"},{"id":"b","text":"雨後春筍"},{"id":"c","text":"青出於藍"},{"id":"d","text":"青雲直上"}]},{"id":"practice-1-3","levelId":1,"prompt":"【延伸練習】形容軍隊或隊伍毫無阻擋地向前推進。最適合的成語是：","choices":[{"id":"a","text":"長驅直入"},{"id":"b","text":"亭亭玉立"},{"id":"c","text":"非池中物"},{"id":"d","text":"信口雌黃"}]},{"id":"practice-1-4","levelId":1,"prompt":"【延伸練習】形容來訪的人非常多，像市集一樣熱鬧。最適合的成語是：","choices":[{"id":"a","text":"門庭若市"},{"id":"b","text":"信手拈來"},{"id":"c","text":"信而有徵"},{"id":"d","text":"信誓旦旦"}]},{"id":"practice-1-5","levelId":1,"prompt":"【延伸練習】比喻事物大量、快速地出現。最適合的成語是：","choices":[{"id":"a","text":"雨後春筍"},{"id":"b","text":"信賞必罰"},{"id":"c","text":"冠冕堂皇"},{"id":"d","text":"冠蓋相望"}]},{"id":"practice-1-6","levelId":1,"prompt":"【延伸練習】比喻後來的人勝過前人。最適合的成語是：","choices":[{"id":"a","text":"青出於藍"},{"id":"b","text":"削足適履"},{"id":"c","text":"前功盡棄"},{"id":"d","text":"前車之鑑"}]},{"id":"practice-1-7","levelId":1,"prompt":"【延伸練習】比喻人迅速獲得高位或顯要的地位。最適合的成語是：","choices":[{"id":"a","text":"青雲直上"},{"id":"b","text":"前呼後擁"},{"id":"c","text":"前倨後恭"},{"id":"d","text":"勉為其難"}]},{"id":"practice-1-8","levelId":1,"prompt":"【延伸練習】形容女子身材修長、姿態優美。最適合的成語是：","choices":[{"id":"a","text":"亭亭玉立"},{"id":"b","text":"南柯一夢"},{"id":"c","text":"南腔北調"},{"id":"d","text":"南極星輝"}]},{"id":"practice-1-9","levelId":1,"prompt":"【延伸練習】比喻不是平凡的人，將來必有作為。最適合的成語是：","choices":[{"id":"a","text":"非池中物"},{"id":"b","text":"南橘北枳"},{"id":"c","text":"南轅北轍"},{"id":"d","text":"厚此薄彼"}]},{"id":"practice-1-10","levelId":1,"prompt":"【延伸練習】指不顧事實，隨意亂說。最適合的成語是：","choices":[{"id":"a","text":"信口雌黃"},{"id":"b","text":"咬文嚼字"},{"id":"c","text":"咬牙切齒"},{"id":"d","text":"品頭論足"}]},{"id":"practice-1-11","levelId":1,"prompt":"【延伸練習】形容寫作或運用材料時非常自然熟練。最適合的成語是：","choices":[{"id":"a","text":"信手拈來"},{"id":"b","text":"哄堂大笑"},{"id":"c","text":"咫尺天涯"},{"id":"d","text":"垂拱而治"}]},{"id":"practice-1-12","levelId":1,"prompt":"【延伸練習】指說話或記載確實可靠，有證據可查。最適合的成語是：","choices":[{"id":"a","text":"信而有徵"},{"id":"b","text":"垂涎三尺"},{"id":"c","text":"垂頭喪氣"},{"id":"d","text":"屋舍儼然"}]},{"id":"practice-1-13","levelId":1,"prompt":"【延伸練習】形容誓言說得很真誠、很堅定。最適合的成語是：","choices":[{"id":"a","text":"信誓旦旦"},{"id":"b","text":"屏氣凝神"},{"id":"c","text":"待字閨中"},{"id":"d","text":"待價而沽"}]},{"id":"practice-1-14","levelId":1,"prompt":"【延伸練習】指賞罰分明，該賞的一定賞、該罰的一定罰。最適合的成語是：","choices":[{"id":"a","text":"信賞必罰"},{"id":"b","text":"徇私舞弊"},{"id":"c","text":"後生可畏"},{"id":"d","text":"後來居上"}]},{"id":"practice-1-15","levelId":1,"prompt":"【延伸練習】形容表面莊嚴體面，也可指堂皇的藉口。最適合的成語是：","choices":[{"id":"a","text":"冠冕堂皇"},{"id":"b","text":"後起之秀"},{"id":"c","text":"後顧之憂"},{"id":"d","text":"怒髮衝冠"}]},{"id":"practice-1-16","levelId":1,"prompt":"【延伸練習】形容賓客或車馬來往不絕。最適合的成語是：","choices":[{"id":"a","text":"冠蓋相望"},{"id":"b","text":"急公好義"},{"id":"c","text":"急征暴歛"},{"id":"d","text":"急流勇退"}]},{"id":"practice-1-17","levelId":1,"prompt":"【延伸練習】比喻勉強遷就，完全不顧實際狀況。最適合的成語是：","choices":[{"id":"a","text":"削足適履"},{"id":"b","text":"急轉直下"},{"id":"c","text":"怨天尤人"},{"id":"d","text":"怨聲載道"}]},{"id":"practice-1-18","levelId":1,"prompt":"【延伸練習】指以前辛苦建立的成果全都白費。最適合的成語是：","choices":[{"id":"a","text":"前功盡棄"},{"id":"b","text":"恆河沙數"},{"id":"c","text":"恃才傲物"},{"id":"d","text":"恍然大悟"}]},{"id":"exam14-synonym-pair","levelId":2,"prompt":"「苦心孤詣」之於「千方百計」，如同下列哪一組關係？","choices":[{"id":"a","text":"洗耳恭聽／充耳不聞"},{"id":"b","text":"相得益彰／相形見絀"},{"id":"c","text":"迫在眉睫／刻不容緩"},{"id":"d","text":"背道而馳／有志一同"}]},{"id":"exam14-self-deprecate","levelId":2,"prompt":"「英雄不怕出身低」這句話勉勵人切莫：","choices":[{"id":"a","text":"妄自菲薄"},{"id":"b","text":"涸及池魚"},{"id":"c","text":"苦中作樂"},{"id":"d","text":"洛陽紙貴"}]},{"id":"exam14-incorrect-use","levelId":2,"prompt":"下列成語何者使用錯誤？","choices":[{"id":"a","text":"IQ 與 EQ 是相輔相成的。"},{"id":"b","text":"母親苦口婆心地勸誡兒子。"},{"id":"c","text":"兩人面面相覷，完全不知發生什麼事。"},{"id":"d","text":"空房子多年無人居住，到處都是風塵僕僕。"}]},{"id":"exam14-self-destruction","levelId":2,"prompt":"「天堂有路你不走，地獄無門你卻闖進來」的意思最接近：","choices":[{"id":"a","text":"飛蛾投火"},{"id":"b","text":"食指大動"},{"id":"c","text":"首如飛蓬"},{"id":"d","text":"食古不化"}]},{"id":"exam14-no-typo","levelId":2,"prompt":"下列哪個選項中的成語全無錯別字？","choices":[{"id":"a","text":"飛皇騰達"},{"id":"b","text":"食隨知味"},{"id":"c","text":"負荊請罪"},{"id":"d","text":"相孺以沫"}]},{"id":"exam14-context-use","levelId":2,"prompt":"下列文句中，哪個成語使用最恰當？","choices":[{"id":"a","text":"她月白風清，善於經營人際關係。"},{"id":"b","text":"社長演講精彩，真可謂金雞獨立。"},{"id":"c","text":"她每天妝扮得玲瓏剔透。"},{"id":"d","text":"他說話總是信口雌黃，真叫人不敢恭維。"}]},{"id":"exam14-fast","levelId":2,"prompt":"形容速度快、如疾風閃電，最適合的是：","choices":[{"id":"a","text":"柳暗花明"},{"id":"b","text":"流離失所"},{"id":"c","text":"相形見絀"},{"id":"d","text":"風馳電掣"}]},{"id":"exam14-housewarming","levelId":2,"prompt":"好友新居落成，前去祝賀時，最適合的賀詞是：","choices":[{"id":"a","text":"為人作嫁"},{"id":"b","text":"美輪美奐"},{"id":"c","text":"洛陽紙貴"},{"id":"d","text":"食言而肥"}]},{"id":"exam14-fate","levelId":2,"prompt":"形容人的命運坎坷不幸，最適合的是：","choices":[{"id":"a","text":"負隅頑抗"},{"id":"b","text":"風聲鶴唳"},{"id":"c","text":"紅顏薄命"},{"id":"d","text":"紅顏禍水"}]},{"id":"exam14-food-desire","levelId":2,"prompt":"「這家餐廳的菜色豐盛美味，令人[食指大動]」畫線詞可替換為：","choices":[{"id":"a","text":"待價而沽"},{"id":"b","text":"垂涎三尺"},{"id":"c","text":"後顧之憂"},{"id":"d","text":"怨聲載道"}]},{"id":"exam14-after-event","levelId":2,"prompt":"「事後諸葛」專指事前無意見、事後才大放厥詞的人；下列何者與其意思相反？","choices":[{"id":"a","text":"洞燭機先"},{"id":"b","text":"後知後覺"},{"id":"c","text":"洗心革面"},{"id":"d","text":"活靈活現"}]},{"id":"exam14-rumor","levelId":2,"prompt":"李白筆下「人言可畏」，可用下列哪個成語形容？","choices":[{"id":"a","text":"為人作嫁"},{"id":"b","text":"秋扇見捐"},{"id":"c","text":"苦盡甘來"},{"id":"d","text":"流言蜚語"}]},{"id":"exam14-luxury-food","levelId":2,"prompt":"「炊金饌玉」與下列何者意思相近？","choices":[{"id":"a","text":"首屈一指"},{"id":"b","text":"食前方丈"},{"id":"c","text":"津津樂道"},{"id":"d","text":"苦盡甘來"}]},{"id":"exam14-explain-compare","levelId":2,"prompt":"「他們兩人的個性根本天差地別，怎麼能夠□□？」最適合填入的是：","choices":[{"id":"a","text":"洪福齊天"},{"id":"b","text":"相提並論"},{"id":"c","text":"風行草偃"},{"id":"d","text":"迫在眉睫"}]},{"id":"exam14-explain-enlightened","levelId":2,"prompt":"「經過老師詳盡的解釋，我頓時□□。」最適合填入的是：","choices":[{"id":"a","text":"茅塞頓開"},{"id":"b","text":"迫不及待"},{"id":"c","text":"重蹈覆轍"},{"id":"d","text":"風雲際會"}]},{"id":"exam14-explain-eager","levelId":2,"prompt":"「雖然距離出發還有一個月，但她已□□地開始收拾行李。」最適合填入的是：","choices":[{"id":"a","text":"迫不及待"},{"id":"b","text":"風行草偃"},{"id":"c","text":"玲瓏剔透"},{"id":"d","text":"相提並論"}]},{"id":"exam14-explain-glass","levelId":2,"prompt":"「這件玻璃工藝□□，煞是可愛。」最適合填入的是：","choices":[{"id":"a","text":"急轉直下"},{"id":"b","text":"玲瓏剔透"},{"id":"c","text":"垂拱而治"},{"id":"d","text":"洪福齊天"}]},{"id":"exam14-explain-repeat","levelId":2,"prompt":"「遭受失敗一定要記取教訓，以免□□。」最適合填入的是：","choices":[{"id":"a","text":"後起之秀"},{"id":"b","text":"重蹈覆轍"},{"id":"c","text":"急征暴歛"},{"id":"d","text":"按圖索驥"}]},{"id":"exam14-pronunciation","levelId":2,"prompt":"【第 14 回・字音辨析】下列成語中，畫線字的讀音何者有誤？","choices":[{"id":"a","text":"流金[鑠]石（ㄕㄨㄛˋ）"},{"id":"b","text":"[枵]腹從公（ㄒㄧㄠ）"},{"id":"c","text":"狡兔三[窟]（ㄑㄩ）"},{"id":"d","text":"[乘]風破浪（ㄔㄥˊ）"}]},{"id":"exam14-pronunciation-match","levelId":2,"prompt":"【第 14 回・字音比較】下列詞語中，何者畫線字讀音相同？","choices":[{"id":"a","text":"風聲鶴[唳]／厲兵[秣]馬"},{"id":"b","text":"垂[涎]三尺／惟妙惟[肖]"},{"id":"c","text":"食[髓]知味／[隨]心所欲"},{"id":"d","text":"洗耳[恭]聽／[恭]賀新禧"}]},{"id":"practice-2-1","levelId":2,"prompt":"【延伸練習】形容真相十分明顯，像揭開來讓人看見。最適合的成語是：","choices":[{"id":"a","text":"昭然若揭"},{"id":"b","text":"柔茹剛吐"},{"id":"c","text":"柔腸寸斷"},{"id":"d","text":"枯木逢春"}]},{"id":"practice-2-2","levelId":2,"prompt":"【延伸練習】比喻欺負軟弱的人，卻畏懼強者。最適合的成語是：","choices":[{"id":"a","text":"柔茹剛吐"},{"id":"b","text":"枯樹生花"},{"id":"c","text":"柳暗花明"},{"id":"d","text":"枵腹從公"}]},{"id":"practice-2-3","levelId":2,"prompt":"【延伸練習】形容內心極度悲痛、愁苦。最適合的成語是：","choices":[{"id":"a","text":"柔腸寸斷"},{"id":"b","text":"殃及池魚"},{"id":"c","text":"洋洋大觀"},{"id":"d","text":"洪福齊天"}]},{"id":"practice-2-4","levelId":2,"prompt":"【延伸練習】比喻絕境中重獲生機，或衰敗後再度興盛。最適合的成語是：","choices":[{"id":"a","text":"枯木逢春"},{"id":"b","text":"流芳百世"},{"id":"c","text":"流離失所"},{"id":"d","text":"流金鑠石"}]},{"id":"practice-2-5","levelId":2,"prompt":"【延伸練習】比喻事物雖然衰敗，仍出現新的轉機。最適合的成語是：","choices":[{"id":"a","text":"枯樹生花"},{"id":"b","text":"津津樂道"},{"id":"c","text":"洞天福地"},{"id":"d","text":"洞燭機先"}]},{"id":"practice-2-6","levelId":2,"prompt":"【延伸練習】比喻困境中忽然出現新的轉機。最適合的成語是：","choices":[{"id":"a","text":"柳暗花明"},{"id":"b","text":"洗心革面"},{"id":"c","text":"洗手奉職"},{"id":"d","text":"洗耳恭聽"}]},{"id":"practice-2-7","levelId":2,"prompt":"【延伸練習】形容人忍著飢餓，盡心處理公務。最適合的成語是：","choices":[{"id":"a","text":"枵腹從公"},{"id":"b","text":"活靈活現"},{"id":"c","text":"洛陽紙貴"},{"id":"d","text":"為人作嫁"}]},{"id":"practice-2-8","levelId":2,"prompt":"【延伸練習】比喻無辜的人遭受牽連與禍害。最適合的成語是：","choices":[{"id":"a","text":"殃及池魚"},{"id":"b","text":"狡兔三窟"},{"id":"c","text":"玲瓏剔透"},{"id":"d","text":"甚囂塵上"}]},{"id":"practice-2-9","levelId":2,"prompt":"【延伸練習】形容事物種類繁多，內容非常豐富。最適合的成語是：","choices":[{"id":"a","text":"洋洋大觀"},{"id":"b","text":"眉飛色舞"},{"id":"c","text":"相形見絀"},{"id":"d","text":"相得益彰"}]},{"id":"practice-2-10","levelId":2,"prompt":"【延伸練習】形容福氣很大，可用來祝福他人。最適合的成語是：","choices":[{"id":"a","text":"洪福齊天"},{"id":"b","text":"相提並論"},{"id":"c","text":"相敬如賓"},{"id":"d","text":"相濡以沫"}]},{"id":"practice-2-11","levelId":2,"prompt":"【延伸練習】指美名長久流傳，受到後人敬仰。最適合的成語是：","choices":[{"id":"a","text":"流芳百世"},{"id":"b","text":"秋扇見捐"},{"id":"c","text":"秋毫無犯"},{"id":"d","text":"穿壁引光"}]},{"id":"practice-2-12","levelId":2,"prompt":"【延伸練習】形容因災禍而離開家園，無處安身。最適合的成語是：","choices":[{"id":"a","text":"流離失所"},{"id":"b","text":"穿鑿附會"},{"id":"c","text":"紅顏薄命"},{"id":"d","text":"約定俗成"}]},{"id":"practice-2-13","levelId":2,"prompt":"【延伸練習】形容天氣酷熱，連金石都像會熔化。最適合的成語是：","choices":[{"id":"a","text":"流金鑠石"},{"id":"b","text":"紈袴子弟"},{"id":"c","text":"美輪美奐"},{"id":"d","text":"背道而馳"}]},{"id":"practice-2-14","levelId":2,"prompt":"【延伸練習】指對某件事很感興趣，不厭其煩地談論。最適合的成語是：","choices":[{"id":"a","text":"津津樂道"},{"id":"b","text":"茅塞頓開"},{"id":"c","text":"苦口婆心"},{"id":"d","text":"苦盡甘來"}]},{"id":"practice-2-15","levelId":2,"prompt":"【延伸練習】指風景優美、適合隱居遊賞的地方。最適合的成語是：","choices":[{"id":"a","text":"洞天福地"},{"id":"b","text":"苟延殘喘"},{"id":"c","text":"負荊請罪"},{"id":"d","text":"迫不及待"}]},{"id":"practice-2-16","levelId":2,"prompt":"【延伸練習】指能在事情發生前，預先察覺其徵兆。最適合的成語是：","choices":[{"id":"a","text":"洞燭機先"},{"id":"b","text":"迫在眉睫"},{"id":"c","text":"重蹈覆轍"},{"id":"d","text":"面面相覷"}]},{"id":"practice-2-17","levelId":2,"prompt":"【延伸練習】指徹底改過自新，重新做人。最適合的成語是：","choices":[{"id":"a","text":"洗心革面"},{"id":"b","text":"音容宛在"},{"id":"c","text":"風行草偃"},{"id":"d","text":"風花雪月"}]},{"id":"practice-2-18","levelId":2,"prompt":"【延伸練習】形容做事廉潔奉公，不徇私情。最適合的成語是：","choices":[{"id":"a","text":"洗手奉職"},{"id":"b","text":"風姿綽約"},{"id":"c","text":"風起雲湧"},{"id":"d","text":"風雲際會"}]},{"id":"practice-2-19","levelId":2,"prompt":"【延伸練習】表示專心恭敬地聆聽別人說話。最適合的成語是：","choices":[{"id":"a","text":"洗耳恭聽"},{"id":"b","text":"風馳電掣"},{"id":"c","text":"風聲鶴唳"},{"id":"d","text":"飛來橫禍"}]},{"id":"practice-2-20","levelId":2,"prompt":"【延伸練習】形容描寫、表演得非常生動逼真。最適合的成語是：","choices":[{"id":"a","text":"活靈活現"},{"id":"b","text":"飛揚跋扈"},{"id":"c","text":"飛黃騰達"},{"id":"d","text":"飛蛾投火"}]},{"id":"practice-2-21","levelId":2,"prompt":"【延伸練習】形容作品廣受歡迎，流傳很廣。最適合的成語是：","choices":[{"id":"a","text":"洛陽紙貴"},{"id":"b","text":"食古不化"},{"id":"c","text":"食不知味"},{"id":"d","text":"食言而肥"}]},{"id":"practice-2-22","levelId":2,"prompt":"【延伸練習】比喻徒然替別人辛勞，自己沒有收穫。最適合的成語是：","choices":[{"id":"a","text":"為人作嫁"},{"id":"b","text":"食指大動"},{"id":"c","text":"食髓知味"},{"id":"d","text":"首如飛蓬"}]},{"id":"practice-2-23","levelId":2,"prompt":"【延伸練習】比喻人為自己預先安排多條退路。最適合的成語是：","choices":[{"id":"a","text":"狡兔三窟"},{"id":"b","text":"首屈一指"},{"id":"c","text":"香消玉殞"},{"id":"d","text":"乘風破浪"}]},{"id":"practice-2-24","levelId":2,"prompt":"【延伸練習】形容器物精巧細緻、明亮通透。最適合的成語是：","choices":[{"id":"a","text":"玲瓏剔透"},{"id":"b","text":"俯仰無愧"},{"id":"c","text":"俯拾即是"},{"id":"d","text":"俯首貼耳"}]},{"id":"practice-2-25","levelId":2,"prompt":"【延伸練習】形容傳聞或議論很多，聲勢很大。最適合的成語是：","choices":[{"id":"a","text":"甚囂塵上"},{"id":"b","text":"昭然若揭"},{"id":"c","text":"柔茹剛吐"},{"id":"d","text":"柔腸寸斷"}]},{"id":"practice-2-26","levelId":2,"prompt":"【延伸練習】形容人非常高興、得意的神情。最適合的成語是：","choices":[{"id":"a","text":"眉飛色舞"},{"id":"b","text":"枯木逢春"},{"id":"c","text":"枯樹生花"},{"id":"d","text":"柳暗花明"}]},{"id":"practice-2-27","levelId":2,"prompt":"【延伸練習】指和別人或別的事物比較後，顯得不足。最適合的成語是：","choices":[{"id":"a","text":"相形見絀"},{"id":"b","text":"枵腹從公"},{"id":"c","text":"殃及池魚"},{"id":"d","text":"洋洋大觀"}]},{"id":"practice-2-28","levelId":2,"prompt":"【延伸練習】指兩者互相配合，使彼此優點更顯著。最適合的成語是：","choices":[{"id":"a","text":"相得益彰"},{"id":"b","text":"洪福齊天"},{"id":"c","text":"流芳百世"},{"id":"d","text":"流離失所"}]},{"id":"practice-2-29","levelId":2,"prompt":"【延伸練習】指把不同的人或事物放在一起比較討論。最適合的成語是：","choices":[{"id":"a","text":"相提並論"},{"id":"b","text":"流金鑠石"},{"id":"c","text":"津津樂道"},{"id":"d","text":"洞天福地"}]},{"id":"practice-2-30","levelId":2,"prompt":"【延伸練習】形容夫妻或彼此互相尊敬，如同對待賓客。最適合的成語是：","choices":[{"id":"a","text":"相敬如賓"},{"id":"b","text":"洞燭機先"},{"id":"c","text":"洗心革面"},{"id":"d","text":"洗手奉職"}]}];
+  const CATALOG = [{"idiom":"金蘭之交","page":178,"levelId":1},{"idiom":"長袖善舞","page":178,"levelId":1},{"idiom":"長驅直入","page":178,"levelId":1},{"idiom":"門庭若市","page":178,"levelId":1},{"idiom":"雨後春筍","page":178,"levelId":1},{"idiom":"青出於藍","page":179,"levelId":1},{"idiom":"青雲直上","page":179,"levelId":1},{"idiom":"亭亭玉立","page":179,"levelId":1},{"idiom":"非池中物","page":179,"levelId":1},{"idiom":"信口雌黃","page":180,"levelId":1},{"idiom":"信手拈來","page":180,"levelId":1},{"idiom":"信而有徵","page":180,"levelId":1},{"idiom":"信誓旦旦","page":180,"levelId":1},{"idiom":"信賞必罰","page":180,"levelId":1},{"idiom":"冠冕堂皇","page":181,"levelId":1},{"idiom":"冠蓋相望","page":181,"levelId":1},{"idiom":"削足適履","page":181,"levelId":1},{"idiom":"前功盡棄","page":181,"levelId":1},{"idiom":"前車之鑑","page":181,"levelId":1},{"idiom":"前呼後擁","page":182,"levelId":1},{"idiom":"前倨後恭","page":182,"levelId":1},{"idiom":"勉為其難","page":182,"levelId":1},{"idiom":"南柯一夢","page":182,"levelId":1},{"idiom":"南腔北調","page":182,"levelId":1},{"idiom":"南極星輝","page":183,"levelId":1},{"idiom":"南橘北枳","page":183,"levelId":1},{"idiom":"南轅北轍","page":183,"levelId":1},{"idiom":"厚此薄彼","page":183,"levelId":1},{"idiom":"咬文嚼字","page":184,"levelId":1},{"idiom":"咬牙切齒","page":184,"levelId":1},{"idiom":"品頭論足","page":184,"levelId":1},{"idiom":"哄堂大笑","page":184,"levelId":1},{"idiom":"咫尺天涯","page":185,"levelId":1},{"idiom":"垂拱而治","page":185,"levelId":1},{"idiom":"垂涎三尺","page":185,"levelId":1},{"idiom":"垂頭喪氣","page":185,"levelId":1},{"idiom":"屋舍儼然","page":185,"levelId":1},{"idiom":"屏氣凝神","page":186,"levelId":1},{"idiom":"待字閨中","page":186,"levelId":1},{"idiom":"待價而沽","page":186,"levelId":1},{"idiom":"徇私舞弊","page":186,"levelId":1},{"idiom":"後生可畏","page":186,"levelId":1},{"idiom":"後來居上","page":187,"levelId":1},{"idiom":"後起之秀","page":187,"levelId":1},{"idiom":"後顧之憂","page":187,"levelId":1},{"idiom":"怒髮衝冠","page":187,"levelId":1},{"idiom":"急公好義","page":187,"levelId":1},{"idiom":"急征暴歛","page":187,"levelId":1},{"idiom":"急流勇退","page":188,"levelId":1},{"idiom":"急轉直下","page":188,"levelId":1},{"idiom":"怨天尤人","page":188,"levelId":1},{"idiom":"怨聲載道","page":188,"levelId":1},{"idiom":"恆河沙數","page":189,"levelId":1},{"idiom":"恃才傲物","page":189,"levelId":1},{"idiom":"恍然大悟","page":189,"levelId":1},{"idiom":"按部就班","page":189,"levelId":1},{"idiom":"按圖索驥","page":189,"levelId":1},{"idiom":"拭目以待","page":190,"levelId":1},{"idiom":"披荊斬棘","page":190,"levelId":1},{"idiom":"指日可待","page":190,"levelId":1},{"idiom":"指桑罵槐","page":190,"levelId":1},{"idiom":"指鹿為馬","page":191,"levelId":1},{"idiom":"拾人牙慧","page":191,"levelId":1},{"idiom":"拾人涕唾","page":191,"levelId":1},{"idiom":"拾遺補闕","page":191,"levelId":1},{"idiom":"挑撥離間","page":192,"levelId":1},{"idiom":"政通人和","page":192,"levelId":1},{"idiom":"故弄玄虛","page":192,"levelId":1},{"idiom":"故步自封","page":192,"levelId":1},{"idiom":"故態復萌","page":192,"levelId":1},{"idiom":"既往不咎","page":193,"levelId":1},{"idiom":"春風化雨","page":193,"levelId":1},{"idiom":"春風滿面","page":193,"levelId":1},{"idiom":"春寒料峭","page":193,"levelId":1},{"idiom":"春樹暮雲","page":193,"levelId":1},{"idiom":"昭然若揭","page":194,"levelId":2},{"idiom":"柔茹剛吐","page":194,"levelId":2},{"idiom":"柔腸寸斷","page":194,"levelId":2},{"idiom":"枯木逢春","page":194,"levelId":2},{"idiom":"枯樹生花","page":195,"levelId":2},{"idiom":"柳暗花明","page":195,"levelId":2},{"idiom":"枵腹從公","page":195,"levelId":2},{"idiom":"殃及池魚","page":195,"levelId":2},{"idiom":"洋洋大觀","page":195,"levelId":2},{"idiom":"洪福齊天","page":196,"levelId":2},{"idiom":"流芳百世","page":196,"levelId":2},{"idiom":"流離失所","page":196,"levelId":2},{"idiom":"流金鑠石","page":196,"levelId":2},{"idiom":"津津樂道","page":196,"levelId":2},{"idiom":"洞天福地","page":197,"levelId":2},{"idiom":"洞燭機先","page":197,"levelId":2},{"idiom":"洗心革面","page":197,"levelId":2},{"idiom":"洗手奉職","page":197,"levelId":2},{"idiom":"洗耳恭聽","page":197,"levelId":2},{"idiom":"活靈活現","page":198,"levelId":2},{"idiom":"洛陽紙貴","page":198,"levelId":2},{"idiom":"為人作嫁","page":198,"levelId":2},{"idiom":"狡兔三窟","page":198,"levelId":2},{"idiom":"玲瓏剔透","page":199,"levelId":2},{"idiom":"甚囂塵上","page":199,"levelId":2},{"idiom":"眉飛色舞","page":199,"levelId":2},{"idiom":"相形見絀","page":199,"levelId":2},{"idiom":"相得益彰","page":200,"levelId":2},{"idiom":"相提並論","page":200,"levelId":2},{"idiom":"相敬如賓","page":200,"levelId":2},{"idiom":"相濡以沫","page":200,"levelId":2},{"idiom":"秋扇見捐","page":200,"levelId":2},{"idiom":"秋毫無犯","page":201,"levelId":2},{"idiom":"穿壁引光","page":201,"levelId":2},{"idiom":"穿鑿附會","page":201,"levelId":2},{"idiom":"紅顏薄命","page":202,"levelId":2},{"idiom":"約定俗成","page":202,"levelId":2},{"idiom":"紈袴子弟","page":202,"levelId":2},{"idiom":"美輪美奐","page":202,"levelId":2},{"idiom":"背道而馳","page":202,"levelId":2},{"idiom":"茅塞頓開","page":203,"levelId":2},{"idiom":"苦口婆心","page":203,"levelId":2},{"idiom":"苦盡甘來","page":203,"levelId":2},{"idiom":"苟延殘喘","page":203,"levelId":2},{"idiom":"負荊請罪","page":203,"levelId":2},{"idiom":"迫不及待","page":204,"levelId":2},{"idiom":"迫在眉睫","page":204,"levelId":2},{"idiom":"重蹈覆轍","page":204,"levelId":2},{"idiom":"面面相覷","page":204,"levelId":2},{"idiom":"音容宛在","page":204,"levelId":2},{"idiom":"風行草偃","page":205,"levelId":2},{"idiom":"風花雪月","page":205,"levelId":2},{"idiom":"風姿綽約","page":205,"levelId":2},{"idiom":"風起雲湧","page":205,"levelId":2},{"idiom":"風雲際會","page":206,"levelId":2},{"idiom":"風馳電掣","page":206,"levelId":2},{"idiom":"風聲鶴唳","page":206,"levelId":2},{"idiom":"飛來橫禍","page":206,"levelId":2},{"idiom":"飛揚跋扈","page":206,"levelId":2},{"idiom":"飛黃騰達","page":207,"levelId":2},{"idiom":"飛蛾投火","page":207,"levelId":2},{"idiom":"食古不化","page":207,"levelId":2},{"idiom":"食不知味","page":207,"levelId":2},{"idiom":"食言而肥","page":208,"levelId":2},{"idiom":"食指大動","page":208,"levelId":2},{"idiom":"食髓知味","page":208,"levelId":2},{"idiom":"首如飛蓬","page":208,"levelId":2},{"idiom":"首屈一指","page":208,"levelId":2},{"idiom":"香消玉殞","page":209,"levelId":2},{"idiom":"乘風破浪","page":209,"levelId":2},{"idiom":"俯仰無愧","page":209,"levelId":2},{"idiom":"俯拾即是","page":209,"levelId":2},{"idiom":"俯首貼耳","page":209,"levelId":2}];
+  const CARDS = {"金蘭之交":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=9130&la=0&webMd=2","definition":"情意相投的好朋友。如：「他們因性格相近，興趣相合而結為金蘭之交。」","fields":[]},"長袖善舞":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5886&la=0&webMd=2","definition":"衣袖長，有助於跳舞時的搖曳生姿。比喻有所憑藉，則易於成功。《韓非子．五蠹》：「鄙諺曰：『長袖善舞，多錢善賈。』此言多資之易為工也。」後以喻人行事的手腕高明，善於經營人際關係。如：此人長袖善舞，在政商界很吃得開。」","fields":[]},"長驅直入":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6394&la=0&webMd=2","definition":"挺進迅速，銳不可擋。《水滸傳》第一○七回：「自此盧俊義等無南顧之憂，兵馬長驅直入。」《蕩寇志》第二一回：「那廝若得了清真山，長驅直入，為患不小。」也作「長驅徑入」、「長驅而入」。","fields":[]},"門庭若市":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5281&la=0&webMd=2","definition":"門庭間來往的人很多，像市集一般熱鬧。比喻上門來的人很多。語出《戰國策．齊策一》：「令初下，群臣進諫，門庭若市。」也作「門庭如市」。","fields":[]},"雨後春筍":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6565&la=0&webMd=2","definition":"春筍在雨後長得又多又快。比喻事物在某一時期後大量湧現，迅速發展。如：「最近這幾年二、三十層的高樓如雨後春筍般的聳立在臺北街頭。」","fields":[]},"青出於藍":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5168&la=0&webMd=2","definition":"藍，蓼藍，可以提取靛青染料的植物。青出於藍指青色是從蓼藍裡提煉出來的，但是顏色比蓼藍還深。語本《荀子．勸學》：「青取之于藍而青于藍，冰，水為之而寒于水。」後用以比喻弟子勝於老師，或後輩優於前輩。唐．白居易〈賦賦〉：「冰生乎水，初變本於典、墳；青出於藍，復增華於風雅。」《糊塗世界》第十一回：「駱青耜道：『老哥是青出於藍而勝於藍了。』黃伯旦道：『言重，言重。』」也作「青過於藍」。","fields":[]},"青雲直上":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6739&la=0&webMd=2","definition":"青雲，指顯要的地位。青雲直上比喻順利的迅速升到高位。唐．劉禹錫〈寄毗陵楊給事詩〉三首之二：「青雲直上無多地，卻要斜飛取勢回。」《兒女英雄傳》第十九回：「但我雖不曾中那進士，卻也教育了無數英才，看將去來，大半都要青雲直上。」也作「直上青雲」。","fields":[]},"亭亭玉立":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5893&la=0&webMd=2","definition":"1.形容人的身材修長，體態秀美。今多用指女子。《浮生六記．卷一．閨房記樂》：「有女名憨園，瓜期未破，亭亭玉立。真『一泓秋水照人寒』者也。」唐．于邵〈楊侍御寫真讚〉：「仙狀秀出，丹青寫似，亭亭玉立，峨峨嶽峙。」也作「玉立亭亭」。\r\\n\\n2.形容花木等挺拔多姿。元．張養浩〈最高歌兼喜春來．想人間是有花開〉曲：「想人間是有花開，誰似他幽閒潔白？亭亭玉立幽軒外，別是箇清涼境界。」《浮生六記．卷二．閒情記趣》：「或亭亭玉立，或飛舞橫斜。花取參差，間以花架，以免飛鈸耍盤之病。」也作「玉立亭亭 」。","fields":[]},"非池中物":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=10925&la=0&webMd=2","definition":"指非長期生活在池塘中之小生物。「非池中物」比喻志向遠大，有抱負的人。《三國志．卷五四．吳書．周瑜魯肅呂蒙傳．周瑜》：「今猥割土地以資業之，聚此三人，俱在疆場，恐蛟龍得雲雨，終非池中物也。」《三國演義》第七九回：「子健懷才抱智，終非池中物，若不早除，必為後患。」","fields":[]},"信口雌黃":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5183&la=0&webMd=2","definition":"比喻不顧事情真相，隨意批評。參見「口中雌黃」條。如：「由於他信口雌黃，造成大家對老李的誤解。」","fields":[]},"信手拈來":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6309&la=0&webMd=2","definition":"順手拿來。比喻寫文章時取材運筆極為自然。宋．陸游〈秋風亭拜寇萊公遺像〉詩：「巴東詩句澶州策，信手拈來盡可驚。」元．陶宗儀《南村輟耕錄．卷二四．待士鄙吝》：「阿翁作畫如說法，信手拈來種種佳。」","fields":[]},"信而有徵":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=14618&la=0&webMd=2","definition":"確實而有證據。《左傳．昭公八年》：「君子之言，信而有徵，故怨遠於其身。」唐．楊烱〈從弟去盈墓誌銘〉：「積善餘慶，信而有徵。」","fields":[]},"信誓旦旦":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6034&la=0&webMd=2","definition":"旦旦，誠懇的樣子。信誓旦旦指誓言說得非常誠懇可靠。《詩經．衛風．氓》：「總角之宴，言笑晏晏，信誓旦旦，不思其反。」漢．司馬相如〈美人賦〉：「臣乃脈定于內，心正于懷，信誓旦旦，秉志不回。」也作「旦旦信誓」。","fields":[]},"信賞必罰":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7824&la=0&webMd=2","definition":"有功必賞，有過必罰。形容賞罰嚴明。《韓非子．外儲說右上》：「信賞必罰，其足以戰。」《漢書．卷八．宣帝紀．贊》：「孝宣之治，信賞必罰。」","fields":[]},"冠冕堂皇":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6231&la=0&webMd=2","definition":"1.形容表面莊嚴體面、高貴氣派的樣子。《二十年目睹之怪現狀》第八四回：「他自己也就把那回身就抱的旖旎風情藏起來，換一副冠冕堂皇的面目了。」\\n\\n2.表面上光明正大的樣子。如：「明明是藉機出國，卻說是拓展貿易，好一個冠冕堂皇的理由！」","fields":[]},"冠蓋相望":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7552&la=0&webMd=2","definition":"比喻使者往來不絕。《戰國策．魏策四》：「齊楚約而欲攻魏，魏使人求救於秦，冠蓋相望，秦救不出。」也作「冠蓋相屬」。","fields":[]},"削足適履":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6028&la=0&webMd=2","definition":"履，鞋。削足適履意指鞋小腳大，故將腳削小以適應鞋的尺寸。語本《淮南子．說林》：「夫所以養而害所養，譬猶削足而適履，殺頭而便冠。」比喻勉強遷就，拘泥舊例而不知變通。如：「擷取他人經驗時，應視自己的需求靈活運用，不可削足適履。」也作「刻足適屨」、「截趾適屨」、「削趾適屨」、「削足就履」、「刖趾適屨」、「刖足適屨」。","fields":[]},"前功盡棄":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5532&la=0&webMd=2","definition":"將以往辛苦建立的功勞，全部廢棄。《史記．卷四．周本紀》：「今又將兵出塞，過兩周，倍韓，攻梁，一舉不得，前功盡棄。」《紅樓夢》第一三回：「如何肯又回家染了紅塵，將前功盡棄呢？」也作「前功皆棄」、「前功盡滅」、「前功盡廢」。","fields":[]},"前車之鑑":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7406&la=0&webMd=2","definition":"比喻可以作為後人借鏡的失敗經驗或教訓。如：「把上次失敗當作前車之鑑，你就可以有更多成功的機會了。」","fields":[]},"前呼後擁":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7664&la=0&webMd=2","definition":"前面有人吆喝開路，後面有人簇擁跟隨。形容達官貴人出行時的浩大聲勢及排場。《紅樓夢》第一○四回：「進了都門，眾衙役接著，前呼後擁的走著。」《孽海花》第二三回：「真個是前呼後擁、呵么喝六，把個朦懂小爵爺，七手八腳的送出門。」也作「後擁前呼」、「後擁前驅」。","fields":[]},"前倨後恭":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5296&la=0&webMd=2","definition":"先前傲慢無禮，後又謙卑恭敬。比喻待人勢利，態度轉變迅速。參見「前倨後卑」條。《西遊記》第五一回：「不是甚前倨後恭，老孫於今是沒棒弄了！」","fields":[]},"勉為其難":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8984&la=0&webMd=2","definition":"雖然在事實上有所困難，但仍努力去做。如：「為了不讓家人失望，所以他勉為其難的接受了這件事情。」","fields":[]},"南柯一夢":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5345&la=0&webMd=2","definition":"廣陵人淳于棼在夢中被大槐國國王招為駙馬，當了南柯郡太守，歷盡人生窮通榮辱。醒來發現躺在大槐樹下，而一切的夢境均發生於樹旁之蟻穴。典出唐．李公佐《南柯太守傳》。比喻人生如夢，富貴得失無常。元．馬致遠〈女冠子．枉了閑愁套．么篇〉：「窮通皆命也。得又何歡，失又何愁，恰似南柯一夢。」","fields":[]},"南腔北調":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6201&la=0&webMd=2","definition":"1.兼具各地方音。清．富察敦崇《燕京歲時記．封臺》：「像聲即口技，能學百鳥音，並能作南腔北調，嬉笑怒罵，以一人而兼之，聽之歷歷也。」\\n\\n2.形容人的語音不純，夾雜著方音。《儒林外史》第一一回：「壁上懸的畫是楷書朱子治家格言，兩邊一副箋紙的聯，上寫著：『三間東倒西歪屋，一個南腔北調人。』」","fields":[]},"南極星輝":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=17015&la=0&webMd=2","definition":"祝福男性長輩，如南極星般吉祥長壽的生日賀詞。《幼學瓊林．卷二．老幼壽誕類》：「賀男壽曰『南極星輝』。」","fields":[]},"南橘北枳":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=14597&la=0&webMd=2","definition":"比喻事物會因環境條件不同而產生變異。參見「淮南橘，淮北枳」條。如：「他基於南橘北枳的考慮，決定搬離龍蛇雜處的舊居，換個新環境。」","fields":[]},"南轅北轍":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5181&la=0&webMd=2","definition":"從太行山去楚國，本應駕車向南，但車夫卻向北行，結果離楚國越來越遠。典出《戰國策．魏策四》。比喻行動和目的彼此背道而馳。如：「這個結果與原先計畫，簡直是南轅北轍，相差太遠了！」也作「北轍南轅」、「北轅適楚」。","fields":[]},"厚此薄彼":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8036&la=0&webMd=2","definition":"優厚某一方而冷落另一方。指對人或事不一視同仁，而有所偏頗。如：「政府查緝逃漏稅不宜厚此薄彼，以免落人口實。」也作「厚彼薄此」。","fields":[]},"咬文嚼字":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5636&la=0&webMd=2","definition":"1.在詞句上斟酌推敲。元．喬吉〈小桃紅．瓠犀微露玉參差〉曲：「含宮泛徵，咬文嚼字，誰敢嗑牙兒。」《二刻拍案驚奇》卷四○：「好詞，好詞。關情之處，令人淚落，真一時名手！怪不得他咬文嚼字，明日元宵佳節，正須好詞，不免赦其罪犯，召他轉來，為大晟樂正，供應詞章。」也作「咬言咂字兒」、「咬文咂字兒」。\\n\\n2.譏笑士人迂腐而不知變通。元．蕭德祥《殺狗勸夫》第四折：「哎！使不的你咬文嚼字。」《隋唐演義》第六回：「如遇患難，此輩咬文嚼字之人，只好坐以待斃，何足為用？」\\n\\n3.形容賣弄文才、裝腔作勢。《金瓶梅》第五○回：「見他在人前鋪眉苫眼，拏班做勢，口裡咬文嚼字，一口一聲只稱呼他薛爺。」《紅樓夢》第二七回：「他們必把一句話拉長了，作兩三截兒，咬文嚼字，拿著腔兒，哼哼唧唧的，急的我冒火。」","fields":[]},"咬牙切齒":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6584&la=0&webMd=2","definition":"非常憤恨的樣子。《水滸傳》第七○回：「眾多兄弟都被他打傷，咬牙切齒，盡要來殺張清。」《初刻拍案驚奇》卷一一：「劉氏咬牙切齒，恨恨的罵了一番。」也作「切齒咬牙」。","fields":[]},"品頭論足":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8252&la=0&webMd=2","definition":"評論人的容貌姿色。亦比喻對人多方挑剔。如：「光是品頭論足、挑三撿四、說空話是沒有用的。」也作「品頭題足」。","fields":[]},"哄堂大笑":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6876&la=0&webMd=2","definition":"形容眾人同時大笑。參見「哄堂」條。《歧路燈》第三○回：「陸郭二人同聲道：『托爺們的洪庇，那時小弟還要叫戲哩。』大家哄堂大笑。」也作「鬨堂大笑」。","fields":[]},"咫尺天涯":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6203&la=0&webMd=2","definition":"形容相距雖近，卻無緣相見，如同相隔千里。元．關漢卿〈新水令．王驄絲鞚套〉：「馬頭咫尺天涯遠，易去難相見。」《喻世明言．卷二二．木綿菴鄭虎臣報冤》：「左右如今也不容相近，咫尺天涯一般，有甚捨不得處？」也作「天涯咫尺」、「咫尺千里」。","fields":[]},"垂拱而治":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=9142&la=0&webMd=2","definition":"天子垂衣拱手，無為而治。《元史．卷二一．成宗本紀四》：「成宗承天下混一之後，垂拱而治，可謂善於守成者矣。」","fields":[]},"垂涎三尺":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5810&la=0&webMd=2","definition":"口水流下三尺長。形容非常貪饞或看見別人的東西極想據為己有。如：「這件清代皇宮玉器，手工精緻，令他垂涎三尺。」","fields":[]},"垂頭喪氣":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5862&la=0&webMd=2","definition":"低垂著頭，意氣消沉。形容失意沮喪的樣子。《新唐書．卷二○八．宦者傳下．韓全誨傳》：「自見勢去，計無所用，垂頭喪氣。」《初刻拍案驚奇》卷一三：「六老垂頭喪氣，只得回身。」也作「低頭喪氣」、「垂首喪氣」。","fields":[]},"屋舍儼然":{"sourceName":"教育部《重編國語辭典修訂本》","sourceUrl":"https://dict.revised.moe.edu.tw/dictView.jsp?ID=155844&la=0&powerMode=0","definition":"「儼然」指整齊的樣子；「屋舍儼然」形容房屋整齊有序。","fields":[{"label":"出處","value":"晉．陶淵明〈桃花源記〉：「土地平曠，屋舍儼然。」"}]},"屏氣凝神":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8383&la=0&webMd=2","definition":"屏住呼吸，集中精神。謂專心一意。《老殘遊記》第二回：「滿園子的人都屏氣凝神，不敢少動。」","fields":[]},"待字閨中":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7943&la=0&webMd=2","definition":"語本《禮記．曲禮上》：「女子許嫁，笄而字。」古代女子成年許嫁才能命字，「待字閨中」即稱女子未有婚嫁之約。清．梁紹壬《兩般秋雨盦隨筆．卷一．方子雲詩》：「宛如待字閨中女，知有團圞在後頭。」","fields":[]},"待價而沽":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5665&la=0&webMd=2","definition":"語本《論語．子罕》：「子曰：『沽之哉！沽之哉！我待賈者也。』」比喻人等待機會，為世所用。如：「每個社會新鮮人都待價而沽，期望能找一份好工作。」","fields":[]},"徇私舞弊":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8042&la=0&webMd=2","definition":"為謀取私利而違法造假。如：「這座高架橋啟用不到半年，居然倒塌了，暴露出發包及施工單位徇私舞弊的嚴重情事。」也作「徇私作弊」。","fields":[]},"後生可畏":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5620&la=0&webMd=2","definition":"年輕人每每能超越先輩，令人敬畏。《論語．子罕》：「後生可畏，焉知來者之不如今也！」三國魏．曹丕〈與吳質書〉：「後生可畏，來者難誣，然恐吾與足下不及見也。」","fields":[]},"後來居上":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5198&la=0&webMd=2","definition":"本指堆積柴火時，後搬來的放置在上面。語本《淮南子．繆稱》：「故聖人不為物先，而常制之其類，若積薪樵，後者在上。」後用以諷刺用人不當，使新進之人位居舊臣之上。清．李漁《風箏誤》第三齣：「衾裯同抱甘誰讓，寵盛處，後來居上。」也用以讚揚後人的成就超越前人。或落後的人超過領先的人。如：「這次馬拉松賽跑，她以後來居上之姿，勇奪冠軍。」","fields":[]},"後起之秀":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6031&la=0&webMd=2","definition":"稱譽後輩中的優秀人物。《發財祕訣》第一○回：「辦的事都是一帆風順。這些都是我輩後起之秀。」也作「後來之秀」。","fields":[]},"後顧之憂":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8649&la=0&webMd=2","definition":"來自後方、家裡或將來的憂患。《魏書．卷五三．李沖傳》：「朕以仁明忠雅，委以臺司之寄，使我出境無後顧之憂，一朝忽有此患，朕甚懷愴慨。」《宋史．卷四四○．文苑傳二．柳開傳》：「令彼有後顧之憂，乃可制其輕動。」也作「後顧之慮」、「後顧之患」、「後顧之虞」。","fields":[]},"怒髮衝冠":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5418&la=0&webMd=2","definition":"盛怒的樣子。《史記．卷八一．廉頗藺相如傳》：「王授璧，相如因持璧卻立，倚柱，怒髮上衝冠。」宋．岳飛〈滿江紅．怒髮衝冠〉詞：「怒髮衝冠，憑欄處，瀟瀟雨歇。」也作「髮上衝冠」、「髮踊衝冠」、「衝冠髮怒」。","fields":[]},"急公好義":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6722&la=0&webMd=2","definition":"熱心公益，喜愛助人。《官場現形記》第三四回：「此次由上海捐集鉅款，來晉賑濟，急公好義，已堪嘉尚。」","fields":[]},"急征暴歛":{"sourceName":"教育部《異體字字典》","sourceUrl":"https://dict.variants.moe.edu.tw/dictView.jsp?ID=14166&powerMode=2","definition":"「征」有課徵、強取之義；教材詞語用來形容苛急徵收、橫暴搜括。","fields":[{"label":"資料說明","value":"教育部《異體字字典》釋「征」為課徵，並舉「急征重斂」為用例。"}]},"急流勇退":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5512&la=0&webMd=2","definition":"在湍急的水勢中，當機立斷回舟退出。比喻人處於得意順遂時，能見機功成身退，以求明哲保身。宋．蘇軾〈贈善相程杰〉詩：「火色上騰雖有數，急流勇退豈無人？」《醒世恆言．卷二．三孝廉讓產立高名》：「知足不辱，知止不殆，既無出類拔萃之才，宜急流勇退，以避賢路。」也作「勇退激流」。","fields":[]},"急轉直下":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7863&la=0&webMd=2","definition":"情況迅速轉變，並且順勢發展下去。如：「這場籃球賽經過了三十分鐘的纏鬥後，我方球員因體力耗損過甚，以至於戰況急轉直下，最後竟然由勝轉敗。」","fields":[]},"怨天尤人":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5483&la=0&webMd=2","definition":"語本《論語．憲問》：「不怨天，不尤人。」懷恨上天，責怪他人。唐．韓愈〈答侯繼書〉：「今幸不為時所用，無朝夕役役之勞……，既不得而怨天尤人者，此吾今之志也。」","fields":[]},"怨聲載道":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5457&la=0&webMd=2","definition":"到處充滿了怨恨的聲音。形容群眾普遍怨恨、不滿。《紅樓夢》第五六回：「那時裡外怨聲載道，豈不失了你們這樣人家的大禮。」《文明小史》第三一回：「伯集把帳一一的七折八扣算了，不管那些人叫苦連天，怨聲載道，就同了顧舉人出京。」也作「怨聲滿道」。","fields":[]},"恆河沙數":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7156&la=0&webMd=2","definition":"印度恆河的沙多到不可計數。形容數量極多。《金剛般若波羅蜜經》：「以七寶滿爾所恆河沙數三千大千世界以用布施，得福多不？」清．紀昀《閱微草堂筆記．卷一三．槐西雜志三》：「然則一家一灶神耳，又不識天下人家如恆河沙數，天下灶神亦當如恆河沙數。此恆沙數之灶神，何人為之？」簡稱為「恆沙」。","fields":[]},"恃才傲物":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6051&la=0&webMd=2","definition":"依仗本身有才幹而驕傲，目空一切。《梁書．卷三五．蕭子恪傳》：「及葬請諡，手詔『恃才傲物，宜諡曰驕。』」《文明小史》第四一回：「見了上司一樣是大人卑職，不像從前的恃才傲物了。」","fields":[]},"恍然大悟":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5633&la=0&webMd=2","definition":"心裡忽然明白。《三國演義》第七七回：「於是關公恍然大悟，稽首皈依而去。」《初刻拍案驚奇》卷三六：「蒲團上靜坐了三晝夜，坐到那心空性寂之處，恍然大悟，元來馬家女子是他前生的妾。」","fields":[]},"按部就班":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5432&la=0&webMd=2","definition":"原指巡查所轄的部屬，歸入所屬的班列。語本《文選．陸機．文賦》：「然後選義按部，考辭就班。」後引申指作文章時，依照文義、安排章節，並將確切的詞句放在適當位置；亦可指做事依照一定的層次、條理。《歧路燈》第九九回：「我一發勞動小相公大筆，寫個書名簽兒，按部就班，以便觀書者指名以求，售書者認簽而給。」《兒女英雄傳》第四○回：「他那個兒子，只按部就班的，也就作到公卿，正用不著到那等地方去名外圖利。」","fields":[]},"按圖索驥":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5312&la=0&webMd=2","definition":"1.按照圖象尋求好馬。語本《漢書．卷六七．梅福傳》：「今不循伯者之道，乃欲以三代選舉之法取當時之士，猶察伯樂之圖，求騏驥於市，而不可得，亦已明矣。」後比喻做事拘泥成法，呆板不知變通。元．袁桷〈示從子瑛〉詩：「隔竹引龜心有想，按圖索驥術難靈。」\\n\\n2.按照線索尋找、探求。比喻掌握線索，易於辦事。","fields":[]},"拭目以待":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6192&la=0&webMd=2","definition":"擦亮眼睛等待著。比喻期待事情的發展及結果。如：「他的新書即將出版，敬請拭目以待。」也作「拭目而待」、「拭目以俟」。","fields":[]},"披荊斬棘":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6101&la=0&webMd=2","definition":"荊、棘，二種多刺的草木。披荊斬棘比喻克服種種困難。如：「他披荊斬棘，辛苦奮鬥，終於有了今日的成就。」也作「披荊帶棘」。","fields":[]},"指日可待":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6182&la=0&webMd=2","definition":"不久即將實現。宋．司馬光〈乞開言路狀〉：「以為言路將開，下情得以上通，太平之期，指日可待也。」宋．曾肇〈上徽宗皇帝論內降指揮不可直付有司〉：「推今日欲治之心，為之不已，太平之功，指日可待。」也作「指日而待」。","fields":[]},"指桑罵槐":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5459&la=0&webMd=2","definition":"指著桑樹罵槐樹，比喻拐彎抹角的罵人。《紅樓夢》第五九回：「那是我們編的，你老別指桑罵槐。」《官場現形記》第一三回：「只有文爺見了統領，聽了隔壁閒話，知道統領是指桑罵槐，已經受了一肚皮的氣。」也作「指雞罵狗」、「指豬罵狗」、「指桑說槐」。","fields":[]},"指鹿為馬":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5164&la=0&webMd=2","definition":"本指趙高獻給秦二世一隻鹿，故意指稱是馬，並問臣子是鹿或馬，而將答鹿者暗中殺害，使群臣畏懼自己，以謀篡位。典出《史記．卷六．秦始皇本紀》。後比喻顛倒是非。《周書．卷一．文帝紀上》：「歡威福自己，生是亂階，緝構南箕，指鹿為馬。」《醒世恆言．卷七．錢秀才錯占鳳凰儔》：「東床已招佳選，何知以羊易牛；西鄰縱有責言，終難指鹿為馬。」也作「指鹿作馬」。","fields":[]},"拾人牙慧":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5269&la=0&webMd=2","definition":"牙慧，言談間流露出的智慧。語本南朝宋．劉義慶《世說新語．文學》：「殷中軍云：『康伯未得我牙後慧。』」比喻蹈襲他人的言論或主張。清．袁枚〈寄奇方伯書〉：「大概著書立說最怕雷同，拾人牙慧。賦詩作文，都是自寫胸襟。」","fields":[]},"拾人涕唾":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7862&la=0&webMd=2","definition":"比喻蹈襲他人的言論或主張。宋．嚴羽《滄浪詩話．答吳景仙書》：「僕之詩辯，乃斷千百年公案，……是自家閉門鑿破此片田地，即非傍人籬壁，拾人涕唾得來者。」也作「拾唾」、「拾人唾涕」、「拾人唾餘」。","fields":[]},"拾遺補闕":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=11567&la=0&webMd=2","definition":"彌補疏漏、匡正過失。《文選．司馬遷．報任少卿書》：「不能納忠效信，有奇策才力之譽，自結明主。次之又不能拾遺補闕，招賢進能，顯巖穴之士。」《清史稿．卷四二一．李菡傳》：「夫獻可替否，宰相之責也；拾遺補闕，諫官之職也。」","fields":[]},"挑撥離間":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6323&la=0&webMd=2","definition":"搬弄是非，分化彼此感情，使人互相猜忌。如：「你們兩個要互相信任，不要上了他挑撥離間的當。」","fields":[]},"政通人和":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7864&la=0&webMd=2","definition":"政事通達，百姓和順。形容國泰民安。宋．范仲淹〈岳陽樓記〉：「越明年，政通人和，百廢具興。」","fields":[]},"故弄玄虛":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6594&la=0&webMd=2","definition":"賣弄玄妙虛無的道理。語本《韓非子．解老》：「聖人觀其玄虛，用其周行，強字之曰道。」後指故意玩弄花招，使人迷惑，無法捉摸。如：「一般的恐怖電影，總愛故弄玄虛來吸引觀眾。」也作「賣弄玄虛」。","fields":[]},"故步自封":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5302&la=0&webMd=2","definition":"比喻墨守成規，安於現狀，不求進取。如：「他為人行事，既不隨波逐流，也不故步自封。」","fields":[]},"故態復萌":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6038&la=0&webMd=2","definition":"老毛病又犯了。《官場現形記》第一二回：「只等撫臺一走，依然是故態復萌。」也作「舊態復萌」。","fields":[]},"既往不咎":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5540&la=0&webMd=2","definition":"咎，怪罪。「既往不咎」指已經過去的事不再追究。語出《論語．八佾》：「成事不說，遂事不諫，既往不咎。」後多用於指對過去的錯誤不再責難。《西遊記》第三一回：「君子人既往不咎。我等是個敗軍之將，不可語勇，救我救兒罷！」也作「不咎既往」。","fields":[]},"春風化雨":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5756&la=0&webMd=2","definition":"適合草木生長的和風及雨水。語本《孟子．盡心上》：「君子所以教者五：有如時雨化之者，有成德者，有達財者，有答問者，有私淑艾者。」漢．劉向《說苑．卷五．貴德》：「吾不能以春風風人，吾不能以夏雨雨人，吾窮必矣。」後用以比喻師長和藹親切的教育。《兒女英雄傳》第三七回：「驥兒承老夫子的春風化雨，遂令小子成名。」也作「化雨春風」。","fields":[]},"春風滿面":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8115&la=0&webMd=2","definition":"形容臉上充滿笑容，情態和悅。元．無名氏《九世同居》第四折：「春風滿面樂醄醄，一聲長笑海山高。」《三俠五義》第九回：「誰知包公不但不怒，將單一一看明，不由春風滿面，口中急急稱讚。」","fields":[]},"春寒料峭":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8726&la=0&webMd=2","definition":"早春薄寒，侵人肌骨。如：「細雨紛飛，梅顫枝頭，倍覺春寒料峭。」","fields":[]},"春樹暮雲":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8338&la=0&webMd=2","definition":"春天的樹，日暮的雲。語本唐．杜甫〈春日憶李白〉詩：「渭北春天樹，江東日暮雲。」杜甫在渭北看到春樹，便憶起在江南的李白見到的是暮雲。後以春樹暮雲為思念遠方友人之辭。","fields":[]},"昭然若揭":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6030&la=0&webMd=2","definition":"本指如同高舉著日月般的明白清楚。語本《莊子．達生》：「今汝飾知以驚愚，脩身以明汙，昭昭乎若揭日月而行也。」後多指真相完全顯露無遺。清．吳騫《拜經樓詩話》卷三：「文宗語絕無蘊蓄，而陰懷嫉忮之心，已昭然若揭。使明宗蚤覺，何至墮其術中？」清．吳棠〈杜詩鏡銓序〉：「而杜公真切深厚之旨，益昭然若揭焉！」","fields":[]},"柔茹剛吐":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=11265&la=0&webMd=2","definition":"吃到硬的即吐出來，軟的就吞下。比喻欺善怕惡。語本《詩經．大雅．烝民》：「人亦有言，柔則茹之，剛則吐之。維仲山甫，柔亦不茹，剛亦不吐，不侮矜寡，不畏彊禦。」也作「吐剛茹柔」、「茹柔吐剛」。","fields":[]},"柔腸寸斷":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=9818&la=0&webMd=2","definition":"形容極度悲傷。《兒女英雄傳》第二六回：「啊呀！妹子這便怎麼處？我此時我方寸搖搖，柔腸寸斷，你怎生救救我姐姐的纔好！」《恨海》第三回：「想到這裡，不覺柔腸寸斷，那淚珠兒滾滾的滴下來。」","fields":[]},"枯木逢春":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6581&la=0&webMd=2","definition":"比喻雖處於絕境卻重獲生機，或劣境忽然轉好。《喻世明言．卷九．裴晉公義還原配》：「兩口兒回到家鄉，見了岳丈黃太學，好似枯木逢春，斷弦再續，歡喜無限。」也作「枯樹生華」。","fields":[]},"枯樹生花":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=23282&la=0&webMd=2","definition":"乾枯的樹再開出花朵。比喻具有起死回生的能力或方法。元．無名氏《翫江亭》第二折：「我曾聽得人說：『寒波造酒，枯樹開花，他便是大羅神仙。』」","fields":[]},"柳暗花明":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5973&la=0&webMd=2","definition":"1.形容綠柳茂密，繁花似錦的美景。《蕩寇志》第五回：「父女二人又行了三四十里，一路柳暗花明，水綠山妍。」也作「花明柳暗」。\\n\\n2.比喻在曲折艱辛之後，忽然絕處逢生，另有一番情景。參見「柳暗花明又一村」條。如：「不要悲觀，人生常是處處峰迴路轉，時時柳暗花明，你不可放棄希望。」","fields":[]},"枵腹從公":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6591&la=0&webMd=2","definition":"餓著肚子辦理公務。形容不顧己身，勤於公事。《糊塗世界》卷九：「這年又是荒年，每日又要走路，一路上人煙零落，無處買東西吃，就有買的，也比平時加了幾倍，這些兵倒弄成了個枵腹從公了。」","fields":[]},"殃及池魚":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5881&la=0&webMd=2","definition":"比喻無故受累。參見「城門失火，殃及池魚」條。","fields":[]},"洋洋大觀":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7530&la=0&webMd=2","definition":"豐富而多采。《浮生六記．卷四．浪遊記快》：「河之北，山如屏列，已屬山西界，真洋洋大觀也。」","fields":[]},"洪福齊天":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6713&la=0&webMd=2","definition":"福氣與天等高。稱頌人福氣極大。《孤本元明雜劇．寶光殿．第四折》：「因聖主心中慈善，賀長生洪福齊天，四夷伏都來朝見。」《官場現形記》第四七回：「大人洪福齊天，定然吉人天相，馬上就會痊好的。」也作「齊天洪福」。","fields":[]},"流芳百世":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5342&la=0&webMd=2","definition":"芳名永遠流傳於後世。《三國演義》第九回：「將軍若扶漢室，乃忠臣也，青史傳名，流芳百世。」《幼學瓊林．卷三．人事類》：「為善則流芳百世，為惡則遺臭萬年。」也作「百世流芳」、「流芳後世」、「流芳萬古」。","fields":[]},"流離失所":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5853&la=0&webMd=2","definition":"轉徙離散，沒有安身的住所。《醒世姻緣傳》第一七回：「通州的百姓全靠了這個過活，並無一個流離失所的人。」","fields":[]},"流金鑠石":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8007&la=0&webMd=2","definition":"鑠，鎔化。流金鑠石形容天氣非常炎熱，好像能把金、石鎔化。《楚辭．宋玉．招魂》：「十日代出，流金鑠石些。」《文明小史．楔子》：「雖然赤日當空，流金鑠石，全不覺半點歊熱。」也作「爍石流金」、「鑠石流金」。","fields":[]},"津津樂道":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7157&la=0&webMd=2","definition":"形容很有興味地談論。如：「連續幾年奪得世界少棒冠軍的光榮事蹟，至今仍為老球迷們津津樂道。」","fields":[]},"洞天福地":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6621&la=0&webMd=2","definition":"神仙所住的地方。比喻名山勝境。元．鄧玉賓〈端正好．俺便似畫圖中套．朝元三煞〉：「五嶽十洲，洞天福地。」明．無名氏《白兔記》第二一齣：「紅線絲纏，繡褥花裀，洞天福地，這好事今朝重見。」也作「福地洞天」。","fields":[]},"洞燭機先":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=17011&la=0&webMd=2","definition":"預先察知事情的發展、徵兆，了解契機所在。如：「多虧研發部門洞燭機先，預先開發市場需求的新產品，公司的財務狀況才得以轉危為安。」","fields":[]},"洗心革面":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6033&la=0&webMd=2","definition":"除去邪思雜念，改變舊日面目。比喻澈底悔悟，改過自新。《抱朴子．外篇．用刑》：「洗心而革面者，必若清波之滌輕塵，朝有德讓之群后，野無犯禮之軌躅。」也作「革面洗心」、「洗面革心」。","fields":[]},"洗手奉職":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8931&la=0&webMd=2","definition":"比喻廉潔無私，忠於職守。唐．韓愈〈唐故中散大夫少府監胡良公墓神道碑〉：「薦公為監察御史，主餽給渭橋以東軍，洗手奉職，不以一錢假人。」","fields":[]},"洗耳恭聽":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5888&la=0&webMd=2","definition":"專心、恭敬的聆聽。元．鄭廷玉《楚昭公》第四折：「請大王試說一遍，容小官洗耳恭聽。」《鏡花緣》第七八回：「如此甚妙，我們洗耳恭聽。」也作「洗耳拱聽」。","fields":[]},"活靈活現":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=9756&la=0&webMd=2","definition":"形容生動逼真。如：「這幅肖像畫得活靈活現。」《醒世恆言．卷三二．黃秀才徼靈玉馬墜》：「呂用之雖然愛那女色，性命為重，說得活靈活現，怎的不怕？」也作「活龍活現」。","fields":[]},"洛陽紙貴":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5253&la=0&webMd=2","definition":"晉代左思寫成〈三都賦〉後，時人競相傳寫，使洛陽的紙價上漲而昂貴。典出《晉書．卷九二．文苑傳．左思傳》。後比喻著作風行一時，流傳甚廣。《孽海花》第二回：「即如寫字的莫友芝，畫畫的湯壎伯，非不洛陽紙貴，名震一時，總嫌帶著江湖氣。」","fields":[]},"為人作嫁":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6353&la=0&webMd=2","definition":"為別人作嫁衣裳。語本唐．秦韜玉〈貧女〉詩：「苦恨年年壓金線，為他人作嫁衣裳。」比喻徒然為他人辛苦。《紅樓夢》第九五回：「見妙玉略有活動，便起身拜了幾拜。妙玉嘆道：『何必為人作嫁！』」","fields":[]},"狡兔三窟":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5667&la=0&webMd=2","definition":"狡猾的兔子有三處藏身的洞穴。《戰國策．齊策四》：「狡兔有三窟，僅得免其死耳。」比喻有多處藏身的地方或多種避禍的準備。《聊齋志異．卷七．邵女》：「汝狡兔三窟，何歸為？」也作「三窟狡兔」。","fields":[]},"玲瓏剔透":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8556&la=0&webMd=2","definition":"1.形容器物精巧細緻，雕工完美。《西遊記》第四回：「複道迴廊，處處玲瓏剔透。」《紅樓夢》第四一回：「劉姥姥掀簾進去，抬頭一看，只見四面牆壁，玲瓏剔透，琴劍瓶爐皆貼在牆上。」也作「剔透玲瓏」。\\n\\n2.比喻人聰明伶俐，靈巧慧黠。元．關漢卿《救風塵》第二折：「那廝愛女娘的心，見的便似驢共狗，賣弄他玲瓏剔透。」《兒女英雄傳》第二三回：「及至見了褚大娘子，又是一對玲瓏剔透的新媳婦。」也作「剔透玲瓏」。\\n\\n3.比喻詩文結構精巧明晰。《野叟曝言》第二七回：「大爺提起筆來，詩詞歌賦，頃刻而成。做得玲瓏剔透，變化出奇。」也作「剔透玲瓏」。","fields":[]},"甚囂塵上":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6961&la=0&webMd=2","definition":"喧譁嘈雜，塵沙飛揚。語本《左傳．成公十六年》：「楚子登巢車以望晉軍，……曰：將發命也，甚囂且塵上矣。」今多用為傳聞四起，議論紛紛的意思。如：「近日官商勾結的消息甚囂塵上。」亦可指極為猖狂、囂張之意。如：「當前社會關說之風甚囂塵上。」","fields":[]},"眉飛色舞":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6029&la=0&webMd=2","definition":"形容非常喜悅得意的神情。《官場現形記》第一回：「王鄉紳一聽此言，不禁眉飛色舞。」《花月痕》第六回：「已是眉飛色舞，豪情勃發了。」也作「色飛眉舞」。","fields":[]},"相形見絀":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5612&la=0&webMd=2","definition":"兩相比較之下顯得不如對方。《歧路燈》第一四回：「又見婁樸，同窗共硯，今日相形見絀。」","fields":[]},"相得益彰":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6479&la=0&webMd=2","definition":"兩相烘托，更加光彩。語本漢．王襃〈聖主得賢臣頌〉：「聚精會神，相得益章。」","fields":[]},"相提並論":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6701&la=0&webMd=2","definition":"把性質、情況相似的人物或事件放在一起討論或同等看待。如：「此一時，彼一時，怎麼可以相提並論？」","fields":[]},"相敬如賓":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5370&la=0&webMd=2","definition":"夫婦間相處融洽，互相尊敬如待賓客。《後漢書．卷八三．逸民傳．龐公傳》：「居峴山之南，未嘗入城府。夫妻相敬如賓。」明．朱權《荊釵記》第一二齣：「夫妻交拜，相敬如賓。」也作「相待如賓」。","fields":[]},"相濡以沫":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7169&la=0&webMd=2","definition":"泉水乾涸，魚兒以口沫互相潤溼。語出《莊子．大宗師》：「泉涸，魚相與處於陸，相呴以溼，相濡以沫。」比喻人同處於困境，而互相以微力救助。也作「濡沫涸轍」、「以沫相濡」。","fields":[]},"秋扇見捐":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=9147&la=0&webMd=2","definition":"入秋天涼，扇子就被棄置不用。語本漢．班婕妤〈怨歌行〉：「新裂齊紈素，皎潔如霜雪。裁為合歡扇，團團似明月。出入君懷袖，動搖微風發。常恐秋節至，涼風奪炎熱。棄捐篋笥中，恩情中道絕。」比喻人不再年輕貌美而遭受冷落。唐．蔣防《霍小玉傳》：「但慮一旦色衰，恩移情替，使女蘿無托，秋扇見捐。」","fields":[]},"秋毫無犯":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5914&la=0&webMd=2","definition":"一點都不侵犯。《三國演義》第二回：「署縣事一月，與民秋毫無犯，民皆感化。」《平妖傳》第四○回：「一路行軍都有紀律，與民秋毫無犯。」也作「秋毫不犯」。","fields":[]},"穿壁引光":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8885&la=0&webMd=2","definition":"漢代匡衡家貧而好學，無力購買燈燭，於是鑿穿牆壁，藉由鄰家燭光以照讀的故事。見《西京雜記》卷二。後比喻刻苦勤學。也作「鑿壁偷光」、「鑿壁透光」。","fields":[]},"穿鑿附會":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5635&la=0&webMd=2","definition":"憑空杜撰，隨意牽合。如：「一棵老樹經由久來的渲染與穿鑿附會，竟成了法力無邊的大樹公。」","fields":[]},"紅顏薄命":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7521&la=0&webMd=2","definition":"嘆息美女的命運不佳。元．無名氏《鴛鴦被》第三折：「總則我紅顏薄命，真心兒待嫁劉彥明，偶然間卻遇張瑞卿。」《隋唐演義》第三四回：「大凡人做了個女身，已是不幸的了；而又棄父母，拋親戚，點入宮來，只道紅顏薄命，如同腐草，即填溝壑。」也作「美人命薄」、「紅顏命薄」。","fields":[]},"約定俗成":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=9143&la=0&webMd=2","definition":"事物的名稱或法則，經人倡導，而成為社會習用或公認者。《荀子．正名》：「名無固宜，約之以命，約定俗成謂之宜，異於約則謂之不宜。」","fields":[]},"紈袴子弟":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7411&la=0&webMd=2","definition":"浮華不知人生甘苦的富家子弟。《東歐女豪傑》第五回：「那紈褲子弟，平日最喜合那些無賴來往。」","fields":[]},"美輪美奐":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5634&la=0&webMd=2","definition":"語本《禮記．檀弓下》：「晉獻文子成室，晉大夫發焉。張老曰：『美哉輪焉，美哉奐焉，歌於斯，哭於斯，聚國族於斯。』」形容房屋裝飾得極為華美。如：「新落成的摩天大樓，不論外觀或內部裝潢，都十分美輪美奐。」也作「美侖美奐」、「美奐美輪」。","fields":[]},"背道而馳":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5366&la=0&webMd=2","definition":"朝著相反方向奔馳。常比喻所要到達的目標和實際進行的方向完全相反。如：「從臺中到臺北，車子應朝北開，你卻上了往南車道，這不是背道而馳嗎？」「想考上大學就該勤奮讀書，而你現在卻整天到處晃蕩，這不是背道而馳嗎？」","fields":[]},"茅塞頓開":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5549&la=0&webMd=2","definition":"比喻馬上開悟，忽然明白。《西遊記》第六四回：「我身無力，我腹無才，得三公之教，茅塞頓開。」《金瓶梅》第六二回：「當時被伯爵一席話，說的西門慶心地透澈，茅塞頓開。」","fields":[]},"苦口婆心":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5751&la=0&webMd=2","definition":"以懇切真摯的態度，竭力勸告他人。《兒女英雄傳》第一六回：「這等人若不得個賢父兄、良師友苦口婆心的成全他，喚醒他，可惜那至性奇才，終歸名隳身敗。」","fields":[]},"苦盡甘來":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6325&la=0&webMd=2","definition":"艱難困苦的境遇已經結束，而將逐步進入佳境。元．白樸《東牆記》第三折：「似這等不枉了教人害，苦盡甘來。」《西遊記》第九回：「真是苦盡甘來，莫大之喜！」也作「苦盡甜來」。","fields":[]},"苟延殘喘":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6874&la=0&webMd=2","definition":"1.勉強存續生命。《西遊記》第三一回：「欲要自盡，又恐父母疑我逃走，事終不明。故沒奈何，苟延殘喘，誠為天地間一大罪人也。」也作「苟留殘喘」、「苟延殘息」。\\n\\n2.比喻勉強撐住局面。如：「兩隊因為實力懸殊，下半場時，弱隊只能苟延殘喘，勉強撐到終場。」","fields":[]},"負荊請罪":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5199&la=0&webMd=2","definition":"戰國時趙國大將廉頗與上卿藺相如不和，相如為社稷著想，每每退讓。廉頗得知後深覺自己無知，乃袒衣露肉，背負荊條，隨賓客到藺相如居所謝罪。典出《史記．卷八一．廉頗藺相如傳》。後世用來形容向對方承認錯，請求責罰和原諒。《舊五代史．卷一三三．周書．世襲傳二．錢鏐傳》：「敢不投杖責躬，負荊請罪。」","fields":[]},"迫不及待":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5898&la=0&webMd=2","definition":"情況急迫，不能再等了。如：「由於實在太餓，雖然菜還沒上齊，他卻已經迫不及待吃了起來。」《鏡花緣》第六回：「該仙子何以迫不及待，並不奏聞請旨，任聽部下逞豔於非時之候，獻媚於世主之前，致令時序顛倒，駭人聽聞。」《文明小史》第一○回：「無奈紳士們置之不理，所以他迫不及待，就把地保按名鎖拿到衙。」","fields":[]},"迫在眉睫":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6686&la=0&webMd=2","definition":"形容事情急迫。如：「這事已迫在眉睫，你怎麼還不趕快著手進行？」","fields":[]},"重蹈覆轍":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=10174&la=0&webMd=2","definition":"重新走上翻過車的老路。比喻不能吸取教訓而再犯同一類的錯誤。如：「上一次當學一次乖，以後就不會重蹈覆轍了。」也作「復蹈其轍」、「復蹈前轍」。","fields":[]},"面面相覷":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5488&la=0&webMd=2","definition":"互相對視而不知所措。形容驚懼或詫異的樣子。《水滸傳》第一七回：「眾做公的都面面相覷，如箭穿雁嘴，鉤搭魚腮，盡無言語。」《儒林外史》第四三回：「那船上管船的舵工，押船的朝奉，面面相覷，束手無策。」也作「面面相窺」、「面面廝覷」。","fields":[]},"音容宛在":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7155&la=0&webMd=2","definition":"人的聲音與容貌彷若在眼前，多用於弔唁之詞。如：「老董事長雖然與世長辭，但在我們心中，老人家音容宛在，令人難以忘懷。」也作「音容如在」。","fields":[]},"風行草偃":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7860&la=0&webMd=2","definition":"語本《論語．顏淵》：「君子之德，風，小人之德，草；草上之風，必偃。」比喻在上位者以德化民。《三國志．卷五三．吳書．張紘傳》裴松之注引《吳書》：「平定三郡，風行草偃，加以忠敬款誠，乃心王室。」唐．劉禹錫〈為淮南杜相公謝兵馬使朱鄭等官表〉：「遂使感激之士，希勇爵以捐驅，猖狂之徒，耹聖澤而悛性，風行草偃，其勢必然。」也作「風行草靡」、「風行草從」、「草靡風行」、「草偃風行」、「草偃風從」。","fields":[]},"風花雪月":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6196&la=0&webMd=2","definition":"1.四時景色。《孤本元明雜劇．魚籃記．第一折》：「春夏秋冬四季天，風花雪月緊相連。」\r\\n\\n2.比喻風流場所中男女歡愛的行為。元．喬吉《金錢記》第三折：「本是些風花雪月，都做了笞杖徒流。」《初刻拍案驚奇》卷一五：「光陰如隙駒，陳秀才風花雪月了七八年，將家私弄得乾淨快了。」","fields":[]},"風姿綽約":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=9353&la=0&webMd=2","definition":"形容人的風采姿容非常優美。如：「神話中的仙子，個個風姿綽約。」","fields":[]},"風起雲湧":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=11509&la=0&webMd=2","definition":"1.大風起來，烏雲湧現。形容氣勢雄偉。清．唐夢賚〈聊齋志異序〉：「下筆風起雲湧，能為載記之言。」\\n\\n2.比喻事物大量迅速發展。如：「國人學電腦的風氣，風起雲湧。」","fields":[]},"風雲際會":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6677&la=0&webMd=2","definition":"比喻才士賢臣為時所用。唐．秦韜玉〈仙掌〉詩：「為余勢負天工背，索取風雲際會身。」《喻世明言．卷一五．史弘肇龍虎君臣會》：「又不見單父呂公善擇婿，一事樊侯一劉季？風雲際會十年間，樊作諸侯劉作帝。」也作「風飛雲會」、「際會風雲」。","fields":[]},"風馳電掣":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5624&la=0&webMd=2","definition":"比喻快速。明．張四維《雙烈記》第二齣：「袖中三尺劍，嘆空自光芒貫日，倘一時離匣，風馳電掣，掃除妖魅。」《二十年目睹之怪現狀》第六八回：「這裡天津的車夫，跑的如飛一般風馳電掣，人坐在上面，倒反有點害怕。」也作「風馳電赴」、「風馳電卷」、「風馳電逝」、「電卷風馳」、「電卷星飛」、「電掣風馳」、「電掣星馳」。","fields":[]},"風聲鶴唳":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5248&la=0&webMd=2","definition":"東晉時秦主苻堅率眾列陣肥水，謝玄等以八千精兵渡水還擊，秦兵大敗，潰兵聽到風聲和鶴鳴，皆以為王師已至。典出《晉書．卷七九．謝安傳》。後形容極為驚慌疑懼。宋．李曾伯〈醉蓬萊．問金城方略〉詞：「見說棋邊，風聲鶴唳，膽落胡虜。」《紅樓夢》第一○二回：「賈珍方好，賈蓉等相繼而病。如此接連數月，鬧得兩府俱怕。從此風聲鶴唳，草木皆妖。」也作「鶴唳風聲」。","fields":[]},"飛來橫禍":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7531&la=0&webMd=2","definition":"突然降臨的意外災禍。《醒世恆言．卷三四．一文錢小隙造奇冤》：「欲待不去照管他，到天明被做公的看見，卻不是一場飛來橫禍，辦不清的官司。」也作「飛災橫禍」、「飛殃走禍」。","fields":[]},"飛揚跋扈":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5749&la=0&webMd=2","definition":"1.意氣舉動灑脫，不受常軌約束。唐．杜甫〈贈李白〉詩：「痛飲狂歌空度日，飛揚跋扈為誰雄。」\\n\\n2.態度蠻橫放肆，放縱霸道不遵循法度。《聊齋志異．卷一○．席方平》：「飛揚跋扈，狗臉生六月之霜；隳突叫號，虎威斷九衢之路。」也作「跋扈飛揚」。","fields":[]},"飛黃騰達":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6035&la=0&webMd=2","definition":"飛黃，神馬名。騰達，形容馬的飛馳。飛黃騰達比喻得意於仕途。《警世通言．卷一七．鈍秀才一朝交泰》：「早晚飛黃騰達，無不爭先恐後。」《醒世恆言．卷二○．張廷秀逃生救父》：「朝吟暮詠，受盡了燈窗之苦，尚不能勾飛黃騰達。」也作「飛黃騰踏」。","fields":[]},"飛蛾投火":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=15397&la=0&webMd=2","definition":"比喻自尋死路、自取滅亡。元．無名氏《謝金吾》第三折：「我已曾著人拏住楊景焦贊兩個，正是飛蛾投火，不怕他不死在手裡。」明．王世貞《鳴鳳記》第二九齣：「下官約董吳二兄同奏權奸，正是累卵擊石，犯之必碎，飛蛾投火，觸之必焦。」也作「飛蛾赴火」。","fields":[]},"食古不化":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5219&la=0&webMd=2","definition":"學習古代知識卻不能充分理解、應用，如同吃了東西不能消化一樣。比喻一味守舊而不知變通。如：「做事情要懂得變通，不要拘泥成規、食古不化，反而壞了事情。」","fields":[]},"食不知味":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=16855&la=0&webMd=2","definition":"飲食無法辨別美味。形容憂慮煩躁或忙碌勞累的樣子。唐．白居易〈初授拾遺獻書〉：「臣所以授官已來，僅將十日，食不知味，寢不遑安，唯思粉身，以答殊寵。」也作「食不甘味」。","fields":[]},"食言而肥":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5545&la=0&webMd=2","definition":"春秋魯大夫孟武伯常失信於魯哀公。在一次宴會中，孟武伯問哀公的寵臣郭重為何如此肥胖，哀公藉機諷刺說：「是食言多矣，能無肥乎？」典出《左傳．哀公二十五年》。後用以比喻言而無信，說話不守信用。明．李開光〈水風臥吟樓記〉：「此予事而掛客懷，何也？不以食言而肥，不因苦吟而瘦，試以數語為記，請覽而教正之如何？」","fields":[]},"食指大動":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7379&la=0&webMd=2","definition":"春秋時楚人獻大鱉給鄭靈公，此時鄭國大夫子家與子公將入朝覲見，子公忽然食指動，遂告訴子家說：「他日我如此，必嘗異味。」典出《左傳．宣公四年》。後用以指將有美味的東西可以吃，或面對美食而食慾大開。如：「面對各種佳餚，令人不覺食指大動。」","fields":[]},"食髓知味":{"sourceName":"教育部《重編國語辭典修訂本》","sourceUrl":"https://dict.revised.moe.edu.tw/dictView.jsp?ID=127829&la=0&powerMode=0","definition":"食得一次骨髓，便知曉其美味；比喻人得到一次好處後便貪得無厭。","fields":[{"label":"例句","value":"自從他上次得到好處，便食髓知味，不斷的騷擾我們。"}]},"首如飛蓬":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=11665&la=0&webMd=2","definition":"頭髮散亂像飛散的蓬草。比喻無心化妝打扮。語出《詩經．衛風．伯兮》：「自伯之東，首如飛蓬，豈無膏沐，誰適為容。」","fields":[]},"首屈一指":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6638&la=0&webMd=2","definition":"彎下手指計算時，首先彎曲拇指。因以「首屈一指」表示第一或最優秀。如：「談到球技與棋藝，他都是首屈一指。」","fields":[]},"香消玉殞":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8223&la=0&webMd=2","definition":"傳統多以香、玉指稱女子。「香消玉殞」比喻女子死亡。如：「沒想到她就這樣香消玉殞了。」清．徐珂《清稗類鈔．文學類．王井尗好填詞》：「彌留時，與其婦曹夫人相訣，約三年即見。至期，曹夫人果亦香消玉殞矣。」也作「香消玉碎」、「香消玉損」、「香銷玉沉」、「玉碎花銷」、「玉碎香消」、「玉碎香殘」。","fields":[]},"乘風破浪":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5272&la=0&webMd=2","definition":"1.順著風，破浪前進。《宋史．卷四五○．忠義列傳五．張順》：「夜漏下三刻，起碇出江，以紅鐙為識。貴先登，順殿之，乘風破浪，徑犯重圍。」《文明小史》第一五回：「把繩索一切紮縛停當，然後又放一聲氣，小火輪動鼓機器，便見一溜煙乘風破浪的去了。」\\n\\n2.南朝宋宗慤年少時，有一次，叔父宗柄問他的志向如何？宗慤回答說：「願乘長風破萬里浪。」見《宋書．卷七六．列傳．宗慤》。後以喻志向遠大，不畏艱難，奮勇前進。《孽海花》第二四回：「東海湄，扶桑涘，欲往從之多蛇豕！乘風破浪從此始。」也作「長風破浪」。","fields":[]},"俯仰無愧":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7525&la=0&webMd=2","definition":"語本《孟子．盡心上》：「仰不愧於天，俯不怍於人。」無論對人、對天都問心無愧。《鏡花緣》第七一回：「對得天地君親，就可俯仰無愧。」","fields":[]},"俯拾即是":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=6671&la=0&webMd=2","definition":"只要彎下身去撿，即可得到。唐．司空圖《詩品．自然》：「俯拾即是，不取諸鄰。」","fields":[]},"俯首貼耳":{"sourceName":"教育部《成語典》2020","sourceUrl":"https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=8629&la=0&webMd=2","definition":"低頭垂耳。形容恭順馴服的樣子。明．朱國楨《湧幢小品．卷一四．教官全城》：「吾徒誦詩書，講逆順，而俯首帖耳，以事賊乎？」也作「伏首帖耳」、「伏首貼耳」、「俯首貼耳」、「俛首帖耳」、「俛首貼耳」。","fields":[]}};
+  const ANSWER_SALT = "idioms1150101-807";
+  const ANSWER_BLOB = "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";
+
+  // ---------- 基本工具 ----------
+  const STORAGE_KEY = 'idioms1150101:mastery-v3';
+  const $ = (id) => document.getElementById(id);
+  const esc = (v) => String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  // 題目文字中以 [字] 標示畫線字，以（注音）標示讀音
+  const rich = (v) => esc(v).replace(/\[([^\]]+)\]/g, '<u class="mark">$1</u>').replace(/（([ㄅ-ㄩˊˇˋ˙]+)）/g, '<span class="zhuyin">（$1）</span>');
+  const plain = (v) => String(v).replace(/[\[\]]/g, '');
+  const icon = (name, cls = '') => `<svg class="icon ${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+  const ANSWERS = (() => {
+    const bytes = Uint8Array.from(atob(ANSWER_BLOB), (c) => c.charCodeAt(0));
+    const key = new TextEncoder().encode(ANSWER_SALT);
+    for (let i = 0; i < bytes.length; i += 1) bytes[i] ^= key[i % key.length];
+    return JSON.parse(new TextDecoder().decode(bytes));
+  })();
+  const QSPEC = QUESTIONS.map((q) => ({ id: q.id, levelId: q.levelId }));
+  const questionById = Object.fromEntries(QUESTIONS.map((q) => [q.id, q]));
+  const levelPages = { 1: '178–193', 2: '194–209' };
+
+  // ---------- 闖關規則（移植自 app/lib/mastery.ts） ----------
+  function shuffleWithSeed(items, seedText) {
+    let seed = Array.from(seedText).reduce((value, ch) => ((value * 31) + ch.charCodeAt(0)) >>> 0, 2166136261);
+    const out = [...items];
+    for (let i = out.length - 1; i > 0; i -= 1) {
+      seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+      const j = seed % (i + 1);
+      [out[i], out[j]] = [out[j], out[i]];
+    }
+    return out;
+  }
+  function makeRun(questions, levelId, seed, attempt = 1, perfectStreak = 0) {
+    return { attempt, perfectStreak,
+      order: shuffleWithSeed(questions.filter((q) => q.levelId === levelId).map((q) => q.id), `${seed}-${levelId}-${attempt}`),
+      index: 0, answers: {}, phase: 'exam', reviewQueue: [], reviewTurn: 0, feedback: null, passedAt: null, certificate: null };
+  }
+  function createMastery(questions, seed) {
+    const first = Math.min(...questions.map((q) => q.levelId));
+    return { version: 3, seed, activeLevelId: first, score: 0, updatedAt: new Date().toISOString(), runs: { [first]: makeRun(questions, first, seed) } };
+  }
+  function currentQuestionId(run) {
+    return run.phase === 'exam' ? run.order[run.index] : run.phase === 'review' ? run.reviewQueue[0] : undefined;
+  }
+  function wrongQuestionIds(run) { return run.order.filter((id) => run.answers[id] === false); }
+  function validSeat(seat) { return /^\d{1,3}$/.test(seat) && Number(seat) >= 1; }
+  function transitionMastery(state, action, questions, now = new Date().toISOString()) {
+    const run = state.runs[state.activeLevelId];
+    let nextRun = { ...run };
+    let score = state.score;
+    let activeLevelId = state.activeLevelId;
+    if (action.type === 'answer') {
+      const id = currentQuestionId(run);
+      if (!id || run.feedback || run.passedAt) return state;
+      nextRun.feedback = action.feedback;
+      if (run.phase === 'exam') {
+        nextRun.answers = { ...run.answers, [id]: action.feedback.correct };
+        if (!action.feedback.correct) nextRun.perfectStreak = 0;
+        score = Math.max(0, score + (action.feedback.correct ? 1 : -1));
+      }
+    } else if (action.type === 'next') {
+      if (!run.feedback) return state;
+      nextRun.feedback = null;
+      if (run.phase === 'exam') {
+        if (run.index < run.order.length - 1) nextRun.index += 1;
+        else {
+          nextRun.phase = 'summary';
+          const allCorrect = run.order.length > 0 && run.order.every((id) => run.answers[id] === true);
+          nextRun.perfectStreak = allCorrect ? 1 : 0;
+          if (allCorrect) nextRun.passedAt = now;
+        }
+      } else if (run.phase === 'review') {
+        const [id, ...remaining] = run.reviewQueue;
+        nextRun.reviewQueue = run.feedback.correct ? remaining : [...remaining, id];
+        nextRun.reviewTurn += 1;
+        if (nextRun.reviewQueue.length === 0) nextRun.phase = 'review-complete';
+      } else return state;
+    } else if (action.type === 'review') {
+      if (run.phase !== 'summary' || run.passedAt || wrongQuestionIds(run).length === 0) return state;
+      nextRun.phase = 'review';
+      nextRun.reviewQueue = shuffleWithSeed(wrongQuestionIds(run), `${state.seed}-review-${run.attempt}`);
+    } else if (action.type === 'retry') {
+      if (run.passedAt || (run.phase !== 'review-complete' && !(run.phase === 'summary' && wrongQuestionIds(run).length === 0))) return state;
+      nextRun = makeRun(questions, state.activeLevelId, state.seed, run.attempt + 1, run.perfectStreak);
+    } else if (action.type === 'level') {
+      const levelIds = [...new Set(questions.map((q) => q.levelId))].sort((a, b) => a - b);
+      if (!levelIds.includes(action.levelId) || levelIds.some((id) => id < action.levelId && !state.runs[id]?.passedAt)) return state;
+      activeLevelId = action.levelId;
+      nextRun = state.runs[activeLevelId] ?? makeRun(questions, activeLevelId, state.seed);
+    } else if (action.type === 'certificate') {
+      const c = action.certificate;
+      if (!run.passedAt || !validSeat(c.seatNumber) || !c.name.trim() || c.name.trim().length > 40) return state;
+      nextRun.certificate = { ...c, name: c.name.trim() };
+    }
+    return { ...state, score, activeLevelId, updatedAt: now, runs: { ...state.runs, [activeLevelId]: nextRun } };
+  }
+  function restoreMastery(value, questions) {
+    try {
+      const state = value;
+      const levelIds = [...new Set(questions.map((q) => q.levelId))];
+      if (!state || state.version !== 3 || typeof state.seed !== 'string' || !state.seed || state.seed.length > 200 || !levelIds.includes(state.activeLevelId) || !Number.isInteger(state.score) || state.score < 0 || !Number.isFinite(Date.parse(state.updatedAt)) || !state.runs || !state.runs[state.activeLevelId]) return null;
+      for (const [key, run] of Object.entries(state.runs)) {
+        const ids = questions.filter((q) => q.levelId === Number(key)).map((q) => q.id);
+        if (!ids.length || !Array.isArray(run.order) || run.order.length !== ids.length || new Set(run.order).size !== ids.length || run.order.some((id) => !ids.includes(id))) return null;
+        if (!Number.isInteger(run.index) || run.index < 0 || run.index >= ids.length || !Number.isInteger(run.attempt) || run.attempt < 1 || ![0, 1, 2].includes(run.perfectStreak) || !['exam', 'summary', 'review', 'review-complete'].includes(run.phase)) return null;
+        if (!run.answers || Object.entries(run.answers).some(([id, ok]) => !ids.includes(id) || typeof ok !== 'boolean')) return null;
+        if (!Array.isArray(run.reviewQueue) || new Set(run.reviewQueue).size !== run.reviewQueue.length || run.reviewQueue.some((id) => !ids.includes(id) || run.answers[id] !== false) || !Number.isInteger(run.reviewTurn) || run.reviewTurn < 0) return null;
+        if (run.phase !== 'exam' && run.order.some((id) => !(id in run.answers))) return null;
+        if (run.phase === 'review' && run.reviewQueue.length === 0) return null;
+        if (run.passedAt && (run.perfectStreak < 1 || run.phase !== 'summary' || !Number.isFinite(Date.parse(run.passedAt)) || run.order.some((id) => run.answers[id] !== true))) return null;
+        if (run.perfectStreak === 2 && !run.passedAt) return null;
+        if (run.feedback && (typeof run.feedback.correct !== 'boolean' || typeof run.feedback.choiceId !== 'string' || typeof run.feedback.correctChoiceId !== 'string' || typeof run.feedback.explanation !== 'string')) return null;
+        if (run.certificate && (!run.passedAt || typeof run.certificate.seatNumber !== 'string' || !validSeat(run.certificate.seatNumber) || typeof run.certificate.name !== 'string' || !run.certificate.name.trim() || run.certificate.name.length > 40 || !Number.isFinite(Date.parse(run.certificate.issuedAt)))) return null;
+      }
+      if (levelIds.some((id) => id < state.activeLevelId && !state.runs[id]?.passedAt)) return null;
+      const runs = Object.fromEntries(Object.entries(state.runs).map(([key, run]) => {
+        if (run.perfectStreak < 1) return [key, run];
+        return [key, { ...run, perfectStreak: 1, passedAt: run.passedAt ?? state.updatedAt, phase: 'summary', index: run.order.length - 1,
+          answers: Object.fromEntries(run.order.map((id) => [id, true])), feedback: null, reviewQueue: [] }];
+      }));
+      return { ...state, runs };
+    } catch { return null; }
+  }
+  function checkAnswer(questionId, choiceId) {
+    const [correctChoiceId, explanation] = ANSWERS[questionId];
+    return { correct: correctChoiceId === choiceId, correctChoiceId, explanation, choiceId };
+  }
+
+  // ---------- 證書（移植自 app/lib/certificate.ts） ----------
+  function escapeXml(v) { return String(v).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[c]); }
+  function certificateSvg(certificate, levelTitle, questionCount) {
+    const name = escapeXml(certificate.name);
+    const seat = escapeXml(certificate.seatNumber);
+    const title = escapeXml(levelTitle);
+    const date = escapeXml(new Intl.DateTimeFormat('zh-TW', { timeZone: 'Asia/Taipei', year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(certificate.issuedAt)));
+    const fontSize = certificate.name.length > 10 ? 38 : certificate.name.length > 6 ? 48 : 64;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="790" viewBox="0 0 1120 790" role="img" aria-label="807 班${name}的${title}通關證書">
+  <defs><linearGradient id="paper" x2="1" y2="1"><stop stop-color="#fffdf6"/><stop offset="1" stop-color="#f5ecd8"/></linearGradient><linearGradient id="gold"><stop stop-color="#9b742d"/><stop offset=".5" stop-color="#d5af64"/><stop offset="1" stop-color="#9b742d"/></linearGradient><pattern id="lines" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M0 32L32 0" stroke="#b29459" stroke-opacity=".055"/></pattern></defs>
+  <rect width="1120" height="790" fill="url(#paper)"/><rect width="1120" height="790" fill="url(#lines)"/>
+  <rect x="25" y="25" width="1070" height="740" rx="8" fill="none" stroke="#17554f" stroke-width="3"/><rect x="40" y="40" width="1040" height="710" rx="4" fill="none" stroke="url(#gold)" stroke-width="2"/>
+  <g fill="none" stroke="#ae8742" stroke-width="2"><path d="M60 125V60H125M995 60H1060V125M60 665V730H125M995 730H1060V665"/><path d="M72 95L95 72L118 95L95 118Z M1002 95L1025 72L1048 95L1025 118Z M72 695L95 672L118 695L95 718Z M1002 695L1025 672L1048 695L1025 718Z"/></g>
+  <g font-family="Noto Serif TC,PMingLiU,Microsoft JhengHei,serif" text-anchor="middle">
+  <text x="560" y="107" font-size="21" letter-spacing="7" fill="#17554f">成語闖關之旅</text>
+  <text x="560" y="164" font-size="14" letter-spacing="6" fill="#ae8742">CERTIFICATE OF ACHIEVEMENT</text>
+  <text x="560" y="248" font-size="58" font-weight="700" letter-spacing="16" fill="#17554f">通關證書</text>
+  <path d="M305 278H485M635 278H815" stroke="#c4a269"/><path d="M550 278L560 268L570 278L560 288Z" fill="#ae8742"/>
+  <text x="560" y="331" font-size="23" fill="#766d59">茲證明　807 班　座號 ${seat} 號</text>
+  <text x="560" y="417" font-size="${fontSize}" ${certificate.name.length > 18 ? 'textLength="760" lengthAdjust="spacingAndGlyphs"' : ''} font-weight="700" fill="#243f3c">${name}</text>
+  <path d="M330 443H790" stroke="#c4a269" stroke-width="1.5"/>
+  <text x="560" y="500" font-size="26" font-weight="700" fill="#17554f">${title} · 成語學習挑戰</text>
+  <text x="560" y="546" font-size="22" fill="#655e4d">完成一次 ${questionCount} 題全對測驗</text>
+  <text x="560" y="585" font-size="19" fill="#766d59">以專注累積實力，以堅持成就每一步。特頒此證，以資鼓勵。</text>
+  <text x="560" y="691" font-size="18" fill="#766d59">${date}　頒發</text>
+  </g>
+  <g transform="translate(922 634)"><path d="M-26 20L-35 72L0 53L35 72L26 20Z" fill="#17554f"/><circle r="53" fill="url(#gold)"/><circle r="43" fill="#fff9e9" stroke="#ae8742" stroke-width="2" stroke-dasharray="2 4"/><text text-anchor="middle" y="0" font-family="Microsoft JhengHei,sans-serif" font-size="16" font-weight="700" fill="#17554f">全對達成</text><text text-anchor="middle" y="23" font-family="Microsoft JhengHei,sans-serif" font-size="13" fill="#9b742d">成語達人</text></g>
+  </svg>`;
+  }
+
+  // ---------- 狀態與保存 ----------
+  let storageOk = true;
+  function randomId() {
+    try { return crypto.randomUUID(); } catch { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+  }
+  function loadState() {
+    try { return restoreMastery(JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'), QSPEC); } catch { return null; }
+  }
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); storageOk = true; }
+    catch { storageOk = false; }
+  }
+  let state = loadState() || createMastery(QSPEC, `guest-${randomId()}`);
+  let selection = null;
+  let certDismissedFor = '';
+  saveState();
+
+  function dispatch(action) {
+    const before = state;
+    const prevKey = runKey();
+    state = transitionMastery(state, action, QSPEC);
+    try { LEVELS.forEach((l) => { const a = before.runs[l.id], b = state.runs[l.id];
+      if (a && b && a.phase === 'exam' && b.phase === 'summary' && b.order.length) {
+        const pct = b.order.filter((id) => b.answers[id] === true).length / b.order.length * 100;
+        PE115.part('L' + l.id, pct, LEVELS.map((x) => 'L' + x.id), 'min', '各關中較低者');
+      } }); } catch (e) {}
+    if (state !== before) { saveState(); }
+    if (runKey() !== prevKey) selection = null;
+    render();
+  }
+  function run() { return state.runs[state.activeLevelId]; }
+  function runKey() { const r = run(); return `${state.activeLevelId}-${r.attempt}-${r.phase}-${r.index}-${r.reviewTurn}`; }
+  function levelOf(id) { return LEVELS.find((l) => l.id === id) || LEVELS[0]; }
+  function isLocked(levelId) { return LEVELS.some((p) => p.id < levelId && !state.runs[p.id]?.passedAt); }
+
+  // ---------- 畫面 ----------
+  function renderMap() {
+    const tiles = LEVELS.map((level) => {
+      const r = state.runs[level.id];
+      const locked = isLocked(level.id);
+      const active = level.id === state.activeLevelId;
+      const passed = Boolean(r?.passedAt);
+      return `<button type="button" class="tile${active ? ' active' : ''}${passed ? ' passed' : ''}" data-level="${level.id}" ${locked ? 'disabled' : ''} aria-pressed="${active}">
+        <div class="tile-head"><span class="badge ${level.color === 'sun' ? 'sun' : 'jade'}">${passed ? icon('check') : level.id}</span>${locked ? `<span title="尚未解鎖" aria-label="尚未解鎖" style="color:#94a3b8">${icon('lock')}</span>` : ''}${passed ? '<span class="tile-note">已通關 · 查看證書</span>' : ''}</div>
+        <p class="tile-title">${esc(level.title)}</p><p class="tile-sub">${esc(level.subtitle)}</p>
+        <p class="tile-status">${locked ? '上一關通過後解鎖' : `全對達成 ${r?.perfectStreak ?? 0} / 1 次`}</p></button>`;
+    }).join('');
+    $('levelMap').innerHTML = tiles + `<button type="button" class="tile glossary" data-open-glossary>
+        <div class="tile-head"><span class="badge gloss">${icon('mark')}</span><span class="tile-note">${CATALOG.length} 詞條</span></div>
+        <p class="tile-title">成語圖鑑</p><p class="tile-sub">教育部正式查閱</p></button>`;
+  }
+
+  function lookupTermFor(question, feedback) {
+    const correctText = plain(question.choices.find((c) => c.id === feedback?.correctChoiceId)?.text ?? '');
+    return CATALOG.find((e) => correctText.includes(e.idiom))?.idiom ?? CATALOG.find((e) => question.prompt.includes(e.idiom))?.idiom;
+  }
+
+  function renderCard() {
+    const r = run();
+    const level = levelOf(state.activeLevelId);
+    const qid = currentQuestionId(r);
+    const question = qid ? questionById[qid] : null;
+    const isReview = r.phase === 'review';
+    const wrongIds = wrongQuestionIds(r);
+    const correctCount = Object.values(r.answers).filter(Boolean).length;
+    const answeredCount = Object.keys(r.answers).length;
+    const total = r.order.length;
+    const pill = $('runPill');
+    pill.className = `pill ${level.color === 'sun' ? 'sun' : 'jade'}`;
+    pill.textContent = `${level.title} · ${r.passedAt ? '已通關' : isReview ? '錯題重練' : `第 ${r.attempt} 次測驗`}`;
+    $('runCounter').textContent = question ? (isReview ? `剩餘 ${r.reviewQueue.length} 題` : `${r.index + 1} / ${total}`) : `${correctCount} / ${total} 題答對`;
+    const pct = isReview ? ((wrongIds.length - r.reviewQueue.length) / Math.max(1, wrongIds.length)) * 100 : (answeredCount / total) * 100;
+    $('railBar').style.width = `${pct}%`;
+    $('rail').setAttribute('aria-valuenow', String(Math.round(pct)));
+
+    const body = $('cardBody');
+    if (question) {
+      const fb = r.feedback;
+      const choices = shuffleWithSeed(question.choices, `${state.seed}-${r.attempt}-${question.id}-${r.reviewTurn}-choices`);
+      const selected = fb?.choiceId ?? selection;
+      const correctText = question.choices.find((c) => c.id === fb?.correctChoiceId)?.text ?? '';
+      const term = fb && !fb.correct ? lookupTermFor(question, fb) : null;
+      const btnLabel = fb ? (isReview ? '繼續複習' : r.index === total - 1 ? '查看測驗結果' : '下一題') : '送出答案';
+      body.innerHTML = `
+        <p class="hint">${isReview ? '練習到會：答對移出清單，答錯稍後再練' : '請選出正確答案'}</p>
+        <h2 class="prompt">${rich(question.prompt)}</h2>
+        <div class="choices" role="group" aria-label="選項">${choices.map((c, i) => {
+          const cls = fb && fb.correctChoiceId === c.id ? 'correct' : fb && c.id === selected ? 'wrong' : c.id === selected ? 'selected' : '';
+          return `<button type="button" class="choice ${cls}" data-choice="${esc(c.id)}" ${fb ? 'disabled' : ''} aria-pressed="${c.id === selected}"><span class="letter">${String.fromCharCode(65 + i)}</span><span class="text">${rich(c.text)}</span></button>`;
+        }).join('')}</div>
+        ${fb ? `<div class="feedback${fb.correct ? ' ok' : ''}" role="status">
+          <p class="feedback-title">${fb.correct ? (isReview ? '答對了！這題已學會。' : '答對了！獲得 1 點。') : (isReview ? '再想想，這題稍後會再出現。' : '這題加入錯題清單，測驗結束後再練習。')}</p>
+          <p>${esc(fb.explanation)}</p>
+          ${!fb.correct ? `<p>正確答案：<strong>${rich(correctText)}</strong></p>${term ? `<p><button type="button" class="btn btn-outline btn-sm" data-lookup="${esc(term)}">在圖鑑查「${esc(term)}」</button></p>` : ''}` : ''}
+        </div>` : ''}
+        <div class="card-foot">
+          <p class="foot-note">${icon('help')}${isReview ? '複習不計入全對次數，也不扣積分' : '答對 +1、答錯 −1；積分最低為 0'}</p>
+          <button type="button" class="btn btn-primary btn-lg" id="mainAction" ${!fb && !selection ? 'disabled' : ''}>${btnLabel}${icon('right')}</button>
+        </div>`;
+      return;
+    }
+    const next = LEVELS.find((l) => l.id > state.activeLevelId);
+    if (r.passedAt) {
+      body.innerHTML = (r.certificate ? `
+        <section aria-label="${esc(level.title)}通關證書">
+          <div class="certificate-print"><img alt="807班${esc(r.certificate.name)}的${esc(level.title)}通關證書，座號${esc(r.certificate.seatNumber)}，一次${total}題全對" width="1120" height="790" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(certificateSvg(r.certificate, level.title, total))}"></div>
+          <div class="actions"><button type="button" class="btn btn-primary" data-action="download">${icon('down')}下載證書圖片</button><button type="button" class="btn btn-outline" data-action="print">${icon('print')}列印／另存 PDF</button></div>
+        </section>` : `
+        <div class="center" style="padding:24px 0">
+          <svg class="icon big-icon" style="width:64px;height:64px" aria-hidden="true"><use href="#i-award"/></svg>
+          <h2 class="result-title">${esc(level.title)}，成功通關！</h2>
+          <p class="result-text">一次 ${total} 題全對，你的努力值得被記錄。</p>
+          <div class="actions"><button type="button" class="btn btn-primary" data-action="open-cert">輸入座號姓名，領取證書</button></div>
+        </div>`) + `
+        <div class="actions">${r.certificate ? '<button type="button" class="btn btn-outline" data-action="open-cert">修改證書姓名與座號</button>' : ''}${next ? `<button type="button" class="btn btn-primary" data-level="${next.id}">前往${esc(next.title)}${icon('right')}</button>` : '<p class="done-note">第一關、第二關全部通過！可點選關卡查看各關證書。</p>'}</div>`;
+      return;
+    }
+    if (r.phase === 'review-complete') {
+      body.innerHTML = `<div class="center" style="padding:20px 0">
+        <svg class="icon big-icon jade" aria-hidden="true"><use href="#i-check"/></svg>
+        <h2 class="result-title">錯題都練會了！</h2>
+        <p class="result-text">本輪 ${wrongIds.length} 道錯題已全部答對。<br>接下來重新測驗，挑戰 ${total} 題全對。</p>
+        <div class="actions"><button type="button" class="btn btn-primary btn-lg" data-action="retry">${icon('retry')}開始下一次測驗</button></div></div>`;
+      return;
+    }
+    body.innerHTML = `<div class="center">
+        <svg class="icon big-icon" style="width:48px;height:48px" aria-hidden="true"><use href="#i-trophy"/></svg>
+        <h2 class="result-title">第 ${r.attempt} 次測驗完成</h2>
+        <p class="result-score">${correctCount}<small> / ${total} 題</small></p>
+        <p class="result-text">${wrongIds.length ? `有 ${wrongIds.length} 題需要複習，練會後再挑戰完整測驗。` : `${total} 題全對，已達成通關條件！`}</p>
+      </div>
+      ${wrongIds.length ? `<div class="wrong-box"><h3>本輪錯題</h3><ol>${wrongIds.map((id) => `<li>${rich(questionById[id].prompt)}</li>`).join('')}</ol></div>` : ''}
+      <div class="actions"><button type="button" class="btn btn-primary btn-lg" data-action="${wrongIds.length ? 'review' : 'retry'}">${wrongIds.length ? '進入錯題重練' : '重新挑戰全對'}${icon('right')}</button></div>`;
+  }
+
+  function renderAside() {
+    const r = run();
+    const wrong = wrongQuestionIds(r).length;
+    const correct = Object.values(r.answers).filter(Boolean).length;
+    $('aside').innerHTML = `
+      <div class="panel"><h2>${icon('trophy')}本關學習紀錄</h2><dl>
+        <div><dt>測驗次數</dt><dd>${r.attempt} 次</dd></div>
+        <div><dt>本輪答對</dt><dd>${correct} / ${r.order.length} 題</dd></div>
+        <div><dt>全對達成</dt><dd style="color:var(--jade-deep)">${r.perfectStreak} / 1 次</dd></div>
+        <div><dt>本輪錯題</dt><dd>${wrong} 題</dd></div>
+        ${r.phase === 'review' ? `<div><dt>待複習</dt><dd style="color:var(--coral)">${r.reviewQueue.length} 題</dd></div>` : ''}
+      </dl></div>
+      <div class="tip"><p><strong>通關小提醒</strong></p><p class="tip-body">完成一次 ${r.order.length} 題全對測驗，就能領取本關證書。有錯題先複習，全部練會後再挑戰完整測驗。</p>
+        <span class="seal${r.perfectStreak >= 1 ? ' on' : ''}">${r.perfectStreak >= 1 ? icon('check') : '1'}</span></div>
+      <p class="kbd-tip">鍵盤操作：按 1～4 選答案，Enter 送出或下一題。</p>`;
+  }
+
+  function render() {
+    const r = run();
+    $('heroStreak').innerHTML = `${r.perfectStreak}<small> / 1 次</small>`;
+    $('heroScore').textContent = String(state.score);
+    renderMap();
+    renderCard();
+    renderAside();
+    const notice = $('notice');
+    notice.hidden = storageOk;
+    notice.textContent = storageOk ? '' : '此瀏覽器無法保存進度（可能是無痕模式），請勿關閉或重新整理頁面。';
+    const certKey = `${state.activeLevelId}-${r.passedAt}`;
+    if (r.passedAt && !r.certificate && certDismissedFor !== certKey && !$('certDialog').open) openCertDialog();
+  }
+
+  // ---------- 證書對話框 ----------
+  function openCertDialog() {
+    const r = run();
+    const level = levelOf(state.activeLevelId);
+    $('certTitle').textContent = `恭喜通過${level.title}！`;
+    $('seatInput').value = r.certificate?.seatNumber ?? '';
+    $('nameInput').value = r.certificate?.name ?? '';
+    $('certError').textContent = '';
+    showDialog($('certDialog'));
+    setTimeout(() => $('seatInput').focus(), 30);
+  }
+  function closeCertDialog() {
+    const r = run();
+    certDismissedFor = `${state.activeLevelId}-${r.passedAt}`;
+    $('certDialog').close();
+  }
+  $('seatInput').addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3); });
+  $('certForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const seatRaw = $('seatInput').value.trim();
+    const name = $('nameInput').value.trim();
+    if (!validSeat(seatRaw)) { $('certError').textContent = '請輸入正確的座號（1 以上的數字）。'; $('seatInput').focus(); return; }
+    if (!name) { $('certError').textContent = '請輸入姓名。'; $('nameInput').focus(); return; }
+    const seatNumber = String(Number(seatRaw));
+    closeCertDialog();
+    dispatch({ type: 'certificate', certificate: { seatNumber, name, issuedAt: run().certificate?.issuedAt ?? new Date().toISOString() } });
+  });
+  $('certLater').addEventListener('click', closeCertDialog);
+  $('certDialog').addEventListener('cancel', (e) => { e.preventDefault(); closeCertDialog(); });
+
+  function downloadCertificate() {
+    const r = run();
+    const level = levelOf(state.activeLevelId);
+    const svg = certificateSvg(r.certificate, level.title, r.order.length);
+    const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `成語闖關之旅-${level.title}-807班-${r.certificate.seatNumber}號.svg`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  }
+
+  // ---------- 成語圖鑑 ----------
+  let glLevel = 1;
+  function showDialog(d) { if (!d.open) { try { d.showModal(); } catch { d.setAttribute('open', ''); } } }
+  function renderGlossary() {
+    $('glDesc').textContent = `收錄兩關全部 ${CATALOG.length} 個成語詞條；小卡直接呈現教育部正式資料，並附原典查閱連結。`;
+    $('glTabs').innerHTML = LEVELS.map((l) => `<button type="button" class="gl-tab" data-gl-level="${l.id}" aria-pressed="${l.id === glLevel}"><strong>${esc(l.title)}</strong><span>${CATALOG.filter((e) => e.levelId === l.id).length} 個成語・P.${levelPages[l.id] ?? ''}</span></button>`).join('');
+    const q = $('glSearch').value.trim();
+    const items = CATALOG.filter((e) => e.levelId === glLevel && e.idiom.includes(q));
+    $('glCount').textContent = `找到 ${items.length} 個詞條`;
+    $('glList').innerHTML = items.map((e) => {
+      const card = CARDS[e.idiom];
+      return `<button type="button" class="gl-item" data-idiom="${esc(e.idiom)}"><div class="gl-item-head"><h3>${esc(e.idiom)}</h3><span class="page-chip">P.${e.page}</span></div>
+        <p class="gl-def">${esc(card.definition)}</p><p class="gl-src">${esc(card.sourceName)}</p><p class="gl-more">閱讀詞條卡 →</p></button>`;
+    }).join('');
+  }
+  function openGlossary(term) {
+    if (term) {
+      const entry = CATALOG.find((e) => e.idiom === term) || CATALOG.find((e) => term.includes(e.idiom));
+      if (entry) { glLevel = entry.levelId; $('glSearch').value = entry.idiom; }
+    } else {
+      glLevel = state.activeLevelId; $('glSearch').value = '';
+    }
+    renderGlossary();
+    showDialog($('glossary'));
+    if (term) { const entry = CATALOG.find((e) => e.idiom === term) || CATALOG.find((e) => term.includes(e.idiom)); if (entry) openDetail(entry.idiom); }
+  }
+  function openDetail(idiom) {
+    const entry = CATALOG.find((e) => e.idiom === idiom);
+    const card = CARDS[idiom];
+    if (!entry || !card) return;
+    const secs = card.fields.map((f) => `<section class="sec t-${esc(f.label)}"><h3>${icon('scroll')}${esc(f.label)}</h3><p>${esc(f.value)}</p></section>`).join('');
+    const d = $('detail');
+    d.innerHTML = `<div class="detail-head">
+        <p class="detail-kicker">IDIOM ARCHIVE</p>
+        <div class="detail-title-row"><h2 id="dtTitle">${esc(entry.idiom)}</h2><span class="detail-page">第 ${entry.page} 頁</span></div>
+        <p class="detail-sub">成語闖關之旅・${esc(card.sourceName)}</p>
+        <button type="button" class="close-x" data-close="detail" aria-label="關閉詞條卡">×</button>
+      </div>
+      <div class="detail-body">
+        <section class="def-box"><h3>${icon('mark')}釋義</h3><p>${esc(card.definition)}</p><p class="def-src">資料來源：${esc(card.sourceName)}</p></section>
+        ${secs ? `<div class="secs">${secs}</div>` : ''}
+        <a class="src-link" href="${esc(card.sourceUrl)}" target="_blank" rel="noopener noreferrer"><span>前往 ${esc(card.sourceName)} 查閱「${esc(entry.idiom)}」</span>${icon('ext')}</a>
+      </div>`;
+    showDialog(d);
+    d.scrollTop = 0;
+  }
+  $('glSearch').addEventListener('input', renderGlossary);
+  for (const d of [$('glossary'), $('detail')]) {
+    d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
+  }
+
+  // ---------- 事件 ----------
+  function submitOrNext() {
+    const r = run();
+    if (r.feedback) { dispatch({ type: 'next' }); setTimeout(() => $('mainAction')?.focus({ preventScroll: true }), 0); scrollCardIntoView(); return; }
+    const qid = currentQuestionId(r);
+    if (!qid || !selection) return;
+    dispatch({ type: 'answer', feedback: checkAnswer(qid, selection) });
+    setTimeout(() => $('mainAction')?.focus({ preventScroll: true }), 0);
+  }
+  function scrollCardIntoView() {
+    const card = document.querySelector('.card');
+    const top = card.getBoundingClientRect().top;
+    if (top < 0) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('button, a');
+    if (!t) return;
+    if (t.dataset.close) { $(t.dataset.close).close(); return; }
+    if (t.dataset.choice && !run().feedback) { selection = t.dataset.choice; renderCard(); return; }
+    if (t.id === 'mainAction') { submitOrNext(); return; }
+    if (t.dataset.level) { selection = null; certDismissedFor = ''; dispatch({ type: 'level', levelId: Number(t.dataset.level) }); scrollCardIntoView(); return; }
+    if (t.hasAttribute('data-open-glossary')) { openGlossary(); return; }
+    if (t.dataset.lookup) { openGlossary(t.dataset.lookup); return; }
+    if (t.dataset.glLevel) { glLevel = Number(t.dataset.glLevel); $('glSearch').value = ''; renderGlossary(); return; }
+    if (t.dataset.idiom) { openDetail(t.dataset.idiom); return; }
+    const a = t.dataset.action;
+    if (a === 'review' || a === 'retry') { dispatch({ type: a }); scrollCardIntoView(); }
+    else if (a === 'open-cert') openCertDialog();
+    else if (a === 'download') downloadCertificate();
+    else if (a === 'print') window.print();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (document.querySelector('dialog[open]') || e.ctrlKey || e.metaKey || e.altKey) return;
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+    const r = run();
+    const qid = currentQuestionId(r);
+    if (!qid) return;
+    if (/^[1-4]$/.test(e.key) && !r.feedback) {
+      const q = questionById[qid];
+      const choices = shuffleWithSeed(q.choices, `${state.seed}-${r.attempt}-${q.id}-${r.reviewTurn}-choices`);
+      const c = choices[Number(e.key) - 1];
+      if (c) { selection = c.id; renderCard(); }
+    } else if (e.key === 'Enter' && (r.feedback || selection)) {
+      if (tag === 'button' || tag === 'a') return; // 已聚焦的按鈕交給瀏覽器原生 Enter 行為
+      e.preventDefault();
+      submitOrNext();
+    }
+  });
+  $('resetBtn').addEventListener('click', () => {
+    if (!window.confirm('確定要清除這台裝置上的成語闖關紀錄嗎？積分、進度與證書都會刪除，無法復原。')) return;
+    try { localStorage.removeItem(STORAGE_KEY); } catch { /* 無法存取儲存空間 */ }
+    state = createMastery(QSPEC, `guest-${randomId()}`);
+    selection = null; certDismissedFor = '';
+    saveState();
+    render();
+  });
+  window.addEventListener('storage', (e) => {
+    if (e.key !== STORAGE_KEY) return;
+    const next = loadState();
+    if (next) { state = next; selection = null; render(); }
+  });
+
+  render();
+  </script>
+<!-- 回段考入口按鈕（連到 periodicexam_115.html，依檔名自動帶到對應段考） -->
+<a id="pe115-home" href="periodicexam_115.html" aria-label="回到一一五上學期段考強化練習入口">🏠 段考入口</a>
+<style>
+#pe115-home{position:fixed;left:12px;bottom:12px;z-index:2147483000;display:inline-flex;align-items:center;gap:4px;
+  padding:8px 14px;border-radius:999px;background:rgba(31,36,51,.88);color:#fff !important;
+  font:600 14px/1.2 "Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
+  text-decoration:none !important;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+#pe115-home:hover{background:#3b5bdb}
+#pe115-home:focus-visible{outline:3px solid #748ffc;outline-offset:2px}
+body{padding-bottom:64px}
+@media print{#pe115-home{display:none}body{padding-bottom:0}}
+</style>
+<script>(function(){var m=location.pathname.match(/115010(\d)\.html?$/i),a=document.getElementById('pe115-home');if(m&&a)a.href='periodicexam_115.html#exam'+m[1];})();</script>
+<script>(function(){try{var m=location.pathname.match(/115010(\d)\.html?$/i),cn=["","一","二","三","四","五"];if(m&&cn[+m[1]]){var t="八年級成語 第"+cn[+m[1]]+"次段考強化練習";document.title=t;var h=document.getElementById("peTitle");if(h)h.textContent=t;}var r=document.getElementById("peRange");if(r&&typeof LEVELS!=="undefined"&&LEVELS.length)r.textContent="範圍："+LEVELS.map(function(l){return l.subtitle}).join("、");}catch(e){}})();</script>
+</body>
+</html>

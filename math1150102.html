@@ -4,6 +4,74 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>八年級數學 第二次段考強化練習</title>
+<script id="pe115-level">
+/* 一一五上學期段考強化練習｜練習等級（共用元件，各練習頁相同）
+   100%＝★★★★★、90%＝★★★★、80%＝★★★、70%＝★★、60%＝★，未滿 60% 尚未評級
+   成績存在 localStorage「pe115:levels」，入口網站讀同一份資料顯示各科練習等級。 */
+window.PE115 = (function () {
+  var KEY = 'pe115:levels';
+  var m = location.pathname.match(/([a-z]+115010\d)\.html?$/i);
+  var FILE = m ? m[1].toLowerCase() + '.html' : null;
+  function stars(p) { p = +p || 0; return p >= 99.95 ? 5 : p >= 90 ? 4 : p >= 80 ? 3 : p >= 70 ? 2 : p >= 60 ? 1 : 0; }
+  function starStr(n) { return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+  function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} }
+  function get() { return FILE ? load()[FILE] || null : null; }
+  function label(p) { var s = stars(p); return s ? '練習等級 ' + starStr(s) : '尚未評級'; }
+  function commit(pct, note, thisRun) {
+    if (!FILE) return;
+    var d = load(), r = d[FILE] || { best: 0, tries: 0 };
+    var before = stars(r.best);
+    r.tries = (r.tries || 0) + 1; r.last = Math.round(pct); r.best = Math.max(r.best || 0, Math.round(pct));
+    r.stars = stars(r.best); r.at = Date.now(); if (note) r.note = note;
+    d[FILE] = r; save(d); paint();
+    toast(thisRun, r, before, note);
+  }
+  /* 單一段考衝刺測驗：pct 為 0–100 */
+  function report(pct, note) { commit(pct, note, Math.round(pct)); }
+  /* 由多份測驗合成（例：兩關取較低、三科模擬卷平均）；未做的部分以 0 計 */
+  function part(id, pct, allIds, mode, note) {
+    if (!FILE) return;
+    var d = load(), r = d[FILE] || { best: 0, tries: 0 };
+    r.parts = r.parts || {}; r.parts[id] = Math.max(r.parts[id] || 0, Math.round(pct));
+    d[FILE] = r; save(d);
+    var vals = allIds.map(function (k) { return r.parts[k] || 0; });
+    var agg = mode === 'min' ? Math.min.apply(null, vals) : vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+    commit(agg, note + ' ' + Math.round(agg) + '%', Math.round(pct));
+  }
+  function paint() {
+    var r = get(), els = document.querySelectorAll('.pe-level');
+    for (var i = 0; i < els.length; i++) {
+      var html = r && r.stars
+        ? '<b>' + label(r.best) + '</b>（段考衝刺最佳 ' + r.best + '%' + (r.note ? '・' + r.note.replace(/ \d+%$/, '') : '') + '）'
+        : '練習等級：尚未評級（段考衝刺答對 60% 以上就會評級）';
+      if (els[i].getAttribute('data-pe') !== html) { els[i].innerHTML = html; els[i].setAttribute('data-pe', html); }
+    }
+  }
+  function toast(thisRun, r, before, note) {
+    var t = document.getElementById('pe-toast');
+    if (!t) { t = document.createElement('div'); t.id = 'pe-toast'; document.body.appendChild(t); }
+    var up = r.stars > before;
+    t.innerHTML = '本次 ' + thisRun + '%' + (note ? '｜' + note : '') + '<br><b>' + (r.stars ? label(r.best) : '練習等級：尚未評級') + '</b>' + (up ? '　⬆ 升級！' : '');
+    t.className = 'show';
+    clearTimeout(t._h); t._h = setTimeout(function () { t.className = ''; }, 5000);
+  }
+  var css = document.createElement('style');
+  css.textContent = '#pe-toast{position:fixed;left:50%;bottom:64px;transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:2147483001;' +
+    'background:rgba(31,36,51,.94);color:#fff;padding:12px 20px;border-radius:14px;text-align:center;line-height:1.6;' +
+    'font:600 15px/1.6 "Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.25);transition:.3s}' +
+    '#pe-toast.show{opacity:1;transform:translate(-50%,0)}#pe-toast b{color:#ffd43b;font-size:17px}' +
+    '.pe-level b{letter-spacing:1px}@media print{#pe-toast{display:none}}';
+  document.head.appendChild(css);
+  function watch() {
+    paint();
+    try { new MutationObserver(function () { if (document.querySelector('.pe-level:not([data-pe])')) paint(); })
+      .observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch); else watch();
+  return { stars: stars, starStr: starStr, label: label, report: report, part: part, get: get, paint: paint };
+})();
+</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <style>
@@ -277,8 +345,9 @@
       <h1>八年級數學 第二次段考強化練習</h1>
       <span class="range">範圍：2-2 根式的運算 ～ 3-2 利用十字交乘法因式分解（2-1 為暖身複習）</span><span class="total-chip" id="totalTxt"></span>
       <p class="sub" style="margin-top:8px">特色：數學闖關基地｜每個單元有 📘 課本例題、📒 習作、⚡ 速測三種關卡，答對拿積分、連續答對有連擊加成</p>
+      <p class="sub pe-level" style="margin-top:4px"></p>
       <div class="progress">
-        <div class="progress-top"><span>段考範圍通關進度（答對六成以上算通關）</span><span id="progTxt"></span></div>
+        <div class="progress-top"><span>段考範圍通關進度（答對六成以上得 ★ 算通關）</span><span id="progTxt"></span></div>
         <div class="progress-bar"><span id="progBar" style="width:0%"></span></div>
       </div>
     </div>
@@ -2063,14 +2132,14 @@ function partName(part){
 }
 
 /* ============ 紀錄 ============ */
-function readRec(id){try{return JSON.parse(localStorage.getItem(KEY+id))||null;}catch(e){return null;}}
+function readRec(id){try{const r=JSON.parse(localStorage.getItem(KEY+id))||null; if(r&&!r.v){r.stars=[0,1,3,5][r.stars]||0;r.v=5;} return r;}catch(e){return null;}}
 function saveRec(id,score,stars){
   try{ const r=readRec(id)||{score:0,stars:0};
-    localStorage.setItem(KEY+id,JSON.stringify({score:Math.max(r.score,score),stars:Math.max(r.stars,stars)})); }catch(e){}
+    localStorage.setItem(KEY+id,JSON.stringify({score:Math.max(r.score,score),stars:Math.max(r.stars,stars),v:5})); }catch(e){}
 }
 function readStyle(){try{return localStorage.getItem(KEY+'style')||'mc';}catch(e){return 'mc';}}
 function saveStyle(v){try{localStorage.setItem(KEY+'style',v);}catch(e){}}
-const starStr = r => r ? `<span class="on">${'★'.repeat(r.stars)}</span>${'☆'.repeat(3-r.stars)}` : '';
+const starStr = r => r ? `<span class="on">${'★'.repeat(r.stars)}</span>${'☆'.repeat(5-r.stars)}` : '';
 
 /* ============ 畫面切換 ============ */
 const $ = id=>document.getElementById(id);
@@ -2261,15 +2330,16 @@ function next(){
 /* ============ 結算 ============ */
 function showResult(){
   const n=S.items.length, correct=S.results.filter(r=>r&&r.correct).length, ratio=correct/n;
-  const stars = ratio===1?3 : ratio>=0.8?2 : ratio>=0.6?1 : 0;
+  const stars = PE115.stars(ratio*100);
   const rank = ratio===1?'👑 數學大師' : ratio>=0.8?'🥇 數學達人' : ratio>=0.6?'🥈 數學見習生' : '🌱 數學新手（再挑戰一次！）';
+  if(!S.saved && S.id==='boss') PE115.report(ratio*100);
   const wrong = S.items.map((_,i)=>i).filter(i=>!S.results[i].correct && !S.fixed.has(i));
   if(!S.saved){ saveRec(S.id,S.score,stars); S.saved=true; }
   const rec=readRec(S.id), boss=S.id==='boss';
   $('result').innerHTML=`
     <div class="result-top">
       <div style="color:var(--muted);font-weight:700">${S.title}</div>
-      <div class="stars">${[0,1,2].map(k=>`<span class="${k<stars?'':'off'}">⭐</span>`).join('')}</div>
+      <div class="stars">${[0,1,2,3,4].map(k=>`<span class="${k<stars?'':'off'}">⭐</span>`).join('')}</div>
       <p class="rank">${rank}</p>
       <p class="big-score">${S.score} 分</p>
       <div class="stats"><span class="stat">答對 ${correct} / ${n} 題</span><span class="stat">最高連擊 ${S.maxCombo}</span>
@@ -2288,7 +2358,7 @@ function showResult(){
       <button class="btn btn-primary" id="againBtn">${boss?'再抽一次魔王':'重新闖關'}</button>
       ${nextPartBtn()}
       ${boss?'':'<button class="btn btn-ghost" id="resOvBtn">題目總覽</button>'}
-      <button class="btn btn-ghost" id="resHomeBtn">🏠 回入口頁</button>
+      <button class="btn btn-ghost" id="resHomeBtn">← 回首頁</button>
     </div>`;
   if(wrong.length) $('retryBtn').onclick=()=>{ S.mode='retry'; S.queue=wrong; S.pos=0; show('game'); renderQuestion(); };
   $('againBtn').onclick=()=> boss?startBoss():startPart(S.id);
