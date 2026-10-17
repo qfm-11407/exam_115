@@ -12,7 +12,9 @@
   4. 新增科目：在 SUBJECTS 加一筆（順序即畫面上的科目順序），再到 CSS 的 :root 加一個顏色變數。
   5. GitHub 上本頁與各練習 HTML 放在同一層，連結 = SUBJECTS 的 dir（目前為 ''）＋ PAGES 的 file。
      資料夾結構改變時，只要改 dir。
-  6. 操作流程：首頁選段考 → 顯示該次段考的各科練習（網址會變成 #exam1、#exam2…，可直接分享）。
+  6. 卡片 title 寫該科特色名稱（例：數學闖關基地），不重複寫段考次數；練習頁本身的標題統一為
+     「八年級XX 第N次段考強化練習」，規格見專案文件「網站規格/段考強化練習_頁面標題與說明規格.md」。
+  7. 操作流程：首頁選段考 → 顯示該次段考的各科練習（網址會變成 #exam1、#exam2…，可直接分享）。
 -->
 <style>
 :root{
@@ -180,50 +182,50 @@ const SUBJECTS = [
 const PAGES = [
   // ---------- 第一次段考 ----------
   { exam: 1, subject: 'chinese', file: 'chinese1150101.html', status: 'soon',
-    title: '國文段考強化練習（一）', range: '第一次段考範圍', tags: [] },
+    title: '課文闖關', range: '第一次段考範圍', tags: [] },
   { exam: 1, subject: 'idioms', file: 'idioms1150101.html', status: 'ready',
-    title: '成語闖關之旅（一）', range: '第一次段考成語', tags: ['成語', '闖關'] },
+    title: '成語闖關之旅', range: '第 13～14 回試卷・成語典 P.178–209', tags: ['成語', '闖關'] },
   { exam: 1, subject: 'english', file: 'english1150101.html', status: 'soon',
-    title: '英文段考強化練習（一）', range: '第一次段考範圍', tags: [] },
+    title: '課文闖關', range: '第一次段考範圍', tags: [] },
   { exam: 1, subject: 'math', file: 'math1150101.html', status: 'soon',
-    title: '數學段考練習（一）', range: '第一次段考範圍', tags: [] },
+    title: '數學闖關基地', range: '第一次段考範圍', tags: [] },
   { exam: 1, subject: 'science', file: 'science1150101.html', status: 'ready',
-    title: '理化段考習作練習（一）', range: '第 1～2 章', tags: ['習作', '圖表重繪'] },
+    title: '習作練習', range: '第 1～2 章', tags: ['習作', '圖表重繪'] },
   { exam: 1, subject: 'social', file: 'social1150101.html', status: 'ready',
-    title: '社會段考強化練習（一）', range: '地理・歷史・公民 第 1～2 課',
+    title: '互動式測驗系統', range: '地理・歷史・公民 第 1～2 課',
     tags: ['地理 L1–2', '歷史 L1–2', '公民 L1–2'] },
 
   // ---------- 第二次段考 ----------
   { exam: 2, subject: 'chinese', file: 'chinese1150102.html', status: 'ready',
-    title: '國文段考強化練習（二）', range: '第四～六課・語文常識二',
+    title: '課文闖關', range: '第四～六課・語文常識二',
     tags: ['注音', '注釋', '句型', '改錯', '閱讀'] },
   { exam: 2, subject: 'idioms', file: 'idioms1150102.html', status: 'building',
-    title: '成語闖關之旅（二）', range: '第二次段考成語', tags: ['成語', '闖關'] },
+    title: '成語闖關之旅', range: '第二次段考成語', tags: ['成語', '闖關'] },
   { exam: 2, subject: 'english', file: 'english1150102.html', status: 'ready',
-    title: '英文段考強化練習（二）', range: 'Lesson 3、Lesson 4、Review 2',
+    title: '課文闖關', range: 'Lesson 3、Lesson 4、Review 2',
     tags: ['字彙', '文法', '翻譯', '改寫', '閱讀'] },
   { exam: 2, subject: 'math', file: 'math1150102.html', status: 'ready',
-    title: '數學段考練習（二）', range: '2-2～3-2（2-1 為複習）', tags: ['2-2', '2-3', '3-1', '3-2'] },
+    title: '數學闖關基地', range: '2-2～3-2（2-1 為暖身複習）', tags: ['2-2', '2-3', '3-1', '3-2'] },
   { exam: 2, subject: 'science', file: 'science1150102.html', status: 'ready',
-    title: '理化段考練習（二）', range: '第 3～4 章・習作＋章節練習＋段考模擬',
+    title: '習作練習', range: '第 3～4 章・習作＋章節練習＋段考模擬',
     tags: ['習作', '第三章練習', '第四章練習', '段考模擬', '逐題檢討'] },
   { exam: 2, subject: 'social', file: 'social1150102.html', status: 'ready',
-    title: '社會段考強化練習（二）', range: '地理・歷史・公民 第 3～4 課',
-    tags: ['地理 L3–4', '歷史 L3–4', '公民 L3–4'] },
+    title: '互動式測驗系統', range: '地理・歷史・公民 第 3～4 課',
+    tags: ['地理 L3–4', '歷史 L3–4', '公民 L3–4', '各科模擬卷'] },
 
   // ---------- 第三次段考 ----------
   { exam: 3, subject: 'chinese', file: 'chinese1150103.html', status: 'soon',
-    title: '國文段考強化練習（三）', range: '第三次段考範圍', tags: [] },
+    title: '課文闖關', range: '第三次段考範圍', tags: [] },
   { exam: 3, subject: 'idioms', file: 'idioms1150103.html', status: 'soon',
-    title: '成語闖關之旅（三）', range: '第三次段考成語', tags: [] },
+    title: '成語闖關之旅', range: '第三次段考成語', tags: [] },
   { exam: 3, subject: 'english', file: 'english1150103.html', status: 'soon',
-    title: '英文段考強化練習（三）', range: '第三次段考範圍', tags: [] },
+    title: '課文闖關', range: '第三次段考範圍', tags: [] },
   { exam: 3, subject: 'math', file: 'math1150103.html', status: 'soon',
-    title: '數學段考練習（三）', range: '第三次段考範圍', tags: [] },
+    title: '數學闖關基地', range: '第三次段考範圍', tags: [] },
   { exam: 3, subject: 'science', file: 'science1150103.html', status: 'soon',
-    title: '理化段考習作練習（三）', range: '第三次段考範圍', tags: [] },
+    title: '習作練習', range: '第三次段考範圍', tags: [] },
   { exam: 3, subject: 'social', file: 'social1150103.html', status: 'soon',
-    title: '社會段考強化練習（三）', range: '第三次段考範圍', tags: [] }
+    title: '互動式測驗系統', range: '第三次段考範圍', tags: [] }
 ];
 
 const STATUS_TEXT = { ready: '開放練習', building: '建置中', soon: '即將推出' };
@@ -294,7 +296,7 @@ function card(p) {
 function renderExam(n) {
   const e = EXAMS.find(x => x.n === n);
   const list = pagesOf(n);
-  document.getElementById('sub').textContent = '選擇科目開始練習，練完記得按「標記練完」！';
+  document.getElementById('sub').textContent = '適用：課前預習・課後複習・自主練習・段考衝刺｜練完記得按「標記練完」';
   document.getElementById('main').innerHTML = `
     <div class="exam-head">
       <button type="button" class="back" data-home>← 回段考選單</button>
