@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#082f49">
-  <meta name="description" content="第3章波動與聲音、第4章光的習作、章節練習與段考複習，選項每次隨機排列。">
+  <meta name="description" content="第3章波動與聲音、第4章光的習作、章節練習與段考模擬，選項每次隨機排列。">
   <title>115學年度第一學期第二次段考理化習作練習</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23082f49'/%3E%3Cpath d='M24 12h16M28 12v15L17 48a5 5 0 0 0 4 7h22a5 5 0 0 0 4-7L36 27V12' fill='none' stroke='%2367e8f9' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M22 44h20' stroke='%23fbbf24' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
   <style>
@@ -169,6 +169,36 @@
     .review-item summary { cursor: pointer; line-height: 1.6; }
     .review-item p { margin: 8px 0 0; }
     .review-explain { color: var(--muted); }
+    .course-menu { margin: 22px 0 8px; }
+    .menu-title { margin: 0 0 14px; font-size: 1.2rem; }
+    .course-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .course-card { border-radius: 22px; border: 1px solid rgba(151,183,201,.65); background: white; box-shadow: var(--shadow); padding: 20px; text-align: left; color: var(--ink); font: inherit; }
+    .course-main { grid-column: 1 / -1; padding: clamp(22px, 4vw, 36px); background: linear-gradient(135deg, #ecfeff 0%, #fffbeb 100%); border: 2px solid var(--cyan); }
+    .course-main h3 { margin: 10px 0 6px; font-size: clamp(1.7rem, 4.5vw, 2.4rem); line-height: 1.25; }
+    .course-main p { margin: 0; color: #334e61; }
+    .course-kicker { display: inline-block; padding: 4px 12px; border-radius: 999px; background: var(--amber); font-size: .85rem; font-weight: 800; }
+    .course-actions { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 12px; margin-top: 20px; }
+    .course-btn { min-height: 60px; padding: 10px 14px; border: 2px solid var(--ink); border-radius: 16px; background: white; color: var(--ink); font: inherit; font-weight: 800; cursor: pointer; transition: transform .15s ease; }
+    .course-btn.primary-btn { background: var(--ink); color: white; font-size: 1.1rem; }
+    .course-btn span { font-weight: 700; opacity: .8; }
+    .course-small { display: grid; gap: 6px; align-content: start; min-height: 150px; cursor: pointer; transition: transform .15s ease, border-color .15s ease; }
+    .course-small:hover, .course-btn:hover { transform: translateY(-2px); border-color: var(--cyan); }
+    .course-small:focus-visible, .course-btn:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
+    .course-icon { font-size: 1.8rem; line-height: 1; }
+    .course-name { font-size: 1.25rem; font-weight: 900; }
+    .course-desc { color: var(--muted); font-size: .92rem; }
+    .course-count { justify-self: start; margin-top: 4px; padding: 3px 12px; border-radius: 999px; background: var(--cyan-soft); font-weight: 800; font-size: .9rem; }
+    #quizToolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    #quizToolbar[hidden] { display: none !important; }
+    .current-range { flex: 1 1 auto; font-size: 1.05rem; }
+    @media (max-width: 800px) {
+      .course-grid { grid-template-columns: 1fr; gap: 12px; }
+      .course-actions { grid-template-columns: 1fr; }
+      .course-small { min-height: 0; grid-template-columns: 40px 1fr auto; align-items: center; column-gap: 10px; padding: 14px 16px; }
+      .course-small .course-icon { grid-row: span 2; }
+      .course-small .course-count { grid-row: span 2; grid-column: 3; margin: 0; }
+      .course-small .course-name, .course-small .course-desc { grid-column: 2; }
+    }
     .learning-status { margin: 0 0 20px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 16px; background: white; }
     .learning-status strong { color: #0e7490; margin-right: 16px; }
     .learning-status p { margin: 6px 0 0; color: var(--muted); font-size: .92rem; }
@@ -234,31 +264,44 @@
         <div class="mark" aria-hidden="true">⚗</div>
         <div>
           <h1>115學年度第一學期第二次段考理化習作練習</h1>
-          <p class="meta">第3章 波動與聲音・第4章 光｜習作＋章節練習＋段考複習</p>
+          <p class="meta">第3章 波動與聲音・第4章 光｜習作＋章節練習＋段考模擬</p>
           <p class="meta">每次開啟、重新整理或重新開始，都會重排題目與選項。</p>
         </div>
       </div>
     </header>
 
-    <section class="toolbar" aria-label="測驗範圍">
-      <div class="segments" id="segments">
-        <button class="segment" data-filter="all" aria-pressed="true">習作全部 <span id="allCount"></span></button>
-        <button class="segment" data-filter="ch3" aria-pressed="false">習作第3章 <span id="ch3Count"></span></button>
-        <button class="segment" data-filter="ch4" aria-pressed="false">習作第4章 <span id="ch4Count"></span></button>
-        <button class="segment" data-filter="p3" aria-pressed="false">第3章練習 <span id="p3Count"></span></button>
-        <button class="segment" data-filter="p4" aria-pressed="false">第4章練習 <span id="p4Count"></span></button>
-        <button class="segment" data-filter="rev" aria-pressed="false">段考複習 <span id="revCount"></span></button>
+    <section class="course-menu" id="courseMenu" aria-label="課程選單">
+      <h2 class="menu-title">選擇要練習的課程</h2>
+      <div class="course-grid">
+        <article class="course-card course-main">
+          <span class="course-kicker">最重要・建議先完成</span>
+          <h3>📘 習作練習</h3>
+          <p>第 3、4 章習作的每一題，含實驗紀錄、學力養成與素養題，附重新繪製的圖。</p>
+          <div class="course-actions">
+            <button class="course-btn primary-btn" data-filter="all">全部習作 <span id="allCount"></span></button>
+            <button class="course-btn" data-filter="ch3">第3章 波動與聲音 <span id="ch3Count"></span></button>
+            <button class="course-btn" data-filter="ch4">第4章 光 <span id="ch4Count"></span></button>
+          </div>
+        </article>
+        <button class="course-card course-small" data-filter="p3"><span class="course-icon" aria-hidden="true">🔊</span><span class="course-name">第三章練習</span><span class="course-desc">波動與聲音・同步卷、課次卷精選</span><span class="course-count" id="p3Count"></span></button>
+        <button class="course-card course-small" data-filter="p4"><span class="course-icon" aria-hidden="true">💡</span><span class="course-name">第四章練習</span><span class="course-desc">光・同步卷、課次卷精選</span><span class="course-count" id="p4Count"></span></button>
+        <button class="course-card course-small" data-filter="rev"><span class="course-icon" aria-hidden="true">📝</span><span class="course-name">段考模擬</span><span class="course-desc">第 3～4 章綜合，模擬段考題型</span><span class="course-count" id="revCount"></span></button>
       </div>
+    </section>
+
+    <section class="toolbar" id="quizToolbar" aria-label="目前練習" hidden>
+      <button class="ghost" id="backToMenu">← 課程選單</button>
+      <strong class="current-range" id="currentRange"></strong>
       <button class="ghost" id="reshuffle" title="清除本次進度，重新排列題目與選項">重新開始</button>
     </section>
 
-    <section class="learning-status" aria-label="通關進度" aria-live="polite">
+    <section class="learning-status" id="statusPanel" aria-label="通關進度" aria-live="polite" hidden>
       <strong id="modeLabel">正式測驗</strong><span id="streakStatus"></span>
       <p id="learningHint"></p>
       <p>所選範圍一次正式測驗全對即可通關領證；錯題複習完成後，請重新挑戰完整範圍。</p>
     </section>
 
-    <section class="workspace">
+    <section class="workspace" id="workspace" hidden>
       <article class="card" aria-live="polite">
         <div class="progress-rail"><div class="progress-bar" id="progressBar"></div></div>
         <div id="quizArea" class="question-wrap">
@@ -1752,8 +1795,8 @@
       }
       return arr;
     };
-    const CHAPTER_NAMES = { ch3: '第3章 波動與聲音', ch4: '第4章 光', p3: '第3章練習', p4: '第4章練習', rev: '段考複習' };
-    const RANGE_NAMES = { all: '習作全部｜第3章＋第4章', ch3: '習作｜第3章 波動與聲音', ch4: '習作｜第4章 光', p3: '第3章練習題', p4: '第4章練習題', rev: '第二次段考複習' };
+    const CHAPTER_NAMES = { ch3: '第3章 波動與聲音', ch4: '第4章 光', p3: '第3章練習', p4: '第4章練習', rev: '段考模擬' };
+    const RANGE_NAMES = { all: '習作全部｜第3章＋第4章', ch3: '習作｜第3章 波動與聲音', ch4: '習作｜第4章 光', p3: '第3章練習題', p4: '第4章練習題', rev: '第二次段考模擬' };
     const chapterName = (chapter) => CHAPTER_NAMES[chapter];
     const rangeName = () => RANGE_NAMES[state.filter];
     const isPerfect = () => state.mode === 'exam' && state.completed && state.queue.length > 0 && state.correct === state.queue.length;
@@ -2049,12 +2092,30 @@
       $('learningHint').textContent = reviewing ? `正式測驗結果：${state.examResult.correct}／${state.examResult.total}。共 ${state.reviewTotal} 題錯題，尚有 ${state.reviewPending.size} 題待答對；答錯會再出現，答對才移出。` : `本輪包含所選範圍全部 ${total} 題，全部答對即可通關；有錯題則於測驗結束後進入複習。`;
     }
 
-    $('segments').addEventListener('click', (event) => {
-      const button = event.target.closest('[data-filter]');
-      if (!button) return;
-      document.querySelectorAll('[data-filter]').forEach(el => el.setAttribute('aria-pressed', String(el === button)));
-      state.filter = button.dataset.filter;
+    // 課程選單與作答畫面切換
+    function showQuizView(on) {
+      $('courseMenu').hidden = on;
+      $('quizToolbar').hidden = !on;
+      $('statusPanel').hidden = !on;
+      $('workspace').hidden = !on;
+      $('currentRange').textContent = rangeName();
+    }
+    function startRange(filter) {
+      state.filter = filter;
       resetQuiz();
+      showQuizView(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    $('courseMenu').addEventListener('click', (event) => {
+      const button = event.target.closest('[data-filter]');
+      if (button) startRange(button.dataset.filter);
+    });
+    $('backToMenu').addEventListener('click', () => {
+      const hasProgress = state.mode === 'review' || state.index > 0 || state.locked || state.selected !== null;
+      if (!state.completed && hasProgress && !window.confirm('回到課程選單會清除本輪答案與進度，確定要離開嗎？')) return;
+      if ($('nameDialog').open) $('nameDialog').close();
+      showQuizView(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
     $('checkAnswer').addEventListener('click', checkAnswer);
     $('nextQuestion').addEventListener('click', nextQuestion);
@@ -2067,7 +2128,7 @@
       if (state.completed && !$('openCertificate').hidden) $('openCertificate').focus();
     });
     document.addEventListener('keydown', (event) => {
-      if ($('nameDialog').open || state.completed) return;
+      if (!$('courseMenu').hidden || $('nameDialog').open || state.completed) return;
       if (!state.locked && ['1','2','3','4'].includes(event.key)) {
         const option = document.querySelectorAll('.option')[Number(event.key) - 1];
         if (option) selectOption(option);
@@ -2078,8 +2139,9 @@
       }
     });
     const countOf = (...chapters) => questions.filter(q => chapters.includes(q.chapter)).length;
-    $('allCount').textContent = `(${countOf('ch3', 'ch4')})`;
-    for (const key of ['ch3', 'ch4', 'p3', 'p4', 'rev']) $(`${key}Count`).textContent = `(${countOf(key)})`;
+    $('allCount').textContent = `${countOf('ch3', 'ch4')} 題`;
+    for (const key of ['ch3', 'ch4', 'p3', 'p4', 'rev']) $(`${key}Count`).textContent = `${countOf(key)} 題`;
+    showQuizView(false);
     resetQuiz();
   </script>
 <!-- 回段考入口按鈕（連到 periodicexam_115.html，依檔名自動帶到對應段考） -->
