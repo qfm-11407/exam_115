@@ -821,7 +821,7 @@ function retryWrong() {
   const wrong = Q.items.filter((q, k) => !(Q.res[k] && Q.res[k].ok));
   if (!wrong.length) return;
   const L = Q.L, U = Q.U;
-  Q = newQ({ mode: "practice", retry: true, L, U, title: `${L.title}｜${U.title}（錯題再練）`, items: orderItems(wrong) });
+  Q = newQ({ mode: "practice", retry: true, L, U, title: `${L.title}｜${U.title}（錯題重練）`, items: orderItems(wrong) });
   renderQ();
 }
 function startMock() {
@@ -988,9 +988,9 @@ function finishPractice() {
   const nextBtn = nu && !nu.exam ? `<button class="btn ghost" onclick="startUnit('${Q.L.id}','${nu.id}')">下一單元：${nu.title} →</button>` : `<button class="btn ghost" onclick="showLesson('${Q.L.id}')">回 ${Q.L.title}</button>`;
   $app.innerHTML = `<div class="topbar"><button class="back" onclick="showLesson('${Q.L.id}')">← 回 ${Q.L.title}</button></div>
     <div class="result"><div class="bigstars">${starHTML(st).replace('class="stars"', "")}</div>
-      <h2>${Q.U.icon} ${Q.U.title}${Q.retry ? "（錯題再練）" : ""}</h2><div class="score">${c} / ${n}</div>
+      <h2>${Q.U.icon} ${Q.U.title}${Q.retry ? "（錯題重練）" : ""}</h2><div class="score">${c} / ${n}</div>
       <div>${msg}${newBest ? "　<b>（新紀錄！）</b>" : ""}</div>
-      <div style="margin-top:8px;color:var(--muted)">本次獲得 <b>${Q.xp} XP</b>・最高連擊 🔥 ${Q.best}${Q.retry ? "・錯題再練不列入星等" : ""}</div>
+      <div style="margin-top:8px;color:var(--muted)">本次獲得 <b>${Q.xp} XP</b>・最高連擊 🔥 ${Q.best}${Q.retry ? "・錯題重練不列入星等" : ""}</div>
       <div class="tools" style="justify-content:center">
         <button class="btn" onclick="startUnit('${Q.L.id}','${Q.U.id}')">↻ 整個單元再挑戰</button>
         ${wrong ? `<button class="btn" style="background:#c43c2f" onclick="retryWrong()">🔁 錯題重練（${wrong} 題）</button>` : ""}

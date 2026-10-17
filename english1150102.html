@@ -271,7 +271,7 @@ const GR  = (kind, title, html, notes, qs) => { const id = "p" + (++_gid); retur
 <script>
 /* ===== L3 Tina and Billy Were Looking for Water ===== */
 LESSONS.push({
-  id: "L3", icon: "🐦", color: "#2f7d4f", soft: "#e4f3ea",
+  id: "L3", icon: "🐦", color: "#6741d9", soft: "#efeafd",
   title: "Lesson 3", en: "Tina and Billy Were Looking for Water",
   badge: "森林探險家",
   points: ["when / before / after", "過去進行式 was / were + V-ing", "時間說法 a quarter / half / to / past", "動物與故事單字"],
@@ -391,7 +391,7 @@ LESSONS.push({
 
 /* ===== L4 I Want to Be a YouTuber ===== */
 LESSONS.push({
-  id: "L4", icon: "🎬", color: "#d4532c", soft: "#fbe9e2",
+  id: "L4", icon: "🎬", color: "#6741d9", soft: "#efeafd",
   title: "Lesson 4", en: "I Want to Be a YouTuber",
   badge: "夢想職人",
   points: ["want / need / plan / learn + to V", "enjoy / keep / finish / practice + V-ing", "動名詞當主詞・虛主詞 It", "職業單字與 -er / -or / -r"],
@@ -512,7 +512,7 @@ LESSONS.push({
 
 /* ===== Review 2 ===== */
 LESSONS.push({
-  id: "R2", icon: "🔁", color: "#4453c9", soft: "#e7e9fb",
+  id: "R2", icon: "🔁", color: "#6741d9", soft: "#efeafd",
   title: "Review 2", en: "L3 + L4 綜合複習",
   badge: "時態大師",
   points: ["四種時態整合", "不定詞 vs. 動名詞", "依提示改寫句子", "Email・公告・日記閱讀"],
@@ -625,7 +625,7 @@ LESSONS.push({
 
 /* ===== 模擬段考（配分比照第二次段考題庫卷）===== */
 const MOCK = {
-  id: "MOCK", icon: "🏆", color: "#b07800", soft: "#fbf1d6",
+  id: "MOCK", icon: "🏆", color: "#6741d9", soft: "#efeafd",
   title: "模擬段考", en: "第二次段考 L3–L4 模擬卷",
   sections: [
     { name: "一、字彙測驗", pts: 2, qs: [
@@ -728,7 +728,7 @@ const MOCK = {
 </script>
 <script>
 /* ================= 練習引擎 ================= */
-const KEY = "eng1150102_progress";
+const KEY = "english1150102:progress-v1", OLD_KEY = "eng1150102_progress";
 const TOTAL_UNITS = LESSONS.reduce((s, l) => s + l.units.length, 0);
 let P = loadP(); migrateStars();
 let Q = null;           // 目前作答中的測驗
@@ -737,6 +737,7 @@ const $app = document.getElementById("app");
 function loadP() {
   let d = null;
   try { d = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+  if (!d) { try { d = JSON.parse(localStorage.getItem(OLD_KEY)); if (d) { localStorage.setItem(KEY, JSON.stringify(d)); localStorage.removeItem(OLD_KEY); } } catch (e) {} }
   return Object.assign({ units: {}, xp: 0, mock: null }, d || {});
 }
 function saveP() { try { localStorage.setItem(KEY, JSON.stringify(P)); } catch (e) {} }
@@ -793,7 +794,7 @@ function clockSVG(h, m) {
 /* ================= 首頁 ================= */
 function showHome() {
   Q = null;
-  setTheme("#2f7d4f", "#e4f3ea");
+  setTheme("#6741d9", "#efeafd");
   const st = totalStars(), max = TOTAL_UNITS * 5, unlocked = mockUnlocked();
   let cards = LESSONS.map(L => {
     const s = lessonStars(L), m = L.units.length * 5;
@@ -825,9 +826,9 @@ function showHome() {
         <div class="stat"><span class="rank">${rankOf(st)}</span></div>
       </div>
     </div>
-    <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先做該課的「單字闖關」，熟悉新單字。</li><li><b>✍️ 課後複習：</b>上完一課，做該課的文法單元（L3 時間說法、when / before / after；L4 不定詞、動名詞）。</li><li><b>🎯 自主練習：</b>到 Review 2 混合練習時態、改寫與閱讀；做完看「錯題詳解」，把錯的弄懂再挑戰。</li><li><b>🏆 段考衝刺：</b>三課各完成 3 個小單元後，挑戰模擬段考（47 題・滿分 100）。</li></ul></details>
+    <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先做該課的「單字闖關」，熟悉新單字。</li><li><b>✍️ 課後複習：</b>上完一課，做該課的文法單元（L3 時間說法、when / before / after；L4 不定詞、動名詞）。</li><li><b>🎯 自主練習：</b>到 Review 2 混合練習時態、改寫與閱讀；做完先看「錯題詳解」，再按「錯題重練」只重做答錯的題目。</li><li><b>🏆 段考衝刺：</b>三課各完成 3 個小單元後，挑戰模擬段考（47 題・滿分 100）。</li></ul></details>
     <div class="grid">${cards}</div>
-    <div class="howto"><b>闖關規則</b>　每個小單元依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★。模擬段考的成績就是本頁的「練習等級」。答對 +10 XP，連續答對還有 🔥 連擊加分；文意字彙用了 💡 提示只拿 +5 XP。三課都完成 3 個小單元後，就能挑戰 🏆 模擬段考！</div>
+    <div class="howto"><b>闖關規則</b>　每個小單元依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★。模擬段考的成績就是本頁的「練習等級」；「錯題重練」可以反覆訂正，但不計入星星與練習等級。答對 +10 XP，連續答對還有 🔥 連擊加分；文意字彙用了 💡 提示只拿 +5 XP。三課都完成 3 個小單元後，就能挑戰 🏆 模擬段考！</div>
     <footer>八年級英文 第二次段考 L3–L4・R2 練習</footer>`;
   scrollTo(0, 0);
 }
@@ -856,7 +857,7 @@ function showLesson(id) {
   const s = lessonStars(L), m = L.units.length * 5;
   $app.innerHTML = `
     <div class="topbar"><button class="back" onclick="showHome()">← 回首頁</button><span class="pill">★ ${s} / ${m}</span>${s === m ? `<span class="pill">🎖️ ${L.badge}</span>` : ""}</div>
-    <div class="banner" style="background:linear-gradient(135deg,${L.color},${L.color}cc)"><div class="big">${L.icon}</div>
+    <div class="banner" style="background:linear-gradient(135deg,#3f2a8c,#6741d9)"><div class="big">${L.icon}</div>
       <h2>${L.title}</h2><div class="en">${L.en}</div>
       <div class="pts">${L.points.map(p => `<span class="chip">${p}</span>`).join("")}</div></div>
     <div class="units">${us}</div>`;
@@ -1059,7 +1060,7 @@ function check() {
   renderQ();
 }
 function flash(t, color) { const d = document.createElement("div"); d.className = "xp-pop"; d.textContent = t; if (color) d.style.color = color; document.body.appendChild(d); setTimeout(() => d.remove(), 900); }
-function nextQ() { if (Q.i < Q.items.length - 1) { Q.i++; renderQ(); scrollTop(); } else finishPractice(); }
+function nextQ() { if (Q.i < Q.items.length - 1) { Q.i++; renderQ(); scrollTop(); } else if (Q.mode === "retry") finishRetry(); else finishPractice(); }
 function move(d) { saveIfText(); Q.i = Math.min(Math.max(Q.i + d, 0), Q.items.length - 1); renderQ(); scrollTop(); }
 function jump(k) { saveIfText(); Q.i = k; renderQ(); scrollTop(); }
 function saveIfText() { const t = Q.items[Q.i].t; if (t === "sp" || t === "fi" || t === "rw") saveInputs(); }
@@ -1067,7 +1068,7 @@ function scrollTop() { scrollTo({ top: 0, behavior: "smooth" }); }
 function quitQ() {
   const started = Q.ans.some(x => x != null);
   if (started && !confirmBox()) return;
-  if (Q.mode === "exam") showHome(); else showLesson(Q.L.id);
+  if (Q.mode === "exam" || !Q.U) showHome(); else showLesson(Q.L.id);
 }
 function confirmBox() { return window.confirm("確定要離開嗎？這次的作答不會記錄。"); }
 
@@ -1097,9 +1098,34 @@ function finishPractice() {
       <div style="margin-top:8px;color:var(--muted)">本次獲得 <b>${Q.xp} XP</b>・最高連擊 🔥 ${Q.best}</div>
       <div class="tools" style="justify-content:center">
         <button class="btn" onclick="startUnit('${Q.L.id}','${Q.U.id}')">↻ 再挑戰一次</button>
-        ${nu ? `<button class="btn ghost" onclick="startUnit('${Q.L.id}','${nu.id}')">下一單元：${nu.title} →</button>` : `<button class="btn ghost" onclick="showHome()">回首頁</button>`}
+        ${retryBtn()}
+        ${nu ? `<button class="btn ghost" onclick="startUnit('${Q.L.id}','${nu.id}')">下一單元：${nu.title} →</button>` : `<button class="btn ghost" onclick="showHome()">← 回首頁</button>`}
       </div></div>
     <div class="review"><h3>${wrong ? `📌 錯題詳解（${wrong} 題）` : "📌 全部答對！以下是本單元詳解"}</h3>${reviewHTML(wrong > 0)}</div>`;
+  scrollTo(0, 0);
+}
+/* ---------- 錯題重練：只重做答錯的題目，成績不計入星星、最佳成績與練習等級 ---------- */
+function wrongIdx(src) { return src.items.map((q, k) => (src.res[k] && src.res[k].ok) ? -1 : k).filter(k => k >= 0); }
+function retryBtn() { const n = wrongIdx(Q).length; return n ? `<button class="btn" style="background:#c43c2f" onclick="startRetry()">🔁 錯題重練（${n} 題）</button>` : ""; }
+function startRetry() {
+  const src = Q, items = wrongIdx(src).map(k => prep(src.items[k]));
+  if (!items.length) return;
+  if (src.L.color) setTheme(src.L.color, src.L.soft);
+  Q = { mode: "retry", L: src.L, U: src.U, title: `🔁 錯題重練｜${src.U ? src.L.title + "・" + src.U.title : "模擬段考"}`, items, i: 0, ans: items.map(() => null), res: items.map(() => null), xp: 0, combo: 0, best: 0, hint: {}, psgOpen: true };
+  renderQ(); scrollTo(0, 0);
+}
+function finishRetry() {
+  const n = Q.items.length, c = Q.res.filter(r => r && r.ok).length, left = n - c;
+  P.xp += Q.xp; saveP();
+  const back = Q.U ? `<button class="back" onclick="showLesson('${Q.L.id}')">← 回 ${Q.L.title}</button>` : `<button class="back" onclick="showHome()">← 回首頁</button>`;
+  const again = Q.U ? `<button class="btn ghost" onclick="startUnit('${Q.L.id}','${Q.U.id}')">↻ 整個單元再挑戰</button>` : `<button class="btn ghost" onclick="startMock()">↻ 模擬段考重新作答</button>`;
+  $app.innerHTML = `<div class="topbar">${back}</div>
+    <div class="result"><div style="font-size:52px">${left ? "🔁" : "🎉"}</div><h2>錯題重練完成</h2>
+      <div class="score">${c} / ${n}</div>
+      <div>${left ? `還有 ${left} 題沒弄懂，看完錯題詳解再練一次！` : "錯題全部訂正完成，太棒了！"}</div>
+      <div style="margin-top:8px;color:var(--muted)">本次獲得 <b>${Q.xp} XP</b>・錯題重練不計入星星與練習等級</div>
+      <div class="tools" style="justify-content:center">${retryBtn()}${again}</div></div>
+    ${left ? `<div class="review"><h3>📌 錯題詳解（${left} 題）</h3>${reviewHTML(true)}</div>` : ""}`;
   scrollTo(0, 0);
 }
 function submitExam() {
@@ -1116,7 +1142,7 @@ function submitExam() {
     <div class="result"><div style="font-size:52px">🏆</div><h2>模擬段考成績</h2>
       <div class="score">${score} 分</div><div><b>${lv}</b>${!first && score >= P.mock ? "　（最佳紀錄）" : ""}</div>
       <div class="secs">${secs.map(s => `<div class="sec">${s.name}<b>${s.pts} / ${s.max} 分</b>答對 ${s.c} / ${s.n}</div>`).join("")}</div>
-      <div class="tools" style="justify-content:center"><button class="btn" onclick="startMock()">↻ 重新作答</button><button class="btn ghost" onclick="showHome()">回首頁</button></div></div>
+      <div class="tools" style="justify-content:center"><button class="btn" onclick="startMock()">↻ 重新作答</button>${retryBtn()}<button class="btn ghost" onclick="showHome()">← 回首頁</button></div></div>
     <div class="review"><h3>📌 錯題詳解（${Q.res.filter(r => !r.ok).length} 題）</h3>${reviewHTML(true)}</div>`;
   scrollTo(0, 0);
 }

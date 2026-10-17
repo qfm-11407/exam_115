@@ -235,6 +235,8 @@ window.PE115 = (function () {
     .review-item b { color: var(--bad); }
     .learning-status { margin: 0 0 20px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 16px; background: white; }
     .learning-status strong { color: #0e7490; margin-right: 16px; }
+    .best-line { font-weight: 700; }
+    .course-best { display: block; margin-top: 2px; font-size: .82rem; font-weight: 700; opacity: .85; }
     .learning-status p { margin: 6px 0 0; color: var(--muted); font-size: .92rem; }
     [hidden] { display: none !important; }
     .certificate {
@@ -308,7 +310,7 @@ window.PE115 = (function () {
 .course-btn{border-color:#2b8a3e}
 .course-main{background:linear-gradient(135deg,#ebfbee 0%,#fffbeb 100%) !important;border-color:#2b8a3e !important}
 .course-small:hover,.course-btn:hover{border-color:#2b8a3e !important}
-.tag,.learning-status strong,.finish .result{color:#2b8a3e !important}
+.tag,.learning-status strong,.finish .result,.best-line{color:#2b8a3e !important}
 </style>
 </head>
 <body>
@@ -338,6 +340,7 @@ window.PE115 = (function () {
     <section class="learning-status" aria-label="通關進度" aria-live="polite">
       <strong id="modeLabel">正式測驗</strong><span id="streakStatus"></span>
       <p id="learningHint"></p>
+      <p class="best-line" id="bestLine"></p>
       <p>所選範圍一次正式測驗全對即可通關領證；錯題重練完成後，請重新挑戰完整範圍。</p>
     </section>
 
@@ -1189,10 +1192,10 @@ const EXTRA_QUESTIONS = [
       });
       const feedback = $('feedback');
       feedback.className = `feedback show ${isCorrect ? 'good' : 'bad'}`;
-      feedback.innerHTML = `<strong>${isCorrect ? '答對了' : '再想一下'}</strong><span>${item.explain}</span>${state.mode === 'review' ? `<p>${isCorrect ? '這題已答對，移出待複習清單。' : '這題會再次出現，答對後才會移出待複習清單。'}</p>` : ''}`;
+      feedback.innerHTML = `<strong>${isCorrect ? '答對了' : '再想一下'}</strong><span>${item.explain}</span>${state.mode === 'review' ? `<p>${isCorrect ? '這題已答對，移出待重練清單。' : '這題會再次出現，答對後才會移出待重練清單。'}</p>` : ''}`;
       $('checkAnswer').hidden = true;
       $('nextQuestion').hidden = false;
-      $('nextQuestion').textContent = state.mode === 'review' ? (state.reviewPending.size === 0 ? '完成複習' : '繼續複習') : (state.index === state.queue.length - 1 ? (state.mistakes.length ? '查看結果，進入錯題重練' : '查看結果') : '下一題');
+      $('nextQuestion').textContent = state.mode === 'review' ? (state.reviewPending.size === 0 ? '完成錯題重練' : '繼續重練') : (state.index === state.queue.length - 1 ? (state.mistakes.length ? '查看結果，進入錯題重練' : '查看結果') : '下一題');
       updateStats();
       $('nextQuestion').focus();
     }
@@ -1217,10 +1220,33 @@ const EXTRA_QUESTIONS = [
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // 進度保存：各範圍正式測驗的最佳答對率與練習次數（錯題重練不計入）
+    const PROGRESS_KEY = 'science1150101:progress-v1';
+    function loadProgress() { try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch (_) { return {}; } }
+    function saveProgress(p) { try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); } catch (_) {} }
+    function recordProgress(filter, correct, total) {
+      const p = loadProgress();
+      const pct = Math.round(correct / total * 100);
+      const r = p[filter] || { best: 0, times: 0 };
+      r.best = Math.max(r.best, pct); r.times += 1; r.last = pct;
+      p[filter] = r;
+      saveProgress(p);
+      paintProgress();
+    }
+    function progressText(filter) {
+      const r = loadProgress()[filter];
+      return r ? `${r.best === 100 ? '🏆 ' : ''}最佳 ${r.best}%・練過 ${r.times} 次` : '尚未練習';
+    }
+    function paintProgress() {
+      document.querySelectorAll('[data-best]').forEach(el => { el.textContent = progressText(el.dataset.best); });
+      $('bestLine').textContent = `本範圍紀錄：${progressText(state.filter)}`;
+    }
+
     function finish() {
       if (state.mode !== 'exam' || state.completed || !state.locked || state.index !== state.queue.length - 1) return;
       state.completed = true;
       state.examResult = { total: state.queue.length, correct: state.correct, mistakes: [...state.mistakes] };
+      recordProgress(state.filter, state.correct, state.queue.length);
       if (state.filter === 'all') PE115.report(state.correct / state.queue.length * 100);
       const perfect = state.correct === state.queue.length;
       if (!perfect) return startReview();
@@ -1270,7 +1296,7 @@ const EXTRA_QUESTIONS = [
       $('finalScore').textContent = `${state.reviewTotal}／${state.reviewTotal} 題已答對`;
       $('finalMessage').textContent = `正式測驗原成績：${state.examResult.correct}／${state.examResult.total}。錯題已全部答對！請重新挑戰完整範圍，一次正式測驗全對即可領取通關證書。`;
       $('restart').textContent = '開始新的正式測驗';
-      $('review').innerHTML = '<p>已完成本輪所有錯題的複習。</p>';
+      $('review').innerHTML = '<p>已完成本輪錯題重練。</p>';
       updateStats();
     }
 
@@ -1323,6 +1349,7 @@ const EXTRA_QUESTIONS = [
     }
 
     function updateStats() {
+      paintProgress();
       const reviewing = state.mode === 'review';
       const done = reviewing ? state.reviewTotal - state.reviewPending.size : state.index + (state.locked ? 1 : 0);
       const total = reviewing ? state.reviewTotal : state.queue.length;
@@ -1330,7 +1357,7 @@ const EXTRA_QUESTIONS = [
       $('totalStat').textContent = total;
       $('correctStat').textContent = state.correct;
       $('doneLabel').textContent = reviewing ? '已練會' : '已作答';
-      $('rateLabel').textContent = reviewing ? '複習完成率' : '正確率';
+      $('rateLabel').textContent = reviewing ? '重練完成率' : '正確率';
       $('rateStat').textContent = reviewing ? `${Math.round(done / total * 100)}%` : (done ? `${Math.round(state.correct / done * 100)}%` : '—');
       if (reviewing) {
         $('questionNo').textContent = `剩餘 ${state.reviewPending.size} 題待答對`;
@@ -1338,7 +1365,7 @@ const EXTRA_QUESTIONS = [
       }
       $('modeLabel').textContent = reviewing ? '錯題重練' : '正式測驗';
       $('streakStatus').textContent = `${rangeName()}｜${isPassed() ? '全對通關' : '一次正式測驗全對即可領證'}`;
-      $('learningHint').textContent = reviewing ? `正式測驗結果：${state.examResult.correct}／${state.examResult.total}。共 ${state.reviewTotal} 題錯題，尚有 ${state.reviewPending.size} 題待答對；答錯會再出現，答對才移出。` : `本輪包含所選範圍全部 ${total} 題，全部答對即可通關；有錯題則於測驗結束後進入複習。`;
+      $('learningHint').textContent = reviewing ? `正式測驗結果：${state.examResult.correct}／${state.examResult.total}。共 ${state.reviewTotal} 題錯題，尚有 ${state.reviewPending.size} 題待答對；答錯會再出現，答對才移出。` : `本輪包含所選範圍全部 ${total} 題，全部答對即可通關；有錯題則於測驗結束後進入錯題重練。`;
     }
 
     $('segments').addEventListener('click', (event) => {

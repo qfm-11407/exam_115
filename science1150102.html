@@ -263,12 +263,14 @@ window.PE115 = (function () {
       .course-grid { grid-template-columns: 1fr; gap: 12px; }
       .course-actions { grid-template-columns: 1fr; }
       .course-small { min-height: 0; grid-template-columns: 40px 1fr auto; align-items: center; column-gap: 10px; padding: 14px 16px; }
-      .course-small .course-icon { grid-row: span 2; }
-      .course-small .course-count { grid-row: span 2; grid-column: 3; margin: 0; }
-      .course-small .course-name, .course-small .course-desc { grid-column: 2; }
+      .course-small .course-icon { grid-row: span 3; }
+      .course-small .course-count { grid-row: span 3; grid-column: 3; margin: 0; }
+      .course-small .course-name, .course-small .course-desc, .course-small .course-best { grid-column: 2; }
     }
     .learning-status { margin: 0 0 20px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 16px; background: white; }
     .learning-status strong { color: #0e7490; margin-right: 16px; }
+    .best-line { font-weight: 700; }
+    .course-best { display: block; margin-top: 2px; font-size: .82rem; font-weight: 700; opacity: .85; }
     .learning-status p { margin: 6px 0 0; color: var(--muted); font-size: .92rem; }
     [hidden] { display: none !important; }
     .certificate {
@@ -342,7 +344,7 @@ window.PE115 = (function () {
 .course-btn{border-color:#2b8a3e}
 .course-main{background:linear-gradient(135deg,#ebfbee 0%,#fffbeb 100%) !important;border-color:#2b8a3e !important}
 .course-small:hover,.course-btn:hover{border-color:#2b8a3e !important}
-.tag,.learning-status strong,.finish .result{color:#2b8a3e !important}
+.tag,.learning-status strong,.finish .result,.best-line{color:#2b8a3e !important}
 </style>
 </head>
 <body>
@@ -368,14 +370,14 @@ window.PE115 = (function () {
           <h3>📘 習作練習</h3>
           <p>第 3、4 章習作的每一題，含實驗紀錄、學力養成與素養題，附重新繪製的圖。</p>
           <div class="course-actions">
-            <button class="course-btn primary-btn" data-filter="all">全部習作 <span id="allCount"></span></button>
-            <button class="course-btn" data-filter="ch3">第3章 波動與聲音 <span id="ch3Count"></span></button>
-            <button class="course-btn" data-filter="ch4">第4章 光 <span id="ch4Count"></span></button>
+            <button class="course-btn primary-btn" data-filter="all">全部習作 <span id="allCount"></span><small class="course-best" data-best="all"></small></button>
+            <button class="course-btn" data-filter="ch3">第3章 波動與聲音 <span id="ch3Count"></span><small class="course-best" data-best="ch3"></small></button>
+            <button class="course-btn" data-filter="ch4">第4章 光 <span id="ch4Count"></span><small class="course-best" data-best="ch4"></small></button>
           </div>
         </article>
-        <button class="course-card course-small" data-filter="p3"><span class="course-icon" aria-hidden="true">🔊</span><span class="course-name">第三章練習</span><span class="course-desc">波動與聲音・同步卷、課次卷精選</span><span class="course-count" id="p3Count"></span></button>
-        <button class="course-card course-small" data-filter="p4"><span class="course-icon" aria-hidden="true">💡</span><span class="course-name">第四章練習</span><span class="course-desc">光・同步卷、課次卷精選</span><span class="course-count" id="p4Count"></span></button>
-        <button class="course-card course-small" data-filter="rev"><span class="course-icon" aria-hidden="true">📝</span><span class="course-name">段考模擬</span><span class="course-desc">第 3～4 章綜合，模擬段考題型</span><span class="course-count" id="revCount"></span></button>
+        <button class="course-card course-small" data-filter="p3"><span class="course-icon" aria-hidden="true">🔊</span><span class="course-name">第三章練習</span><span class="course-desc">波動與聲音・同步卷、課次卷精選</span><span class="course-count" id="p3Count"></span><span class="course-best" data-best="p3"></span></button>
+        <button class="course-card course-small" data-filter="p4"><span class="course-icon" aria-hidden="true">💡</span><span class="course-name">第四章練習</span><span class="course-desc">光・同步卷、課次卷精選</span><span class="course-count" id="p4Count"></span><span class="course-best" data-best="p4"></span></button>
+        <button class="course-card course-small" data-filter="rev"><span class="course-icon" aria-hidden="true">📝</span><span class="course-name">段考模擬</span><span class="course-desc">第 3～4 章綜合，模擬段考題型</span><span class="course-count" id="revCount"></span><span class="course-best" data-best="rev"></span></button>
       </div>
     </section>
 
@@ -388,6 +390,7 @@ window.PE115 = (function () {
     <section class="learning-status" id="statusPanel" aria-label="通關進度" aria-live="polite" hidden>
       <strong id="modeLabel">正式測驗</strong><span id="streakStatus"></span>
       <p id="learningHint"></p>
+      <p class="best-line" id="bestLine"></p>
       <p>所選範圍一次正式測驗全對即可通關領證；錯題重練完成後，請重新挑戰完整範圍。</p>
     </section>
 
@@ -2023,10 +2026,10 @@ window.PE115 = (function () {
       });
       const feedback = $('feedback');
       feedback.className = `feedback show ${isCorrect ? 'good' : 'bad'}`;
-      feedback.innerHTML = `<strong>${isCorrect ? '答對了' : '再想一下'}</strong><span>${item.explain}</span>${state.mode === 'review' ? `<p>${isCorrect ? '這題已答對，移出待複習清單。' : '這題會再次出現，答對後才會移出待複習清單。'}</p>` : ''}`;
+      feedback.innerHTML = `<strong>${isCorrect ? '答對了' : '再想一下'}</strong><span>${item.explain}</span>${state.mode === 'review' ? `<p>${isCorrect ? '這題已答對，移出待重練清單。' : '這題會再次出現，答對後才會移出待重練清單。'}</p>` : ''}`;
       $('checkAnswer').hidden = true;
       $('nextQuestion').hidden = false;
-      $('nextQuestion').textContent = state.mode === 'review' ? (state.reviewPending.size === 0 ? '完成複習' : '繼續複習') : (state.index === state.queue.length - 1 ? (state.mistakes.length ? '查看結果，進入錯題重練' : '查看結果') : '下一題');
+      $('nextQuestion').textContent = state.mode === 'review' ? (state.reviewPending.size === 0 ? '完成錯題重練' : '繼續重練') : (state.index === state.queue.length - 1 ? (state.mistakes.length ? '查看結果，進入錯題重練' : '查看結果') : '下一題');
       updateStats();
       $('nextQuestion').focus();
     }
@@ -2055,14 +2058,37 @@ window.PE115 = (function () {
     function reviewHtml(log) {
       if (!log || !log.length) return '';
       const wrong = log.filter(r => !r.ok).length;
-      return `<h3>逐題檢討（答對 ${log.length - wrong} 題、答錯 ${wrong} 題）</h3>` + log.map((r, i) =>
+      return `<h3>錯題詳解・逐題檢討（答對 ${log.length - wrong} 題、答錯 ${wrong} 題）</h3>` + log.map((r, i) =>
         `<details class="review-item ${r.ok ? 'ok' : 'ng'}"${r.ok ? '' : ' open'}><summary><b>第 ${i + 1} 題　${r.ok ? '✔ 答對' : '✘ 答錯'}</b>　${r.q}</summary><p>你的答案：${r.chosen}</p>${r.ok ? '' : `<p>正確答案：${r.answer}</p>`}<p class="review-explain">解析：${r.explain}</p></details>`).join('');
+    }
+
+    // 進度保存：各範圍正式測驗的最佳答對率與練習次數（錯題重練不計入）
+    const PROGRESS_KEY = 'science1150102:progress-v1';
+    function loadProgress() { try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch (_) { return {}; } }
+    function saveProgress(p) { try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); } catch (_) {} }
+    function recordProgress(filter, correct, total) {
+      const p = loadProgress();
+      const pct = Math.round(correct / total * 100);
+      const r = p[filter] || { best: 0, times: 0 };
+      r.best = Math.max(r.best, pct); r.times += 1; r.last = pct;
+      p[filter] = r;
+      saveProgress(p);
+      paintProgress();
+    }
+    function progressText(filter) {
+      const r = loadProgress()[filter];
+      return r ? `${r.best === 100 ? '🏆 ' : ''}最佳 ${r.best}%・練過 ${r.times} 次` : '尚未練習';
+    }
+    function paintProgress() {
+      document.querySelectorAll('[data-best]').forEach(el => { el.textContent = progressText(el.dataset.best); });
+      $('bestLine').textContent = `本範圍紀錄：${progressText(state.filter)}`;
     }
 
     function finish() {
       if (state.mode !== 'exam' || state.completed || !state.locked || state.index !== state.queue.length - 1) return;
       state.completed = true;
       state.examResult = { total: state.queue.length, correct: state.correct, mistakes: [...state.mistakes], log: [...state.log] };
+      recordProgress(state.filter, state.correct, state.queue.length);
       if (state.filter === 'rev') PE115.report(state.correct / state.queue.length * 100);
       const perfect = state.correct === state.queue.length;
       if (!perfect) return startReview();
@@ -2112,7 +2138,7 @@ window.PE115 = (function () {
       $('finalScore').textContent = `${state.reviewTotal}／${state.reviewTotal} 題已答對`;
       $('finalMessage').textContent = `正式測驗原成績：${state.examResult.correct}／${state.examResult.total}。錯題已全部答對！請重新挑戰完整範圍，一次正式測驗全對即可領取通關證書。`;
       $('restart').textContent = '開始新的正式測驗';
-      $('review').innerHTML = '<p>已完成本輪所有錯題的複習。下面是這次正式測驗的逐題檢討。</p>' + reviewHtml(state.examResult.log);
+      $('review').innerHTML = '<p>已完成本輪錯題重練。下面是這次正式測驗的錯題詳解與逐題檢討。</p>' + reviewHtml(state.examResult.log);
       updateStats();
     }
 
@@ -2165,6 +2191,7 @@ window.PE115 = (function () {
     }
 
     function updateStats() {
+      paintProgress();
       const reviewing = state.mode === 'review';
       const done = reviewing ? state.reviewTotal - state.reviewPending.size : state.index + (state.locked ? 1 : 0);
       const total = reviewing ? state.reviewTotal : state.queue.length;
@@ -2172,7 +2199,7 @@ window.PE115 = (function () {
       $('totalStat').textContent = total;
       $('correctStat').textContent = state.correct;
       $('doneLabel').textContent = reviewing ? '已練會' : '已作答';
-      $('rateLabel').textContent = reviewing ? '複習完成率' : '正確率';
+      $('rateLabel').textContent = reviewing ? '重練完成率' : '正確率';
       $('rateStat').textContent = reviewing ? `${Math.round(done / total * 100)}%` : (done ? `${Math.round(state.correct / done * 100)}%` : '—');
       if (reviewing) {
         $('questionNo').textContent = `剩餘 ${state.reviewPending.size} 題待答對`;
@@ -2180,7 +2207,7 @@ window.PE115 = (function () {
       }
       $('modeLabel').textContent = reviewing ? '錯題重練' : '正式測驗';
       $('streakStatus').textContent = `${rangeName()}｜${isPassed() ? '全對通關' : '一次正式測驗全對即可領證'}`;
-      $('learningHint').textContent = reviewing ? `正式測驗結果：${state.examResult.correct}／${state.examResult.total}。共 ${state.reviewTotal} 題錯題，尚有 ${state.reviewPending.size} 題待答對；答錯會再出現，答對才移出。` : `本輪包含所選範圍全部 ${total} 題，全部答對即可通關；有錯題則於測驗結束後進入複習。`;
+      $('learningHint').textContent = reviewing ? `正式測驗結果：${state.examResult.correct}／${state.examResult.total}。共 ${state.reviewTotal} 題錯題，尚有 ${state.reviewPending.size} 題待答對；答錯會再出現，答對才移出。` : `本輪包含所選範圍全部 ${total} 題，全部答對即可通關；有錯題則於測驗結束後進入錯題重練。`;
     }
 
     // 課程選單與作答畫面切換
