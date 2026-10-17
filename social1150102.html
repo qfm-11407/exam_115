@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>社會科互動式測驗系統｜一一五學年度上學期第二次段考</title>
+    <title>八年級社會 第二次段考強化練習</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
@@ -44,6 +44,15 @@
         .talk-bubble::before { content: ''; position: absolute; left: -9px; top: 14px; border: 8px solid transparent; border-right-color: #d1d5db; border-left: 0; }
         .fig-cap { text-align: center; font-size: 0.8rem; color: #6b7280; margin: 0.4rem 0 0.8rem; }
     </style>
+<style id="pe-howto-css">
+.pe-howto{margin:16px 0;padding:12px 16px;border:1px dashed rgba(120,120,140,.45);border-radius:14px;
+  background:rgba(255,255,255,.55);text-align:left;color:inherit;font-size:15px;line-height:1.6}
+.pe-howto summary{cursor:pointer;font-weight:800;list-style:revert}
+.pe-howto ul{list-style:none;margin:10px 0 2px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 18px}
+.pe-howto li{margin:0}
+.pe-howto li b{white-space:nowrap}
+@media print{.pe-howto{display:none}}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 py-10">
 
@@ -54,10 +63,11 @@
 
             <div id="home-screen" class="text-center fade-in">
                 <div class="inline-block p-4 bg-emerald-50 rounded-full mb-4 text-5xl">🌏</div>
-                <h1 class="text-3xl md:text-4xl font-black text-gray-800 mb-2">社會科互動式測驗系統</h1>
-                <p class="text-lg md:text-xl font-bold text-indigo-600 tracking-wide mb-2">一一五學年度上學期第二次段考</p>
+                <h1 class="text-3xl md:text-4xl font-black text-gray-800 mb-2">八年級社會 第二次段考強化練習</h1>
+                <p class="text-lg md:text-xl font-bold text-indigo-600 tracking-wide mb-2">範圍：地理・歷史・公民 第 3～4 課</p>
                 <span class="inline-block px-4 py-1 rounded-full bg-emerald-100 text-emerald-700 font-bold text-sm">本次開放：地理、公民、歷史練習</span>
-                <p class="text-gray-500 mb-8 mt-4 max-w-lg mx-auto leading-relaxed">依段考命題模式設計，含地圖、圖表判讀與題組題。<br>請先選擇科目，再選擇課次。</p>
+                <p class="text-gray-500 mb-4 mt-4 max-w-lg mx-auto leading-relaxed">特色：互動式測驗系統｜依段考命題模式設計，含地圖、圖表判讀與題組題。<br>請先選擇科目，再選擇課次。</p>
+                <div class="max-w-3xl mx-auto mb-8"><details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，選科目和課次先試做，每題都有解題剖析，可以邊做邊學。</li><li><b>✍️ 課後複習：</b>上完一課，做該課的題目，答完仔細看解題剖析。</li><li><b>🎯 自主練習：</b>用「錯題重測」把錯的題目練到會，再「從頭再測一次」確認。</li><li><b>🏆 段考衝刺：</b>每科都有「第二次段考模擬卷」，三科各做一份，再把錯題重測到全對。</li></ul></details></div>
                 <div id="subject-list" class="grid grid-cols-1 md:grid-cols-3 gap-5"></div>
             </div>
 

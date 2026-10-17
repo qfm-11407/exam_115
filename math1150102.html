@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>八年級數學 第二次段考闖關</title>
+<title>八年級數學 第二次段考強化練習</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <style>
@@ -247,13 +247,22 @@
   }
   .progress-top{gap:10px} #progTxt{white-space:nowrap}
 </style>
+<style id="pe-howto-css">
+.pe-howto{margin:16px 0;padding:12px 16px;border:1px dashed rgba(120,120,140,.45);border-radius:14px;
+  background:rgba(255,255,255,.55);text-align:left;color:inherit;font-size:15px;line-height:1.6}
+.pe-howto summary{cursor:pointer;font-weight:800;list-style:revert}
+.pe-howto ul{list-style:none;margin:10px 0 2px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 18px}
+.pe-howto li{margin:0}
+.pe-howto li b{white-space:nowrap}
+@media print{.pe-howto{display:none}}
+</style>
 </head>
 <body>
 
 <header>
   <div class="bar">
-    <button class="home-btn hidden" id="homeBtn" title="回到入口頁">🏠 入口</button>
-    <div class="brand">√ 八年級數學闖關
+    <button class="home-btn hidden" id="homeBtn" title="回到本頁首頁">← 回首頁</button>
+    <div class="brand">√ 八年級數學 第二次段考強化練習
       <small id="brandSub">第二次段考｜2-2 根式的運算 ～ 3-2 十字交乘法</small></div>
     <div class="chips" id="chips">
       <span class="chip">積分 <b id="scoreTxt">0</b></span>
@@ -265,14 +274,16 @@
 <main>
   <section id="home">
     <div class="card hero">
-      <h1>第二次段考 數學闖關基地</h1>
-      <p class="sub">每個單元有三種關卡：📘 課本例題、📒 習作、⚡ 速測。答對拿積分、連續答對有連擊加成；算完可切換「原題型」自己動筆，再一步一步對答案。</p>
-      <span class="range">段考範圍：2-2 根式的運算 ～ 3-2 利用十字交乘法因式分解</span><span class="total-chip" id="totalTxt"></span>
+      <h1>八年級數學 第二次段考強化練習</h1>
+      <span class="range">範圍：2-2 根式的運算 ～ 3-2 利用十字交乘法因式分解（2-1 為暖身複習）</span><span class="total-chip" id="totalTxt"></span>
+      <p class="sub" style="margin-top:8px">特色：數學闖關基地｜每個單元有 📘 課本例題、📒 習作、⚡ 速測三種關卡，答對拿積分、連續答對有連擊加成</p>
       <div class="progress">
         <div class="progress-top"><span>段考範圍通關進度（答對六成以上算通關）</span><span id="progTxt"></span></div>
         <div class="progress-bar"><span id="progBar" style="width:0%"></span></div>
       </div>
     </div>
+
+    <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新單元前，先做該單元的「📘 課本例題」，跟著步驟看懂解法。</li><li><b>✍️ 課後複習：</b>上完課做「📒 習作」；切到「原題型」先自己動筆算，再逐步對答案。</li><li><b>🎯 自主練習：</b>用「⚡ 速測」檢查熟練度，闖完把錯題重練到全對；需要補強 2-1 就做「🧩 暖身複習」。</li><li><b>🏆 段考衝刺：</b>做「🏆 章末總習題」，再挑戰「👾 魔王關：段考模擬」。</li></ul></details>
 
     <div class="sec-title">🧩 暖身複習 <small>上次段考範圍，先熱身再出發</small></div>
     <div class="units" id="reviewUnits"></div>
