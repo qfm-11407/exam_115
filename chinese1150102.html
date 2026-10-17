@@ -164,6 +164,15 @@ footer{margin-top:28px;text-align:center;color:#8b8577;font-size:14px}
   .qhead .name{font-size:16px;min-width:0;flex-basis:60%}
 }
 </style>
+<style id="pe-howto-css">
+.pe-howto{margin:16px 0;padding:12px 16px;border:1px dashed rgba(120,120,140,.45);border-radius:14px;
+  background:rgba(255,255,255,.55);text-align:left;color:inherit;font-size:15px;line-height:1.6}
+.pe-howto summary{cursor:pointer;font-weight:800;list-style:revert}
+.pe-howto ul{list-style:none;margin:10px 0 2px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px 18px}
+.pe-howto li{margin:0}
+.pe-howto li b{white-space:nowrap}
+@media print{.pe-howto{display:none}}
+</style>
 </head>
 <body>
 <div id="app" class="wrap"></div>
@@ -662,12 +671,14 @@ function showHome() {
     <div class="hero"><div class="deco">文</div>
       <h1>八年級國文 第二次段考強化練習</h1>
       <div class="sub">範圍：第四課 愛蓮說・第五課 生命中的碎珠・第六課 鳥・語文常識二 句型</div>
+      <div class="sub">特色：課文闖關｜每課 4 個小單元，答對得 ★ 與 XP，三課達標解鎖模擬段考</div>
       <div class="stats">
         <div class="stat"><b>★ ${st}</b>/ ${max}</div>
         <div class="stat"><b>${P.xp}</b>XP</div>
         <div class="stat"><span class="rank">${rankOf(st)}</span></div>
       </div>
     </div>
+    <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先做該課的「國字注音」「注釋」，認識生難字詞。</li><li><b>✍️ 課後複習：</b>上完一課，做「課文選擇題」和該課的特色單元（蓮的密碼、論證偵探、賞鳥觀察站）。</li><li><b>🎯 自主練習：</b>答錯的題目在結果頁按「只練錯題」再挑戰，把每個小單元練到 ★★★。</li><li><b>🏆 段考衝刺：</b>到「段考複習」練注音 100 則、注釋 50 則、句型判斷與形近字改錯，最後挑戰模擬段考。</li></ul></details>
     <div class="grid">${cards}</div>
     <div class="howto"><b>闖關規則</b>　每個小單元答對率 50% 得 ★、70% 得 ★★、90% 得 ★★★。答對 +10 XP，連續答對還有 🔥 連擊加分。答錯的題目會在結果頁整理出來，可以按「只練錯題」再挑戰。L4、L5、L6 各有 2 個小單元拿到 ★，就能在「段考複習」挑戰 🏆 模擬段考！</div>
     <footer>八年級國文 第二次段考 L4–L6・語文常識二 練習</footer>`;
