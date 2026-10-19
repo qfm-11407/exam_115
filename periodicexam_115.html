@@ -85,8 +85,9 @@ h1{margin:4px 0 6px; font-size:clamp(1.6rem,4.2vw,2.5rem); line-height:1.25}
 }
 .exam-btn h2{margin:0; font-size:1.6rem}
 .exam-meta{color:var(--muted); font-size:.95rem; margin:0}
-.dots{display:flex; gap:6px; flex-wrap:wrap}
-.dots span{font-size:.8rem; padding:1px 8px; border-radius:6px; border:1px solid var(--line); color:var(--muted)}
+/* 科目小標籤固定兩排、每排四科：國文 成語 英文 數學／理化 公民 歷史 地理 */
+.dots{display:grid; grid-template-columns:repeat(4,1fr); gap:6px}
+.dots span{font-size:.8rem; padding:2px 4px; border-radius:6px; border:1px solid var(--line); color:var(--muted); text-align:center; white-space:nowrap}
 .dots span.on{border-color:transparent; background:var(--c); color:#fff}
 .enter{margin-top:auto; font-weight:700; color:var(--accent)}
 
