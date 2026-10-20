@@ -111,7 +111,9 @@ window.PE115 = (function () {
         .talk-bubble { position: relative; background: #fff; border: 2px solid #d1d5db; border-radius: 14px; padding: 0.55rem 0.8rem; line-height: 1.6; font-size: 0.95rem; }
         .talk-bubble::before { content: ''; position: absolute; left: -9px; top: 14px; border: 8px solid transparent; border-right-color: #d1d5db; border-left: 0; }
         .fig-cap { text-align: center; font-size: 0.8rem; color: #6b7280; margin: 0.4rem 0 0.8rem; }
-    </style>
+            .lock-shake { animation: lockShake .4s; }
+        @keyframes lockShake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+</style>
 <style id="pe-howto-css">
 .pe-howto{margin:16px 0;padding:12px 16px;border:1px dashed rgba(120,120,140,.45);border-radius:14px;
   background:rgba(255,255,255,.55);text-align:left;color:inherit;font-size:15px;line-height:1.6}
@@ -143,9 +145,9 @@ window.PE115 = (function () {
                 <h1 class="text-3xl md:text-4xl font-black text-gray-800 mb-2">八年級社會 第二次段考強化練習</h1>
                 <p class="text-lg md:text-xl font-bold text-orange-700 tracking-wide mb-2">範圍：公民・歷史・地理 第 3～4 課</p>
                 <span class="inline-block px-4 py-1 rounded-full bg-orange-100 text-orange-700 font-bold text-sm">本次開放：公民、歷史、地理練習</span>
-                <p class="text-gray-500 mb-4 mt-4 max-w-lg mx-auto leading-relaxed">特色：互動式測驗系統｜依段考命題模式設計，含地圖、圖表判讀與題組題。<br>請先選擇科目，再選擇課次。</p>
+                <p class="text-gray-500 mb-4 mt-4 max-w-lg mx-auto leading-relaxed">特色：互動式測驗系統｜每課有 📖 重點卡、⚡ 名詞速答、🎯 特色關卡、✍️ 課後練習四個小單元，三科各課達 ★★★ 解鎖模擬卷。<br>請先選擇科目，再選擇課次。</p>
                 <p class="text-gray-700 mb-4 pe-level"></p>
-                <div class="max-w-3xl mx-auto mb-8"><details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，選科目和課次先試做，每題都有解題剖析，可以邊做邊學。</li><li><b>✍️ 課後複習：</b>上完一課，做該課的題目，答完仔細看解題剖析。</li><li><b>🎯 自主練習：</b>用「錯題重練」把錯的題目練到會，再「從頭再測一次」確認。</li><li><b>🏆 段考衝刺：</b>每科都有「第二次段考模擬卷」，三科各做一份，再把錯題重練到全對。</li></ul></details></div>
+                <div class="max-w-3xl mx-auto mb-8"><details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先翻該課的「📖 重點卡」，再用「⚡ 名詞速答」檢查記住了沒。</li><li><b>✍️ 課後複習：</b>上完一課，做該科的特色關卡（地理「🗺️ 地圖偵探」、歷史「⏳ 時光任務」、公民「🗂️ 情境分類」）和「✍️ 課後練習」。</li><li><b>🎯 自主練習：</b>答錯的題目按「錯題重練」，把速答、特色關卡、課後練習都練到 ★★★（80 分）以上。</li><li><b>🏆 段考衝刺：</b>同一科兩課的小單元都達 ★★★，就解鎖「📝 第二次段考模擬卷」，三科各做一份。</li></ul></details></div>
                 <div id="subject-list" class="grid grid-cols-1 md:grid-cols-3 gap-5"></div>
             </div>
 
@@ -199,6 +201,14 @@ window.PE115 = (function () {
                     <div id="question-fig" class="fig-wrap hidden"></div>
                 </div>
 
+                <div id="quick-bar" class="hidden mb-4">
+                    <div class="flex justify-between items-center text-sm font-bold mb-1">
+                        <span class="text-orange-700">⏱️ 剩下 <span id="quick-time">20</span> 秒</span>
+                        <span id="quick-combo" class="text-rose-600"></span>
+                    </div>
+                    <div class="w-full bg-orange-100 rounded-full h-2 overflow-hidden"><div id="quick-fill" class="h-full bg-orange-500 rounded-full" style="width:100%"></div></div>
+                </div>
+
                 <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
 
                 <div id="explanation-container" class="hidden mt-6 p-6 rounded-xl shadow-sm">
@@ -215,6 +225,44 @@ window.PE115 = (function () {
                         <span id="next-btn-text">下一題</span>
                         <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </button>
+                </div>
+            </div>
+
+            <div id="cards-screen" class="hidden fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <button onclick="goBackToChapters()" class="text-gray-400 hover:text-gray-700 flex items-center text-sm font-medium transition-colors">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        回課次
+                    </button>
+                    <div class="text-sm font-bold bg-gray-50 border border-gray-200 px-4 py-1.5 rounded-full text-gray-700 shadow-sm">已翻 <span id="cards-seen">0</span> / <span id="cards-total">0</span> 張</div>
+                </div>
+                <div class="flex justify-between text-xs md:text-sm text-gray-500 mb-4 font-medium">
+                    <span id="cards-title" class="font-bold text-gray-700"></span>
+                    <span>第 <span id="cards-idx" class="text-gray-900 font-bold text-base">1</span> 張</span>
+                </div>
+                <div id="flash-card" onclick="flipCard()" class="cursor-pointer select-none rounded-3xl border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-white shadow-md p-6 md:p-10 flex flex-col items-center justify-center text-center" style="min-height:260px">
+                    <div id="flash-front">
+                        <div class="text-xs font-bold text-orange-700 mb-3">📖 重點卡</div>
+                        <div id="flash-term" class="text-3xl md:text-4xl font-black text-gray-800 mb-4"></div>
+                        <div class="text-sm text-gray-400">先想一想它的意思，再點一下翻面 👆</div>
+                    </div>
+                    <div id="flash-back" class="hidden w-full">
+                        <div id="flash-term2" class="text-lg font-black text-orange-700 mb-3"></div>
+                        <p id="flash-def" class="text-base md:text-lg text-gray-800 leading-relaxed text-justify"></p>
+                        <p id="flash-src" class="mt-4 text-xs text-gray-500"></p>
+                    </div>
+                </div>
+                <div class="mt-5 grid grid-cols-3 gap-3">
+                    <button onclick="moveCard(-1)" class="py-3 rounded-xl border-2 border-gray-200 bg-white text-gray-600 font-bold hover:border-gray-300">← 上一張</button>
+                    <button onclick="flipCard()" class="py-3 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold">翻面</button>
+                    <button onclick="moveCard(1)" class="py-3 rounded-xl border-2 border-gray-200 bg-white text-gray-600 font-bold hover:border-gray-300">下一張 →</button>
+                </div>
+                <div id="cards-done" class="hidden mt-6 p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-center">
+                    <p class="font-bold text-emerald-700 mb-3">🎉 這一課的重點卡都翻過了！接著用名詞速答檢查記住了沒。</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-3">
+                        <button onclick="goQuickFromCards()" class="px-6 py-3 rounded-xl bg-gray-800 hover:bg-gray-900 text-white font-bold">⚡ 去做名詞速答</button>
+                        <button onclick="goBackToChapters()" class="px-6 py-3 rounded-xl border-2 border-gray-200 bg-white text-gray-600 font-bold">回課次</button>
+                    </div>
                 </div>
             </div>
 
@@ -610,6 +658,36 @@ window.PE115 = (function () {
                 ${hBox(142, 14, 96, 64, '甲', HS.hi)}${hLine(238, 46, 254, 46, 'mhs')}
                 ${hBox(256, 14, 104, 64, '傳入歐洲')}${hLine(360, 46, 376, 46, 'mhs')}
                 ${hBox(378, 14, 98, 64, '乙', HS.hi)}</svg><p class="fig-cap">指南針的傳播與影響示意圖</p>`,
+            // ===== 學習單元：🗺️ 地圖偵探 附圖 =====
+            d3_grain: () => chinaMap({ markers: [{ lon: 126, lat: 46, label: '甲' }, { lon: 116, lat: 30.5, label: '乙' }, { lon: 83, lat: 39.5, label: '丙' }, { lon: 104.5, lat: 30.5, label: '丁', dx: -10, anchor: 'end' }], note: '中國四地位置示意圖' }),
+            d3_pasture: () => chinaMap({ markers: [{ lon: 89, lat: 32.5, label: '甲' }, { lon: 85, lat: 43, label: '乙' }, { lon: 118, lat: 44.5, label: '丙' }, { lon: 115.5, lat: 36, label: '丁' }], note: '中國四地位置示意圖' }),
+            d3_bayan: () => chinaMap({ markers: [{ lon: 110, lat: 41.8, label: '甲' }], extra: `<text x="{X:117.2,39.2}" y="{Y:117.2,39.2}" class="axis lg">北京</text><circle cx="{X:116.4,39.9}" cy="{Y:116.4,39.9}" r="3.5" fill="#1f2937"/>`, note: '白雲鄂博位置示意圖' }),
+            d3_sez: () => chinaMap({ markers: [{ lon: 114.1, lat: 22.5, label: '甲', dx: -10, dy: 12, anchor: 'end' }, { lon: 118.1, lat: 24.5, label: '乙' }, { lon: 76, lat: 39.5, label: '丙', dy: -8 }, { lon: 121.5, lat: 31.2, label: '丁' }], note: '中國四地位置示意圖' }),
+            d3_regions: () => chinaMap({ markers: [{ lon: 125.5, lat: 45, label: '甲' }, { lon: 119, lat: 33, label: '乙' }, { lon: 112.5, lat: 31, label: '丙', dx: -10, anchor: 'end' }, { lon: 93, lat: 35, label: '丁' }], note: '甲～丁分別位在四大經濟區（示意）' }),
+            d3_circles: () => chinaMap({ markers: [{ lon: 116.4, lat: 39.9, label: '甲' }, { lon: 121.5, lat: 31.2, label: '乙' }, { lon: 113.6, lat: 22.8, label: '丙', dx: -10, anchor: 'end' }, { lon: 106.5, lat: 29.6, label: '丁', dx: -10, anchor: 'end' }], note: '中國四地位置示意圖' }),
+            d3_qtrail: () => chinaMap({ markers: [{ lon: 101.8, lat: 36.6, label: '西寧' }, { lon: 91.1, lat: 29.6, label: '拉薩', dy: 18 }],
+                extra: `<polyline points="{P:101.8,36.6} {P:97.5,36.4} {P:94.9,36.4} {P:92.5,33.5} {P:91.1,29.6}" fill="none" stroke="#7c2d12" stroke-width="4" stroke-dasharray="10 4"/>`, note: '鐵路路線示意圖' }),
+            d3_gas: () => chinaMap({ markers: [{ lon: 83, lat: 40, label: '塔里木盆地', dy: 20 }, { lon: 121.5, lat: 31.2, label: '上海', dy: 18 }],
+                extra: `<defs><marker id="d3g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/></marker></defs>
+                    <polyline points="{P:83,40} {P:95,39.5} {P:105,37} {P:113,34.5} {P:120.5,31.4}" fill="none" stroke="#c2410c" stroke-width="4" marker-end="url(#d3g)"/>`, note: '能源輸送方向示意圖' }),
+            d3_water: () => chinaMap({ markers: [{ lon: 116.4, lat: 39.9, label: '北京' }],
+                extra: `<defs><marker id="d3w" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--river)"/></marker></defs>
+                    <polyline points="{P:96,32.8} {P:103,30.5} {P:108,30.6} {P:112,30.4} {P:117,30.8} {P:121,31.4}" fill="none" stroke="var(--river)" stroke-width="3"/>
+                    <text x="{X:107,29.6}" y="{Y:107,29.6}" class="axis lg" style="fill:var(--river)">長江</text>
+                    <polyline points="{P:111.5,32.6} {P:113.5,35.5} {P:115.5,38.6}" fill="none" stroke="var(--river)" stroke-width="4" stroke-dasharray="8 4" marker-end="url(#d3w)"/>`, note: '調水方向示意圖' }),
+            d3_cities: () => chinaMap({ markers: [{ lon: 116.4, lat: 39.9, label: '甲' }, { lon: 121.5, lat: 31.2, label: '乙' }, { lon: 114.1, lat: 22.5, label: '丙' }, { lon: 91.1, lat: 29.6, label: '丁' }], note: '中國四個都市位置示意圖' }),
+            d4_dust: () => chinaMap({ wide: true, markers: [{ lon: 105, lat: 45.5, label: '甲' }],
+                extra: `<defs><marker id="d4d" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a16207"/></marker></defs>
+                    <polyline points="{P:106,44.5} {P:116,40.5}" fill="none" stroke="#a16207" stroke-width="4" stroke-dasharray="6 4" marker-end="url(#d4d)"/>
+                    <polyline points="{P:107,44.5} {P:126.5,37.5}" fill="none" stroke="#a16207" stroke-width="4" stroke-dasharray="6 4" marker-end="url(#d4d)"/>
+                    <polyline points="{P:106,44} {P:120.5,25.5}" fill="none" stroke="#a16207" stroke-width="4" stroke-dasharray="6 4" marker-end="url(#d4d)"/>`, note: '沙塵移動方向示意圖' }),
+            d4_smog: () => chinaMap({ wide: true, markers: [{ lon: 116.4, lat: 39.9, label: '北京', dx: -10, anchor: 'end' }],
+                extra: `<defs><marker id="d4s" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker></defs>
+                    <polyline points="{P:117.5,39.5} {P:126.5,37.3}" fill="none" stroke="#6b7280" stroke-width="5" stroke-dasharray="7 4" marker-end="url(#d4s)"/>
+                    <polyline points="{P:117.5,40.5} {P:135,36}" fill="none" stroke="#6b7280" stroke-width="5" stroke-dasharray="7 4" marker-end="url(#d4s)"/>`, note: '冬季廢氣飄送方向示意圖' }),
+            d4_mekong: () => chinaMap({ extra: `<polyline points="{P:94,33.5} {P:97.5,31} {P:99,28} {P:99.8,25} {P:100.8,22.5} {P:102,20} {P:104,17.6}" fill="none" stroke="var(--river)" stroke-width="4"/>
+                    <text x="{X:100.5,26.5}" y="{Y:100.5,26.5}" class="axis lg" style="fill:var(--river)">瀾滄江</text>
+                    <text x="{X:103,18.6}" y="{Y:103,18.6}" class="axis lg">→ 流出國界</text>`, note: '跨國河川示意圖' }),
 };
 
 
@@ -1545,6 +1623,24 @@ window.PE115 = (function () {
                 ]
             }
         };
+
+        // ===== 每課學習單元：📖 重點卡、⚡ 名詞速答、🎯 特色關卡（✍️ 課後練習＝原本各課題目）=====
+        const UNIT_DATA = {"geography": {"第3課 中國的產業發展與地區差異": {"cards": [{"term": "南稻北麥", "d": "秦嶺—淮河以南氣溫較高、降水豐富，多水田、種水稻，以米食為主；以北多旱田、種小麥，發展出麵食文化。", "src": "3-1 一｜課本第32頁 圖1-3-1"}, {"term": "三種畜牧方式", "d": "內蒙古高原東側：在水草豐美的河岸放牧。新疆：逐水草而居的游牧。青藏高原：順應季節驅趕牲口上、下山的山牧季移。", "src": "3-1 一｜課本第32頁"}, {"term": "高原之舟、沙漠之舟", "d": "犛牛能馱重物在寒冷山區行走，是「高原之舟」；駱駝能適應沙漠惡劣環境，是「沙漠之舟」。", "src": "3-1 一｜課本第32頁 圖說"}, {"term": "農牧業轉型三做法", "d": "① 提升生產效率：機械化、智慧科技、水利、化肥、大型畜牧場。② 建設農業專區：商品糧基地。③ 改善交通建設：農產品快速流動。", "src": "3-1 二｜課本第33頁"}, {"term": "商品糧基地", "d": "集中在少數地區大量生產糧食，確保糧食供給。缺點：一旦遭遇水旱災害，容易發生全國性斷糧。", "src": "3-1 二｜課本第33頁 圖1-3-5"}, {"term": "設廠地點的改變", "d": "早期：煤、鐵、石油重量重、不易遠運，重工業設在原料產地。近年：礦產需大量進口，沿海及長江沿岸水運便利，成為設廠首選。", "src": "3-2 一｜課本第34頁"}, {"term": "交通東密西疏", "d": "交通是經濟發展的指標。工商業發達的東半部鐵、公路密集；發展較遲緩的西半部路線稀疏。", "src": "3-2 一｜課本第34頁 圖1-3-7"}, {"term": "改革開放", "d": "一九八○年代開始，中國從封閉狀態進入對外開放投資貿易的急速發展時期。", "src": "3-2 二 充電站｜課本第35頁"}, {"term": "經濟特區", "d": "最早在東南沿海設立五個，以出口為導向，憑低廉勞動成本、優惠政策、交通便利而成功；2010年在新疆喀什設第六個。", "src": "3-2 二 充電站｜課本第35頁 圖1-3-10"}, {"term": "世界工廠", "d": "石化、鋼鐵、電子、汽車生產規模領先世界，產品在全球市場占重要地位。產業重心逐漸由勞力密集轉向技術密集。", "src": "3-2 二｜課本第35頁"}, {"term": "四大經濟區", "d": "東部：最發達。中部：糧食供應地、工資較低、深具潛力。西部：資源豐富但對外交通不便。東北：重工業式微，推動東北振興。", "src": "3-3 一｜課本第36頁 圖1-3-11"}, {"term": "西部大開發", "d": "四項重點工程：西電東送、西氣東輸、南水北調、青藏鐵路。", "src": "3-3 一 充電站｜課本第36頁 圖1-3-12"}, {"term": "三大經濟圈", "d": "環渤海：政治與交通核心，有中關村「中國矽谷」。長三角：以上海為核心，工商業最發達、都市化最高。珠三角：最早改革開放，港澳資金湧入，新創產業中心。", "src": "3-3 一｜課本第37頁 圖1-3-13"}, {"term": "主要都市", "d": "北京：首都，古蹟眾多（故宮）。上海：海岸線中點、長江出海口，最大金融中心。廣州：珠江流域門戶的商港。深圳：特區典範，近年受房地產泡沫與工廠外移困擾。", "src": "3-3 二｜課本第38頁"}], "quick": [{"question": "秦嶺—淮河以北，主要種植哪一種作物？", "options": ["小麥", "水稻", "甘蔗", "茶葉"], "answer": 0, "explanation": "以北多旱田、種小麥，發展出麵食文化。", "source": "3-1 一｜第32頁"}, {"question": "青藏高原的畜牧方式是？", "options": ["山牧季移", "逐水草游牧", "河岸放牧", "大型牧場"], "answer": 0, "explanation": "青藏高原牧民順應季節草場更替，驅趕牲口上、下山。", "source": "3-1 一｜第32頁"}, {"question": "被譽為「高原之舟」的牲畜是？", "options": ["犛牛", "駱駝", "馬", "綿羊"], "answer": 0, "explanation": "犛牛能馱重物在寒冷山區行走。", "source": "3-1 一｜第32頁 圖說"}, {"question": "集中在少數地區大量生產糧食的農業專區稱為？", "options": ["商品糧基地", "經濟特區", "工業園區", "自然保護區"], "answer": 0, "explanation": "中國設立多個全國性商品糧基地。", "source": "3-1 二｜第33頁"}, {"question": "中國早期的重工業多設在哪裡？", "options": ["原料產地", "沿海港口", "國界邊境", "首都附近"], "answer": 0, "explanation": "基礎原料重量重、不易遠運。", "source": "3-2 一｜第34頁"}, {"question": "近年中國設廠的首選地區是？", "options": ["沿海及長江沿岸", "青藏高原", "內蒙古高原", "塔里木盆地"], "answer": 0, "explanation": "礦產需大量進口，水運便利的地區成為首選。", "source": "3-2 一｜第34頁"}, {"question": "中國的改革開放開始於哪個年代？", "options": ["一九八○年代", "一九五○年代", "一九九○年代", "二○一○年代"], "answer": 0, "explanation": "一九八○年代實施改革開放政策。", "source": "3-2 二 充電站｜第35頁"}, {"question": "中國第六個經濟特區設在哪裡？", "options": ["新疆喀什", "廣東深圳", "福建廈門", "海南"], "answer": 0, "explanation": "西元2010年在新疆喀什設立第六個經濟特區。", "source": "3-2 二 充電站｜第35頁"}, {"question": "中國經濟最發達的經濟區是？", "options": ["東部地區", "中部地區", "西部地區", "東北地區"], "answer": 0, "explanation": "東部沿海人口稠密、勞力充足、交通便利、進出口貿易興盛。", "source": "3-3 一｜第36頁"}, {"question": "「東北振興」計畫主要是為了改善什麼？", "options": ["重工業式微", "沙漠化", "人口太少", "水災頻繁"], "answer": 0, "explanation": "東北因礦產枯竭、設備老舊，重工業發展式微。", "source": "3-3 一｜第36頁"}, {"question": "中國最大的金融中心是？", "options": ["上海", "北京", "廣州", "深圳"], "answer": 0, "explanation": "上海位處海岸線中點和長江出海口。", "source": "3-3 二｜第38頁"}, {"question": "有「中國矽谷」之稱的中關村位在哪裡？", "options": ["北京", "上海", "深圳", "武漢"], "answer": 0, "explanation": "中關村在北京近郊，屬於環渤海經濟圈。", "source": "3-3 一｜第37頁"}], "special": [{"question": "🗺️ 附圖甲～丁中，哪一處「不是」全國性商品糧基地？", "options": ["甲", "乙", "丙", "丁"], "answer": 2, "explanation": "丙是塔里木盆地，大部分是沙漠、乾燥少雨，不適合大規模種植糧食。甲東北平原、乙長江中下游平原、丁四川盆地都是商品糧基地。", "source": "3-1 二｜課本第33頁 圖1-3-5", "fixed": true, "image": "d3_grain"}, {"question": "🗺️ 附圖甲～丁中，哪一處的牧民過著「逐水草而居」的游牧生活？", "options": ["甲", "乙", "丙", "丁"], "answer": 1, "explanation": "乙是乾燥少雨的新疆，牧民逐水草而居。甲青藏高原採山牧季移；丙內蒙古高原東側在河岸放牧；丁華北平原以農業為主。", "source": "3-1 一｜課本第32頁 圖1-3-1", "fixed": true, "image": "d3_pasture"}, {"question": "🗺️ 附圖甲處是著名的鐵礦與稀土產地白雲鄂博。它位在哪一個省級行政區？", "options": ["內蒙古", "新疆", "西藏", "青海"], "answer": 0, "explanation": "白雲鄂博在內蒙古。扉頁也提到內蒙古地區有「開採稀土與汙染」的問題。", "source": "3-2 一｜課本第34頁 圖1-3-6；扉頁學習圖解", "image": "d3_bayan"}, {"question": "🗺️ 附圖甲～丁中，哪一處「不是」經濟特區？", "options": ["甲", "乙", "丙", "丁"], "answer": 3, "explanation": "丁是上海，不是經濟特區。甲深圳、乙廈門是東南沿海最早的經濟特區，丙喀什是2010年設立的第六個。", "source": "3-2 二 充電站｜課本第35頁 圖1-3-10", "fixed": true, "image": "d3_sez"}, {"question": "🗺️ 附圖甲～丁代表中國四大經濟區。「位居內陸，是重要的糧食供應地，工資較東部低廉」的是哪一區？", "options": ["甲", "乙", "丙", "丁"], "answer": 2, "explanation": "丙是中部地區。甲是東北地區、乙是東部地區、丁是西部地區。", "source": "3-3 一｜課本第36頁 圖1-3-11", "fixed": true, "image": "d3_regions"}, {"question": "🗺️ 附圖甲～丁中，「鄰近香港、澳門，是中國最早改革開放的地區」位在哪一處附近？", "options": ["甲", "乙", "丙", "丁"], "answer": 2, "explanation": "丙在珠江口，是珠三角經濟圈。甲是環渤海（北京）、乙是長三角（上海）、丁是重慶。", "source": "3-3 一｜課本第37頁", "fixed": true, "image": "d3_circles"}, {"question": "🗺️ 附圖中連接西寧與拉薩的鐵路，是西部大開發的哪一項工程？", "options": ["青藏鐵路", "西氣東輸", "南水北調", "西電東送"], "answer": 0, "explanation": "青藏鐵路連接青海西寧與西藏拉薩，是西部大開發的重點工程之一。", "source": "3-3 一 充電站｜課本第36頁 圖1-3-12", "image": "d3_qtrail"}, {"question": "🗺️ 附圖箭頭從新疆塔里木盆地指向上海。這是西部大開發的哪一項工程？", "options": ["西氣東輸", "西電東送", "南水北調", "中歐班列"], "answer": 0, "explanation": "把新疆的天然氣以管線送到上海等東部地區，是西氣東輸。", "source": "3-3 一 充電站｜課本第36頁", "image": "d3_gas"}, {"question": "🗺️ 附圖箭頭為南水北調的方向，把長江流域的水送往北方。北方需要調水，主要原因是什麼？", "options": ["北方降水較少", "北方氣溫較高", "北方地勢較低", "北方河川太多"], "answer": 0, "explanation": "第1課：中國降水由東南向西北遞減，秦嶺、淮河以北年降水量多不到750mm，加上人口與工業用水需求大。", "source": "3-3 一 充電站｜課本第36頁；第1課 降水", "image": "d3_water"}, {"question": "🗺️ 「原為珠江口東側的鄉村，設立經濟特區後迅速發展，一度成為新興都市的典範。」這是附圖中哪一處？", "options": ["甲", "乙", "丙", "丁"], "answer": 2, "explanation": "丙是深圳。甲是北京、乙是上海、丁是拉薩。", "source": "3-3 二｜課本第38頁", "fixed": true, "image": "d3_cities"}]}, "第4課 中國的經濟發展與全球關連": {"cards": [{"term": "世界工廠的起點", "d": "外國企業把工廠生產過程的「最後組裝階段」移到中國，中國成為世界工廠；研發、品牌行銷多留在外國。", "src": "4-1 一｜課本第40頁"}, {"term": "紅色供應鏈", "d": "中國扶植本土廠商，把原本進口的零件改在國內生產，上、中、下游串成完整的在地供應鏈。", "src": "4-1 一｜課本第40頁 側欄"}, {"term": "品牌與電動車", "d": "全球前五大手機品牌，除三星、蘋果外都是中國品牌；中國電動汽車銷量世界第一。", "src": "4-1 一｜課本第40頁 圖1-4-1、1-4-2"}, {"term": "世界市場", "d": "平均薪資提高、消費能力提升，加上人口龐大，全球企業紛紛到中國設點，爭取中國消費者。", "src": "4-1 二｜課本第41頁"}, {"term": "無現金支付", "d": "搭配手機與無線網路，普及程度名列世界前茅（扉頁：中國行動支付全球第一）。", "src": "4-1 二｜課本第41頁 圖1-4-5"}, {"term": "進出口名列前茅", "d": "中國是世界主要加工基地：原物料、零組件大量進口，工業產品大量外銷。", "src": "4-2 一｜課本第42頁 圖1-4-6"}, {"term": "對外投資", "d": "經濟快速成長累積資金，投資遍及全球，以亞洲為主（約七成），其次是中南美洲。", "src": "4-2 一｜課本第42頁 圖1-4-7、1-4-8"}, {"term": "一帶一路", "d": "一帶：絲綢之路經濟帶（陸路）。一路：二十一世紀海上絲綢之路（海路）。", "src": "4-2 一｜課本第43頁 圖1-4-9"}, {"term": "一帶一路的目的與問題", "d": "目的：為工業產品取得國際市場，掌握重要資源與戰略要地。問題：部分國家無法償債，建設主權易手，例如斯里蘭卡漢班托塔港。", "src": "4-2 一｜課本第43頁"}, {"term": "產線移出中國", "d": "原因：關鍵技術與零組件被禁止進入中國、工資及地價提高、政策改變（例如環保標準變嚴格）。", "src": "4-2 一｜課本第43頁"}, {"term": "對世界環境的三項影響", "d": "① 碳排放：總量世界第一。② 空氣汙染：廢氣隨季風飄到鄰國。③ 水資源使用：瀾滄江水壩影響下游。", "src": "4-2 二｜課本第44頁"}, {"term": "沙漠化與沙塵暴", "d": "內蒙古、新疆一帶過度農墾、過度放牧形成沙漠化；冬末春初強風颳起裸露塵土，就形成沙塵暴。", "src": "4-2 二 充電站｜課本第44頁"}, {"term": "瀾滄江跨國水權", "d": "瀾滄江是湄公河上游。中國自1986年起在上游興建水壩，下游湄公河水量減少，影響中南半島的農業與航運。", "src": "4-2 二 充電站｜課本第44頁 圖1-4-13"}, {"term": "兼顧發展與環保", "d": "中國逐漸正視環境議題，努力透過產業結構的調整，兼顧經濟發展與環境保護。", "src": "4-2 二｜課本第44頁"}], "quick": [{"question": "外國企業把哪一個生產階段移到中國，使中國成為世界工廠？", "options": ["最後組裝", "研發設計", "品牌行銷", "原料開採"], "answer": 0, "explanation": "外國企業將最後組裝階段移到中國。", "source": "4-1 一｜第40頁"}, {"question": "上、中、下游串成完整的在地供應鏈，稱為？", "options": ["紅色供應鏈", "世界工廠", "經濟特區", "一帶一路"], "answer": 0, "explanation": "扶植本土廠商，降低對外國零件的依賴。", "source": "4-1 一｜第40頁"}, {"question": "中國龐大的消費能力，使它成為？", "options": ["世界市場", "世界工廠", "世界屋脊", "商品糧基地"], "answer": 0, "explanation": "世界市場強調消費；世界工廠強調生產。", "source": "4-1 二｜第41頁"}, {"question": "手機搭配無線網路，發展出哪一種交易方式？", "options": ["無現金支付", "信用卡分期", "郵政匯票", "以物易物"], "answer": 0, "explanation": "中國行動支付普及程度名列世界前茅。", "source": "4-1 二｜第41頁"}, {"question": "中國對外投資最多的是哪一洲？", "options": ["亞洲", "非洲", "歐洲", "大洋洲"], "answer": 0, "explanation": "以亞洲為主，約七成。", "source": "4-2 一｜第42頁"}, {"question": "「一帶一路」的「一路」是指？", "options": ["海上絲綢之路", "絲綢之路經濟帶", "青藏鐵路", "京杭運河"], "answer": 0, "explanation": "一路是二十一世紀海上絲綢之路。", "source": "4-2 一｜第43頁"}, {"question": "斯里蘭卡因無法償債，把哪一座港口租給中國99年？", "options": ["漢班托塔港", "瓜達爾港", "洋山港", "維多利亞港"], "answer": 0, "explanation": "漢班托塔港是一帶一路債務問題的例子；瓜達爾港在巴基斯坦。", "source": "4-2 一｜第43頁 圖1-4-11"}, {"question": "中國的二氧化碳排放總量是世界第幾名？", "options": ["第一名", "第二名", "第三名", "第十名"], "answer": 0, "explanation": "中國排放量占全世界34.1%，居世界第一。", "source": "4-2 二｜第44頁 圖1-4-12"}, {"question": "瀾滄江流出中國後，下游稱為？", "options": ["湄公河", "長江", "恆河", "珠江"], "answer": 0, "explanation": "瀾滄江是湄公河的上游。", "source": "4-2 二｜第44頁"}, {"question": "造成沙漠化的主要人為原因是？", "options": ["過度農墾放牧", "興建水壩", "發展觀光", "工廠外移"], "answer": 0, "explanation": "內蒙古、新疆一帶過度農墾、過度放牧。", "source": "4-2 二 充電站｜第44頁"}, {"question": "沙塵暴通常發生在什麼時候？", "options": ["冬末春初", "盛夏時節", "秋季", "全年平均"], "answer": 0, "explanation": "冬末春初，蒙古一帶的塵土被強風颳起。", "source": "4-2 二 充電站｜第44頁"}, {"question": "中國希望用什麼方式兼顧經濟發展與環境保護？", "options": ["調整產業結構", "全面停工", "增加燃煤", "擴大放牧"], "answer": 0, "explanation": "透過產業結構的調整達成目標。", "source": "4-2 二｜第44頁"}], "special": [{"question": "🗺️ 冬末春初，塵土從附圖甲處被強風颳起，影響中國北部、韓國、日本，甚至臺灣。甲處大約是哪裡？", "options": ["蒙古一帶", "青藏高原", "四川盆地", "長江三角洲"], "answer": 0, "explanation": "沙塵暴的塵土來自蒙古、內蒙古一帶裸露的土地，隨冬季季風向東南吹送。", "source": "4-2 二 充電站「沙塵暴」｜課本第44頁", "image": "d4_dust"}, {"question": "🗺️ 附圖箭頭表示冬季時，華北工廠與汽車廢氣飄送的方向。這屬於中國對世界環境的哪一項影響？", "options": ["空氣汙染", "碳排放", "水資源使用", "沙漠化"], "answer": 0, "explanation": "廢氣隨季風飄到韓國、日本等鄰近地區，屬於空氣汙染。", "source": "4-2 二｜課本第44頁", "image": "d4_smog"}, {"question": "🗺️ 附圖藍線是一條跨國河川，在中國境內稱為瀾滄江。中國在上游興建水壩後，哪些國家最受影響？", "options": ["中南半島國家", "朝鮮半島國家", "中亞國家", "日本"], "answer": 0, "explanation": "瀾滄江流出中國後稱湄公河，流經寮國、泰國、柬埔寨、越南等中南半島國家。", "source": "4-2 二 充電站｜課本第44頁 圖1-4-13", "image": "d4_mekong"}, {"question": "🗺️ 附圖中，經東南亞、南亞前往非洲東岸的「乙」路線，是哪一條？", "options": ["海上絲綢之路", "絲綢之路經濟帶", "中歐班列", "青藏鐵路"], "answer": 0, "explanation": "乙是海路，即二十一世紀海上絲綢之路；甲是陸路的絲綢之路經濟帶。", "source": "4-2 一｜課本第43頁 圖1-4-9", "image": "m4_belt"}, {"question": "📊 依附圖，中國對亞洲的投資大約占全部的幾成？", "options": ["約七成", "約三成", "約一成", "約五成"], "answer": 0, "explanation": "中國對外投資以亞洲為主，約占70.2%。", "source": "4-2 一｜課本第42頁 圖1-4-8", "image": "f4_invest"}, {"question": "📊 依附圖，前五大貿易國中，哪一國的出口額最高？", "options": ["中國", "美國", "德國", "日本"], "answer": 0, "explanation": "中國出口額約3,577（十億美元），居五國之首。", "source": "4-2 一｜課本第42頁 圖1-4-6", "image": "f4_trade"}, {"question": "📊 依附圖，電動汽車總銷售量第一的國家是？", "options": ["中國", "美國", "德國", "英國"], "answer": 0, "explanation": "中國電動汽車銷量遠高於其他國家，超過其餘九國的總和。", "source": "4-1 一｜課本第40頁 圖1-4-2", "image": "f4_ev"}, {"question": "📊 依附圖，二氧化碳排放總量第二名的國家是？", "options": ["美國", "印度", "俄羅斯", "日本"], "answer": 0, "explanation": "第一名中國（11,950百萬噸），第二名美國（4,416），第三名印度（3,219）。", "source": "4-2 二｜課本第44頁 圖1-4-12", "image": "f4_co2"}, {"question": "📊 依附圖，前五大智慧型手機品牌中，「不是」中國品牌的是哪兩個？", "options": ["三星、蘋果", "小米、OPPO", "傳音、小米", "OPPO、三星"], "answer": 0, "explanation": "前五大品牌除了三星與蘋果，小米、傳音、OPPO都是中國品牌。", "source": "4-1 一｜課本第40頁 圖1-4-1", "image": "f4_phone"}, {"question": "📊 附圖為產品生產鏈。「紅色供應鏈」是指哪些階段都能在中國國內完成？", "options": ["甲～丁全部", "只有丙", "只有甲", "只有甲和丁"], "answer": 0, "explanation": "紅色供應鏈是把上、中、下游串成完整的在地供應鏈，使各階段都能在國內完成。", "source": "4-1 一｜課本第40頁 側欄", "image": "m4_chain"}]}}, "history": {"第3課 宋元時期的民族互動": {"cards": [{"term": "遼（契丹）", "d": "唐亡後，契丹人建立遼國，南下取得燕雲十六州，勢力越過長城以南，長城失去防禦功能。", "src": "3-1 一｜課本第94頁 圖2-3-2"}, {"term": "北宋", "d": "趙匡胤建立，定都汴京（今開封）。偏重文人政治，影響軍事發展，未能奪回燕雲十六州。", "src": "3-1 二｜課本第95頁"}, {"term": "澶淵之盟", "d": "宋真宗時與遼訂立：宋每年給遼銀、絹（歲幣），劃定疆界，君主以兄弟相稱，是對等的外交關係。", "src": "3-1 二 充電站｜課本第95頁"}, {"term": "金與靖康之禍", "d": "女真人建立金國，聯宋滅遼後攻宋，靖康2年（1127年）攻破首都、俘虜宋朝皇室，史稱靖康之禍。", "src": "3-1 三｜課本第95頁"}, {"term": "南宋", "d": "殘餘的宋室南遷，定都臨安（今杭州）。金始終無法控制長江以南，雙方簽訂和議，南北對峙。", "src": "3-1 三｜課本第95頁 圖2-3-5"}, {"term": "蒙古帝國", "d": "鐵木真統一蒙古，被尊為成吉思汗；與繼位者三次西征，建立四大汗國，形成橫跨歐亞的帝國。", "src": "3-2 一｜課本第96～97頁"}, {"term": "元朝", "d": "忽必烈建立，定都大都（今北京），南下滅宋，使蒙古人成為第一個統治全中國的草原民族。", "src": "3-2 一｜課本第96頁"}, {"term": "四等級", "d": "蒙古人、色目人（西域各民族，多負責財政）、漢人（原受金統治）、南人（原受南宋統治，地位最低）。漢人、南人在政治、法律、科舉受限。", "src": "3-2 二｜課本第97頁 圖2-3-8"}, {"term": "市舶司與驛站", "d": "市舶司：設於廣州、泉州，管理商船、檢查貨物、徵稅，類似海關。驛站：信使與官員換馬歇息，也有助經貿與文化交流。", "src": "3-3 一 充電站｜課本第98頁"}, {"term": "紙幣與夜市", "d": "為解決銅錢攜帶不便，宋元發展出紙幣；坊市制度廢除，不受時間地點限制的夜市盛行（清明上河圖）。", "src": "3-3 一｜課本第98～99頁"}, {"term": "伊斯蘭文化", "d": "泉州清淨寺（北宋）是現存最早具阿拉伯建築風格的清真寺；回回人擔任司天監，影響天文曆法與醫學。", "src": "3-3 二｜課本第100頁"}, {"term": "宋代科技", "d": "指南針：廣泛用於航海，經阿拉伯傳到歐洲，有助新航路發現。活字版印刷：北宋畢昇。火藥：廣泛用於戰爭，後輾轉西傳。", "src": "3-3 二｜課本第101頁"}, {"term": "理學", "d": "宋代知識分子把佛學融入儒家而成的新儒學，南宋朱熹集大成；四書集注成為元代科舉標準本，並傳到朝鮮、日本。", "src": "3-3 二 充電站｜課本第101頁"}], "quick": [{"question": "契丹人建立的政權是？", "options": ["遼", "金", "元", "西夏"], "answer": 0, "explanation": "唐亡後契丹人建立遼國。", "source": "3-1 一｜第94頁"}, {"question": "北宋時，女真人建立的政權是？", "options": ["金", "遼", "元", "西夏"], "answer": 0, "explanation": "北宋晚期女真人建立金國。", "source": "3-1 三｜第95頁"}, {"question": "北宋的首都是？", "options": ["汴京", "臨安", "大都", "長安"], "answer": 0, "explanation": "趙匡胤定都汴京（今開封）。", "source": "3-1 二｜第95頁"}, {"question": "南宋的首都是？", "options": ["臨安", "汴京", "大都", "應天"], "answer": 0, "explanation": "南宋以臨安府（今杭州）為都城。", "source": "3-1 三｜第95頁"}, {"question": "宋、遼建立對等外交關係的盟約是？", "options": ["澶淵之盟", "靖康之禍", "宋金和議", "禮儀之爭"], "answer": 0, "explanation": "澶淵之盟雙方君主以兄弟相稱。", "source": "3-1 二｜第95頁"}, {"question": "金兵攻破北宋首都、俘虜皇室的事件是？", "options": ["靖康之禍", "永嘉之禍", "澶淵之盟", "安史之亂"], "answer": 0, "explanation": "靖康2年（1127年）的靖康之禍。", "source": "3-1 三｜第95頁"}, {"question": "被尊稱為「成吉思汗」的是？", "options": ["鐵木真", "忽必烈", "拔都", "旭烈兀"], "answer": 0, "explanation": "鐵木真統一蒙古各部族。", "source": "3-2 一｜第96頁"}, {"question": "元朝的首都是？", "options": ["大都", "和林", "臨安", "應天"], "answer": 0, "explanation": "忽必烈定都大都（今北京）。", "source": "3-2 一｜第96頁"}, {"question": "元朝四等級中地位最低的是？", "options": ["南人", "漢人", "色目人", "蒙古人"], "answer": 0, "explanation": "原受南宋統治的人民被列為南人。", "source": "3-2 二｜第97頁"}, {"question": "宋元時期管理商船、徵收關稅的機構是？", "options": ["市舶司", "驛站", "司天監", "太學"], "answer": 0, "explanation": "市舶司設在廣州、泉州等地。", "source": "3-3 一｜第98頁"}, {"question": "發展出活字版印刷術的是？", "options": ["畢昇", "朱熹", "張擇端", "鄭和"], "answer": 0, "explanation": "北宋畢昇發展活字版印刷。", "source": "3-3 二｜第101頁"}, {"question": "集理學大成的是？", "options": ["朱熹", "畢昇", "岳飛", "忽必烈"], "answer": 0, "explanation": "南宋朱熹集理學之大成。", "source": "3-3 二｜第101頁"}], "special": [{"type": "order", "question": "⏳ 時光排序：依發生先後，由早到晚點選。", "items": ["北宋建立", "宋遼訂立澶淵之盟", "女真人建立金國", "靖康之禍，宋室南遷"], "explanation": "北宋建立（960年）→ 澶淵之盟（宋真宗時）→ 金國建立（1115年）→ 靖康之禍（1127年）。", "source": "3-1｜課本第94～95頁；單元時間軸", "options": [], "answer": 0}, {"type": "order", "question": "⏳ 時光排序：依兩宋與周邊民族的互動，由早到晚點選。", "items": ["北宋聯金滅遼", "金南下滅北宋", "南宋、金對峙", "南宋聯蒙滅金", "元滅南宋"], "explanation": "北宋聯金滅遼 → 金南下滅北宋（靖康之禍）→ 南宋與金對峙 → 南宋聯蒙滅金 → 元滅南宋（1279年）。", "source": "3-1 想一想｜課本第96頁", "options": [], "answer": 0}, {"type": "order", "question": "⏳ 時光排序：依蒙古與元朝的發展，由早到晚點選。", "items": ["鐵木真被尊為成吉思汗", "忽必烈定國號為大元", "元滅南宋", "元朝統治後期民變紛起"], "explanation": "鐵木真統一蒙古（十三世紀初）→ 忽必烈定國號為大元（1271年）→ 元滅南宋（1279年）→ 元朝後期財政紊亂、民變紛起而滅亡。", "source": "3-2｜課本第96～97頁", "options": [], "answer": 0}, {"type": "order", "question": "⏳ 因果排序：指南針如何改變世界？依先後點選。", "items": ["宋代廣泛用於航海", "阿拉伯商旅帶往歐洲", "有助於新航路的發現"], "explanation": "指南針在宋代廣泛應用於航海，後由阿拉伯商旅帶往歐洲，有助於日後新航路的發現。", "source": "3-3 二｜課本第101頁", "options": [], "answer": 0}, {"question": "🎭 穿越任務：你是北宋的使臣，奉命與遼國談判。依史實，你帶回的盟約內容最可能是什麼？", "options": ["宋每年送遼銀、絹，雙方君主以兄弟相稱", "遼國向宋朝稱臣、每年進貢", "宋把長江以南割讓給遼", "雙方約定共同攻打蒙古"], "answer": 0, "explanation": "澶淵之盟規定宋每年支付遼國銀、絹（歲幣），劃定疆界，雙方君主以兄弟互稱。", "source": "3-1 二 充電站｜課本第95頁"}, {"question": "🎭 穿越任務：你是靖康之禍後的宋朝將領。依史實，你最可能做什麼？", "options": ["積極抗金，企圖收復黃河流域", "聯合遼國一起攻打金國", "向蒙古稱臣以求和平", "把首都遷到大都"], "answer": 0, "explanation": "靖康之禍激勵部分宋朝將領（如岳飛）積極抗金，企圖收復原有土地。遼國此時已被金所滅。", "source": "3-1 三 想一想｜課本第95頁"}, {"question": "🎭 穿越任務：你是十三世紀泉州的商人。下列哪一件事最可能是你的日常？", "options": ["接待阿拉伯商人，到市舶司報關繳稅", "用美洲白銀向葡萄牙人買茶葉", "跟荷蘭東印度公司簽約", "因為海禁不能出海"], "answer": 0, "explanation": "宋元時期泉州設有市舶司，信仰伊斯蘭教的商人在海上貿易扮演重要角色。白銀、荷蘭、海禁都是明代以後。", "source": "3-3 一｜課本第98頁；課後閱讀第103頁"}, {"question": "🎭 穿越任務：你是元朝時住在華北、原本受金國統治的讀書人。你最可能被列為哪一等級？", "options": ["漢人", "南人", "色目人", "蒙古人"], "answer": 0, "explanation": "原本受金國統治的漢人、契丹人、女真人被列為漢人；原受南宋統治的才是南人。", "source": "3-2 二｜課本第97頁 圖2-3-8"}, {"question": "🎭 穿越任務：你是北宋汴京的居民，吃完晚飯想出門。依史實，你最可能做什麼？", "options": ["逛夜市、聽說書", "等市場明天早上開門", "搭鄭和的船出海", "去看利瑪竇的世界地圖"], "answer": 0, "explanation": "宋朝坊市制度廢除，夜市盛行，說書也在宋代興起。鄭和、利瑪竇都是明代。", "source": "3-3 一｜課本第98頁；學習會考第102頁"}, {"question": "🎭 穿越任務：你在元朝的司天監工作，負責觀察天文、推算曆法。你最可能是哪一種人？", "options": ["信仰伊斯蘭教、精通天文的回回人", "剛考上科舉的南人", "日本派來的遣唐使", "天主教耶穌會傳教士"], "answer": 0, "explanation": "元代專門聘用回回人（信仰伊斯蘭教者）擔任司天監的工作。", "source": "3-3 二｜課本第100頁 圖2-3-13"}]}, "第4課 明清帝國與天朝體制": {"cards": [{"term": "明朝建立", "d": "元末群雄並起，朱元璋擊敗群雄建立明朝，定都應天（今南京），是為明太祖。", "src": "4-1 一｜課本第104頁"}, {"term": "明成祖", "d": "為防範蒙古重新修築長城，並遷都北京；十五世紀前期派鄭和下西洋。", "src": "4-1 一；4-2 一｜課本第104、106頁"}, {"term": "明中葉的威脅", "d": "東南沿海有倭寇騷擾，北方有蒙古侵犯；後來女真再度崛起，改名滿洲，建立清國（1636年）。", "src": "4-1 一｜課本第104頁 圖2-4-2"}, {"term": "明朝滅亡與清兵入關", "d": "明末大饑荒，流寇四起，李自成攻陷北京，明朝滅亡（1644年）；清兵因明將吳三桂投降，得以入山海關。", "src": "4-1 一、二｜課本第104～105頁"}, {"term": "懷柔與高壓", "d": "康熙、雍正、乾隆三帝：懷柔是禮遇明朝遺臣、利用科舉籠絡士人；高壓是強迫漢人薙髮、大興文字獄。", "src": "4-1 二｜課本第105頁"}, {"term": "康雍乾盛世", "d": "臺灣（康熙年間）、蒙古、西藏、新疆相繼納入版圖，國勢達於極盛。", "src": "4-1 二｜課本第105頁 圖2-4-6"}, {"term": "朝貢貿易", "d": "明清以天朝自居，只有接受冊封的國家才能以朝貢名義通商，可得豐厚賞賜與保護。", "src": "4-2 一｜課本第106頁"}, {"term": "鄭和下西洋", "d": "前往東南亞、印度洋一帶（西洋），遠至非洲東岸；各國受通商利益吸引來朝貢，例如榜葛剌進貢「麒麟」（長頸鹿）。", "src": "4-2 一｜課本第106頁 圖2-4-7、2-4-8"}, {"term": "海禁與海商", "d": "明初為防倭寇實施海禁，沿海居民迫於生計私自出海；十六世紀中期局部解除。倭寇多為中國人，亦盜亦商，學者稱「海商」。", "src": "4-2 二｜課本第106頁"}, {"term": "白銀與美洲作物", "d": "歐洲商人以美洲白銀購買中國絲綢、瓷器、茶葉，白銀流入中國；番薯、玉米、馬鈴薯傳入，緩和糧食不足。", "src": "4-2 三｜課本第107頁"}, {"term": "歐洲人的據點", "d": "葡萄牙：澳門。西班牙：菲律賓馬尼拉。荷蘭東印度公司：巴達維亞（今雅加達）亞洲總部。", "src": "4-2 三 超連結｜課本第107頁"}, {"term": "利瑪竇", "d": "明末來華的耶穌會傳教士，尊重傳統、允許祭祖祀孔、穿儒服；與徐光啟合譯幾何原本，傳入曆法、幾何學。", "src": "4-3｜課本第108頁"}, {"term": "禮儀之爭與禁教", "d": "教宗不准中國信徒祭祖、祀孔，引發禮儀之爭；雍正禁教（1723年），中西交流趨於沉寂。日本只准中國、荷蘭商船到長崎。", "src": "4-3｜課本第109頁"}], "quick": [{"question": "明朝的開國皇帝是？", "options": ["朱元璋", "明成祖", "李自成", "康熙"], "answer": 0, "explanation": "朱元璋建立明朝，是為明太祖。", "source": "4-1 一｜第104頁"}, {"question": "明成祖把首都遷到哪裡？", "options": ["北京", "南京", "西安", "杭州"], "answer": 0, "explanation": "明成祖為防範蒙古遷都北京。", "source": "4-1 一｜第104頁"}, {"question": "明末攻陷北京的流寇首領是？", "options": ["李自成", "吳三桂", "鄭和", "朱元璋"], "answer": 0, "explanation": "勢力最大的李自成攻陷北京，明朝滅亡。", "source": "4-1 一｜第104頁"}, {"question": "清兵入關時進入的關隘是？", "options": ["山海關", "嘉峪關", "玉門關", "雁門關"], "answer": 0, "explanation": "清兵因吳三桂投降，得以進入山海關。", "source": "4-1 二｜第105頁"}, {"question": "清初士人因詩文觸犯禁忌而入獄，稱為？", "options": ["文字獄", "薙髮令", "海禁", "禮儀之爭"], "answer": 0, "explanation": "文字獄是清初的高壓手段。", "source": "4-1 二 充電站｜第105頁"}, {"question": "臺灣在哪一位皇帝時被納入清朝版圖？", "options": ["康熙", "雍正", "乾隆", "順治"], "answer": 0, "explanation": "臺灣在康熙年間被納入清朝版圖。", "source": "4-1 二｜第105頁"}, {"question": "接受冊封才能以朝貢名義通商，稱為？", "options": ["朝貢貿易", "市舶貿易", "白銀貿易", "走私貿易"], "answer": 0, "explanation": "明清以天朝自居。", "source": "4-2 一｜第106頁"}, {"question": "鄭和的船隊最遠到達哪裡？", "options": ["非洲東岸", "美洲", "歐洲", "澳洲"], "answer": 0, "explanation": "鄭和出使路線遠至非洲東岸。", "source": "4-2 一｜第106頁 圖2-4-8"}, {"question": "葡萄牙人占領作為貿易據點的是？", "options": ["澳門", "馬尼拉", "巴達維亞", "長崎"], "answer": 0, "explanation": "西班牙占馬尼拉，荷蘭在巴達維亞設總部。", "source": "4-2 三｜第107頁"}, {"question": "傳入中國、被記載有「救飢」作用的美洲作物是？", "options": ["番薯", "小麥", "水稻", "茶葉"], "answer": 0, "explanation": "徐光啟農政全書記載番薯可以救飢。", "source": "4-2 三｜第107頁"}, {"question": "和徐光啟合譯幾何原本的傳教士是？", "options": ["利瑪竇", "沙勿略", "馬可波羅", "鄭和"], "answer": 0, "explanation": "利瑪竇與徐光啟合譯幾何原本。", "source": "4-3｜第108頁"}, {"question": "下令全面禁教的清朝皇帝是？", "options": ["雍正", "康熙", "乾隆", "順治"], "answer": 0, "explanation": "雍正皇帝展開嚴厲的禁教行動。", "source": "4-3｜第109頁"}], "special": [{"type": "order", "question": "⏳ 時光排序：依發生先後，由早到晚點選。", "items": ["明朝建立", "鄭和初次西航", "利瑪竇到中國", "清國建立", "清兵進占北京"], "explanation": "明朝建立（1368年）→ 鄭和初次西航（1405年）→ 利瑪竇到中國（1582年）→ 清國建立（1636年）→ 清兵進占北京（1644年）。", "source": "第二單元 時間軸｜課本第92～93頁", "options": [], "answer": 0}, {"type": "order", "question": "⏳ 時光排序：明朝海上貿易政策的變化，依先後點選。", "items": ["明初為防倭寇實施海禁", "十六世紀中期平定倭寇、局部解除海禁", "漢人海商的貿易網絡遍及日本與東南亞"], "explanation": "明初實施海禁 → 十六世紀中期平定倭寇後局部解除海禁 → 沿海貿易再度興起，漢人海商網絡遍及中國、日本與東南亞。", "source": "4-2 二｜課本第106頁", "options": [], "answer": 0}, {"type": "order", "question": "⏳ 因果排序：天主教在中國的傳教，依先後點選。", "items": ["利瑪竇允許信徒祭祖、祀孔", "教宗不准中國信徒祭祖、祀孔", "雍正皇帝下令禁教", "中西文化交流趨於沉寂"], "explanation": "利瑪竇尊重中國傳統 → 清初教宗不准祭祖祀孔，引發禮儀之爭 → 雍正禁教 → 中西文化交流趨於沉寂。", "source": "4-3｜課本第108～109頁", "options": [], "answer": 0}, {"type": "order", "question": "⏳ 時光排序：明清之際的變局，依先後點選。", "items": ["女真再度崛起，改名滿洲", "滿洲建立清國", "李自成攻陷北京", "吳三桂投降，清兵入關"], "explanation": "女真崛起改名滿洲 → 建立清國（1636年）→ 李自成攻陷北京、明朝滅亡（1644年）→ 同年吳三桂降清，清兵入關。", "source": "4-1｜課本第104～105頁", "options": [], "answer": 0}, {"question": "🎭 穿越任務：你是鄭和船隊的一名水手。依史實，你最可能到過哪些地方？", "options": ["滿剌加（麻六甲）、印度的古里", "美洲的墨西哥", "歐洲的倫敦", "日本長崎的出島"], "answer": 0, "explanation": "鄭和前往東南亞、印度洋一帶，經滿剌加、古里，遠至非洲東岸。", "source": "4-2 一｜課本第106頁 圖2-4-8"}, {"question": "🎭 穿越任務：你是明初福建沿海的居民，政府剛實施海禁。依課本，許多人最可能怎麼做？", "options": ["迫於生計，違反禁令私自出海", "全家搬到北方草原", "改當元朝的色目人官員", "搭荷蘭商船到歐洲"], "answer": 0, "explanation": "東南沿海如廣東、福建的居民迫於生計，還是有許多人違反禁令，私自出海。", "source": "4-2 二｜課本第106頁"}, {"question": "🎭 穿越任務：你是十七世紀的荷蘭商人，想到日本做生意。依史實，你只能怎麼做？", "options": ["在長崎出島的商館內活動", "到京都、江戶自由傳教", "到澳門向葡萄牙人借港口", "用歲幣向日本換取和平"], "answer": 0, "explanation": "日本限制西方傳教士與商人，只允許中國、荷蘭商船到長崎；荷蘭人只能在出島的商館內活動。", "source": "4-3｜課本第109頁 圖2-4-14"}, {"question": "🎭 穿越任務：你是清初江南的讀書人，希望保住性命、繼續求取功名。下列哪一種做法最安全？", "options": ["遵守薙髮規定，參加科舉考試", "寫詩諷刺朝廷", "堅持留明朝髮式", "公開組織反清活動"], "answer": 0, "explanation": "清初採懷柔（科舉籠絡）與高壓（薙髮、文字獄）並行；觸犯禁忌可能入獄甚至被殺。", "source": "4-1 二｜課本第105頁"}, {"question": "🎭 穿越任務：你是十六世紀的西班牙商人，帶著美洲白銀來到馬尼拉。你最想買的是什麼？", "options": ["中國的絲綢、瓷器、茶葉", "北宋發行的紙幣", "日本的佛經", "印度的香料種子"], "answer": 0, "explanation": "歐洲商人以美洲白銀購買中國的絲綢、瓷器、茶葉，再轉賣到世界各地獲取高額利潤。", "source": "4-2 三｜課本第107頁 圖2-4-9"}, {"question": "🎭 穿越任務：你是明末的士大夫徐光啟，和利瑪竇往來密切。你最可能做什麼？", "options": ["一起翻譯幾何原本，學習西方數學", "一起推動清朝禁教", "一起跟著鄭和下西洋", "一起到長崎出島經商"], "answer": 0, "explanation": "徐光啟與利瑪竇合譯幾何原本，被西方科學知識吸引，後來受洗成為天主教徒。", "source": "4-3｜課本第108頁；課後閱讀第111頁"}]}}, "civics": {"第3課 政府與權力分立": {"cards": [{"term": "人治", "d": "統治者依自己的意思制定或修改法律，目的是鞏固權力；統治者不需遵守；執行標準隨統治者改變，人民權利受侵害。", "src": "3-1｜課本第158頁"}, {"term": "法治", "d": "人民選出的代表依程序制定或修改法律，目的在保障人民權利；同時約束統治者與人民，標準明確，不朝令夕改。", "src": "3-1｜課本第158頁"}, {"term": "權力", "d": "強制與支配的力量，行使後會使他人受到影響。例：政府處罰違法的人（公權力）。", "src": "3-2 一｜課本第159頁"}, {"term": "權利", "d": "法律保護人民享有的利益：不受任意侵害，並能請求特定利益。例：拒絕未依法定程序的搜索、颱風後申請災害補助。", "src": "3-2 一｜課本第159頁"}, {"term": "權力與權利的關聯", "d": "人民透過選舉的權利賦予政府權力，期望政府以公權力保障權利；政府濫權時，人民可用罷免等方式收回權力。", "src": "3-2 二｜課本第159頁"}, {"term": "有限政府", "d": "民主國家透過憲法，以分權制衡建構政府，政府權力受到人民的監督與約束。", "src": "3-3｜課本第160頁"}, {"term": "權力分立", "d": "把權力分別交由不同機關獨立行使，避免權力過度集中。", "src": "3-3｜課本第160頁"}, {"term": "相互制衡", "d": "各權力互相監督與牽制。例：行政機關推動政策須有法律依據；行政違法損害人民權益，可向司法機關尋求協助。", "src": "3-3｜課本第160頁"}, {"term": "三權分立", "d": "法國學者孟德斯鳩提出：行政權（內閣，執行政策）、立法權（國會，制定法律）、司法權（法院，依法獨立審判）。", "src": "3-3｜課本第160頁 圖3-3-8"}, {"term": "五權分立", "d": "孫中山提出：為避免濫用私人，考試權從行政權獨立；為避免國會專制，監察權從立法權獨立。", "src": "3-3｜課本第160頁 圖3-3-9"}, {"term": "艾克頓名言", "d": "「權力使人腐化，絕對的權力使人絕對腐化。」提醒權力需要分立與制衡。", "src": "3-3 引言｜課本第160頁"}, {"term": "學生輔導法修法", "d": "行政院提出修正草案、立法院三讀通過：增加專業輔導人力；學生經本人同意、學校評估後，可不經法定代理人同意接受諮商。", "src": "3 課後閱讀｜課本第162頁"}], "quick": [{"question": "「統治者的意思就是法律」屬於？", "options": ["人治", "法治", "民主", "分權"], "answer": 0, "explanation": "人治：統治者依己意制定或修改法律。", "source": "3-1｜第158頁"}, {"question": "法律由人民選出的代表依程序制定，屬於？", "options": ["法治", "人治", "專制", "世襲"], "answer": 0, "explanation": "法治的法律制定者是人民選出的代表。", "source": "3-1｜第158頁"}, {"question": "「強制與支配的力量」是指？", "options": ["權力", "權利", "義務", "責任"], "answer": 0, "explanation": "權力行使後會使他人受到影響。", "source": "3-2 一｜第159頁"}, {"question": "「法律保護人民享有的利益」是指？", "options": ["權利", "權力", "公權力", "統治權"], "answer": 0, "explanation": "權利保障人民不受任意侵害。", "source": "3-2 一｜第159頁"}, {"question": "政府處罰違法的人民，這種權力又稱為？", "options": ["公權力", "罷免權", "私權利", "選舉權"], "answer": 0, "explanation": "對違法的人民，政府擁有處罰的權力，又稱公權力。", "source": "3-2 一｜第159頁"}, {"question": "人民收回賦予民選公職人員權力的方式是？", "options": ["罷免", "質詢", "彈劾", "覆議"], "answer": 0, "explanation": "人民可行使罷免權利，使其去職並收回權力。", "source": "3-2 二｜第159頁"}, {"question": "提出「三權分立」的學者是？", "options": ["孟德斯鳩", "孫中山", "艾克頓", "華盛頓"], "answer": 0, "explanation": "法國學者孟德斯鳩。", "source": "3-3｜第160頁"}, {"question": "我國「五權分立」是由誰提出？", "options": ["孫中山", "孟德斯鳩", "艾克頓", "林肯"], "answer": 0, "explanation": "我國採用孫中山提出的五權分立。", "source": "3-3｜第160頁"}, {"question": "為避免「濫用私人」而獨立出來的是？", "options": ["考試權", "監察權", "司法權", "立法權"], "answer": 0, "explanation": "考試權從行政權中獨立。", "source": "3-3｜第160頁"}, {"question": "為避免「國會專制」而獨立出來的是？", "options": ["監察權", "考試權", "行政權", "司法權"], "answer": 0, "explanation": "監察權從立法權中獨立。", "source": "3-3｜第160頁"}, {"question": "權力受到人民監督與約束的政府稱為？", "options": ["有限政府", "萬能政府", "專制政府", "世襲政府"], "answer": 0, "explanation": "民主國家建立有限政府。", "source": "3-3｜第160頁"}, {"question": "三權分立中，負責制定法律的是？", "options": ["國會", "內閣", "法院", "元首"], "answer": 0, "explanation": "立法機關（國會）有立法權。", "source": "3-3｜第160頁"}], "special": [{"question": "🗂️ 把情境分到正確的類別：「某國總統一聲令下延長自己的任期，國會只能照辦。」", "options": ["人治", "法治"], "answer": 0, "explanation": "統治者依自己的意思改變規則，鞏固權力，是人治。", "source": "3-1｜課本第158頁", "fixed": true}, {"question": "🗂️ 把情境分到正確的類別：「疫情期間，政府依立法院通過的特別條例實施入境檢疫。」", "options": ["人治", "法治"], "answer": 1, "explanation": "政府依法律程序限制人民自由，依法行政，是法治。", "source": "3-1｜課本第158頁", "fixed": true}, {"question": "🗂️ 把情境分到正確的類別：「警察依法開罰闖紅燈的機車騎士。」", "options": ["權力", "權利"], "answer": 0, "explanation": "政府對違法的人民行使處罰的力量，是權力（公權力）。", "source": "3-2 一｜課本第159頁 圖3-3-3", "fixed": true}, {"question": "🗂️ 把情境分到正確的類別：「學生經本人同意、學校評估後，可以接受專業輔導諮商。」", "options": ["權力", "權利"], "answer": 1, "explanation": "法律保障學生能請求特定利益，是權利。", "source": "3 課後閱讀｜課本第162頁", "fixed": true}, {"question": "🗂️ 把情境分到正確的類別：「立法院經各黨團溝通協調，三讀通過學生輔導法修正案。」", "options": ["權力", "權利"], "answer": 0, "explanation": "立法院行使立法的權力。課後閱讀也把這項歸為權力的行使。", "source": "3 課後閱讀 延伸思考｜課本第162頁", "fixed": true}, {"question": "🗂️ 把情境分到正確的類別：「颱風過後，農民依損失狀況向政府申請災害補助。」", "options": ["權力", "權利"], "answer": 1, "explanation": "人民向國家請求特定利益，是權利。", "source": "3-2 一｜課本第159頁", "fixed": true}, {"question": "🗂️ 這件事屬於哪一種權力？「法院依法審判鄰居之間的名譽糾紛。」", "options": ["行政權", "立法權", "司法權", "考試權", "監察權"], "answer": 2, "explanation": "法院依法獨立審判、解決紛爭，是司法權。", "source": "3-3｜課本第160頁", "fixed": true}, {"question": "🗂️ 這件事屬於哪一種權力？「舉辦國家考試，選拔公務人員。」", "options": ["行政權", "立法權", "司法權", "考試權", "監察權"], "answer": 3, "explanation": "選拔、任用人才是考試權，我國為避免濫用私人而將它獨立。", "source": "3-3｜課本第160頁", "fixed": true}, {"question": "🗂️ 這件事屬於哪一種權力？「制定法律，並代表人民監督政府。」", "options": ["行政權", "立法權", "司法權", "考試權", "監察權"], "answer": 1, "explanation": "立法權是制定法律與監督政府的權力。", "source": "3-3；4-1 二｜課本第160、167頁", "fixed": true}, {"question": "🗂️ 這件事屬於哪一種權力？「糾舉、彈劾違法失職的公務人員。」", "options": ["行政權", "立法權", "司法權", "考試權", "監察權"], "answer": 4, "explanation": "監察權是監督政府官員施政的權力，我國為避免國會專制而將它獨立。", "source": "3-3；4-1 五｜課本第160、169頁", "fixed": true}]}, "第4課 我國的中央政府": {"cards": [{"term": "總統", "d": "國家元首，人民直接選舉，任期四年，連選得連任一次。統率三軍；公布法律、發布命令與緊急命令；人事任命與提名；決定國家安全大政方針。", "src": "4-1 一｜課本第166頁"}, {"term": "緊急命令", "d": "國家遭遇緊急危難或財經重大變故：經行政院會議決議→總統發布→10日內提交立法院追認；不同意則立即失效。", "src": "4-1 一｜課本第166頁 圖3-4-1"}, {"term": "行政院", "d": "最高行政機關。院長由總統直接任命，副院長及部會首長由院長提請總統任命。依法規畫和執行政策與法律。", "src": "4-1 一｜課本第166～167頁"}, {"term": "立法院", "d": "最高立法機關，立委由人民選出、任期四年，院長副院長由立委互選。職權：制定法律、審查預算、質詢、同意權、提出總統副總統彈劾與罷免案、憲法修正案、領土變更案。", "src": "4-1 二｜課本第167頁"}, {"term": "司法院", "d": "院長、副院長、大法官由總統提名，經立法院同意。各級法院：審判；懲戒法院：懲戒公務人員；憲法法庭：解釋憲法、統一解釋法令、審理總統副總統彈劾案、政黨違憲解散案。", "src": "4-1 三｜課本第168頁"}, {"term": "考試院", "d": "考選部：公務人員考試、專技人員考試。銓敘部：銓敘、撫卹、退休。院長、副院長、考試委員由總統提名，經立法院同意。", "src": "4-1 四｜課本第168頁"}, {"term": "監察院", "d": "糾舉、彈劾（對公務人員）；糾正（對行政院及所屬機關）；審計部審核決算。院長、副院長、監察委員、審計長由總統提名，經立法院同意。", "src": "4-1 五｜課本第169頁 圖3-4-7"}, {"term": "覆議", "d": "行政院認為立法院決議窒礙難行，經總統核可移請覆議；1/2以上立委維持原決議，院長應接受；逾期未議決，原決議失效。", "src": "4-2 一｜課本第170頁 圖3-4-10"}, {"term": "施政報告與質詢", "d": "行政院向立法院提出施政方針與施政報告；立委可質詢行政院院長及部會首長，被質詢人有答復義務。", "src": "4-2 一｜課本第171頁"}, {"term": "不信任案", "d": "立法院對院長提出，1/2以上立委通過，院長應辭職，並得呈請總統解散立法院；未通過，一年內不得對同一院長再提。", "src": "4-2 一｜課本第171頁 圖3-4-12"}, {"term": "澄清吏治", "d": "五院公務人員須經考試任用；違法失職由監察院彈劾，交司法院懲戒法院議處。", "src": "4-2 二｜課本第172頁 圖3-4-13"}, {"term": "預算流程", "d": "行政院編列 → 立法院審查 → 行政院執行、做成決算 → 監察院審計部審核 → 立法院審議審核報告。", "src": "4-2 二｜課本第172頁 圖3-4-15"}, {"term": "憲法法庭新制", "d": "憲法訴訟法（民國111年施行）：大法官會議改為憲法法庭裁判、大法官須公開立場；立委聲請釋憲門檻由三分之一降為四分之一。", "src": "4 課後閱讀｜課本第174頁"}], "quick": [{"question": "我國的國家元首是？", "options": ["總統", "行政院院長", "立法院院長", "司法院院長"], "answer": 0, "explanation": "總統為國家元首，對外代表中華民國。", "source": "4-1 一｜第166頁"}, {"question": "我國的最高行政機關是？", "options": ["行政院", "立法院", "總統府", "監察院"], "answer": 0, "explanation": "行政院為我國最高行政機關。", "source": "4-1 一｜第166頁"}, {"question": "行政院院長如何產生？", "options": ["總統直接任命", "人民直接選舉", "立委互選", "立法院同意"], "answer": 0, "explanation": "行政院院長由總統直接任命。", "source": "4-1 一｜第166頁"}, {"question": "立法院院長如何產生？", "options": ["立委互選", "總統任命", "人民直選", "總統提名"], "answer": 0, "explanation": "立法院院長、副院長由立法委員互選產生。", "source": "4-1 二｜第167頁"}, {"question": "總統發布緊急命令後，須在幾日內提交立法院追認？", "options": ["10日", "7日", "30日", "90日"], "answer": 0, "explanation": "10日內提交立法院追認。", "source": "4-1 一｜第166頁"}, {"question": "負責解釋憲法的是？", "options": ["憲法法庭", "懲戒法院", "各級法院", "考選部"], "answer": 0, "explanation": "大法官組成憲法法庭，解釋憲法。", "source": "4-1 三｜第168頁"}, {"question": "掌理公務人員考試的是？", "options": ["考選部", "銓敘部", "審計部", "法務部"], "answer": 0, "explanation": "考試院設考選部。", "source": "4-1 四｜第168頁"}, {"question": "審核政府決算的是？", "options": ["審計部", "考選部", "財政部", "懲戒法院"], "answer": 0, "explanation": "監察院審計部審核決算。", "source": "4-1 五｜第169頁"}, {"question": "監察院「糾正權」的對象是？", "options": ["行政機關", "公務人員", "總統", "立法委員"], "answer": 0, "explanation": "糾正是對行政院及其所屬機關。", "source": "4-1 五｜第169頁"}, {"question": "可以對行政院院長提出不信任案的是？", "options": ["立法院", "監察院", "總統", "司法院"], "answer": 0, "explanation": "立法院對院長提出不信任案。", "source": "4-2 一｜第171頁"}, {"question": "行政院認為法案窒礙難行，可以移請立法院？", "options": ["覆議", "不信任", "彈劾", "追認"], "answer": 0, "explanation": "經總統核可，移請立法院覆議。", "source": "4-2 一｜第170頁"}, {"question": "新制中，立委聲請釋憲的門檻是？", "options": ["四分之一", "三分之一", "二分之一", "三分之二"], "answer": 0, "explanation": "由三分之一降為四分之一。", "source": "4 課後閱讀｜第174頁"}], "special": [{"question": "🗂️ 這是哪一個機關的職權？「統率全國陸海空軍。」", "options": ["總統", "行政院", "立法院", "司法院", "考試院", "監察院"], "answer": 0, "explanation": "總統統率全國陸海空軍。", "source": "4-1 一｜課本第166頁", "fixed": true}, {"question": "🗂️ 這是哪一個機關的職權？「規畫並執行長期照顧政策，督導所屬部會施政。」", "options": ["總統", "行政院", "立法院", "司法院", "考試院", "監察院"], "answer": 1, "explanation": "行政院依法規畫和執行政策與法律，督導所屬機關施政。", "source": "4-1 一｜課本第166頁", "fixed": true}, {"question": "🗂️ 這是哪一個機關的職權？「審查中央政府總預算。」", "options": ["總統", "行政院", "立法院", "司法院", "考試院", "監察院"], "answer": 2, "explanation": "立法院負責審查中央政府總預算。", "source": "4-1 二｜課本第167頁", "fixed": true}, {"question": "🗂️ 這是哪一個機關的職權？「審理總統、副總統彈劾案。」", "options": ["總統", "行政院", "立法院", "司法院", "考試院", "監察院"], "answer": 3, "explanation": "司法院大法官組成憲法法庭審理；提出彈劾案的是立法院。", "source": "4-1 三｜課本第168頁", "fixed": true}, {"question": "🗂️ 這是哪一個機關的職權？「辦理公務人員的銓敘、撫卹與退休。」", "options": ["總統", "行政院", "立法院", "司法院", "考試院", "監察院"], "answer": 4, "explanation": "考試院銓敘部掌理銓敘、撫卹、退休。", "source": "4-1 四｜課本第168頁", "fixed": true}, {"question": "🗂️ 這是哪一個機關的職權？「由審計部審核政府的決算。」", "options": ["總統", "行政院", "立法院", "司法院", "考試院", "監察院"], "answer": 5, "explanation": "監察院審計部負責審核政府決算。", "source": "4-1 五｜課本第169頁", "fixed": true}, {"question": "🗂️ 這是哪一個機關的職權？「對總統提名的大法官人選行使同意權。」", "options": ["總統", "行政院", "立法院", "司法院", "考試院", "監察院"], "answer": 2, "explanation": "司法院、考試院、監察院的重要人事須經立法院同意。", "source": "4-2 二｜課本第172頁 圖3-4-14", "fixed": true}, {"question": "🗂️ 這是哪一個機關的職權？「依法公布立法院三讀通過的法律。」", "options": ["總統", "行政院", "立法院", "司法院", "考試院", "監察院"], "answer": 0, "explanation": "總統依法公布法律、發布命令。", "source": "4-1 一｜課本第166頁", "fixed": true}, {"question": "🗂️ 監察院的哪一種職權？「監察院要求衛福部改善長照補助發放延誤的問題。」", "options": ["糾舉", "彈劾", "糾正"], "answer": 2, "explanation": "對行政機關的不當施政要求改善，是糾正。", "source": "4-1 五｜課本第169頁 圖3-4-7", "fixed": true}, {"question": "🗂️ 監察院的哪一種職權？「監察院對收賄的公務人員提案，成立後交懲戒法院議處。」", "options": ["糾舉", "彈劾", "糾正"], "answer": 1, "explanation": "對違法失職公務人員提案、交懲戒法院審理，是彈劾。糾舉則送被糾舉人的主管或上級長官。", "source": "4-1 五｜課本第169頁 圖3-4-7", "fixed": true}]}}};
+        const SPECIAL_NAME = {"geography": "🗺️ 地圖偵探", "history": "⏳ 時光任務", "civics": "🗂️ 情境分類"};
+        const UNIT_INFO = { cards: '📖 重點卡', quick: '⚡ 名詞速答', practice: '✍️ 課後練習' };
+        (function attachUnits() {
+            Object.entries(UNIT_DATA).forEach(([sid, lessons]) => {
+                const chs = quizData[sid].chapters;
+                Object.entries(lessons).forEach(([lesson, u]) => {
+                    const p = chs.find(c => c.name === lesson);
+                    if (p) { p.lesson = lesson; p.kind = 'practice'; p.unit = UNIT_INFO.practice; }
+                    const no = lesson.split(' ')[0];
+                    chs.push({ name: no + '｜重點卡', lesson, kind: 'cards', unit: UNIT_INFO.cards, data: u.cards });
+                    chs.push({ name: no + '｜名詞速答', lesson, kind: 'quick', unit: UNIT_INFO.quick, data: u.quick });
+                    chs.push({ name: no + '｜' + SPECIAL_NAME[sid].replace(/^\S+\s*/, ''), lesson, kind: 'special', unit: SPECIAL_NAME[sid], data: u.special });
+                });
+            });
+        })();
         // 三科代表色：公民（深）→ 歷史（中）→ 地理（淺），同一橘色系，與入口網站一致；樣式在 #pe-social-colors
         const THEME = {
             civ: { card: 'soc-civ-card', icon: 'soc-civ-icon', text: 'soc-civ-text', bar: 'soc-civ-bar' },
@@ -1554,7 +1650,8 @@ window.PE115 = (function () {
 
         let currentChapterIndex = 0, currentQuestions = [], currentQuestionIndex = 0;
         let score = 0, correctAnswersCount = 0, hasAnsweredCurrent = false, incorrectQuestions = [], isRetryMode = false;
-        let currentSubjectId = 'geography', isExam = false;
+        let currentSubjectId = 'geography', isExam = false, isQuick = false, combo = 0, maxCombo = 0, quickTimer = null;
+        const QUICK_SEC = 20;
         let subject = quizData.geography;
 
         // ===== 學習進度：記在這台裝置的瀏覽器，重新開啟頁面不會歸零 =====
@@ -1576,6 +1673,23 @@ window.PE115 = (function () {
             return `<span class="px-2 py-1 rounded ${r.best === 100 ? 'bg-yellow-100 text-yellow-700' : 'bg-sky-100 text-sky-700'}">${r.best === 100 ? '🏆 ' : ''}最佳 ${r.best} 分・練過 ${r.tries} 次</span>`;
         }
         const $ = id => document.getElementById(id);
+        // ===== 學習單元：星等、解鎖 =====
+        function starHTML(n) { return `<span style="color:#f59f00">${'★'.repeat(n)}</span><span style="color:#d1d5db">${'★'.repeat(5 - n)}</span>`; }
+        function unitStatus(sid, ch) {
+            const r = progOf(sid, ch);
+            if (ch.kind === 'cards') return r ? `<span class="text-sky-700">已翻 ${r.seen || 0} / ${ch.data.length} 張</span>` : '<span class="text-gray-400">尚未翻閱</span>';
+            if (!r) return '<span class="text-gray-400">尚未練習</span>';
+            return `${starHTML(PE115.stars(r.best))} <span class="text-gray-600">最佳 ${r.best} 分</span>`;
+        }
+        function unitDesc(ch) {
+            const n = ch.data.length;
+            return ch.kind === 'cards' ? `${n} 張翻卡` : ch.kind === 'quick' ? `${n} 題・每題 ${QUICK_SEC} 秒` : ch.kind === 'special' ? `${n} 關` : `${n} 題`;
+        }
+        function examLock(sid) {
+            if (/[?&]teacher\b/.test(location.search)) return [];
+            return quizData[sid].chapters.filter(c => !c.exam && c.kind !== 'cards' && (((progOf(sid, c) || {}).best) || 0) < 80);
+        }
+
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -1598,7 +1712,7 @@ window.PE115 = (function () {
         }
 
         function switchScreen(name) {
-            ['home-screen', 'chapter-screen', 'quiz-screen', 'result-screen'].forEach(id => $(id).classList.add('hidden'));
+            ['home-screen', 'chapter-screen', 'quiz-screen', 'cards-screen', 'result-screen'].forEach(id => $(id).classList.add('hidden'));
             $(name + '-screen').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -1607,13 +1721,13 @@ window.PE115 = (function () {
             const list = $('subject-list');
             list.innerHTML = '';
             Object.entries(quizData).forEach(([id, sub]) => {
-                const t = THEME[sub.color], n = sub.chapters.filter(c => !c.exam).length, ne = sub.chapters.length - n;
+                const t = THEME[sub.color], n = new Set(sub.chapters.filter(c => !c.exam).map(c => c.lesson || c.name)).size, ne = sub.chapters.filter(c => c.exam).length;
                 const btn = document.createElement('button');
                 btn.className = `group flex flex-col items-center justify-center p-8 border-2 rounded-2xl transition-all shadow-sm bg-white ${t.card}`;
                 btn.innerHTML = `
                     <div class="w-20 h-20 ${t.icon} rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-4xl shadow-inner">${sub.icon}</div>
                     <span class="text-2xl font-bold text-gray-800 mb-1">${sub.name}</span>
-                    <span class="text-sm font-medium mt-2 ${n ? 'text-gray-500' : 'text-gray-400'}">${n ? `共 ${n} 個課次${ne ? '＋模擬卷' : ''}` : '題庫準備中'}</span>
+                    <span class="text-sm font-medium mt-2 ${n ? 'text-gray-500' : 'text-gray-400'}">${n ? `共 ${n} 課・每課 4 個小單元${ne ? '＋模擬卷' : ''}` : '題庫準備中'}</span>
                     ${(() => { const d = sub.chapters.filter(c => (PROG[id] || {})[c.name]).length; return d ? `<span class="text-xs font-bold mt-1 text-orange-700">已練 ${d} / ${sub.chapters.length}</span>` : ''; })()}`;
                 btn.onclick = () => showChapters(id);
                 list.appendChild(btn);
@@ -1634,16 +1748,53 @@ window.PE115 = (function () {
             if (!subject.chapters.length) {
                 list.innerHTML = `<div class="md:col-span-2 text-center py-14 text-gray-500"><div class="text-5xl mb-4">🚧</div><p class="text-lg font-bold text-gray-700 mb-1">${subject.name}題庫準備中</p><p>此科目前尚無練習題，敬請期待！</p></div>`;
             }
+            // 依課分組：每課四個小單元
+            const lessons = [], ORDER = { cards: 0, quick: 1, special: 2, practice: 3 };
             subject.chapters.forEach((ch, i) => {
+                if (ch.exam) return;
+                const L = ch.lesson || ch.name; let g = lessons.find(x => x.name === L);
+                if (!g) { g = { name: L, units: [] }; lessons.push(g); }
+                g.units.push([ch, i]);
+            });
+            lessons.forEach(g => {
+                g.units.sort((a, b) => ORDER[a[0].kind || 'practice'] - ORDER[b[0].kind || 'practice']);
+                const [no, ...rest] = g.name.split(' ');
+                const box = document.createElement('div');
+                box.className = `md:col-span-2 text-left p-5 border-2 rounded-2xl bg-white shadow-sm ${t.card}`;
+                box.innerHTML = `<div class="text-sm font-black ${t.text} mb-1">${no}</div><div class="text-xl font-bold text-gray-800 mb-4">${rest.join(' ')}</div><div class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>`;
+                const grid = box.lastElementChild;
+                g.units.forEach(([ch, i]) => {
+                    const b = document.createElement('button');
+                    b.className = 'unit-btn text-left p-3 rounded-xl border-2 border-gray-100 bg-white hover:border-gray-300 hover:shadow transition-all';
+                    b.innerHTML = `<div class="font-bold text-gray-800">${ch.unit || UNIT_INFO.practice}</div><div class="text-xs text-gray-500 mt-0.5">${unitDesc(ch)}</div><div class="text-xs font-bold mt-1.5">${unitStatus(currentSubjectId, ch)}</div>`;
+                    b.onclick = () => startQuiz(i);
+                    grid.appendChild(b);
+                });
+                list.appendChild(box);
+            });
+            subject.chapters.forEach((ch, i) => {
+                if (!ch.exam) return;
                 const figs = ch.data.filter(q => q.image || (q.group && GROUPS[q.group].img)).length;
                 const groups = new Set(ch.data.filter(q => q.group).map(q => q.group)).size;
                 let [no, ...rest] = ch.name.split(' ');
                 if (!rest.length) { rest = [ch.name.replace(/^\d+_/, '')]; no = `第 ${i + 1} 單元`; }
                 const btn = document.createElement('button');
+                const lockList = examLock(currentSubjectId);
+                if (ch.exam && lockList.length) {
+                    btn.className = `text-left p-6 border-2 border-dashed rounded-2xl bg-gray-50 md:col-span-2 border-gray-300 cursor-not-allowed`;
+                    btn.innerHTML = `
+                    <div class="text-sm font-black text-gray-500 mb-1">🔒 段考模擬卷（尚未解鎖）</div>
+                    <div class="text-xl font-bold text-gray-500 mb-1">${rest.join(' ')}</div>
+                    <div class="text-sm text-gray-500 mb-2">把下面 ${lockList.length} 個小單元練到 ★★★（80 分）以上就能解鎖：</div>
+                    <div class="flex flex-wrap gap-2 text-xs font-bold">${lockList.map(c => `<span class="px-2 py-1 rounded bg-white border border-gray-200 text-gray-600">${(c.lesson || c.name).split(' ')[0]} ${c.unit || ''}（${((progOf(currentSubjectId, c) || {}).best) || 0} 分）</span>`).join('')}</div>`;
+                    btn.onclick = () => { btn.classList.remove('lock-shake'); void btn.offsetWidth; btn.classList.add('lock-shake'); };
+                    list.appendChild(btn);
+                    return;
+                }
                 if (ch.exam) {
                     btn.className = `group text-left p-6 border-2 border-dashed rounded-2xl transition-all shadow-sm bg-gradient-to-br from-white to-rose-50 md:col-span-2 border-rose-300 hover:border-rose-500`;
                     btn.innerHTML = `
-                    <div class="text-sm font-black text-rose-600 mb-1">📝 段考模擬卷</div>
+                    <div class="text-sm font-black text-rose-600 mb-1">📝 段考模擬卷${/[?&]teacher\b/.test(location.search) ? '（教師預覽）' : '・已解鎖'}</div>
                     <div class="text-xl font-bold text-gray-800 mb-1">${rest.join(' ')}</div>
                     <div class="text-sm text-gray-500 mb-3">${ch.desc || ''}</div>
                     <div class="flex flex-wrap gap-2 text-xs font-bold">
@@ -1673,18 +1824,21 @@ window.PE115 = (function () {
             switchScreen('chapter');
         }
 
-        function goBackToChapters() { showChapters(currentSubjectId); }
+        function goBackToChapters() { stopTimer(); showChapters(currentSubjectId); }
 
-        function goHome() { $('header-bar').className = 'h-2 bg-orange-600 w-full absolute top-0 left-0'; renderHome(); switchScreen('home'); try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
+        function goHome() { stopTimer(); $('header-bar').className = 'h-2 bg-orange-600 w-full absolute top-0 left-0'; renderHome(); switchScreen('home'); try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
 
         function startQuiz(chapterIndex, retryData = null) {
             currentChapterIndex = chapterIndex;
             const chapter = subject.chapters[chapterIndex];
+            if (chapter.kind === 'cards') { startCards(chapterIndex); return; }
+            if (chapter.exam && examLock(currentSubjectId).length) return;
+            isQuick = chapter.kind === 'quick'; combo = 0; maxCombo = 0; stopTimer();
             const source = retryData ? retryData : chapter.data;
             isRetryMode = !!retryData;
             const loaded = JSON.parse(JSON.stringify(source));
             isExam = !!chapter.exam;
-            $('quiz-header-title').innerHTML = `${subject.icon} ${isExam ? '📝 ' + chapter.name.replace(/^\S+ /, '') : chapter.name}` + (isRetryMode ? ' <span class="ml-2 px-2 py-0.5 bg-rose-100 text-rose-600 rounded text-xs">錯題重練</span>' : '');
+            $('quiz-header-title').innerHTML = `${subject.icon} ${isExam ? '📝 ' + chapter.name.replace(/^\S+ /, '') : chapter.unit ? chapter.lesson.split(' ')[0] + '｜' + chapter.unit : chapter.name}` + (isRetryMode ? ' <span class="ml-2 px-2 py-0.5 bg-rose-100 text-rose-600 rounded text-xs">錯題重練</span>' : '');
             currentQuestions = isExam ? loaded : shuffleKeepGroups(loaded);
             currentQuestionIndex = 0; score = 0; correctAnswersCount = 0; incorrectQuestions = [];
             updateScoreDisplay();
@@ -1723,6 +1877,10 @@ window.PE115 = (function () {
 
             const box = $('options-container');
             box.innerHTML = '';
+            $('quick-bar').classList.toggle('hidden', !isQuick);
+            if (isQuick) { $('quick-combo').textContent = combo >= 2 ? `🔥 連擊 ${combo}` : ''; startTimer(); }
+            if (q.type === 'order') { box.className = 'space-y-4'; renderOrder(q); return; }
+            box.className = `grid grid-cols-1 ${q.options.length > 4 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'} gap-3`;
             let opts = q.options.map((text, index) => ({ text, originalIndex: index }));
             if (!q.fixed && !isExam) shuffleArray(opts);
             q.shuffledAnswer = opts.findIndex(o => o.originalIndex === q.answer);
@@ -1746,13 +1904,19 @@ window.PE115 = (function () {
 
             if (isCorrect) {
                 selectedBtn.classList.add('correct'); selectedBtn.classList.remove('opacity-70');
-                score += 100 / currentQuestions.length; correctAnswersCount++;
-                updateScoreDisplay();
             } else {
-                selectedBtn.classList.add('incorrect'); selectedBtn.classList.remove('opacity-70');
+                if (selectedBtn) { selectedBtn.classList.add('incorrect'); selectedBtn.classList.remove('opacity-70'); }
                 all[q.shuffledAnswer].classList.add('correct'); all[q.shuffledAnswer].classList.remove('opacity-70');
-                if (!incorrectQuestions.some(x => x.question === q.question)) incorrectQuestions.push(q);
             }
+            judge(q, isCorrect, selectedIndex === -1);
+        }
+
+        // 共用評分與解析（選擇題、排序題、速答都走這裡）
+        function judge(q, isCorrect, timeout) {
+            hasAnsweredCurrent = true; stopTimer();
+            if (isCorrect) { score += 100 / currentQuestions.length; correctAnswersCount++; updateScoreDisplay(); }
+            else if (!incorrectQuestions.some(x => x.question === q.question)) incorrectQuestions.push(q);
+            if (isQuick) { combo = isCorrect ? combo + 1 : 0; maxCombo = Math.max(maxCombo, combo); $('quick-combo').textContent = combo >= 2 ? `🔥 連擊 ${combo}` : ''; }
 
             const exp = $('explanation-container');
             if (isCorrect) {
@@ -1764,13 +1928,115 @@ window.PE115 = (function () {
                 exp.className = 'mt-6 p-6 rounded-xl shadow-sm border border-rose-100 bg-rose-50 text-gray-800 fade-in';
                 $('explanation-title').className = 'font-bold mb-2 flex items-center text-lg text-rose-700';
                 $('explanation-icon').textContent = '💡';
-                $('explanation-status-text').textContent = '再接再厲！解題剖析：';
+                $('explanation-status-text').textContent = timeout ? '⏰ 時間到！解題剖析：' : '再接再厲！解題剖析：';
             }
             $('explanation-text').textContent = q.explanation;
             $('explanation-src').textContent = q.source ? `📖 課本出處：${q.source}` : '';
             exp.classList.remove('hidden');
             $('next-btn').classList.remove('hidden');
             $('next-btn-text').textContent = currentQuestionIndex === currentQuestions.length - 1 ? '查看結果' : '下一題';
+        }
+
+
+        // ===== ⏳ 排序題：依序點選 =====
+        function renderOrder(q) {
+            const n = q.items.length;
+            let pool = q.items.map((t, k) => k);
+            do { shuffleArray(pool); } while (pool.every((v, k) => v === k));
+            q._pool = pool; q._pick = [];
+            const box = $('options-container');
+            box.innerHTML = `
+                <div class="text-sm font-bold text-gray-500">由早到晚，依序點選下面的卡片（點已選的卡片可以退回）：</div>
+                <div id="ord-picks" class="p-3 rounded-xl border-2 border-dashed border-orange-300 bg-orange-50 space-y-2" style="min-height:64px"></div>
+                <div id="ord-pool" class="flex flex-wrap gap-2"></div>
+                <div class="flex gap-3"><button id="ord-reset" class="px-5 py-2.5 rounded-xl border-2 border-gray-200 bg-white text-gray-600 font-bold">重排</button>
+                <button id="ord-ok" class="px-5 py-2.5 rounded-xl bg-gray-800 text-white font-bold opacity-40" disabled>確認答案</button></div>`;
+            $('ord-reset').onclick = () => { if (hasAnsweredCurrent) return; q._pool = q._pool.concat(q._pick); q._pick = []; drawOrder(q); };
+            $('ord-ok').onclick = () => checkOrder(q);
+            drawOrder(q);
+        }
+        function drawOrder(q, result) {
+            const picks = $('ord-picks'), pool = $('ord-pool');
+            picks.innerHTML = q._pick.length ? '' : '<div class="text-sm text-gray-400 py-2 text-center">點選的卡片會依序排在這裡</div>';
+            q._pick.forEach((k, pos) => {
+                const ok = result ? k === pos : null;
+                const b = document.createElement('button');
+                b.className = `w-full text-left p-3 rounded-xl border-2 font-medium flex items-center ${ok === true ? 'border-emerald-500 bg-emerald-50' : ok === false ? 'border-rose-400 bg-rose-50' : 'border-orange-200 bg-white'}`;
+                b.innerHTML = `<span class="w-7 h-7 flex-shrink-0 rounded-lg bg-orange-600 text-white font-black flex items-center justify-center mr-3">${pos + 1}</span><span>${q.items[k]}</span>${ok === false ? `<span class="ml-auto text-xs font-bold text-rose-600">應為第 ${k + 1}</span>` : ''}`;
+                b.onclick = () => { if (hasAnsweredCurrent) return; q._pick.splice(pos, 1); q._pool.push(k); drawOrder(q); };
+                picks.appendChild(b);
+            });
+            pool.innerHTML = '';
+            q._pool.forEach((k, idx) => {
+                const b = document.createElement('button');
+                b.className = 'option-btn px-4 py-3 rounded-xl border-2 border-gray-200 bg-white hover:border-orange-400 font-medium text-gray-700';
+                b.textContent = q.items[k];
+                b.onclick = () => { if (hasAnsweredCurrent) return; q._pool.splice(idx, 1); q._pick.push(k); drawOrder(q); };
+                pool.appendChild(b);
+            });
+            const ok = $('ord-ok'), full = q._pick.length === q.items.length && !hasAnsweredCurrent;
+            ok.disabled = !full; ok.classList.toggle('opacity-40', !full);
+        }
+        function checkOrder(q) {
+            if (hasAnsweredCurrent || q._pick.length !== q.items.length) return;
+            const isCorrect = q._pick.every((k, pos) => k === pos);
+            hasAnsweredCurrent = true;
+            drawOrder(q, true);
+            $('ord-reset').disabled = true; $('ord-reset').classList.add('opacity-40');
+            judge(q, isCorrect, false);
+        }
+
+        // ===== ⚡ 名詞速答：每題限時 =====
+        function stopTimer() { if (quickTimer) { clearInterval(quickTimer); quickTimer = null; } }
+        function startTimer() {
+            stopTimer();
+            const t0 = Date.now();
+            const tick = () => {
+                const left = Math.max(0, QUICK_SEC - (Date.now() - t0) / 1000);
+                $('quick-time').textContent = Math.ceil(left);
+                $('quick-fill').style.width = `${left / QUICK_SEC * 100}%`;
+                $('quick-fill').className = `h-full rounded-full ${left < 5 ? 'bg-rose-500' : 'bg-orange-500'}`;
+                if (left <= 0) { stopTimer(); if (!hasAnsweredCurrent) selectOption(-1, null); }
+            };
+            tick(); quickTimer = setInterval(tick, 100);
+        }
+
+        // ===== 📖 重點卡 =====
+        let cardIdx = 0, cardChapter = null, cardSeen = new Set();
+        function startCards(chapterIndex) {
+            currentChapterIndex = chapterIndex; cardChapter = subject.chapters[chapterIndex];
+            const r = progOf(currentSubjectId, cardChapter);
+            cardSeen = new Set((r && r.seenIdx) || []);
+            cardIdx = 0; stopTimer();
+            $('cards-title').textContent = `${subject.icon} ${cardChapter.lesson.split(' ')[0]}｜📖 重點卡`;
+            $('cards-total').textContent = cardChapter.data.length;
+            const p = (PROG[currentSubjectId] = PROG[currentSubjectId] || {});
+            const rec = p[cardChapter.name] || { best: 0, tries: 0, seen: 0, seenIdx: [] };
+            rec.tries += 1; rec.at = Date.now(); p[cardChapter.name] = rec;
+            try { localStorage.setItem(PROG_KEY, JSON.stringify(PROG)); } catch (e) {}
+            showCard(false);
+            switchScreen('cards');
+        }
+        function showCard(back) {
+            const c = cardChapter.data[cardIdx];
+            $('flash-term').textContent = c.term; $('flash-term2').textContent = c.term;
+            $('flash-def').textContent = c.d; $('flash-src').textContent = `📖 課本出處：${c.src}`;
+            $('flash-front').classList.toggle('hidden', back); $('flash-back').classList.toggle('hidden', !back);
+            $('cards-idx').textContent = cardIdx + 1;
+            if (back) {
+                cardSeen.add(cardIdx);
+                const rec = PROG[currentSubjectId][cardChapter.name];
+                rec.seenIdx = [...cardSeen]; rec.seen = cardSeen.size; rec.best = Math.round(cardSeen.size / cardChapter.data.length * 100);
+                try { localStorage.setItem(PROG_KEY, JSON.stringify(PROG)); } catch (e) {}
+            }
+            $('cards-seen').textContent = cardSeen.size;
+            $('cards-done').classList.toggle('hidden', cardSeen.size < cardChapter.data.length);
+        }
+        function flipCard() { showCard($('flash-back').classList.contains('hidden')); }
+        function moveCard(d) { cardIdx = (cardIdx + d + cardChapter.data.length) % cardChapter.data.length; showCard(false); }
+        function goQuickFromCards() {
+            const i = subject.chapters.findIndex(c => c.lesson === cardChapter.lesson && c.kind === 'quick');
+            if (i >= 0) startQuiz(i);
         }
 
         function nextQuestion() {
@@ -1824,6 +2090,13 @@ window.PE115 = (function () {
             } else {
                 $('result-message').textContent = '再接再厲！多利用錯題重練，仔細看題目給的圖表與線索。';
                 icon.textContent = '💪'; icon.className = 'w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl shadow-lg bg-gray-100 border-4 border-white';
+            }
+            stopTimer();
+            if (isQuick && maxCombo >= 2) $('result-message').textContent = `🔥 最高連擊 ${maxCombo} 題！` + $('result-message').textContent;
+            const chNow = subject.chapters[currentChapterIndex];
+            if (!isRetryMode && !chNow.exam && chNow.kind) {
+                const exam = subject.chapters.find(c => c.exam);
+                if (exam) { const left = examLock(currentSubjectId).length; $('result-message').textContent += left ? `　（再完成 ${left} 個小單元達 ★★★，就能解鎖${subject.name}模擬卷）` : `　🔓 ${subject.name}模擬卷已解鎖！`; }
             }
             const retryBtn = $('retry-incorrect-btn');
             if (incorrectQuestions.length > 0) { retryBtn.classList.remove('hidden'); $('incorrect-badge').textContent = incorrectQuestions.length; }
