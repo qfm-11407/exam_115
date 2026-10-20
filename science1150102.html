@@ -335,6 +335,50 @@ window.PE115 = (function () {
 .pe-howto li b{white-space:nowrap}
 @media print{.pe-howto{display:none}}
 </style>
+<style id="sci-route-css">
+/* 理化學習路線（顏色沿用 #pe-theme-sci 的綠色） */
+.route-stats{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 16px}
+.route-pill{display:inline-flex;gap:4px;align-items:center;padding:6px 14px;border-radius:999px;background:#ebfbee;border:1px solid #b2f2bb;font-weight:800}
+.route-rank{padding:6px 14px;border-radius:999px;background:#fcc419;color:#3a2a00;font-weight:800}
+.route-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.route-card{position:relative;display:grid;gap:8px;align-content:start;text-align:left;padding:20px;border-radius:22px;border:1px solid rgba(151,183,201,.65);background:#fff;box-shadow:var(--shadow);color:var(--ink);font:inherit;cursor:pointer;transition:transform .15s ease,border-color .15s ease}
+.route-card:hover{transform:translateY(-2px);border-color:#2b8a3e}
+.route-card:focus-visible,.unit-row:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+.route-card.locked{background:#f8f9fa;color:#6b7b88}
+.route-lock{position:absolute;top:14px;right:14px;padding:3px 10px;border-radius:999px;background:#fff3bf;font-size:.85rem;font-weight:800}
+.route-icon{font-size:2rem;line-height:1}
+.route-title{font-size:1.35rem;font-weight:900;color:#1b4d2e}
+.route-sub{color:var(--muted);font-size:.92rem}
+.route-tags{display:flex;flex-wrap:wrap;gap:6px}
+.route-tags span{padding:2px 10px;border-radius:8px;background:#f1f3f5;font-size:.82rem;color:#495057}
+.route-bar{display:block;height:8px;border-radius:999px;background:#e9ecef;overflow:hidden}
+.route-bar i{display:block;height:100%;background:#2b8a3e}
+.route-meta{display:flex;justify-content:space-between;gap:10px;font-size:.88rem;color:var(--muted);font-weight:700}
+.route-note{margin:14px 0 0;padding:12px 16px;border-radius:14px;background:#fff3bf;font-weight:700}
+.route-rules{margin:18px 0 0;padding:14px 18px;border-radius:16px;background:#fff;border:1px solid var(--line);font-size:.92rem;color:#334e61}
+.route-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:4px 0 14px}
+.route-head{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+.route-head h2{margin:0 0 6px;color:#1b4d2e}
+.unit-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.unit-row{width:100%;display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:14px 16px;border-radius:16px;border:1px solid var(--line);background:#fff;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.unit-row:hover{border-color:#2b8a3e;background:#f4fcf5}
+.unit-no{display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:#ebfbee;color:#2b8a3e;font-weight:900}
+.unit-main b{display:block;font-size:1.05rem}
+.unit-main small,.unit-side small{color:var(--muted)}
+.unit-side{text-align:right;display:grid;gap:2px}
+.unit-stars{color:#f08c00;letter-spacing:1px;font-size:1.05rem}
+.unit-intro{padding:clamp(20px,4vw,32px);border-radius:22px;border:2px solid #2b8a3e;background:linear-gradient(135deg,#ebfbee 0%,#fff 70%);box-shadow:var(--shadow)}
+.unit-intro h2{margin:10px 0 12px;color:#1b4d2e}
+.key-points{margin:0 0 16px;padding-left:1.2em;display:grid;gap:10px;line-height:1.7}
+.key-points b{color:#1b4d2e}
+.unit-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px}
+.unit-actions span{color:var(--muted);font-weight:700}
+.route-next{margin-top:16px}
+.route-stars{margin:0 0 10px;font-size:1.05rem}
+.route-stars b{color:#f08c00;letter-spacing:1px}
+.route-next-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+@media (max-width:800px){.route-grid{grid-template-columns:1fr}.unit-row{grid-template-columns:34px 1fr}.unit-side{grid-column:2;text-align:left;display:flex;gap:10px;align-items:center}}
+</style>
 <style id="pe-theme-sci">
 /* 理化代表色（綠）：與段考入口網站一致，只改頁首與主要按鈕 */
 .masthead{background:#1b4d2e !important}
@@ -355,30 +399,15 @@ window.PE115 = (function () {
         <div>
           <h1>八年級理化 第二次段考強化練習</h1>
           <p class="meta">範圍：第3章 波動與聲音・第4章 光</p>
-          <p class="meta">特色：習作練習｜習作＋章節練習＋段考模擬，每次開啟都會重排題目與選項；一次全對可領通關證書</p>
+          <p class="meta">特色：習作練習｜每章分成小單元：先看重點卡，再闖關（習作＋精選練習），答對得 ★ 與 XP；兩章達標解鎖段考模擬</p>
           <p class="meta pe-level"></p>
         </div>
       </div>
     </header>
 
     <section class="course-menu" id="courseMenu" aria-label="課程選單">
-      <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新章節前，在「📘 習作練習」選該章先試做，看看會遇到哪些概念。</li><li><b>✍️ 課後複習：</b>上完一章，做該章習作，再做「第三章練習」或「第四章練習」（同步卷、課次卷精選）。</li><li><b>🎯 自主練習：</b>測驗結束後做錯題重練，直到錯題全部答對；按「重新開始」可換一組題序再練。</li><li><b>🏆 段考衝刺：</b>做「📝 段考模擬」（第 3～4 章綜合），一次全對就能領取通關證書。</li></ul></details>
-      <h2 class="menu-title">選擇要練習的課程</h2>
-      <div class="course-grid">
-        <article class="course-card course-main">
-          <span class="course-kicker">最重要・建議先完成</span>
-          <h3>📘 習作練習</h3>
-          <p>第 3、4 章習作的每一題，含實驗紀錄、學力養成與素養題，附重新繪製的圖。</p>
-          <div class="course-actions">
-            <button class="course-btn primary-btn" data-filter="all">全部習作 <span id="allCount"></span><small class="course-best" data-best="all"></small></button>
-            <button class="course-btn" data-filter="ch3">第3章 波動與聲音 <span id="ch3Count"></span><small class="course-best" data-best="ch3"></small></button>
-            <button class="course-btn" data-filter="ch4">第4章 光 <span id="ch4Count"></span><small class="course-best" data-best="ch4"></small></button>
-          </div>
-        </article>
-        <button class="course-card course-small" data-filter="p3"><span class="course-icon" aria-hidden="true">🔊</span><span class="course-name">第三章練習</span><span class="course-desc">波動與聲音・同步卷、課次卷精選</span><span class="course-count" id="p3Count"></span><span class="course-best" data-best="p3"></span></button>
-        <button class="course-card course-small" data-filter="p4"><span class="course-icon" aria-hidden="true">💡</span><span class="course-name">第四章練習</span><span class="course-desc">光・同步卷、課次卷精選</span><span class="course-count" id="p4Count"></span><span class="course-best" data-best="p4"></span></button>
-        <button class="course-card course-small" data-filter="rev"><span class="course-icon" aria-hidden="true">📝</span><span class="course-name">段考模擬</span><span class="course-desc">第 3～4 章綜合，模擬段考題型</span><span class="course-count" id="revCount"></span><span class="course-best" data-best="rev"></span></button>
-      </div>
+      <details class="pe-howto" id="peHowto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新的一節前，到該章點小單元，先讀「📖 重點卡」認識觀念。</li><li><b>✍️ 課後複習：</b>上完一節，按「開始闖關」做該單元的習作＋精選練習，拿到 ★★★ 以上再前進下一單元。</li><li><b>🎯 自主練習：</b>答錯的題目會自動進入「錯題重練」，直到全部答對；結果頁的「錯題詳解」可以逐題看解析。</li><li><b>🏆 段考衝刺：</b>兩章各有 3 個小單元拿到 ★，就能挑戰「🏆 段考模擬」；「📘 習作總挑戰」一次全對可領通關證書。</li></ul></details>
+      <div id="routeView"></div>
     </section>
 
     <section class="toolbar" id="quizToolbar" aria-label="目前練習" hidden>
@@ -391,7 +420,7 @@ window.PE115 = (function () {
       <strong id="modeLabel">正式測驗</strong><span id="streakStatus"></span>
       <p id="learningHint"></p>
       <p class="best-line" id="bestLine"></p>
-      <p>所選範圍一次正式測驗全對即可通關領證；錯題重練完成後，請重新挑戰完整範圍。</p>
+      <p>小單元依答對率得 ★；習作總挑戰與段考模擬一次全對可領證。錯題重練不計入星星與練習等級。</p>
     </section>
 
     <section class="workspace" id="workspace" hidden>
@@ -415,6 +444,7 @@ window.PE115 = (function () {
           <p id="finalMessage"></p>
           <button class="primary" id="restart">重新開始</button>
           <button class="ghost" id="openCertificate" hidden>填寫座號與姓名，領取證書</button>
+          <div class="route-next" id="routeNext"></div>
           <section class="certificate" id="certificate" aria-labelledby="certificateTitle" hidden>
             <p class="certificate-kicker">理化練習・全對通關</p>
             <h2 id="certificateTitle">通關證書</h2>
@@ -1893,7 +1923,7 @@ window.PE115 = (function () {
     const chapterName = (chapter) => CHAPTER_NAMES[chapter];
     const rangeName = () => RANGE_NAMES[state.filter];
     const isPerfect = () => state.mode === 'exam' && state.completed && state.queue.length > 0 && state.correct === state.queue.length;
-    const isPassed = () => isPerfect();
+    const isPassed = () => isPerfect() && (state.filter === 'all' || state.filter === 'rev');
     // Only permutation history is stored; no answers or personal information.
     const orderMemory = new Map();
     function shuffleFresh(items, key, everyPosition = false) {
@@ -1929,7 +1959,7 @@ window.PE115 = (function () {
     }
 
     function resetQuiz() {
-      const pool = state.filter === 'all' ? questions.filter(q => q.chapter === 'ch3' || q.chapter === 'ch4') : questions.filter(q => q.chapter === state.filter);
+      const pool = UNIT_MAP[state.filter] ? questions.filter(q => UNIT_MAP[state.filter].ids.includes(q.id)) : state.filter === 'all' ? questions.filter(q => q.chapter === 'ch3' || q.chapter === 'ch4') : questions.filter(q => q.chapter === state.filter);
       state.mode = 'exam';
       state.queue = makeQueue(pool, `questions:${state.filter}`);
       state.index = 0;
@@ -2089,6 +2119,9 @@ window.PE115 = (function () {
       state.completed = true;
       state.examResult = { total: state.queue.length, correct: state.correct, mistakes: [...state.mistakes], log: [...state.log] };
       recordProgress(state.filter, state.correct, state.queue.length);
+      state.lastGain = state.correct * 10;
+      addXp(state.lastGain);
+      setRouteNext(state.lastGain);
       if (state.filter === 'rev') PE115.report(state.correct / state.queue.length * 100);
       const perfect = state.correct === state.queue.length;
       if (!perfect) return startReview();
@@ -2136,8 +2169,9 @@ window.PE115 = (function () {
       $('progressBar').style.width = '100%';
       $('finishHeading').textContent = '錯題重練完成';
       $('finalScore').textContent = `${state.reviewTotal}／${state.reviewTotal} 題已答對`;
-      $('finalMessage').textContent = `正式測驗原成績：${state.examResult.correct}／${state.examResult.total}。錯題已全部答對！請重新挑戰完整範圍，一次正式測驗全對即可領取通關證書。`;
-      $('restart').textContent = '開始新的正式測驗';
+      $('finalMessage').textContent = UNIT_MAP[state.filter] ? `正式測驗原成績：${state.examResult.correct}／${state.examResult.total}。錯題已全部答對！可以前進下一單元，或再挑戰一次拿更多 ★。` : `正式測驗原成績：${state.examResult.correct}／${state.examResult.total}。錯題已全部答對！請重新挑戰完整範圍，一次正式測驗全對即可領取通關證書。`;
+      $('restart').textContent = UNIT_MAP[state.filter] ? '↻ 再挑戰本單元' : '開始新的正式測驗';
+      setRouteNext(state.lastGain);
       $('review').innerHTML = '<p>已完成本輪錯題重練。下面是這次正式測驗的錯題詳解與逐題檢討。</p>' + reviewHtml(state.examResult.log);
       updateStats();
     }
@@ -2206,8 +2240,148 @@ window.PE115 = (function () {
         $('progressBar').style.width = `${done / total * 100}%`;
       }
       $('modeLabel').textContent = reviewing ? '錯題重練' : '正式測驗';
-      $('streakStatus').textContent = `${rangeName()}｜${isPassed() ? '全對通關' : '一次正式測驗全對即可領證'}`;
+      $('streakStatus').textContent = `${rangeName()}｜${UNIT_MAP[state.filter] ? '依答對率得 ★，全對五顆星' : isPassed() ? '全對通關' : '一次正式測驗全對即可領證'}`;
       $('learningHint').textContent = reviewing ? `正式測驗結果：${state.examResult.correct}／${state.examResult.total}。共 ${state.reviewTotal} 題錯題，尚有 ${state.reviewPending.size} 題待答對；答錯會再出現，答對才移出。` : `本輪包含所選範圍全部 ${total} 題，全部答對即可通關；有錯題則於測驗結束後進入錯題重練。`;
+    }
+
+    // ===== 學習路線：章 → 小單元（重點卡＋闖關）→ 段考模擬 =====
+    const ids = (...ranges) => ranges.flatMap(r => { const [a, b] = String(r).split('-').map(Number); const out = []; for (let i = a; i <= (b || a); i++) out.push(`q${String(i).padStart(3, '0')}`); return out; });
+    const ROUTE = [
+      { ch: 3, icon: '🔊', title: '第3章 波動與聲音', tags: ['波的種類', '週期・頻率・波速', '聲速', '回聲與超聲波', '音調・響度・音色'], units: [
+        { id: 'u31a', icon: '🌊', title: '3-1 波的種類', desc: '力學波・橫波・縱波・波峰與波谷', ids: ids('1-4', 89, 90, 95), fig: 'springLong', points: [
+          '波傳遞的是<b>能量</b>，不是介質：就像球場上的人浪，觀眾只是站起又坐下，並沒有跑到隔壁座位。',
+          '要靠介質才能傳播的是<b>力學波</b>（繩波、水波、彈簧波、聲波）；光波、電磁波不需要介質。',
+          '介質振動方向和前進方向<b>垂直</b>＝橫波（上下甩繩子）；<b>平行</b>＝縱波（前後推彈簧、空氣中的聲波）。',
+          '橫波看得到波峰、波谷；縱波看得到密部、疏部。'] },
+        { id: 'u31b', icon: '⏱️', title: '3-1 週期、頻率與波速', desc: '振幅・波長・f＝1／T・v＝f×λ', ids: ids('5-11', '91-94', 96), fig: 'waveParts', points: [
+          '<b>週期 T</b>：振動一次要幾秒；<b>頻率 f</b>：每秒振動幾次（赫 Hz）。兩者互為倒數：f＝1 ÷ T。',
+          '<b>振幅</b>：波峰到原靜止位置的高度；<b>波長 λ</b>：相鄰兩個波峰的距離。',
+          '<b>波速 v＝f × λ</b>。同一條繩子（同一介質）波速固定：甩得越快（頻率變大），波長就越短。',
+          '計算口訣：先找「幾秒振動幾次」算頻率，再找「一個波多長」，相乘就是波速。'] },
+        { id: 'u32', icon: '🔔', title: '3-2 聲波的產生與傳播', desc: '聲音由振動產生・需要介質・聲速', ids: ids('12-17', '97-103'), fig: 'bellJar', points: [
+          '聲音由物體<b>振動</b>產生（摸喉嚨說話會感覺到振動）；還要有<b>介質</b>才能傳出去，真空中聽不到。',
+          '空氣中的聲波是<b>縱波</b>，空氣只在原地前後振動，不會跟著聲音跑走。',
+          '聲速：<b>固體＞液體＞氣體</b>；同一種空氣，<b>溫度越高聲速越快</b>。音量大小不影響聲速。',
+          '聲音換介質時<b>頻率不變</b>，聲速和波長會改變。距離＝聲速 × 時間。'] },
+        { id: 'u33', icon: '📡', title: '3-3 聲波的反射與超聲波', desc: '回聲・吸音・聲納・超聲波', ids: ids('18-20', '104-110'), fig: '', points: [
+          '聲波遇到障礙物返回，叫<b>回聲</b>。光滑堅硬的表面容易反射；柔軟、多孔的表面（窗簾、吸音板）容易吸收。',
+          '原聲和回聲要相隔 <b>0.1 秒</b>以上，耳朵才分得出來；太近會重疊，聽起來更響亮（浴室唱歌）。',
+          '聲納測深：聲音<b>來回</b>一趟，所以深度＝聲速 × 時間 ÷ 2。',
+          '頻率高於 <b>20000 Hz</b> 的是超聲波，人耳聽不到，可用於聲納、超音波檢查、清洗機。'] },
+        { id: 'u34', icon: '🎸', title: '3-4 多變的聲音', desc: '音調・響度・音色・噪音', ids: ids('21-26', '111-118'), fig: '', points: [
+          '<b>音調</b>（高低）由<b>頻率</b>決定：弦越細、越短、拉得越緊，音調越高；空氣柱越短，音調越高。',
+          '<b>響度</b>（大小）由<b>振幅</b>決定，單位是<b>分貝 dB</b>；用力撥弦只會變大聲，不會變高音。',
+          '<b>音色</b>（特色）由<b>波形</b>決定，所以閉上眼也聽得出鋼琴和小提琴。',
+          '長期處在 70 分貝以上的噪音環境，可能傷害聽力。'] },
+        { id: 'u3s', icon: '🧩', title: '第3章 素養挑戰', desc: '來學烏克麗麗・如何測量聲速', ids: ids('27-32'), fig: 'ironPipe', points: [
+          '情境題先把問題翻譯成觀念：調音＝調<b>頻率</b>，用的是能測頻率的工具。',
+          '弦樂器：音調高低 ← 頻率 ← 弦的粗細、長短、鬆緊。',
+          '兩次聲響的題目：同一段距離，經固體比經空氣先到，<b>時間差＝空氣所需時間－固體所需時間</b>。'] }
+      ] },
+      { ch: 4, icon: '💡', title: '第4章 光', tags: ['光的直進', '反射與面鏡', '折射', '透鏡成像', '光學儀器', '光與顏色'], units: [
+        { id: 'u41', icon: '🕯️', title: '4-1 光的傳播與光速', desc: '影子・針孔成像・光速', ids: ids('54-56', '119-124'), fig: 'pinhole', points: [
+          '光在均勻介質中<b>直線前進</b>：影子、針孔成像、日晷都是證據。',
+          '針孔成像是<b>上下顛倒、左右相反的實像</b>；像的大小 ÷ 物體大小＝像距 ÷ 物距。針孔要適當大小。',
+          '光<b>不需要介質</b>，真空中速率約 3×10⁸ m/s，比聲速快很多，所以先看到閃電、後聽到雷聲。'] },
+        { id: 'u42', icon: '🪞', title: '4-2 光的反射與面鏡', desc: '反射定律・平面鏡・凹面鏡・凸面鏡', ids: ids('57-62', '125-131'), fig: 'mirrorXY', points: [
+          '<b>反射定律</b>：入射角＝反射角，入射線、反射線、法線在同一平面。粗糙表面的漫反射也遵守。',
+          '平面鏡成<b>正立、等大、左右相反的虛像</b>，像到鏡子的距離＝物到鏡子的距離。',
+          '<b>凹面鏡</b>會聚光線：手電筒、探照燈、衛星天線；靠近時可看到放大的像（化妝鏡）。',
+          '<b>凸面鏡</b>成縮小正立的像、視野大：路口轉角鏡、汽車後照鏡、商店防盜鏡。'] },
+        { id: 'u43a', icon: '🌈', title: '4-3 光的折射', desc: '偏向法線・偏離法線・視深', ids: ids('63-72', 132, 134, 137, 138), fig: 'interface', points: [
+          '光在不同介質中速率不同，斜射進入另一個介質時會偏折，叫<b>折射</b>。',
+          '空氣 → 水（變慢）：折射線<b>偏向法線</b>；水 → 空氣（變快）：折射線<b>偏離法線</b>。',
+          '從岸上看水中的魚、硬幣，會覺得比實際<b>淺</b>；水中的魚看岸上的鳥，會覺得比較高。',
+          '光的可逆性：光線反過來走，路徑相同。'] },
+        { id: 'u43b', icon: '🔍', title: '4-3 透鏡成像（含實驗）', desc: '凸透鏡・凹透鏡・實像與虛像', ids: ids('33-44', '73-75', 133, 135, 136, 139), fig: 'lensBench', points: [
+          '<b>凸透鏡</b>中間厚，使光會聚；<b>凹透鏡</b>中間薄，使光發散。',
+          '凸透鏡：物在 2f 外 → 倒立縮小實像（相機）；在 2f → 倒立等大；在 f～2f → 倒立放大實像（投影機）；在 f 上不成像；在 f 內 → 正立放大虛像（放大鏡）。',
+          '凹透鏡不論物距，都只成<b>正立縮小虛像</b>。',
+          '<b>實像</b>能用紙屏接到；<b>虛像</b>紙屏接不到，只能用眼睛透過透鏡看。'] },
+        { id: 'u44', icon: '👓', title: '4-4 光學儀器', desc: '眼睛・眼鏡・相機・顯微鏡', ids: ids('76-78', '140-144'), fig: '', points: [
+          '眼睛的水晶體像凸透鏡，視網膜上是<b>倒立的實像</b>；相機的感光元件也一樣。',
+          '<b>近視</b>：像落在視網膜<b>前方</b>，戴凹透鏡；<b>遠視、老花</b>：像落在後方或看近不清，戴凸透鏡。',
+          '相機拍照時景物在兩倍焦距外，像落在一倍～兩倍焦距之間；光圈越大進光越多。',
+          '複式顯微鏡的物鏡、目鏡都是凸透鏡，最後看到<b>放大、上下顛倒、左右相反的虛像</b>。'] },
+        { id: 'u45', icon: '🎨', title: '4-5 光與顏色（含實驗）', desc: '色散・三原色光・物體的顏色', ids: ids('45-53', '79-81', '145-148'), fig: '', points: [
+          '白光經三稜鏡分成紅、橙、黃、綠、藍、靛、紫，叫<b>色散</b>；紅、綠、藍是<b>三原色光</b>。',
+          '不透明物體的顏色＝它<b>反射</b>的色光；透明物體的顏色＝能<b>穿透</b>它的色光。',
+          '白色反射所有色光，黑色吸收所有色光。紅紙在綠光下沒有紅光可反射，看起來是黑色。',
+          '色光題步驟：① 先寫出照進來有哪些色光 ② 再看物體能反射（或讓穿過）哪些。'] },
+        { id: 'u4s', icon: '🧩', title: '第4章 素養挑戰', desc: '鬼屋布置・皮影戲', ids: ids('82-88'), fig: '', points: [
+          '生活情境先判斷是哪一種現象：影子＝<b>直進</b>，鏡子＝<b>反射</b>，透鏡、水中物體＝<b>折射</b>。',
+          '透鏡讓光偏向哪邊：凸透鏡偏向主軸，凹透鏡偏離主軸。',
+          '燈光顏色題：先列出光源有哪些色光，再看每個部位能反射或透過哪些。'] }
+      ] }
+    ];
+    const UNIT_LIST = ROUTE.flatMap(c => c.units.map(u => ({ ...u, ch: c.ch, full: `第${c.ch}章｜${u.title}` })));
+    const UNIT_MAP = Object.fromEntries(UNIT_LIST.map(u => [u.id, u]));
+    for (const u of UNIT_LIST) RANGE_NAMES[u.id] = u.full;
+    const starsFor = pct => (typeof PE115 !== 'undefined' && PE115.stars) ? PE115.stars(pct) : (pct >= 100 ? 5 : pct >= 90 ? 4 : pct >= 80 ? 3 : pct >= 70 ? 2 : pct >= 60 ? 1 : 0);
+    const starStr = n => '★'.repeat(n) + '☆'.repeat(5 - n);
+    function unitStars(id) { const r = loadProgress()[id]; return r ? starsFor(r.best) : 0; }
+    function chapterStars(c) { return c.units.reduce((s, u) => s + unitStars(u.id), 0); }
+    function totalStars() { return UNIT_LIST.reduce((s, u) => s + unitStars(u.id), 0); }
+    function totalXp() { return loadProgress()._xp || 0; }
+    function addXp(n) { const p = loadProgress(); p._xp = (p._xp || 0) + n; saveProgress(p); }
+    function rankOf(st) {
+      const max = UNIT_LIST.length * 5;
+      if (st >= max) return '👑 理化王者';
+      if (st >= 51) return '🏅 段考達人';
+      if (st >= 32) return '⚗️ 實驗高手';
+      if (st >= 13) return '🔭 自然探險家';
+      return '🌱 見習研究員';
+    }
+    function mockUnlocked() {
+      if (/unlock/.test(String(location.search) + String(location.hash))) return true;
+      return ROUTE.every(c => c.units.filter(u => unitStars(u.id) >= 1).length >= 3);
+    }
+    let routeState = { view: 'home' };
+    function goRoute(spec) {
+      const [view, arg] = String(spec).split(':');
+      if (view === 'chapter') renderRoute({ view, ch: Number(arg) });
+      else if (view === 'unit') renderRoute({ view, id: arg });
+      else renderRoute({ view: 'home' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function renderRoute(next) {
+      if (next) routeState = next;
+      $('peHowto').hidden = routeState.view !== 'home';
+      const max = UNIT_LIST.length * 5, st = totalStars();
+      let html = '';
+      if (routeState.view === 'home') {
+        const unlocked = mockUnlocked();
+        html += `<div class="route-stats"><span class="route-pill">★ <b>${st}</b> / ${max}</span><span class="route-pill"><b>${totalXp()}</b> XP</span><span class="route-rank">${rankOf(st)}</span></div><div class="route-grid">`;
+        for (const c of ROUTE) {
+          const s = chapterStars(c), m = c.units.length * 5;
+          html += `<button class="route-card" data-go="chapter:${c.ch}"><span class="route-icon">${c.icon}</span><span class="route-title">${c.title}</span><span class="route-sub">${c.units.length} 個小單元・先看重點卡再闖關</span><span class="route-tags">${c.tags.map(t => `<span>${t}</span>`).join('')}</span><span class="route-bar"><i style="width:${s / m * 100}%"></i></span><span class="route-meta"><span>${c.units.filter(u => unitStars(u.id) >= 1).length} / ${c.units.length} 單元拿到 ★</span><span>★ ${s} / ${m}</span></span></button>`;
+        }
+        html += `<button class="route-card${unlocked ? '' : ' locked'}" ${unlocked ? 'data-filter="rev"' : 'data-go="locked"'}>${unlocked ? '' : '<span class="route-lock">🔒 未解鎖</span>'}<span class="route-icon">🏆</span><span class="route-title">段考模擬</span><span class="route-sub">第 3～4 章綜合・${questions.filter(q => q.chapter === 'rev').length} 題・成績就是練習等級</span><span class="route-tags"><span>波動與聲音</span><span>光</span><span>光與聲音比較</span></span><span class="route-meta"><span>${unlocked ? progressText('rev') : '第3、4章各有 3 個小單元拿到 ★ 即可解鎖'}</span></span></button>`;
+        html += `<button class="route-card" data-filter="all"><span class="route-icon">📘</span><span class="route-title">習作總挑戰</span><span class="route-sub">第 3、4 章習作 ${questions.filter(q => q.chapter === 'ch3' || q.chapter === 'ch4').length} 題・一次全對可領通關證書</span><span class="route-tags"><span>實驗紀錄</span><span>學力養成</span><span>素養活用</span></span><span class="route-meta"><span>${progressText('all')}</span></span></button>`;
+        html += `</div><p class="route-note" id="routeNote" hidden></p>`;
+        html += `<div class="route-rules"><b>闖關規則</b>　每個小單元先看「重點卡」，再闖關（習作＋精選練習）。依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★；每答對 1 題 +10 XP。答錯的題目會進入「錯題重練」，重練不計入星星與練習等級。第3、4章各有 3 個小單元拿到 ★，就能挑戰 🏆 段考模擬，段考模擬的成績就是本頁的「練習等級」。</div>`;
+      } else if (routeState.view === 'chapter') {
+        const c = ROUTE.find(x => x.ch === routeState.ch) || ROUTE[0];
+        const s = chapterStars(c), m = c.units.length * 5;
+        html += `<div class="route-top"><button class="ghost" data-go="home">← 回首頁</button><span class="route-pill">★ ${s} / ${m}</span></div>`;
+        html += `<div class="route-head"><span class="route-icon">${c.icon}</span><div><h2>${c.title}</h2><div class="route-tags">${c.tags.map(t => `<span>${t}</span>`).join('')}</div></div></div><ol class="unit-list">`;
+        c.units.forEach((u, i) => {
+          const n = unitStars(u.id);
+          html += `<li><button class="unit-row" data-go="unit:${u.id}"><span class="unit-no">${i + 1}</span><span class="unit-main"><b>${u.icon} ${u.title}</b><small>${u.desc}</small></span><span class="unit-side"><span class="unit-stars">${starStr(n)}</span><small>${u.ids.length} 題</small></span></button></li>`;
+        });
+        html += `</ol>`;
+      } else {
+        const u = UNIT_MAP[routeState.id] || UNIT_LIST[0];
+        html += `<div class="route-top"><button class="ghost" data-go="chapter:${u.ch}">← 回 第${u.ch}章</button><span class="route-pill">${starStr(unitStars(u.id))}</span></div>`;
+        html += `<article class="unit-intro"><span class="course-kicker">📖 重點卡</span><h2>${u.icon} ${u.title}</h2><ul class="key-points">${u.points.map(p => `<li>${p}</li>`).join('')}</ul>${u.fig && FIG[u.fig] ? `<div class="figure">${FIG[u.fig]}</div>` : ''}<div class="unit-actions"><button class="primary" data-filter="${u.id}">開始闖關（${u.ids.length} 題）</button><span>本單元紀錄：${progressText(u.id)}</span></div></article>`;
+      }
+      $('routeView').innerHTML = html;
+    }
+    function setRouteNext(gain) {
+      const u = UNIT_MAP[state.filter];
+      if (!u) { $('routeNext').innerHTML = `<div class="route-next-actions"><button class="ghost" data-go-quiz="home">← 回首頁</button></div>`; return; }
+      const nu = UNIT_LIST[UNIT_LIST.indexOf(u) + 1];
+      $('routeNext').innerHTML = `<p class="route-stars">本單元最佳：<b>${starStr(unitStars(u.id))}</b>${gain ? `　本次 +${gain} XP` : ''}</p><div class="route-next-actions"><button class="ghost" data-go-quiz="chapter:${u.ch}">← 回 第${u.ch}章</button>${nu ? `<button class="primary" data-go-quiz="unit:${nu.id}">下一單元：${nu.title} →</button>` : `<button class="primary" data-go-quiz="home">回首頁挑戰段考模擬 →</button>`}</div>`;
     }
 
     // 課程選單與作答畫面切換
@@ -2217,21 +2391,40 @@ window.PE115 = (function () {
       $('statusPanel').hidden = !on;
       $('workspace').hidden = !on;
       $('currentRange').textContent = rangeName();
+      if (!on) renderRoute();
     }
     function startRange(filter) {
       state.filter = filter;
+      $('backToMenu').textContent = UNIT_MAP[filter] ? `← 回 第${UNIT_MAP[filter].ch}章` : '← 回首頁';
+      $('routeNext').innerHTML = '';
       resetQuiz();
       showQuizView(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     $('courseMenu').addEventListener('click', (event) => {
+      const go = event.target.closest('[data-go]');
+      if (go) {
+        if (go.dataset.go === 'locked') { const note = $('routeNote'); note.hidden = false; note.textContent = '🔒 段考模擬還沒解鎖：第3章、第4章各要有 3 個小單元拿到 ★，先去闖關吧！'; return; }
+        goRoute(go.dataset.go);
+        return;
+      }
       const button = event.target.closest('[data-filter]');
       if (button) startRange(button.dataset.filter);
+    });
+    $('routeNext').addEventListener('click', (event) => {
+      const b = event.target.closest('[data-go-quiz]');
+      if (!b) return;
+      if ($('nameDialog').open) $('nameDialog').close();
+      const [view, arg] = b.dataset.goQuiz.split(':');
+      routeState = view === 'chapter' ? { view, ch: Number(arg) } : view === 'unit' ? { view, id: arg } : { view: 'home' };
+      showQuizView(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
     $('backToMenu').addEventListener('click', () => {
       const hasProgress = state.mode === 'review' || state.index > 0 || state.locked || state.selected !== null;
       if (!state.completed && hasProgress && !window.confirm('回首頁會清除本輪答案與進度，確定要離開嗎？')) return;
       if ($('nameDialog').open) $('nameDialog').close();
+      routeState = UNIT_MAP[state.filter] ? { view: 'chapter', ch: UNIT_MAP[state.filter].ch } : { view: 'home' };
       showQuizView(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
@@ -2256,9 +2449,6 @@ window.PE115 = (function () {
         if (state.locked) nextQuestion(); else checkAnswer();
       }
     });
-    const countOf = (...chapters) => questions.filter(q => chapters.includes(q.chapter)).length;
-    $('allCount').textContent = `${countOf('ch3', 'ch4')} 題`;
-    for (const key of ['ch3', 'ch4', 'p3', 'p4', 'rev']) $(`${key}Count`).textContent = `${countOf(key)} 題`;
     showQuizView(false);
     resetQuiz();
   </script>
