@@ -173,7 +173,7 @@ footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:cent
 <script>
 /* ===== 段考 ===== */
 const EXAMS = [
-  { n: 1, name: '第一次段考', stage: 'STAGE 1' },
+  { n: 1, name: '第一次段考', stage: 'STAGE 1', closed: true },   // closed: true＝已結束，首頁顯示但不能點；要重新開放就刪掉 closed
   { n: 2, name: '第二次段考', stage: 'STAGE 2' },
   { n: 3, name: '第三次段考', stage: 'STAGE 3' }
 ];
@@ -285,15 +285,15 @@ function renderHome() {
   document.getElementById('sub').textContent = '選擇要準備的段考，開始闖關！';
   const html = EXAMS.map(e => {
     const list = pagesOf(e.n);
-    const open = list.filter(p => p.status === 'ready').length;
+    const open = e.closed ? 0 : list.filter(p => p.status === 'ready').length;
     const dots = list.map(p => {
       const s = subj(p.subject);
-      return `<span class="${p.status === 'ready' ? 'on' : ''}" style="--c:${s.color}">${esc(s.short)}</span>`;
+      return `<span class="${p.status === 'ready' && !e.closed ? 'on' : ''}" style="--c:${s.color}">${esc(s.short)}</span>`;
     }).join('');
     return `<button type="button" class="exam-btn" data-exam="${e.n}" ${open ? '' : 'disabled'}>
       <span class="stage">${e.stage}</span>
       <h2>${e.name}</h2>
-      <p class="exam-meta">${open ? `${open} 科開放練習` : '尚未開放'}</p>
+      <p class="exam-meta">${e.closed ? '已結束（暫停開放）' : open ? `${open} 科開放練習` : '尚未開放'}</p>
       <div class="dots">${dots}</div>
       ${open ? `<div>${progress(list)}</div><span class="enter">進入 →</span>` : ''}
     </button>`;
@@ -341,7 +341,7 @@ function renderExam(n) {
 function route() {
   const m = location.hash.match(/^#exam(\d)$/);
   const n = m ? Number(m[1]) : 0;
-  if (n && EXAMS.some(e => e.n === n)) renderExam(n); else renderHome();
+  if (n && EXAMS.some(e => e.n === n && !e.closed)) renderExam(n); else { if (n) history.replaceState(null, '', location.pathname); renderHome(); }
 }
 
 document.addEventListener('click', e => {
