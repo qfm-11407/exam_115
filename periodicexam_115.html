@@ -67,6 +67,12 @@ button{font:inherit}
 
 /* ---------- 頁首 ---------- */
 header{padding:32px 0 12px; text-align:center}
+/* 精簡頁首：一行標題＋右側切換，讓島嶼地圖在第一個畫面完整呈現 */
+header.top{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 16px; padding:12px 0 10px; text-align:left}
+header.top .ttl{display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 12px}
+header.top h1{font-size:clamp(1.25rem,2.6vw,1.6rem); margin:0}
+.tools{display:flex; align-items:center; flex-wrap:wrap; gap:10px 16px}
+.tools .exam-prog{min-width:220px}
 .kicker{font-size:.9rem; color:var(--muted); letter-spacing:.08em}
 h1{margin:4px 0 6px; font-size:clamp(1.6rem,4.2vw,2.5rem); line-height:1.25}
 .sub{color:var(--muted); margin:0}
@@ -153,8 +159,10 @@ h1{margin:4px 0 6px; font-size:clamp(1.6rem,4.2vw,2.5rem); line-height:1.25}
 .view-tg button{border:0; background:transparent; color:var(--muted); padding:8px 14px; cursor:pointer; font-weight:600}
 .view-tg button[aria-pressed="true"]{background:var(--accent); color:#fff}
 .map-wrap{position:relative; border-radius:22px; overflow:hidden; box-shadow:0 6px 24px rgba(20,60,90,.18); background:var(--sea2)}
-.map-wrap svg{display:block; width:100%; height:auto; user-select:none; -webkit-user-select:none}
-.map-tip{margin:0 0 10px; color:var(--muted); font-size:.95rem; text-align:center}
+.map-wrap{background:linear-gradient(var(--sea1),var(--sea2))}
+/* 地圖高度不超過一個畫面（扣掉頁首），兩側不足處以海面底色補滿 */
+.map-wrap svg{display:block; width:100%; height:auto; max-height:calc(100vh - 78px); max-height:calc(100svh - 78px); user-select:none; -webkit-user-select:none}
+
 .isl{cursor:pointer; outline:none}
 .isl .lift{transition:transform .25s ease}
 .isl:hover .lift, .isl:focus-visible .lift, .isl.sel .lift{transform:translateY(-10px)}
@@ -175,6 +183,8 @@ h1{margin:4px 0 6px; font-size:clamp(1.6rem,4.2vw,2.5rem); line-height:1.25}
 @media (max-width:700px){
   .isl-panel{position:fixed; left:8px; right:8px; bottom:8px; width:auto; transform:none}
   .map-wrap{border-radius:16px}
+  .map-wrap svg{max-height:calc(100vh - 136px); max-height:calc(100svh - 136px)}
+  header.top{padding:8px 0}
 }
 
 footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:center}
@@ -195,15 +205,15 @@ footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:cent
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="kicker">八年級・一一五學年度上學期</div>
-    <h1>一一五上學期段考強化練習</h1>
-    <p class="sub" id="sub">選擇要準備的段考，開始闖關！</p>
+  <header class="top">
+    <div class="ttl"><h1>一一五上學期段考強化練習</h1><span class="kicker" id="kicker">八年級</span></div>
+    <div class="tools" id="tools"></div>
+    <p class="sub" id="sub" hidden></p>
   </header>
 
   <main id="main"></main>
 
-  <footer>練習等級：段考衝刺答對 60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★｜紀錄只存在這台裝置的瀏覽器</footer>
+  <footer>適用：課前預習・課後複習・自主練習・段考衝刺｜完成段考衝刺就會自動評定練習等級<br>練習等級：段考衝刺答對 60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★｜紀錄只存在這台裝置的瀏覽器</footer>
 </div>
 
 <script>
@@ -370,22 +380,18 @@ function renderExam(n) {
   const list = pagesOf(n);
   if (CUR !== n) SEL = '';
   CUR = n;
-  document.getElementById('sub').textContent = '適用：課前預習・課後複習・自主練習・段考衝刺｜完成段考衝刺就會自動評定練習等級';
-  const body = VIEW === 'map'
-    ? `<p class="map-tip">👆 點選島嶼，查看該科練習，再按「開始練習」出發</p>
-       <div class="map-wrap" id="mapwrap">${islandMap(e, list)}
-         <div class="isl-panel" id="islpanel" ${SEL ? '' : 'hidden'}>${SEL ? panelHTML(list) : ''}</div></div>`
-    : `<div class="grid">${list.map(card).join('')}</div>`;
-  document.getElementById('main').innerHTML = `
-    <div class="exam-head">
-      <div class="exam-title"><span class="stage">${e.stage}</span><h2>${e.name}</h2></div>
+  document.getElementById('kicker').textContent = `八年級・${e.name}`;
+  document.getElementById('tools').innerHTML = `
       <div class="view-tg" role="group" aria-label="顯示方式">
         <button type="button" data-view="map" aria-pressed="${VIEW === 'map'}">🗺️ 地圖</button>
         <button type="button" data-view="list" aria-pressed="${VIEW === 'list'}">📋 清單</button>
       </div>
-      <div class="exam-prog">${progress(list)}</div>
-    </div>
-    ${body}`;
+      ${VIEW === 'list' ? `<div class="exam-prog">${progress(list)}</div>` : ''}`;
+  const body = VIEW === 'map'
+    ? `<div class="map-wrap" id="mapwrap">${islandMap(e, list)}
+         <div class="isl-panel" id="islpanel" ${SEL ? '' : 'hidden'}>${SEL ? panelHTML(list) : ''}</div></div>`
+    : `<div class="grid">${list.map(card).join('')}</div>`;
+  document.getElementById('main').innerHTML = body;
 }
 
 function panelHTML(list) {
@@ -673,10 +679,10 @@ function islandMap(e, list) {
     <ellipse cx="4" cy="16" rx="58" ry="22" fill="rgba(10,50,70,.18)"/><ellipse cx="0" cy="8" rx="54" ry="22" fill="#efe3c4"/><ellipse cx="0" cy="4" rx="40" ry="15" fill="#f6edd4"/>
     ${tree(-26, 4, 0.8)}${tree(28, 8, 0.7, '#6ab04c')}
     <line x1="0" y1="4" x2="0" y2="-34" stroke="#7a5534" stroke-width="4"/>
-    <rect x="-100" y="-104" width="200" height="72" rx="14" fill="#fff" stroke="${'#e03131'}" stroke-width="4"/>
-    <text x="0" y="-80" text-anchor="middle" font-size="13" font-weight="800" fill="#e03131" letter-spacing="3">${e.stage}</text>
-    <text x="0" y="-55" text-anchor="middle" font-size="25" font-weight="900" fill="#1f2433">${e.name}</text>
-    <text x="0" y="-38" text-anchor="middle" font-size="12.5" fill="#667085">已評級 ${rated} / ${open.length} 科</text></g>`;
+    <rect x="-110" y="-112" width="220" height="80" rx="14" fill="#fff" stroke="${'#e03131'}" stroke-width="4"/>
+    <text x="0" y="-90" text-anchor="middle" font-size="13" font-weight="800" fill="#e03131" letter-spacing="3">${e.stage}</text>
+    <text x="0" y="-65" text-anchor="middle" font-size="25" font-weight="900" fill="#1f2433">${e.name}</text>
+    <text x="0" y="-44" text-anchor="middle" font-size="13" font-weight="700" fill="#1971c2">👆 點選島嶼出發・已評級 ${rated} / ${open.length} 科</text></g>`;
   /* 島嶼：由後往前畫（y 小的先畫） */
   const order = SUBJECTS.map((x, i) => [x, i]).filter(([x]) => L.pos[x.id] && byId[x.id]).sort((a, b) => L.pos[a[0].id][1] - L.pos[b[0].id][1]);
   order.forEach(([sj, i]) => {
