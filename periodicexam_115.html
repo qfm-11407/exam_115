@@ -669,11 +669,19 @@ function islandMap(e, list) {
       for (let t = 0; t <= 1.001; t += 0.125) { const px = x1 + dx * t - nx * k, py = y1 + Y + dy * t - ny * k; s += `<line x1="${f1(px)}" y1="${f1(py)}" x2="${f1(px)}" y2="${f1(py - 9)}" stroke="#7a5534" stroke-width="2"/>`; } });
   });
   /* 小船 */
-  const boats = mapMode() === 'wide' ? [[90, 640, '#e03131'], [1110, 160, '#1971c2'], [720, 470, '#f08c00'], [1060, 700, '#2b8a3e']]
+  const boats = mapMode() === 'wide' ? [[90, 640, '#e03131'], [1110, 160, '#1971c2'], [1060, 700, '#2b8a3e']]
                                      : [[80, 160, '#e03131'], [560, 770, '#1971c2'], [320, 1320, '#f08c00']];
   boats.forEach(([x, y, col], i) => { s += boat(x, y, col, i); });
   /* 中央碼頭：段考看板 */
-  const [hx, hy] = L.hub, open = list.filter(p => p.status === 'ready');
+  /* 中央立牌的位置：立牌（上 112、下 38）放在「上方島嶼標籤底部」與「下方島嶼建築頂端」之間的正中央，避免重疊 */
+  const SIGN_TOP = 112, SIGN_BOTTOM = 38, LABEL_BOTTOM = R * 0.5 + 56 + 19;
+  const TOP_EXT = { chinese: 75, idioms: 75, english: 150, math: 75, science: 120, civics: 70, history: 75, geography: 80 };   // 建築高出島中心多少
+  let [hx, hy] = L.hub;
+  const near = Object.keys(L.pos).filter(id => Math.abs(L.pos[id][0] - hx) < 110 + R * 1.2);
+  const above = near.filter(id => L.pos[id][1] < hy).map(id => L.pos[id][1] + LABEL_BOTTOM);
+  const below = near.filter(id => L.pos[id][1] > hy).map(id => L.pos[id][1] - (TOP_EXT[id] || 80));
+  if (above.length && below.length) hy = Math.round((Math.max(...above) + Math.min(...below)) / 2 + (SIGN_TOP - SIGN_BOTTOM) / 2);
+  const open = list.filter(p => p.status === 'ready');
   const rated = open.filter(p => (levelOf(p.file, subj(p.subject).part) || {}).stars > 0).length;
   s += `<g transform="translate(${hx},${hy})">
     <ellipse cx="4" cy="16" rx="58" ry="22" fill="rgba(10,50,70,.18)"/><ellipse cx="0" cy="8" rx="54" ry="22" fill="#efe3c4"/><ellipse cx="0" cy="4" rx="40" ry="15" fill="#f6edd4"/>
