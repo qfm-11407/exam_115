@@ -1382,28 +1382,88 @@ body{padding-bottom:64px}
     return { W, H: 205 + (rows - 1) * 330 + 170, R: Math.min(92, cell * 0.31), pos };
   }
 
-  function mapSVG(cfg, items, sel) {
-    const n = items.length, Lo = layout(n), R = Lo.R, anim = !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
-    const rand = rng(n * 31 + 7);
-    let s = `<svg viewBox="0 0 ${Lo.W} ${Lo.H}" role="img" aria-label="島嶼地圖：點選島嶼查看練習" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif">
-      <defs><linearGradient id="pmSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd6df"/><stop offset="1" stop-color="#5cb8c9"/></linearGradient>
-      <linearGradient id="pmBeam" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#fff3bf"/><stop offset="1" stop-color="#fff3bf" stop-opacity="0"/></linearGradient>
-      <filter id="pmGray"><feColorMatrix type="saturate" values="0.15"/></filter></defs>
-      <rect width="${Lo.W}" height="${Lo.H}" fill="url(#pmSea)"/>`;
-    for (let i = 0; i < (Lo.W * Lo.H) / 9000; i++) { const x = rand() * Lo.W, y = rand() * Lo.H, w = 10 + rand() * 12;
-      s += `<path class="pm-wave" style="animation-delay:-${(rand() * 4).toFixed(1)}s" d="M${f1(x)},${f1(y)}q${f1(w / 2)},-5 ${f1(w)},0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`; }
+  /* ---------- 全域世界（與入口網站同一張群島地圖的位置）：各科首頁在世界地圖上放大到該科的區域，其他島淺白處理 ---------- */
+  const WORLD = {
+    wide: { W: 1200, H: 790, R: 92, pos: { chinese: [190, 335], idioms: [395, 215], english: [630, 175], math: [870, 240], science: [1045, 440], civics: [370, 590], history: [600, 640], geography: [835, 600] } },
+    tall: { W: 640, H: 1350, R: 98, pos: { chinese: [165, 345], idioms: [470, 315], english: [160, 625], math: [475, 600], science: [165, 915], civics: [480, 895], history: [455, 1190], geography: [170, 1210] } },
+    bridges: [['chinese', 'idioms'], ['civics', 'history'], ['history', 'geography']],
+    kind: { chinese: 'pavilion', idioms: 'gate', english: 'clocktower', math: 'solids', science: 'lighthouse', civics: 'courthouse', history: 'citygate', geography: 'mountain' },
+    color: { chinese: '#c2255c', idioms: '#0b7285', english: '#7048e8', math: '#1971c2', science: '#2b8a3e', civics: '#8a2f08', history: '#c2410c', geography: '#e8590c' },
+    name: { chinese: '國文島', idioms: '成語島', english: '英文島', math: '數學島', science: '理化島', civics: '公民島', history: '歷史島', geography: '地理島' }
+  };
+  function regionSVG(items, sel, Lo, ox, oy) {
+    const n = items.length, R = Lo.R, anim = motionOK();
+    let s = `<g transform="translate(${f1(ox)},${f1(oy)})">`;
     items.forEach((it, i) => { const [x, y] = Lo.pos[i]; s += `<ellipse cx="${x}" cy="${y + 30}" rx="${f1(R * 1.7)}" ry="${f1(R * 0.92)}" fill="#b9ece9" opacity=".45"/>`; });
     for (let i = 0; i < n - 1; i++) if (!items[i].apart && !items[i + 1].apart) s += bridge(Lo.pos[i], Lo.pos[i + 1]);
     [[0.06, 0.2, '#e03131'], [0.93, 0.12, '#1971c2'], [0.9, 0.9, '#f08c00'], [0.05, 0.86, '#2b8a3e']].forEach(([fx, fy, col], i) => { s += boat(f1(Lo.W * fx), f1(Lo.H * fy), col, i); });
-    const order = items.map((it, i) => i).sort((a, b) => Lo.pos[a][1] - Lo.pos[b][1]);
-    order.forEach(i => { const it = items[i], [x, y] = Lo.pos[i];
+    items.map((it, i) => i).sort((a, b) => Lo.pos[a][1] - Lo.pos[b][1]).forEach(i => { const it = items[i], [x, y] = Lo.pos[i];
       s += `<g class="pm-isl${sel === i ? ' sel' : ''}" data-i="${i}" transform="translate(${x},${y})" tabindex="0" role="button" aria-label="${esc(it.name + '：' + it.sub)}">
         <g class="pm-bob" style="animation-delay:-${(i * 0.7).toFixed(1)}s"><g class="pm-lift">
           <g ${it.locked ? 'filter="url(#pmGray)" opacity=".8"' : ''}>${islandSVG(it.kind, it.color, R, anim && !it.locked)}</g>
           ${it.locked ? cloud(-36, -46, 0.8) + `<g transform="translate(30,-62)"><circle r="17" fill="#fff"/><text y="7" font-size="20" text-anchor="middle">🔒</text></g>` : ''}
           ${labelSVG(i + 1, it.name, it.sub, it.color, R * 0.5 + 62, /★/.test(it.sub) && !/★ 0 \//.test(it.sub))}
         </g></g></g>`; });
+    return s + '</g>';
+  }
+  const svgHead = (vb, extra = '') => `<svg viewBox="${vb.map(f1).join(' ')}" role="img" aria-label="島嶼地圖：點島嶼直接進入" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif" ${extra}>
+      <defs><linearGradient id="pmSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd6df"/><stop offset="1" stop-color="#5cb8c9"/></linearGradient>
+      <linearGradient id="pmBeam" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#fff3bf"/><stop offset="1" stop-color="#fff3bf" stop-opacity="0"/></linearGradient>
+      <filter id="pmGray"><feColorMatrix type="saturate" values="0.15"/></filter><filter id="pmBlurHole" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="40"/></filter></defs>`;
+  function waves(x0, y0, w, h, seed, dens = 9000) {
+    const rand = rng(seed); let s = '';
+    for (let i = 0; i < (w * h) / dens; i++) { const x = x0 + rand() * w, y = y0 + rand() * h, ww = 10 + rand() * 12;
+      s += `<path class="pm-wave" style="animation-delay:-${(rand() * 4).toFixed(1)}s" d="M${f1(x)},${f1(y)}q${f1(ww / 2)},-5 ${f1(ww)},0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`; }
+    return s;
+  }
+  function mapSVG(cfg, items, sel) {
+    const n = items.length, Lo = layout(n);
+    const me = cfg.world ? (typeof cfg.world === 'function' ? cfg.world() : cfg.world) : null;
+    const wl = me && WORLD[window.innerWidth < 700 ? 'tall' : 'wide'];
+    if (!wl || !wl.pos[me]) {   // 沒有世界設定：單獨一張地圖
+      return svgHead([0, 0, Lo.W, Lo.H]) + `<rect width="${Lo.W}" height="${Lo.H}" fill="url(#pmSea)"/>` + waves(0, 0, Lo.W, Lo.H, n * 31 + 7) + regionSVG(items, sel, Lo, 0, 0) + '</svg>';
+    }
+    /* 放大倍率 F：讓相鄰科目的島剛好在本區邊緣「露出來」，不壓到本科的島 */
+    const [mx0, my0] = wl.pos[me], others = Object.keys(wl.pos).filter(k => k !== me), RW = wl.R * 1.25;
+    const ok = F => others.every(k => { const dx = Math.max(0, Math.abs((wl.pos[k][0] - mx0) * F) - Lo.W / 2), dy = Math.max(0, Math.abs((wl.pos[k][1] - my0) * F) - Lo.H / 2);
+      return Math.hypot(dx, dy) >= RW * F * 0.3; });
+    let lo = 1, hi = 30; for (let k = 0; k < 40; k++) { const m = (lo + hi) / 2; if (ok(m)) hi = m; else lo = m; }
+    const F = hi, cx = mx0 * F, cy = my0 * F, rx = cx - Lo.W / 2, ry = cy - Lo.H / 2;
+    const padX = Lo.W * 0.16, padY = Lo.H * 0.2, vb = [rx - padX, ry - padY, Lo.W + 2 * padX, Lo.H + 2 * padY];
+    const asp = vb[2] / vb[3], WW = wl.W * F, WH = wl.H * F;
+    let ow = WW, oh = WH; if (ow / oh > asp) oh = ow / asp; else ow = oh * asp;   // 全景鏡頭（同長寬比，動畫時不跳版面）
+    const ov = [(WW - ow) / 2, (WH - oh) / 2, ow, oh];
+    const bx = Math.min(ov[0], vb[0]) - 200, by = Math.min(ov[1], vb[1]) - 200, bw = Math.max(ov[0] + ov[2], vb[0] + vb[2]) + 200 - bx, bh = Math.max(ov[1] + ov[3], vb[1] + vb[3]) + 200 - by;
+    let s = svgHead(vb, `data-wv="${ov.map(f1).join(' ')}" data-tv="${vb.map(f1).join(' ')}"`);
+    s += `<mask id="pmHole" maskUnits="userSpaceOnUse" x="${f1(bx)}" y="${f1(by)}" width="${f1(bw)}" height="${f1(bh)}"><rect x="${f1(bx)}" y="${f1(by)}" width="${f1(bw)}" height="${f1(bh)}" fill="#fff"/>
+      <ellipse cx="${f1(cx)}" cy="${f1(cy)}" rx="${f1(Lo.W * 0.6)}" ry="${f1(Lo.H * 0.66)}" fill="#000" filter="url(#pmBlurHole)"/></mask>`;
+    s += `<rect x="${f1(bx)}" y="${f1(by)}" width="${f1(bw)}" height="${f1(bh)}" fill="url(#pmSea)"/>`;
+    s += waves(vb[0], vb[1], vb[2], vb[3], n * 31 + 7) + waves(ov[0], ov[1], ov[2], ov[3], 99, 9000 * F * F);
+    /* 世界上的其他科目島（同入口網站的位置，放大 F 倍），之後蓋一層白霧 */
+    s += `<g mask="url(#pmHole)"><g transform="scale(${f1(F * 1000) / 1000})">`;
+    WORLD.bridges.forEach(([a, b]) => { s += bridge(wl.pos[a], wl.pos[b]); });
+    others.forEach(k => { const [x, y] = wl.pos[k];
+      s += `<g transform="translate(${x},${y})">${islandSVG(WORLD.kind[k], WORLD.color[k], wl.R, false).replace(/<ellipse class="pm-ring"[^>]*\/>/, '')}
+        <text y="${f1(wl.R * 0.5 + 52)}" text-anchor="middle" font-size="22" font-weight="900" fill="#1f2433" opacity=".8">${WORLD.name[k]}</text></g>`; });
+    s += `</g></g>`;
+    s += `<ellipse cx="${f1(cx)}" cy="${f1(cy + 20)}" rx="${f1(Lo.W * 0.56)}" ry="${f1(Lo.H * 0.58)}" fill="#b9ece9" opacity=".35"/>`;
+    s += `<rect x="${f1(bx)}" y="${f1(by)}" width="${f1(bw)}" height="${f1(bh)}" fill="#f4fbfc" opacity=".66" mask="url(#pmHole)"/>`;
+    s += regionSVG(items, sel, Lo, rx, ry);
     return s + '</svg>';
+  }
+  /* 鏡頭移動：在同一張世界地圖上平移＋縮放（改 viewBox），由全景飛到本科，或由本科飛回全景 */
+  function flyView(svg, from, to, ms, done) {
+    if (!svg || !motionOK()) { if (done) done(); return; }
+    const a = from.split(' ').map(Number), b = to.split(' ').map(Number), t0 = performance.now();
+    const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const step = now => { const t = Math.min(1, (now - t0) / ms), k = ease(t);
+      // 縮放用對數內插，看起來像等速拉近
+      const w = Math.exp(Math.log(a[2]) + (Math.log(b[2]) - Math.log(a[2])) * k), h = w * (b[3] / b[2]);
+      const cxa = a[0] + a[2] / 2, cya = a[1] + a[3] / 2, cxb = b[0] + b[2] / 2, cyb = b[1] + b[3] / 2, q = (a[2] - w) / ((a[2] - b[2]) || 1);
+      const cxv = cxa + (cxb - cxa) * q, cyv = cya + (cyb - cya) * q;
+      svg.setAttribute('viewBox', [cxv - w / 2, cyv - h / 2, w, h].map(f1).join(' '));
+      if (t < 1) requestAnimationFrame(step); else { svg.setAttribute('viewBox', to); if (done) done(); } };
+    requestAnimationFrame(step);
   }
 
   /* ---------- 街區：tiles = [{ name, sub, kind, color, locked, acts: [{ label, el, ghost }] }] ---------- */
@@ -1874,6 +1934,7 @@ body{padding-bottom:64px}
   function arrive(el) {
     if (!PENDING || !el || !motionOK()) return; if (Date.now() - PENDING.t > 2500) { PENDING = null; return; }
     const dir = PENDING.dir; PENDING = null;
+    if (dir === 'in' && el.getAttribute && el.getAttribute('data-wv')) { const tv = el.getAttribute('data-tv'); el.setAttribute('viewBox', el.getAttribute('data-wv')); flyView(el, el.getAttribute('data-wv'), tv, 1200); return; }
     try { el.animate(dir === 'out' ? [{ transform: 'scale(1.5)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }] : [{ transform: 'scale(.62)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }],
       { duration: 380, easing: 'cubic-bezier(.2,.7,.3,1)' }); } catch (e) {}
   }
@@ -1904,7 +1965,9 @@ body{padding-bottom:64px}
     @media (max-width:700px){ #pe-crumb{font-size:13px; left:8px; bottom:8px; max-width:calc(100vw - 70px)} }
     @media print{ #pe-crumb{display:none} }
     details.pm-rules{margin:14px 0; border:1px dashed #cfd4dc; border-radius:14px; padding:8px 14px; background:rgba(255,255,255,.6)}
-    details.pm-rules > summary{cursor:pointer; font-weight:800; color:#475467; font-size:15px} details.pm-rules[open] > summary{margin-bottom:6px}`;
+    details.pm-rules > summary{cursor:pointer; font-weight:800; color:#475467; font-size:15px} details.pm-rules[open] > summary{margin-bottom:6px}
+    .pm-rules-list{list-style:none; margin:4px 0 2px; padding:0; display:grid; gap:6px} .pm-rules-list li{display:flex; gap:8px; align-items:flex-start; line-height:1.6; font-size:16px; text-align:left}
+    .pm-rules-list .pm-ri{flex:none; width:1.5em; text-align:center}`;
   function crumbTick() {
     if (!CRUMBS) return;
     let list = []; try { list = CRUMBS() || []; } catch (e) { list = []; }
@@ -1928,7 +1991,11 @@ body{padding-bottom:64px}
   document.addEventListener('click', e => {
     const a = e.target.closest && e.target.closest('.pm-crumb [data-ci]'); if (!a) return;
     const nav = a.closest('.pm-crumb'), c = nav._list[+a.dataset.ci]; if (!c) return;
-    if (c.href) { try { sessionStorage.setItem(ZKEY, 'out'); } catch (err) {} return; }
+    if (c.href) { try { sessionStorage.setItem(ZKEY, 'out'); } catch (err) {}
+      const w = [...document.querySelectorAll('.pe-map svg[data-wv]')].find(x => x.getBoundingClientRect().height > 0);   // 世界地圖：鏡頭先飛回全景再換頁
+      if (w && motionOK() && !e.ctrlKey && !e.metaKey) { e.preventDefault(); let gone = false; const go = () => { if (!gone) { gone = true; location.href = c.href; } };
+        flyView(w, w.getAttribute('viewBox'), w.getAttribute('data-wv'), 750, go); setTimeout(go, 1300); }
+      return; }
     e.preventDefault(); setPending('out'); try { c.go(); } catch (err) { console.warn('PE115Map.crumb', err); } window.scrollTo({ top: 0, behavior: 'smooth' });
   });
   /* 精簡說明：📌 怎麼用、闖關規則預設收合（同一個元素只收一次，學生打開後不會再被關上） */
@@ -1938,7 +2005,19 @@ body{padding-bottom:64px}
     RULES.forEach(rule => { const sel = rule && rule.sel ? rule.sel : rule; resolve(sel).forEach(el => { if (!el || el.closest('details.pm-rules') || el.hasAttribute('data-pm-r')) return;
       const grp = [].concat(el); if (rule && rule.prev && el.previousElementSibling) grp.unshift(el.previousElementSibling);
       const d = document.createElement('details'); d.className = 'pm-rules'; el = grp[0];
-      d.innerHTML = '<summary>📜 闖關規則（星等、解鎖條件）</summary>'; el.setAttribute('data-pm-r', ''); el.parentNode.insertBefore(d, el); grp.forEach(x => d.appendChild(x)); }); });
+      d.innerHTML = '<summary>📜 闖關規則（星等、解鎖條件）</summary>'; el.setAttribute('data-pm-r', ''); el.parentNode.insertBefore(d, el); grp.forEach(x => d.appendChild(x));
+      /* 一整段文字的規則改成條列（原段落保留但隱藏）；本來就分項的（例：數學）不變 */
+      const last = grp[grp.length - 1];
+      if (!last.querySelector('li, .rule')) {
+        const txt = last.textContent.replace(/^\s*(📜\s*)?闖關規則\s*/, '').trim();
+        const items = txt.split(/(?<=[。！!；])/).map(t => t.replace(/[。；]$/, '').trim()).filter(Boolean);
+        if (items.length > 1) {
+          const ico = t => /得星|★/.test(t) && /%/.test(t) ? '⭐' : /解鎖|就能/.test(t) ? '🔓' : /錯題|重練/.test(t) ? '🔁' : /練習等級/.test(t) ? '🏆' : /XP|連擊/.test(t) ? '⚡' : /重點卡/.test(t) ? '📖' : '•';
+          const ul = document.createElement('ul'); ul.className = 'pm-rules-list';
+          ul.innerHTML = items.map(t => `<li><span class="pm-ri">${ico(t)}</span><span>${esc(t)}</span></li>`).join('');
+          last.style.display = 'none'; d.appendChild(ul);
+        }
+      } }); });
   }
 
   /* ===================================================================
@@ -1993,6 +2072,7 @@ body{padding-bottom:64px}
 <script id="pe115-map-config">
 /* 國文：首頁課次卡片 → 島嶼（L4 愛蓮說・L5 生命中的碎珠・L6 鳥・段考複習） */
 PE115Map.add({
+  world: 'chinese',   // 在全域世界地圖上放大到本科（其他科目淺白）
   key: 'home', anchor: '#app > .grid', items: '#app > .grid > .lcard',
   name: el => { const t = el.querySelector('.ttl').textContent, e = (el.querySelector('.en') || {}).textContent || ''; return /課$/.test(t) ? `${t} ${e.split('｜')[0]}` : t; },
   sub: el => { const s = el.querySelectorAll('.meta span'); return s.length ? s[s.length - 1].textContent : ''; },
