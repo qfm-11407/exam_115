@@ -23,7 +23,7 @@
   9. 「❓ 怎麼玩」是整個系列唯一的完整說明（id="guide"），各科頁的「📌 怎麼用」預設收合；改玩法時記得一起改這裡。
   8. 段考頁有兩種顯示：🗺️ 島嶼地圖（預設）與 📋 清單，學生的選擇記在 localStorage「pe115:view」。
      島嶼地圖全部用 SVG 程式繪製：島的位置改 MAP_LAYOUT（wide＝電腦／投影，tall＝手機直式），
-     群島與橋改 MAP_GROUPS、MAP_BRIDGES，島上建築在 LANDMARK。點島嶼先出現練習卡片，按「開始練習」才進入。
+     群島與橋改 MAP_GROUPS、MAP_BRIDGES，島上建築在 LANDMARK。點已開放的島嶼直接進入該科（鏡頭拉近後換頁），未開放的才跳出卡片。
 -->
 <style>
 :root{
@@ -233,12 +233,13 @@ footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:cent
       <h2 id="guideTitle">❓ 怎麼玩：一一五上學期段考強化練習</h2>
       <p class="guide-lead">適用：課前預習・課後複習・自主練習・段考衝刺。每一科都是一座島，由大到小一路走進去練習。</p>
       <ol class="guide-steps">
-        <li><b>🌏 全景</b>：就是這張群島地圖。點一座島 → 看該科卡片 → 按「開始練習」。</li>
+        <li><b>🌏 全景</b>：就是這張群島地圖。點一座島，鏡頭拉近就直接進入該科（還沒開放的島會顯示「即將推出」）。</li>
         <li><b>🏝️ 科目島</b>：各科首頁，每課（數學是每節）一座島，依序用木橋相連。</li>
-        <li><b>🏙️ 街區</b>：一課的街道平面圖，小單元是沿街的建築，依 01、02… 前進；點建築看題數與星星，再按「出發 →」。</li>
+        <li><b>🏙️ 街區</b>：一課的街道平面圖，小單元是沿街的建築，依 01、02… 前進；點建築就直接開始練習（題數與星星寫在建築名牌上，數學會自動從還沒過的上／下段開始）。</li>
         <li><b>📋 本課看板</b>：街尾的看板顯示本課星星、完成幾站與徽章，按「▶ 繼續下一站」就從還沒完成的單元接著練。</li>
         <li><b>✏️ 建築（作答）</b>：題目卡浮在海面上，下方小船依進度航向這座島；右下「🌫️ 專注模式」可以關掉背景。</li>
       </ol>
+      <p class="guide-lead"><b>操作只有一個規則：點了就進入。</b>還沒解鎖的島或建築，點了會跳出一句解鎖條件。</p>
       <h3>📍 迷路了怎麼辦？</h3>
       <p>每一頁左下角都有<b>位置列</b>，例如「🌏 全景 › 國文島 › 第四課 愛蓮說 街區 › 注釋」。點其中任何一段，就回到那一層。</p>
       <h3>⭐ 星星與練習等級</h3>
@@ -732,7 +733,7 @@ function islandMap(e, list) {
     <rect x="-110" y="-112" width="220" height="80" rx="14" fill="#fff" stroke="${'#e03131'}" stroke-width="4"/>
     <text x="0" y="-90" text-anchor="middle" font-size="13" font-weight="800" fill="#e03131" letter-spacing="3">${e.stage}</text>
     <text x="0" y="-65" text-anchor="middle" font-size="25" font-weight="900" fill="#1f2433">${e.name}</text>
-    <text x="0" y="-44" text-anchor="middle" font-size="13" font-weight="700" fill="#1971c2">👆 點選島嶼出發・已評級 ${rated} / ${open.length} 科</text></g>`;
+    <text x="0" y="-44" text-anchor="middle" font-size="13" font-weight="700" fill="#1971c2">👆 點島嶼直接出發・已評級 ${rated} / ${open.length} 科</text></g>`;
   /* 島嶼：由後往前畫（y 小的先畫） */
   const order = SUBJECTS.map((x, i) => [x, i]).filter(([x]) => L.pos[x.id] && byId[x.id]).sort((a, b) => L.pos[a[0].id][1] - L.pos[b[0].id][1]);
   order.forEach(([sj, i]) => {
@@ -783,6 +784,7 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-guide]')) { openGuide(true); return; }
   if (e.target.closest('[data-guide-close]') || e.target.id === 'guide') { openGuide(false); return; }
   const go = e.target.closest('#islpanel a.go');
+  if (go && Date.now() - selAt < 220) { e.preventDefault(); return; }   // 連點兩下時，第二下不要落在剛跳出的「開始練習」
   if (go && !e.ctrlKey && !e.metaKey && !e.shiftKey) { e.preventDefault(); zoomGo(go.getAttribute('href')); return; }
   const x = e.target.closest('.exam-btn');
   if (x && !x.disabled) { location.hash = 'exam' + x.dataset.exam; window.scrollTo(0, 0); return; }
@@ -790,12 +792,20 @@ document.addEventListener('click', e => {
   const v = e.target.closest('[data-view]');
   if (v) { VIEW = v.dataset.view; try { localStorage.setItem(VIEW_KEY, VIEW); } catch (err) {} route(); return; }
   const isl = e.target.closest('.isl');
-  if (isl) { selectIsland(isl.dataset.isl); return; }
+  if (isl) { enterIsland(isl.dataset.isl); return; }
   if (e.target.closest('[data-close]')) { selectIsland(''); return; }
 });
 /* 點島嶼：顯示該科的練習卡片（再按「開始練習」才進入，避免誤按） */
+/* 點島嶼：已開放的科目直接進入（鏡頭拉近後換頁）；還沒開放的才跳出卡片顯示「即將推出」 */
+function enterIsland(id) {
+  const p = pagesOf(CUR).find(x => x.subject === id), s = subj(id);
+  if (!p || p.status !== 'ready') { selectIsland(id); return; }
+  SEL = id; document.querySelectorAll('.isl').forEach(g => g.classList.toggle('sel', g.dataset.isl === id));
+  zoomGo(encodeURI((s.dir || '') + p.file) + (s.part ? '#' + s.part : ''));
+}
+let selAt = 0;
 function selectIsland(id) {
-  SEL = id;
+  SEL = id; selAt = Date.now();
   document.querySelectorAll('.isl').forEach(g => g.classList.toggle('sel', g.dataset.isl === id));
   const panel = document.getElementById('islpanel');
   if (!panel) return;
@@ -805,7 +815,7 @@ function selectIsland(id) {
 }
 document.addEventListener('keydown', e => {
   const isl = e.target.closest && e.target.closest('.isl');
-  if (isl && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); selectIsland(isl.dataset.isl); }
+  if (isl && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); enterIsland(isl.dataset.isl); }
   if (e.key === 'Escape' && SEL) selectIsland('');
 });
 /* 視窗寬窄改變（手機轉向）時換成對應的地圖排列 */

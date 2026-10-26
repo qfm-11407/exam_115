@@ -1653,11 +1653,14 @@ body{padding-bottom:64px}
         <div class="pm-bd-bar"><i style="width:${pct}%"></i></div>
         ${ex.badge ? `<div class="pm-bd-badge${ex.badge.got ? ' got' : ''}">🎖️ ${esc(ex.badge.name)}　${ex.badge.got ? '已獲得！' : esc(ex.badge.need || '全部單元拿滿 ★ 就能獲得')}</div>` : ''}
         <ol class="pm-bd-list">${tiles.map((t, i) => `<li><button type="button" data-bt="${i}" class="${info.st[i].ok ? 'ok' : ''}${i === info.next ? ' nx' : ''}"><span class="pm-bd-no">${String(i + 1).padStart(2, '0')}</span><span class="pm-bd-nm">${t.locked ? '🔒 ' : ''}${esc(t.name)}</span><span class="pm-bd-st">${info.st[i].b ? '★'.repeat(info.st[i].a) + '☆'.repeat(Math.max(0, info.st[i].b - info.st[i].a)) : info.st[i].ok ? '✔' : '—'}</span></button></li>`).join('')}</ol>
+        ${(() => { const tools = []; tiles.forEach((t, i) => (t.acts || []).forEach((a, k) => { if (a.ghost) tools.push(`<button type="button" class="ghost" data-tool="${i}:${k}">${esc(a.label)}・${esc(t.name.replace(/^\S+\s/, ''))}</button>`); }));
+          return tools.length ? `<div class="pm-bd-tools"><span>老師工具：</span>${tools.join('')}</div>` : ''; })()}
         <div class="pm-dt-acts">${nx ? `<button type="button" data-go-next>${allDone ? '▶ 再挑戰最弱的一站：' : '▶ 繼續下一站：'}${esc(nx.name)}</button>` : ''}</div></div>`;
     panel.hidden = false; panel.scrollTop = 0;
     if (!keep) { const f = panel.querySelector('[data-go-next], [data-bt]'); if (f) f.focus({ preventScroll: true }); try { panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {} }
   }
   function openBuilding(sea, t, keep) {
+    if (!keep) panelOpenedAt = Date.now();
     const tiles = sea._tiles, tl = tiles && tiles[t], panel = sea.querySelector('.pm-panel'); if (!tl || !panel) return;
     sea._sel = t; sea.querySelectorAll('.pm-bld').forEach(g => g.classList.toggle('sel', +g.dataset.t === t));
     panel._tiles = tiles; panel.classList.remove('pm-dock');
@@ -1682,7 +1685,7 @@ body{padding-bottom:64px}
     if (host) host.remove();
     host = document.createElement('div'); host.className = 'pe-map'; host.dataset.pd = cfg.key; host.dataset.sig = sig;
     const lm = cfg.landmark ? cfg.landmark() : ['pavilion', '#3b5bdb'];
-    host.innerHTML = `<div class="pe-map-bar"><span class="pm-tip">${view === 'map' ? '🏙️ ' + esc(title || '街區') + '：點建築查看練習再出發' : ''}</span>
+    host.innerHTML = `<div class="pe-map-bar"><span class="pm-tip">${view === 'map' ? '🏙️ ' + esc(title || '街區') + '：點建築直接開始練習' : ''}</span>
       <span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🏙️ 街區</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div>` +
       (view === 'map' ? `<div class="pm-sea pm-street">${streetSVG(tiles, lm[0], lm[1] || (tiles[0] || {}).color, host._sel)}<div class="pm-panel" hidden></div></div>` : '');
     const sea = host.querySelector('.pm-sea'); if (sea) { setTimeout(() => arrive(sea.querySelector('svg')), 0); sea._tiles = tiles; sea._title = (title || '').replace(/\s*街區$/, ''); sea._lc = lm[1] || (tiles[0] || {}).color; sea._boardEx = cfg.board; }
@@ -1746,6 +1749,10 @@ body{padding-bottom:64px}
   .pm-bd-list button:hover,.pm-bd-list button:focus-visible{background:#eef2ff; outline:none} .pm-bd-list button.nx{box-shadow:inset 0 0 0 2px var(--pmc,#3b5bdb)}
   .pm-bd-no{font-weight:800; color:var(--pmc,#3b5bdb); font-size:13px} .pm-bd-nm{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap} .pm-bd-st{color:#f59f00; letter-spacing:1px; font-size:13px; white-space:nowrap}
   .pm-bd-list button.ok .pm-bd-nm::after{content:' ✔'; color:#2b8a3e; font-weight:800}
+  .pm-toast{position:absolute; left:50%; top:16px; transform:translate(-50%,-8px); z-index:8; background:#1f2433; color:#fff; font-weight:700; font-size:15px; padding:10px 16px; border-radius:14px; max-width:calc(100% - 40px); box-shadow:0 6px 18px rgba(0,0,0,.25); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s}
+  .pm-toast.on{opacity:1; transform:translate(-50%,0)}
+  .pm-bd-tools{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:10px; font-size:13px; color:#667085}
+  .pm-bd-tools button{all:unset; cursor:pointer; padding:4px 10px; border-radius:99px; box-shadow:inset 0 0 0 1px #d0d5dd; font-size:13px; color:#475467; font-family:inherit}
   .pm-bp .pm-dt-acts{justify-content:flex-start; margin-top:12px} .pm-bp .pm-dt-acts button{padding:9px 18px; font-size:15px}
   @media print{.pe-map{display:none}}`;
   function addCSS() { if (document.getElementById('pe115-map-css')) return; const st = document.createElement('style'); st.id = 'pe115-map-css'; st.textContent = css; document.head.appendChild(st); }
@@ -1767,14 +1774,14 @@ body{padding-bottom:64px}
     if (!els.length) { if (box_) box_.remove(); return; }
     const view = getView(), mode = window.innerWidth < 700 ? 't' : 'w';
     const items = els.map((el, i) => ({ el, name: (cfg.name(el, i) || '').trim(), sub: (cfg.sub ? cfg.sub(el, i) : '') || '', kind: cfg.kind(el, i), color: toHex(cfg.color ? cfg.color(el, i) : '#3b5bdb'),
-      locked: cfg.locked ? !!cfg.locked(el, i) : false, apart: cfg.apart ? !!cfg.apart(el, i) : false }));
+      locked: cfg.locked ? !!cfg.locked(el, i) : false, apart: cfg.apart ? !!cfg.apart(el, i) : false, lockMsg: cfg.lockMsg ? cfg.lockMsg(el, i) : '' }));
     const sig = mapSig(cfg, items);
     resolve(cfg.hide || cfg.anchor).forEach(h => { if (!h.closest('.pe-map')) h.style.display = view === 'map' ? 'none' : ''; });
     if (box_ && box_.dataset.sig === sig && box_.nextElementSibling === anchor) { box_._items = items; return; }
     if (box_) box_.remove();
     box_ = document.createElement('div'); box_.className = 'pe-map'; box_.dataset.pm = cfg.key; box_.dataset.sig = sig; box_._items = items; box_._cfg = cfg;
     const sel = SEL[cfg.key];
-    box_.innerHTML = `<div class="pe-map-bar"><span class="pm-tip">${view === 'map' ? '🗺️ 點選島嶼，查看內容後再出發' : ''}</span>
+    box_.innerHTML = `<div class="pe-map-bar"><span class="pm-tip">${view === 'map' ? '🗺️ 點島嶼直接出發' : ''}</span>
       <span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🗺️ 地圖</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div>` +
       (view === 'map' ? `<div class="pm-sea">${mapSVG(cfg, items, sel)}<div class="pm-panel" hidden></div></div>` : '');
     anchor.parentNode.insertBefore(box_, anchor);
@@ -1783,12 +1790,41 @@ body{padding-bottom:64px}
     if (view === 'map' && dr != null && items[dr] && cfg.tiles) openPanel(box_, dr, true);
     else if (view === 'map' && sel != null && items[sel]) openPanel(box_, sel, true);
   }
+  let panelOpenedAt = 0;
+  /* 統一操作規則：點了就進入。未解鎖的只跳出一句解鎖條件 */
+  function toast(host, msg) {
+    if (!host) return; let t = host.querySelector('.pm-toast'); if (!t) { t = document.createElement('div'); t.className = 'pm-toast'; t.setAttribute('role', 'status'); host.appendChild(t); }
+    t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2800);
+  }
+  const starsIn = s => ((String(s || '').match(/★/g)) || []).length;
+  function pickAct(tile) {   // 有多段（例：數學上／下）時，自動從還沒拿到 ★ 的那段開始；都過了就練星星最少的
+    if (tile.go) return tile.go;
+    const acts = (tile.acts || []).filter(a => a.el && !a.ghost); if (!acts.length) return null;
+    const none = acts.find(a => starsIn(a.label) === 0); if (none) return none.el;
+    return acts.reduce((m, a) => starsIn(a.label) < starsIn(m.label) ? a : m, acts[0]).el;
+  }
+  function enterTile(sea, t) {
+    const tl = sea && sea._tiles && sea._tiles[t]; if (!tl) return;
+    const el = pickAct(tl);
+    if (tl.locked) { if (el && !el.disabled) el.click(); else toast(sea, `🔒 ${tl.name}：${tl.lockMsg || tl.sub || '尚未解鎖'}`); return; }
+    if (!el) return;
+    sea.querySelectorAll('.pm-bld').forEach(g => g.classList.toggle('sel', +g.dataset.t === t));
+    zoomInto(sea.querySelector('svg'), sea.querySelector(`.pm-bld[data-t="${t}"]`), () => el.click());
+  }
   function openPanel(box_, i, keep) {
+    if (!keep) panelOpenedAt = Date.now();
     const items = box_._items, panel = box_.querySelector('.pm-panel'); if (!panel) return;
     SEL[box_.dataset.pm] = i;
     box_.querySelectorAll('.pm-isl').forEach(g => g.classList.toggle('sel', +g.dataset.i === i));
     const it = items[i], cfg = box_._cfg;
     const tiles = cfg && cfg.tiles ? cfg.tiles(it.el, i) : null;
+    if (!keep && (!tiles || tiles.length === 1)) {   // 只有一個入口的島：直接進入
+      const sea0 = box_.querySelector('.pm-sea'), g0 = box_.querySelector(`.pm-isl[data-i="${i}"]`);
+      const t0 = tiles && tiles[0], el = t0 ? pickAct(t0) : it.el;
+      if ((t0 && t0.locked) || it.locked) { if (el && !el.disabled && !(t0 && !t0.acts.length)) el.click(); else toast(sea0, `🔒 ${it.name}：${(t0 && (t0.lockMsg || t0.sub)) || it.lockMsg || it.sub || '尚未解鎖'}`); SEL[box_.dataset.pm] = null; g0 && g0.classList.remove('sel'); return; }
+      if (el) zoomInto(sea0 && sea0.querySelector('svg'), g0, () => el.click());
+      SEL[box_.dataset.pm] = null; return;
+    }
     if (tiles && tiles.length) {   // 有多個小單元的島：放大進入該島的街區平面圖
       DRILL[box_.dataset.pm] = i; SEL[box_.dataset.pm] = null; try { box_.dataset.sig = mapSig(cfg, items); } catch (e) {}
       const sea = box_.querySelector('.pm-sea'); if (!sea) return;
@@ -1797,7 +1833,7 @@ body{padding-bottom:64px}
       if (!keep && !sea._zooming) { const svg0 = sea.querySelector('svg'), g0 = box_.querySelector(`.pm-isl[data-i="${i}"]`);
         if (svg0 && g0 && motionOK()) { sea._zooming = true; zoomInto(svg0, g0, () => { sea._zooming = false; openPanel(box_, i, 'z'); }); return; } }
       sea.innerHTML = streetSVG(tiles, it.kind, it.color, null) + `<button type="button" class="pm-back">← 回${esc(isle)}全圖</button><div class="pm-panel" hidden></div>`;
-      const tip = box_.querySelector('.pm-tip'); if (tip) tip.textContent = `🏙️ ${isle} › ${it.name} 街區：點建築查看練習再出發`;
+      const tip = box_.querySelector('.pm-tip'); if (tip) tip.textContent = `🏙️ ${isle} › ${it.name} 街區：點建築直接開始練習`;
       if (keep === 'z' || (keep && PENDING)) arrive(sea.querySelector('svg'));
       requestAnimationFrame(() => { try { crumbTick(); } catch (e) {} });
       if (!keep) { try { sea.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {} const g = sea.querySelector('.pm-bld'); if (g) g.focus({ preventScroll: true }); }
@@ -1810,6 +1846,7 @@ body{padding-bottom:64px}
     panel.innerHTML = `<span class="pm-cap">${String(i + 1).padStart(2, '0')}　${esc(it.name)}</span><button type="button" class="pm-x" aria-label="關閉">✕</button>`;
     panel.appendChild(cl); panel.hidden = false; panel.scrollTop = 0;
     cl.addEventListener('click', ev => {
+      if (Date.now() - panelOpenedAt < 220) { ev.preventDefault(); ev.stopPropagation(); return; }
       const act = ev.target.closest('button, a, [data-pm-act], [role="button"], [data-go], [data-filter], [data-play], [data-level]');
       ev.preventDefault(); ev.stopPropagation();
       if (!act || !cl.contains(act)) return;
@@ -1826,6 +1863,7 @@ body{padding-bottom:64px}
 
   document.addEventListener('click', e => {
     const box_ = e.target.closest && e.target.closest('.pe-map'); if (!box_) return;
+    if (e.target.closest('.pm-panel') && Date.now() - panelOpenedAt < 220) { e.preventDefault(); e.stopPropagation(); return; }   // 防止連點兩下時第二下落在剛跳出的按鈕上
     const dh = e.target.closest('.pm-panel') || e.target.closest('.pm-district'); if (dh && dh._tiles && districtClick(e, dh)) return;
     const v = e.target.closest('[data-pmv]');
     if (v) { setView(v.dataset.pmv); SEL[box_.dataset.pm] = null; DRILL[box_.dataset.pm] = null; document.querySelectorAll('.pe-map').forEach(b => b.dataset.sig = ''); refresh(); return; }
@@ -1833,20 +1871,21 @@ body{padding-bottom:64px}
     const sea = e.target.closest('.pm-street');
     if (e.target.closest('.pm-x')) { if (sea) { const p = sea.querySelector('.pm-panel'); p.hidden = true; p.innerHTML = ''; sea._sel = null; sea.querySelectorAll('.pm-bld.sel').forEach(g => g.classList.remove('sel')); } else closePanel(box_); return; }
     if (sea) { const pb = e.target.closest('.pm-panel'); const bd = pb && pb._board;
-      if (bd && e.target.closest('[data-go-next]')) { const t = sea._tiles[bd.next], a = t && t.acts && t.acts[0]; if (a && a.el) { pb.hidden = true; sea._sel = null; zoomInto(sea.querySelector('svg'), sea.querySelector(`.pm-bld[data-t="${bd.next}"]`), () => a.el.click()); } return; }
-      const bt = bd && e.target.closest('[data-bt]'); if (bt) { openBuilding(sea, +bt.dataset.bt); return; }
+      if (bd && e.target.closest('[data-go-next]')) { pb.hidden = true; sea._sel = null; enterTile(sea, bd.next); return; }
+      const bt = bd && e.target.closest('[data-bt]'); if (bt) { pb.hidden = true; sea._sel = null; enterTile(sea, +bt.dataset.bt); return; }
+      const tl0 = bd && e.target.closest('[data-tool]'); if (tl0) { const [ti, ai] = tl0.dataset.tool.split(':').map(Number), a = (sea._tiles[ti].acts || [])[ai]; if (a && a.el) { pb.hidden = true; a.el.click(); } return; }
       if (e.target.closest('.pm-plaza')) { openBoard(sea); return; } }
-    const bld = e.target.closest('.pm-bld'); if (bld && sea) { openBuilding(sea, +bld.dataset.t); return; }
+    const bld = e.target.closest('.pm-bld'); if (bld && sea) { enterTile(sea, +bld.dataset.t); return; }
     const isl = e.target.closest('.pm-isl'); if (isl) openPanel(box_, +isl.dataset.i);
   });
   document.addEventListener('keydown', e => {
     const isl = e.target.closest && e.target.closest('.pm-isl');
-    if (isl && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (isl.classList.contains('pm-plaza')) openBoard(isl.closest('.pm-street')); else if (isl.classList.contains('pm-bld')) openBuilding(isl.closest('.pm-street'), +isl.dataset.t); else openPanel(isl.closest('.pe-map'), +isl.dataset.i); }
+    if (isl && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (isl.classList.contains('pm-plaza')) openBoard(isl.closest('.pm-street')); else if (isl.classList.contains('pm-bld')) enterTile(isl.closest('.pm-street'), +isl.dataset.t); else openPanel(isl.closest('.pe-map'), +isl.dataset.i); }
     if (e.key === 'Escape') document.querySelectorAll('.pe-map').forEach(closePanel);
   });
   let queued = false;
   function refresh() { queued = false; CONFIGS.forEach(c => { try { build(c); } catch (err) { console.warn('PE115Map', c.key, err); } }); DCONFIGS.forEach(c => { try { buildDistrict(c); } catch (err) { console.warn('PE115Map.district', c.key, err); } });
-    try { tidyTick(); } catch (err) {} try { crumbTick(); } catch (err) {} }
+    try { tidyTick(); } catch (err) {} try { crumbTick(); } catch (err) {} try { headTick(); } catch (err) { console.warn('PE115Map.head', err); } }
   const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(refresh); } };
   let lastMode = window.innerWidth < 700;
   window.addEventListener('resize', () => { const m = window.innerWidth < 700; if (m !== lastMode) { lastMode = m; schedule(); } });
@@ -2000,7 +2039,47 @@ body{padding-bottom:64px}
       const d = document.createElement('details'); d.className = 'pm-rules'; el = grp[0];
       d.innerHTML = '<summary>📜 闖關規則（星等、解鎖條件）</summary>'; el.setAttribute('data-pm-r', ''); el.parentNode.insertBefore(d, el); grp.forEach(x => d.appendChild(x)); }); });
   }
-  window.PE115Map = { crumbs(fn) { CRUMBS = fn; schedule(); }, rules(sels) { RULES = RULES.concat(sels); schedule(); },
+
+  /* ===================================================================
+     島嶼名牌（PE115Map.head）：取代各科首頁原本的大標題區（標題、範圍、特色、練習等級），改成以地圖為主的精簡名牌
+     cfg：{ hero: 要隱藏的原標題區（選擇器或函式）, name, sub, kind, color, range(), chips() }
+     原標題區仍保留在原始碼中（隱藏），練習等級仍由 pe115-level 元件寫入，名牌讀取後精簡顯示
+     =================================================================== */
+  let HEADS = [];
+  const headCSS = `.pm-head{display:flex; align-items:center; gap:14px; margin:10px 0 12px; padding:10px 16px 10px 10px; border-radius:20px; box-sizing:border-box;
+      background:linear-gradient(100deg,#8fd6df,#cdeef1 55%,#eef9fa); box-shadow:0 4px 16px rgba(20,60,90,.12); font-family:'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif; text-align:left}
+    .pm-head svg{width:96px; height:72px; flex:none; display:block}
+    .pm-head-txt{flex:1; min-width:0}
+    .pm-head-name{margin:0; font-size:24px; line-height:1.25; font-weight:900; color:#1f2433; letter-spacing:.02em}
+    .pm-head-name small{font-size:14px; font-weight:800; color:var(--pmc,#3b5bdb); margin-left:8px; background:#fff; padding:2px 10px; border-radius:99px; vertical-align:3px}
+    .pm-head-range{font-size:14px; color:#3d5560; margin-top:3px; line-height:1.45}
+    .pm-head-chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
+    .pm-chip{font-size:13px; font-weight:800; color:#344054; background:rgba(255,255,255,.85); padding:3px 10px; border-radius:99px; white-space:nowrap}
+    .pm-chip.lv{color:#b35c00}
+    @media (max-width:560px){ .pm-head{gap:8px; padding:8px 10px 8px 6px} .pm-head svg{width:72px; height:54px} .pm-head-name{font-size:20px} .pm-head-range{font-size:13px} }`;
+  function headTick() {
+    HEADS.forEach(cfg => {
+      const heroes = resolve(cfg.hero); const hero = heroes[0];
+      let el = document.querySelector(`.pm-head[data-ph="${cfg.key || 'head'}"]`);
+      if (!hero || !hero.isConnected) { if (el && !(cfg.keep && cfg.keep())) el.remove(); return; }
+      if (!document.getElementById('pe115-head-css')) { const st = document.createElement('style'); st.id = 'pe115-head-css'; st.textContent = headCSS; document.head.appendChild(st); }
+      heroes.forEach(h => { if (h.style.display !== 'none') h.style.display = 'none'; });
+      const lvEl = cfg.level ? cfg.level() : (hero.querySelector ? hero.querySelector('.pe-level') : null) || document.querySelector('.pe-level');
+      const lv = ((lvEl && lvEl.textContent) || '').replace(/（[^）]*）/g, '').replace(/\(.*?\)/g, '').trim();
+      const range = (cfg.range ? cfg.range() : '') || '', chips = (cfg.chips ? cfg.chips() : []).filter(Boolean).map(t => t.replace(/\s*\/\s*/g, ' / ').replace(/(\d)([A-Za-z])/g, '$1 $2').replace(/([\u4e00-\u9fff])(\d)/g, '$1 $2'));
+      const c = toHex(typeof cfg.color === 'function' ? cfg.color() : cfg.color || '#3b5bdb'), kind = typeof cfg.kind === 'function' ? cfg.kind() : cfg.kind;
+      const name = typeof cfg.name === 'function' ? cfg.name() : cfg.name, sub = typeof cfg.sub === 'function' ? cfg.sub() : (cfg.sub || '');
+      const sig = [name, sub, kind, c, range, lv, chips.join('|')].join('¦');
+      if (!el) { el = document.createElement('div'); el.className = 'pm-head'; el.dataset.ph = cfg.key || 'head'; }
+      if (el.nextElementSibling !== heroes[0] || !el.isConnected) heroes[0].parentNode.insertBefore(el, heroes[0]);
+      if (el.dataset.sig === sig) return; el.dataset.sig = sig; el.style.setProperty('--pmc', c);
+      el.innerHTML = `<svg viewBox="-118 -150 236 200" aria-hidden="true">${islandSVG(kind, c, 82, false).replace(/<ellipse class="pm-ring"[^>]*\/>/, '')}</svg>
+        <div class="pm-head-txt"><h1 class="pm-head-name">${esc(name)}${sub ? `<small>${esc(sub)}</small>` : ''}</h1>
+        ${range ? `<div class="pm-head-range">${esc(range)}</div>` : ''}
+        <div class="pm-head-chips">${lv ? `<span class="pm-chip lv">${esc(lv)}</span>` : ''}${chips.map(t => `<span class="pm-chip">${esc(t)}</span>`).join('')}</div></div>`;
+    });
+  }
+  window.PE115Map = { head(cfg) { HEADS.push(cfg); schedule(); }, crumbs(fn) { CRUMBS = fn; schedule(); }, rules(sels) { RULES = RULES.concat(sels); schedule(); },
     drillTo(key, pred) { const box_ = document.querySelector(`.pe-map[data-pm="${key}"]`); let idx = null;
       if (pred && box_ && box_._items) { idx = box_._items.findIndex(it => pred(it.name)); if (idx < 0) idx = null; }
       DRILL[key] = idx; SEL[key] = null; if (box_) box_.dataset.sig = ''; schedule(); },
@@ -2056,6 +2135,10 @@ PE115Map.crumbs(() => {
     const L_ = Q.L; return [isle, { label: `${L_.title} 街區`, go: () => showLesson(L_.id) }, { label: (Q.U ? Q.U.title : '練習') + (done ? '・結果' : '') }]; }
   return [isle];
 });
+/* 島嶼名牌：取代首頁大標題區（原標題區隱藏但保留） */
+PE115Map.head({ hero: '#app > .hero', name: '英文島', sub: '第二次段考', kind: 'clocktower', color: '#7048e8',
+  range: () => ([...document.querySelectorAll('#app > .hero .sub')].find(x => /範圍/.test(x.textContent)) || {}).textContent || '',
+  chips: () => [...document.querySelectorAll('#app > .hero .stat')].map(x => x.textContent.replace(/\s+/g, ' ').trim()) });
 </script>
 </body>
 </html>
