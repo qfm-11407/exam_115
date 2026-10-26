@@ -140,14 +140,19 @@ window.PE115 = (function () {
 
         <div class="p-5 md:p-10">
 
-            <div id="home-screen" class="text-center fade-in">
+            <!-- 共用頁首：標題、範圍、特色、練習等級、怎麼用。首頁（選科目）與課次頁都顯示，入口網站用 #civics 等直接開到課次頁時也看得到 -->
+            <div id="pe-social-head" class="text-center">
                 <div class="inline-block p-4 bg-orange-50 rounded-full mb-4 text-5xl">🌏</div>
                 <h1 class="text-3xl md:text-4xl font-black text-gray-800 mb-2">八年級社會 第二次段考強化練習</h1>
                 <p class="text-lg md:text-xl font-bold text-orange-700 tracking-wide mb-2">範圍：公民・歷史・地理 第 3～4 課</p>
                 <span class="inline-block px-4 py-1 rounded-full bg-orange-100 text-orange-700 font-bold text-sm">本次開放：公民、歷史、地理練習</span>
-                <p class="text-gray-500 mb-4 mt-4 max-w-lg mx-auto leading-relaxed">特色：互動式測驗系統｜每課有 📖 重點卡、⚡ 名詞速答、🎯 特色關卡、✍️ 課後練習四個小單元，三科各課達 ★★★ 解鎖模擬卷。<br>請先選擇科目，再選擇課次。</p>
+                <p class="text-gray-500 mb-4 mt-4 max-w-lg mx-auto leading-relaxed">特色：互動式測驗系統｜每課有 📖 重點卡、⚡ 名詞速答、🎯 特色關卡、✍️ 課後練習四個小單元，三科各課達 ★★★ 解鎖模擬卷。</p>
                 <p class="text-gray-700 mb-4 pe-level"></p>
                 <div class="max-w-3xl mx-auto mb-8"><details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先翻該課的「📖 重點卡」，再用「⚡ 名詞速答」檢查記住了沒。</li><li><b>✍️ 課後複習：</b>上完一課，做該科的特色關卡（地理「🗺️ 地圖偵探」、歷史「⏳ 時光任務」、公民「🗂️ 情境分類」）和「✍️ 課後練習」。</li><li><b>🎯 自主練習：</b>答錯的題目按「錯題重練」，把速答、特色關卡、課後練習都練到 ★★★（80 分）以上。</li><li><b>🏆 段考衝刺：</b>同一科兩課的小單元都達 ★★★，就解鎖「📝 第二次段考模擬卷」，三科各做一份。</li></ul></details></div>
+            </div>
+
+            <div id="home-screen" class="text-center fade-in">
+                <p class="text-gray-600 font-bold mb-4">請先選擇科目，再選擇課次。</p>
                 <div id="subject-list" class="grid grid-cols-1 md:grid-cols-3 gap-5"></div>
             </div>
 
@@ -160,9 +165,8 @@ window.PE115 = (function () {
                             <p class="text-sm text-gray-500 mt-1">請選擇要練習的課次</p>
                         </div>
                     </div>
-                    <button onclick="goHome()" class="text-gray-500 hover:text-gray-800 flex items-center text-sm font-medium bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl transition-colors">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                        回首頁
+                    <button onclick="goHub()" class="text-gray-500 hover:text-gray-800 flex items-center text-sm font-medium bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl transition-colors">
+                        🏠 段考入口
                     </button>
                 </div>
                 <div id="chapter-list" class="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto"></div>
@@ -285,7 +289,7 @@ window.PE115 = (function () {
                     </button>
                     <button onclick="restartChapter()" class="px-8 py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-xl transition-all shadow-md">從頭再測一次</button>
                     <button onclick="goBackToChapters()" class="px-8 py-3.5 border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white font-medium rounded-xl transition-all">選其他課次</button>
-                    <button onclick="goHome()" class="px-8 py-3.5 border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white font-medium rounded-xl transition-all">回首頁</button>
+                    <button onclick="goHub()" class="px-8 py-3.5 border-2 border-gray-200 hover:border-gray-300 text-gray-600 bg-white font-medium rounded-xl transition-all">🏠 段考入口</button>
                 </div>
             </div>
         </div>
@@ -1713,6 +1717,7 @@ window.PE115 = (function () {
 
         function switchScreen(name) {
             ['home-screen', 'chapter-screen', 'quiz-screen', 'cards-screen', 'result-screen'].forEach(id => $(id).classList.add('hidden'));
+            const hd = $('pe-social-head'); if (hd) hd.style.display = (name === 'home' || name === 'chapter') ? '' : 'none';
             $(name + '-screen').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -1826,6 +1831,9 @@ window.PE115 = (function () {
 
         function goBackToChapters() { stopTimer(); showChapters(currentSubjectId); }
 
+        /* 入口網站已把社會分成公民／歷史／地理三座島，課次頁與結果頁直接回段考入口，不再經過本頁的「選科目」首頁
+           （直接打開本頁、網址沒有 #civics 等時，仍會顯示選科目首頁，方便老師檢查） */
+        function goHub() { stopTimer(); const a = document.getElementById('pe115-home'); location.href = (a && a.href) || 'periodicexam_115.html'; }
         function goHome() { stopTimer(); $('header-bar').className = 'h-2 bg-orange-600 w-full absolute top-0 left-0'; renderHome(); switchScreen('home'); try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
 
         function startQuiz(chapterIndex, retryData = null) {
