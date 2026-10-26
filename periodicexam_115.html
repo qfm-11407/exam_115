@@ -20,6 +20,7 @@
      「八年級XX 第N次段考強化練習」，規格見專案文件「網站規格/段考強化練習_頁面標題與說明規格.md」。
   7. 一次只開放一次段考：EXAMS 裡標 current: true 的那一次，入口一打開就是它的島嶼地圖（不顯示其他次段考）。
      換下一次段考時，把 current: true 移到下一筆即可。練習頁的「段考入口」按鈕帶 #exam1、#exam2 也一律顯示目前這次。
+  9. 「❓ 怎麼玩」是整個系列唯一的完整說明（id="guide"），各科頁的「📌 怎麼用」預設收合；改玩法時記得一起改這裡。
   8. 段考頁有兩種顯示：🗺️ 島嶼地圖（預設）與 📋 清單，學生的選擇記在 localStorage「pe115:view」。
      島嶼地圖全部用 SVG 程式繪製：島的位置改 MAP_LAYOUT（wide＝電腦／投影，tall＝手機直式），
      群島與橋改 MAP_GROUPS、MAP_BRIDGES，島上建築在 LANDMARK。點島嶼先出現練習卡片，按「開始練習」才進入。
@@ -187,6 +188,16 @@ h1{margin:4px 0 6px; font-size:clamp(1.6rem,4.2vw,2.5rem); line-height:1.25}
   header.top{padding:8px 0}
 }
 
+
+/* ---------- ❓ 怎麼玩 ---------- */
+.guide-btn{border:1px solid var(--line); background:var(--card); color:var(--ink); padding:8px 14px; border-radius:10px; cursor:pointer; font-weight:700}
+.guide-btn:hover{border-color:var(--accent)}
+.guide{position:fixed; inset:0; z-index:50; background:rgba(15,20,35,.5); display:flex; align-items:center; justify-content:center; padding:16px}
+.guide[hidden]{display:none}
+.guide-card{position:relative; background:var(--card); color:var(--ink); border-radius:20px; padding:24px 24px 18px; width:min(680px,100%); max-height:calc(100vh - 32px); overflow:auto; box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.guide-card h2{margin:0 36px 6px 0; font-size:1.35rem} .guide-card h3{margin:16px 0 4px; font-size:1.05rem}
+.guide-lead{color:var(--muted); margin:0 0 8px} .guide-card ol,.guide-card ul{margin:6px 0; padding-left:1.4em} .guide-card li{margin:4px 0}
+.guide-x{position:absolute; top:12px; right:12px; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; font-size:1rem}
 footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:center}
 
 @media (max-width:1020px){
@@ -213,7 +224,37 @@ footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:cent
 
   <main id="main"></main>
 
-  <footer>適用：課前預習・課後複習・自主練習・段考衝刺｜完成段考衝刺就會自動評定練習等級<br>練習等級：段考衝刺答對 60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★｜紀錄只存在這台裝置的瀏覽器</footer>
+  <footer>練習等級：段考衝刺答對 60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★｜紀錄只存在這台裝置的瀏覽器</footer>
+
+  <!-- ❓ 怎麼玩：整個系列的完整說明只放在這裡，各科頁面的「📌 怎麼用」預設收合 -->
+  <div class="guide" id="guide" hidden role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+    <div class="guide-card">
+      <button type="button" class="guide-x" data-guide-close aria-label="關閉">✕</button>
+      <h2 id="guideTitle">❓ 怎麼玩：一一五上學期段考強化練習</h2>
+      <p class="guide-lead">適用：課前預習・課後複習・自主練習・段考衝刺。每一科都是一座島，由大到小一路走進去練習。</p>
+      <ol class="guide-steps">
+        <li><b>🌏 全景</b>：就是這張群島地圖。點一座島 → 看該科卡片 → 按「開始練習」。</li>
+        <li><b>🏝️ 科目島</b>：各科首頁，每課（數學是每節）一座島，依序用木橋相連。</li>
+        <li><b>🏙️ 街區</b>：一課的街道平面圖，小單元是沿街的建築，依 01、02… 前進；點建築看題數與星星，再按「出發 →」。</li>
+        <li><b>📋 本課看板</b>：街尾的看板顯示本課星星、完成幾站與徽章，按「▶ 繼續下一站」就從還沒完成的單元接著練。</li>
+        <li><b>✏️ 建築（作答）</b>：題目卡浮在海面上，下方小船依進度航向這座島；右下「🌫️ 專注模式」可以關掉背景。</li>
+      </ol>
+      <h3>📍 迷路了怎麼辦？</h3>
+      <p>每一頁左下角都有<b>位置列</b>，例如「🌏 全景 › 國文島 › 第四課 愛蓮說 街區 › 注釋」。點其中任何一段，就回到那一層。</p>
+      <h3>⭐ 星星與練習等級</h3>
+      <ul>
+        <li>每個小單元依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★，只記最佳成績。</li>
+        <li>各科的<b>段考衝刺</b>（模擬段考、魔王關、段考模擬、模擬卷、成語一關 50 題）成績就是該科的<b>練習等級</b>，會顯示在這張地圖的島名旁。</li>
+        <li>答錯的題目可以「錯題重練」，重練不影響星星與練習等級。</li>
+        <li>各科模擬段考的解鎖條件不同，寫在各科頁面的「📜 闖關規則」裡。</li>
+      </ul>
+      <h3>🛠️ 小工具</h3>
+      <ul>
+        <li>地圖右上角可以切換「🗺️ 地圖／📋 清單」，清單就是一般的卡片排列。</li>
+        <li>紀錄只存在這台裝置的瀏覽器；換電腦或清除瀏覽紀錄，星星會重新計算。</li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -386,6 +427,7 @@ function renderExam(n) {
         <button type="button" data-view="map" aria-pressed="${VIEW === 'map'}">🗺️ 地圖</button>
         <button type="button" data-view="list" aria-pressed="${VIEW === 'list'}">📋 清單</button>
       </div>
+      <button type="button" class="guide-btn" data-guide>❓ 怎麼玩</button>
       ${VIEW === 'list' ? `<div class="exam-prog">${progress(list)}</div>` : ''}`;
   const body = VIEW === 'map'
     ? `<div class="map-wrap" id="mapwrap">${islandMap(e, list)}
@@ -715,7 +757,33 @@ function route() {
   renderExam(cur);
 }
 
+/* ❓ 怎麼玩 */
+function openGuide(on) { const g = document.getElementById('guide'); g.hidden = !on; if (on) g.querySelector('.guide-x').focus(); }
+/* 縮放轉場：往科目島前進時鏡頭拉近被選的島；從科目頁回來時拉遠（裝置設定「減少動態效果」時關閉） */
+const motionOK = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+function zoomGo(href) {
+  try { sessionStorage.setItem('pe115:zoom', 'in'); } catch (e) {}
+  const svg = document.querySelector('#mapwrap svg'), g = SEL && document.querySelector(`.isl[data-isl="${SEL}"]`);
+  if (!svg || !g || !motionOK() || !svg.animate) { location.href = href; return; }
+  const r = svg.getBoundingClientRect(), t = g.getBoundingClientRect();
+  svg.style.transformOrigin = `${t.left + t.width / 2 - r.left}px ${t.top + t.height / 2 - r.top}px`;
+  const p = document.getElementById('islpanel'); if (p) p.hidden = true;
+  let gone = false; const go = () => { if (!gone) { gone = true; location.href = href; } };
+  svg.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(2.6)', opacity: 0 }], { duration: 360, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }).onfinish = go;
+  setTimeout(go, 700);
+}
+function arriveHub() {
+  let z = null; try { z = sessionStorage.getItem('pe115:zoom'); if (z === 'out') sessionStorage.removeItem('pe115:zoom'); } catch (e) {}
+  const svg = document.querySelector('#mapwrap svg');
+  if (z === 'out' && svg && svg.animate && motionOK()) svg.animate([{ transform: 'scale(1.5)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], { duration: 420, easing: 'cubic-bezier(.2,.7,.3,1)' });
+}
+window.addEventListener('pageshow', e => { if (e.persisted) { const svg = document.querySelector('#mapwrap svg'); if (svg) { svg.getAnimations && svg.getAnimations().forEach(a => a.cancel()); } } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !document.getElementById('guide').hidden) openGuide(false); });
 document.addEventListener('click', e => {
+  if (e.target.closest('[data-guide]')) { openGuide(true); return; }
+  if (e.target.closest('[data-guide-close]') || e.target.id === 'guide') { openGuide(false); return; }
+  const go = e.target.closest('#islpanel a.go');
+  if (go && !e.ctrlKey && !e.metaKey && !e.shiftKey) { e.preventDefault(); zoomGo(go.getAttribute('href')); return; }
   const x = e.target.closest('.exam-btn');
   if (x && !x.disabled) { location.hash = 'exam' + x.dataset.exam; window.scrollTo(0, 0); return; }
   if (e.target.closest('[data-home]')) { location.hash = ''; window.scrollTo(0, 0); return; }
@@ -748,6 +816,7 @@ window.addEventListener('hashchange', route);
 window.addEventListener('pageshow', route);
 window.addEventListener('storage', e => { if (e.key === LV_KEY) route(); });
 route();
+arriveHub();
 </script>
 </body>
 </html>

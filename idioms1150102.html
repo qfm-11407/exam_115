@@ -942,6 +942,8 @@ body{padding-bottom:64px}
 
 
 
+
+
 <script id="pe115-map">
 /* ===== PE115 島嶼地圖元件（各練習頁共用，內容一字不差；各頁設定寫在 pe115-map-config） =====
    用法：PE115Map.add({ key, anchor, items, hide, name, sub, kind, color, locked, apart })
@@ -1244,7 +1246,7 @@ body{padding-bottom:64px}
     const nm = [...name].length > 13 ? [...name].slice(0, 12).join('') + '…' : name;
     const wNo = 26, W = Math.max(tw(nm, 19), tw(sub, 13)) + wNo + 34, x0 = -W / 2;
     return `<g transform="translate(0,${y})"><rect x="${f1(x0)}" y="-24" width="${f1(W)}" height="50" rx="20" fill="#fff" stroke="rgba(0,0,0,.06)"/>
-      <text x="${f1(x0 + 14)}" y="-2" font-size="14" font-weight="800" fill="${c}">${String(no).padStart(2, '0')}</text>
+      <text x="${f1(x0 + 14)}" y="-2" font-size="14" font-weight="800" fill="${c}">${typeof no === 'number' ? String(no).padStart(2, '0') : no}</text>
       <text x="${f1(x0 + 14 + wNo)}" y="0" font-size="19" font-weight="800" fill="#1f2433">${esc(nm)}</text>
       <text x="${f1(x0 + 14 + wNo)}" y="18" font-size="13" font-weight="700" fill="${starry ? '#e8590c' : '#868e96'}">${esc(sub)}</text></g>`;
   }
@@ -1315,7 +1317,10 @@ body{padding-bottom:64px}
     const b = e.target.closest('[data-t][data-a]'); if (!b || !host._tiles) return false;
     const t = host._tiles[+b.dataset.t], a = t && t.acts && t.acts[+b.dataset.a];
     e.preventDefault(); e.stopPropagation();
-    if (a && a.el) { const box_ = host.closest('.pe-map'); if (box_ && host.classList.contains('pm-panel')) { SEL[box_.dataset.pm] = null; host.hidden = true; const sea = host.closest('.pm-street'); if (sea) sea._sel = null; } a.el.click(); }
+    if (a && a.el) { const box_ = host.closest('.pe-map'); const sea = host.closest('.pm-sea');
+      const tgt = sea && (sea.querySelector(`.pm-bld[data-t="${b.dataset.t}"]`) || sea.querySelector('.pm-isl.sel'));
+      if (box_ && host.classList.contains('pm-panel')) { SEL[box_.dataset.pm] = null; host.hidden = true; if (sea) sea._sel = null; }
+      zoomInto(sea && sea.querySelector('svg'), tgt, () => a.el.click()); }
     return true;
   }
 
@@ -1338,6 +1343,7 @@ body{padding-bottom:64px}
       road: [[l + 70, 372], [r - 70, 372]] };
   }
   function streetSVG(tiles, landmark, lc, sel) {
+    const info = boardInfo(tiles);
     const narrow = window.innerWidth < 700, Lo = streetLayout(tiles.length, narrow), T = 34, c = toHex(lc || '#3b5bdb'), rand = rng(tiles.length * 17 + 3);
     let s = `<svg viewBox="0 0 ${Lo.W} ${Lo.H}" role="img" aria-label="街區平面圖：點選建築查看練習" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif">
       <defs><linearGradient id="pmSea2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd6df"/><stop offset="1" stop-color="#5cb8c9"/></linearGradient>
@@ -1373,9 +1379,18 @@ body{padding-bottom:64px}
     deco.sort((a, b) => a[1] - b[1]).forEach(([x, y], k) => { s += k % 5 === 4 ? `<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="16" ry="7" fill="#f3d9e4"/><circle cx="${f1(x - 5)}" cy="${f1(y - 1)}" r="2.5" fill="#f783ac"/><circle cx="${f1(x + 5)}" cy="${f1(y + 1)}" r="2.5" fill="#fcc419"/>` : k % 3 ? tree(x, y, 0.85, k % 2 ? '#5fa35a' : '#6ab04c') : pine(x, y, 0.85); });
     /* 地標廣場（本課代表建築，不能點） */
     const [px, py] = Lo.plaza;
-    s += `<ellipse cx="${px}" cy="${py + 6}" rx="70" ry="34" fill="${shade(c, 0.78)}" stroke="${shade(c, 0.5)}" stroke-width="2"/>`;
-    s += `<g transform="translate(${px},${py}) scale(.62)" opacity=".95">${(L[landmark] || L.pavilion)(c, false)}</g>`;
-    s += `<g transform="translate(${px},${py + 52})"><rect x="-44" y="-13" width="88" height="24" rx="12" fill="rgba(255,255,255,.85)"/><text y="4" font-size="13" font-weight="800" text-anchor="middle" fill="${shade(c, -0.3)}">地標廣場</text></g>`;
+    /* 本課看板（可點）：廣場上的地標＋公告看板，顯示本課星星與完成站數 */
+    const lab0 = Lo.narrow ? 1.25 : 1;
+    s += `<g class="pm-isl pm-bld pm-plaza${sel === 'board' ? ' sel' : ''}" transform="translate(${px},${py})" tabindex="0" role="button" aria-label="本課看板：已完成 ${info.done} / ${info.total} 站"><g class="pm-lift">
+      <ellipse class="pm-ring" cx="0" cy="6" rx="84" ry="40" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="10 8"/>
+      <ellipse cx="0" cy="6" rx="74" ry="35" fill="${shade(c, 0.78)}" stroke="${shade(c, 0.5)}" stroke-width="2"/>
+      <g transform="translate(-14,-4) scale(.56)">${(L[landmark] || L.pavilion)(c, false)}</g>
+      <g transform="translate(38,4)"><rect x="-2" y="-34" width="4" height="34" fill="#8b5e3c"/><rect x="18" y="-34" width="4" height="34" fill="#8b5e3c"/>
+        <rect x="-8" y="-62" width="36" height="32" rx="3" fill="#fff" stroke="${shade(c, -0.1)}" stroke-width="2.5"/>
+        <text x="10" y="-49" font-size="9" font-weight="900" text-anchor="middle" fill="${shade(c, -0.25)}">看板</text>
+        <text x="10" y="-36" font-size="9" font-weight="800" text-anchor="middle" fill="#f59f00">${info.done}/${info.total}</text></g>
+      <g transform="translate(0,${f1(58 * lab0)}) scale(${lab0})">${labelSVG('★', '本課看板', info.m ? `★ ${info.s} / ${info.m}・已完成 ${info.done}/${info.total}` : `已完成 ${info.done} / ${info.total} 站`, c, 0, info.s > 0)}</g>
+    </g></g>`;
     /* 建築：由後往前畫 */
     const lab = Lo.narrow ? 1.25 : 1;
     tiles.map((t, i) => i).sort((a, b) => Lo.pos[a][1] - Lo.pos[b][1]).forEach(i => { const t = tiles[i], [x, y] = Lo.pos[i], tc = toHex(t.color || c);
@@ -1387,6 +1402,38 @@ body{padding-bottom:64px}
         <g transform="translate(0,${f1(48 * lab)}) scale(${lab})">${labelSVG(i + 1, t.name, t.sub || '', tc, 0, /★/.test(t.sub || '') && /★/.test((t.sub || '').replace(/☆/g, '')))}</g>
       </g></g>`; });
     return s + '</svg>';
+  }
+  /* 本課看板：整理各站（小單元）的星星與完成情況，找出「下一站」 */
+  const lvStars = sc => sc >= 99.95 ? 5 : sc >= 90 ? 4 : sc >= 80 ? 3 : sc >= 70 ? 2 : sc >= 60 ? 1 : 0;
+  function tileStars(t) {
+    if (Array.isArray(t.stars)) return t.stars;
+    const txt = [t.sub || ''].concat((t.acts || []).map(a => a.label || '')).join(' '), b = txt.match(/最佳\s*(\d+(?:\.\d+)?)\s*分/);
+    if (b) return [lvStars(+b[1]), 5];
+    const f = (txt.match(/★/g) || []).length, e = (txt.match(/☆/g) || []).length; return [f, f + e];
+  }
+  function boardInfo(tiles) {
+    let s = 0, m = 0, done = 0; const st = tiles.map(t => { const [a, b] = tileStars(t), cards = (t.sub || '').match(/已翻\s*(\d+)\s*\/\s*(\d+)/);
+      const ok = a > 0 || (cards && +cards[1] >= +cards[2] && +cards[2] > 0); s += a; m += b; if (ok) done++; return { a, b, ok }; });
+    let next = tiles.findIndex((t, i) => !t.locked && !st[i].ok && (t.acts || []).length);
+    if (next < 0) { let best = -1; tiles.forEach((t, i) => { if (t.locked || !(t.acts || []).length || !st[i].b) return; if (best < 0 || st[i].a / st[i].b < st[best].a / st[best].b) best = i; }); next = best; }
+    return { s, m, done, total: tiles.length, next, st };
+  }
+  function openBoard(sea, keep) {
+    const tiles = sea._tiles, panel = sea.querySelector('.pm-panel'); if (!tiles || !panel) return;
+    const info = boardInfo(tiles), ex = sea._boardEx ? (sea._boardEx() || {}) : {}, c = toHex(sea._lc || '#3b5bdb');
+    sea._sel = 'board'; sea.querySelectorAll('.pm-bld').forEach(g => g.classList.toggle('sel', g.classList.contains('pm-plaza')));
+    const starTxt = ex.stars || (info.m ? `★ ${info.s} / ${info.m}` : ''), pct = info.m ? Math.round(info.s / info.m * 100) : Math.round(info.done / info.total * 100);
+    const nx = info.next >= 0 ? tiles[info.next] : null, allDone = info.done === info.total;
+    panel._tiles = null; panel._board = { tiles, next: info.next };
+    panel.innerHTML = `<span class="pm-cap">📋 本課看板</span><button type="button" class="pm-x" aria-label="關閉">✕</button>
+      <div class="pm-bp pm-board" style="--pmc:${c}"><div class="pm-bp-name">${esc(sea._title || '本課')}</div>
+        <div class="pm-bd-row">${starTxt ? `<b class="pm-bd-star">${esc(starTxt)}</b>` : ''}<span>已完成 ${info.done} / ${info.total} 站</span></div>
+        <div class="pm-bd-bar"><i style="width:${pct}%"></i></div>
+        ${ex.badge ? `<div class="pm-bd-badge${ex.badge.got ? ' got' : ''}">🎖️ ${esc(ex.badge.name)}　${ex.badge.got ? '已獲得！' : esc(ex.badge.need || '全部單元拿滿 ★ 就能獲得')}</div>` : ''}
+        <ol class="pm-bd-list">${tiles.map((t, i) => `<li><button type="button" data-bt="${i}" class="${info.st[i].ok ? 'ok' : ''}${i === info.next ? ' nx' : ''}"><span class="pm-bd-no">${String(i + 1).padStart(2, '0')}</span><span class="pm-bd-nm">${t.locked ? '🔒 ' : ''}${esc(t.name)}</span><span class="pm-bd-st">${info.st[i].b ? '★'.repeat(info.st[i].a) + '☆'.repeat(Math.max(0, info.st[i].b - info.st[i].a)) : info.st[i].ok ? '✔' : '—'}</span></button></li>`).join('')}</ol>
+        <div class="pm-dt-acts">${nx ? `<button type="button" data-go-next>${allDone ? '▶ 再挑戰最弱的一站：' : '▶ 繼續下一站：'}${esc(nx.name)}</button>` : ''}</div></div>`;
+    panel.hidden = false; panel.scrollTop = 0;
+    if (!keep) { const f = panel.querySelector('[data-go-next], [data-bt]'); if (f) f.focus({ preventScroll: true }); try { panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {} }
   }
   function openBuilding(sea, t, keep) {
     const tiles = sea._tiles, tl = tiles && tiles[t], panel = sea.querySelector('.pm-panel'); if (!tl || !panel) return;
@@ -1416,7 +1463,7 @@ body{padding-bottom:64px}
     host.innerHTML = `<div class="pe-map-bar"><span class="pm-tip">${view === 'map' ? '🏙️ ' + esc(title || '街區') + '：點建築查看練習再出發' : ''}</span>
       <span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🏙️ 街區</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div>` +
       (view === 'map' ? `<div class="pm-sea pm-street">${streetSVG(tiles, lm[0], lm[1] || (tiles[0] || {}).color, host._sel)}<div class="pm-panel" hidden></div></div>` : '');
-    const sea = host.querySelector('.pm-sea'); if (sea) sea._tiles = tiles;
+    const sea = host.querySelector('.pm-sea'); if (sea) { setTimeout(() => arrive(sea.querySelector('svg')), 0); sea._tiles = tiles; sea._title = (title || '').replace(/\s*街區$/, ''); sea._lc = lm[1] || (tiles[0] || {}).color; sea._boardEx = cfg.board; }
     anchor.parentNode.insertBefore(host, anchor);
   }
 
@@ -1469,6 +1516,14 @@ body{padding-bottom:64px}
   .pm-street .pm-back:focus-visible{outline:3px solid #3b5bdb}
   .pm-bp{padding:2px 4px 4px} .pm-bp-name{font-size:19px; font-weight:800; color:#1f2433} .pm-bp-desc{font-size:14px; color:#475467; margin-top:2px}
   .pm-bp-sub{font-size:14px; color:#667085; margin-top:4px} .pm-bp-sub.st{color:#e8590c; font-weight:700}
+  .pm-bd-row{display:flex; gap:14px; align-items:baseline; flex-wrap:wrap; margin-top:4px; color:#475467; font-size:14.5px} .pm-bd-star{color:#e8590c; font-size:17px}
+  .pm-bd-bar{height:8px; background:#eef0f4; border-radius:99px; overflow:hidden; margin:8px 0 6px} .pm-bd-bar i{display:block; height:100%; background:var(--pmc,#3b5bdb); border-radius:99px}
+  .pm-bd-badge{font-size:14px; color:#667085; margin:6px 0 2px} .pm-bd-badge.got{color:#b07800; font-weight:800}
+  .pm-bd-list{list-style:none; margin:8px 0 0; padding:0; display:grid; gap:4px}
+  .pm-bd-list button{all:unset; box-sizing:border-box; width:100%; display:flex; gap:10px; align-items:center; padding:7px 10px; border-radius:10px; background:#f8f9fb; cursor:pointer; font-size:14.5px; font-family:inherit; color:#1f2433}
+  .pm-bd-list button:hover,.pm-bd-list button:focus-visible{background:#eef2ff; outline:none} .pm-bd-list button.nx{box-shadow:inset 0 0 0 2px var(--pmc,#3b5bdb)}
+  .pm-bd-no{font-weight:800; color:var(--pmc,#3b5bdb); font-size:13px} .pm-bd-nm{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap} .pm-bd-st{color:#f59f00; letter-spacing:1px; font-size:13px; white-space:nowrap}
+  .pm-bd-list button.ok .pm-bd-nm::after{content:' ✔'; color:#2b8a3e; font-weight:800}
   .pm-bp .pm-dt-acts{justify-content:flex-start; margin-top:12px} .pm-bp .pm-dt-acts button{padding:9px 18px; font-size:15px}
   @media print{.pe-map{display:none}}`;
   function addCSS() { if (document.getElementById('pe115-map-css')) return; const st = document.createElement('style'); st.id = 'pe115-map-css'; st.textContent = css; document.head.appendChild(st); }
@@ -1477,6 +1532,11 @@ body{padding-bottom:64px}
   const toHex = col => { const m = String(col).match(/\d+(\.\d+)?/g); if (!m || /^#/.test(col)) return /^#[0-9a-f]{6}$/i.test(col) ? col : '#3b5bdb';
     return '#' + m.slice(0, 3).map(v => (+v | 0).toString(16).padStart(2, '0')).join(''); };
   function resolve(x) { if (!x) return []; if (typeof x === 'function') return [].concat(x() || []).filter(Boolean); return [...document.querySelectorAll(x)]; }
+  function mapSig(cfg, items) {
+    const view = getView(), mode = window.innerWidth < 700 ? 't' : 'w', dr0 = DRILL[cfg.key];
+    const drT = (dr0 != null && items[dr0] && cfg.tiles) ? cfg.tiles(items[dr0].el, dr0).map(t => t.name + t.sub + t.locked).join(',') : '';
+    return view + mode + (dr0 != null ? 'D' + dr0 + drT : '') + items.map(it => it.name + it.sub + it.locked + it.kind).join('|');
+  }
   function build(cfg) {
     const anchor = resolve(cfg.anchor)[0];
     if (!anchor || !anchor.isConnected) return;
@@ -1486,8 +1546,7 @@ body{padding-bottom:64px}
     const view = getView(), mode = window.innerWidth < 700 ? 't' : 'w';
     const items = els.map((el, i) => ({ el, name: (cfg.name(el, i) || '').trim(), sub: (cfg.sub ? cfg.sub(el, i) : '') || '', kind: cfg.kind(el, i), color: toHex(cfg.color ? cfg.color(el, i) : '#3b5bdb'),
       locked: cfg.locked ? !!cfg.locked(el, i) : false, apart: cfg.apart ? !!cfg.apart(el, i) : false }));
-    const dr0 = DRILL[cfg.key], drT = (dr0 != null && els[dr0] && cfg.tiles) ? cfg.tiles(els[dr0], dr0).map(t => t.name + t.sub + t.locked).join(',') : '';
-    const sig = view + mode + (dr0 != null ? 'D' + dr0 + drT : '') + items.map(it => it.name + it.sub + it.locked + it.kind).join('|');
+    const sig = mapSig(cfg, items);
     resolve(cfg.hide || cfg.anchor).forEach(h => { if (!h.closest('.pe-map')) h.style.display = view === 'map' ? 'none' : ''; });
     if (box_ && box_.dataset.sig === sig && box_.nextElementSibling === anchor) { box_._items = items; return; }
     if (box_) box_.remove();
@@ -1498,6 +1557,7 @@ body{padding-bottom:64px}
       (view === 'map' ? `<div class="pm-sea">${mapSVG(cfg, items, sel)}<div class="pm-panel" hidden></div></div>` : '');
     anchor.parentNode.insertBefore(box_, anchor);
     const dr = DRILL[cfg.key];
+    if (!(view === 'map' && dr != null && items[dr] && cfg.tiles)) arrive(box_.querySelector('.pm-sea svg'));
     if (view === 'map' && dr != null && items[dr] && cfg.tiles) openPanel(box_, dr, true);
     else if (view === 'map' && sel != null && items[sel]) openPanel(box_, sel, true);
   }
@@ -1508,12 +1568,16 @@ body{padding-bottom:64px}
     const it = items[i], cfg = box_._cfg;
     const tiles = cfg && cfg.tiles ? cfg.tiles(it.el, i) : null;
     if (tiles && tiles.length) {   // 有多個小單元的島：放大進入該島的街區平面圖
-      DRILL[box_.dataset.pm] = i; SEL[box_.dataset.pm] = null;
+      DRILL[box_.dataset.pm] = i; SEL[box_.dataset.pm] = null; try { box_.dataset.sig = mapSig(cfg, items); } catch (e) {}
       const sea = box_.querySelector('.pm-sea'); if (!sea) return;
-      sea.classList.add('pm-street'); sea._tiles = tiles; sea._sel = null;
+      sea.classList.add('pm-street'); sea._tiles = tiles; sea._sel = null; sea._title = it.name; sea._lc = it.color; sea._boardEx = null;
       const isle = (typeof cfg.island === 'function' ? cfg.island() : cfg.island) || '島嶼';
+      if (!keep && !sea._zooming) { const svg0 = sea.querySelector('svg'), g0 = box_.querySelector(`.pm-isl[data-i="${i}"]`);
+        if (svg0 && g0 && motionOK()) { sea._zooming = true; zoomInto(svg0, g0, () => { sea._zooming = false; openPanel(box_, i, 'z'); }); return; } }
       sea.innerHTML = streetSVG(tiles, it.kind, it.color, null) + `<button type="button" class="pm-back">← 回${esc(isle)}全圖</button><div class="pm-panel" hidden></div>`;
       const tip = box_.querySelector('.pm-tip'); if (tip) tip.textContent = `🏙️ ${isle} › ${it.name} 街區：點建築查看練習再出發`;
+      if (keep === 'z' || (keep && PENDING)) arrive(sea.querySelector('svg'));
+      requestAnimationFrame(() => { try { crumbTick(); } catch (e) {} });
       if (!keep) { try { sea.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {} const g = sea.querySelector('.pm-bld'); if (g) g.focus({ preventScroll: true }); }
       return;
     }
@@ -1531,7 +1595,7 @@ body{padding-bottom:64px}
       let o = it.el; for (const k of path) { o = o && o.children[k]; }
       if (!o) return;
       SEL[box_.dataset.pm] = null; panel.hidden = true;
-      o.click();
+      zoomInto(box_.querySelector('.pm-sea svg'), box_.querySelector(`.pm-isl[data-i="${i}"]`), () => o.click());
     }, true);
     if (!keep) { const f = cl.matches('button') ? cl : cl.querySelector('button:not([disabled])'); if (f) f.focus({ preventScroll: true });
       try { panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {} }
@@ -1543,19 +1607,24 @@ body{padding-bottom:64px}
     const dh = e.target.closest('.pm-panel') || e.target.closest('.pm-district'); if (dh && dh._tiles && districtClick(e, dh)) return;
     const v = e.target.closest('[data-pmv]');
     if (v) { setView(v.dataset.pmv); SEL[box_.dataset.pm] = null; DRILL[box_.dataset.pm] = null; document.querySelectorAll('.pe-map').forEach(b => b.dataset.sig = ''); refresh(); return; }
-    if (e.target.closest('.pm-back')) { DRILL[box_.dataset.pm] = null; box_.dataset.sig = ''; refresh(); return; }
+    if (e.target.closest('.pm-back')) { DRILL[box_.dataset.pm] = null; box_.dataset.sig = ''; setPending('out'); refresh(); return; }
     const sea = e.target.closest('.pm-street');
     if (e.target.closest('.pm-x')) { if (sea) { const p = sea.querySelector('.pm-panel'); p.hidden = true; p.innerHTML = ''; sea._sel = null; sea.querySelectorAll('.pm-bld.sel').forEach(g => g.classList.remove('sel')); } else closePanel(box_); return; }
+    if (sea) { const pb = e.target.closest('.pm-panel'); const bd = pb && pb._board;
+      if (bd && e.target.closest('[data-go-next]')) { const t = sea._tiles[bd.next], a = t && t.acts && t.acts[0]; if (a && a.el) { pb.hidden = true; sea._sel = null; zoomInto(sea.querySelector('svg'), sea.querySelector(`.pm-bld[data-t="${bd.next}"]`), () => a.el.click()); } return; }
+      const bt = bd && e.target.closest('[data-bt]'); if (bt) { openBuilding(sea, +bt.dataset.bt); return; }
+      if (e.target.closest('.pm-plaza')) { openBoard(sea); return; } }
     const bld = e.target.closest('.pm-bld'); if (bld && sea) { openBuilding(sea, +bld.dataset.t); return; }
     const isl = e.target.closest('.pm-isl'); if (isl) openPanel(box_, +isl.dataset.i);
   });
   document.addEventListener('keydown', e => {
     const isl = e.target.closest && e.target.closest('.pm-isl');
-    if (isl && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (isl.classList.contains('pm-bld')) openBuilding(isl.closest('.pm-street'), +isl.dataset.t); else openPanel(isl.closest('.pe-map'), +isl.dataset.i); }
+    if (isl && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (isl.classList.contains('pm-plaza')) openBoard(isl.closest('.pm-street')); else if (isl.classList.contains('pm-bld')) openBuilding(isl.closest('.pm-street'), +isl.dataset.t); else openPanel(isl.closest('.pe-map'), +isl.dataset.i); }
     if (e.key === 'Escape') document.querySelectorAll('.pe-map').forEach(closePanel);
   });
   let queued = false;
-  function refresh() { queued = false; CONFIGS.forEach(c => { try { build(c); } catch (err) { console.warn('PE115Map', c.key, err); } }); DCONFIGS.forEach(c => { try { buildDistrict(c); } catch (err) { console.warn('PE115Map.district', c.key, err); } }); }
+  function refresh() { queued = false; CONFIGS.forEach(c => { try { build(c); } catch (err) { console.warn('PE115Map', c.key, err); } }); DCONFIGS.forEach(c => { try { buildDistrict(c); } catch (err) { console.warn('PE115Map.district', c.key, err); } });
+    try { tidyTick(); } catch (err) {} try { crumbTick(); } catch (err) {} }
   const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(refresh); } };
   let lastMode = window.innerWidth < 700;
   window.addEventListener('resize', () => { const m = window.innerWidth < 700; if (m !== lastMode) { lastMode = m; schedule(); } });
@@ -1633,15 +1702,89 @@ body{padding-bottom:64px}
     const pl = el.querySelector('.pm-place'); if (pl) { const t = '📍 ' + (cfg.place ? cfg.place() : ''); if (pl.textContent !== t) pl.textContent = t; }
     const b = el.querySelector('.pm-boatpos'); if (b && el._x) { const [d, n] = cfg.progress ? cfg.progress() : [0, 1]; const x = el._x[0] + (el._x[1] - el._x[0]) * Math.min(1, n ? d / n : 0);
       b.style.transition = 'transform .8s ease'; b.style.transform = `translateX(${f1(x)}px)`; }
-    const card = cfg.card && cfg.card(); if (card && !card.classList.contains('pm-float')) card.classList.add('pm-float');
+    const card = cfg.card && cfg.card(); if (card && !card.classList.contains('pm-float')) { card.classList.add('pm-float'); if (PENDING && PENDING.dir === 'in') arrive(card); }
     const ok = cfg.correct && cfg.correct(); if (ok && ok !== lastOk) { el.classList.add('glow'); setTimeout(() => el.classList.remove('glow'), 1100); } lastOk = ok || '';
   }
   let sq = false; const sceneSchedule = () => { if (!sq) { sq = true; requestAnimationFrame(() => { sq = false; try { sceneTick(); } catch (e) { console.warn('PE115Map.scene', e); } }); } };
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('#pe-scene-btn')) { try { localStorage.setItem(SCENE_KEY, sceneOn() ? 'off' : 'on'); } catch (err) {} sceneSig = ''; sceneSchedule(); } });
-  window.addEventListener('scroll', sceneSchedule, { passive: true });
+  window.addEventListener('scroll', () => { sceneSchedule(); if (CRUMBS) requestAnimationFrame(() => { try { crumbTick(); } catch (e) {} }); }, { passive: true });
   window.addEventListener('resize', sceneSchedule); if (window.visualViewport) window.visualViewport.addEventListener('resize', sceneSchedule);
   new MutationObserver(m => { if (SCENE && m.some(x => !(x.target.closest && x.target.closest('#pe-scene, #pe-scene-btn')) && x.target.id !== 'pe-scene-btn')) sceneSchedule(); }).observe(document.documentElement, { childList: true, subtree: true });
-  window.PE115Map = { add(cfg) { CONFIGS.push(cfg); schedule(); }, district(cfg) { DCONFIGS.push(cfg); schedule(); }, scene(cfg) { SCENE = cfg; sceneSchedule(); }, refresh: schedule, kinds: Object.keys(L) };
+
+  /* ===================================================================
+     位置列＋縮放轉場＋精簡說明
+     - 位置列 #pe-crumb（左下角，取代原本的「🏠 段考入口」）：🌏 全景 › 國文島 › 第四課 街區 › 注釋，點任一段回到那一層
+     - 縮放轉場：往下一層時鏡頭往點選處拉近，返回上一層時拉遠（約 0.35 秒；裝置設定「減少動態效果」時關閉）
+     - 精簡說明：完整說明集中在段考入口的「❓ 怎麼玩」；各頁「📌 怎麼用」與闖關規則預設收合
+     =================================================================== */
+  const motionOK = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const ZKEY = 'pe115:zoom';
+  let PENDING = null;
+  try { const z = sessionStorage.getItem(ZKEY); if (z) { PENDING = { dir: z, t: Date.now() + 1500 }; sessionStorage.removeItem(ZKEY); } } catch (e) {}
+  const setPending = dir => { PENDING = { dir, t: Date.now() }; };
+  function arrive(el) {
+    if (!PENDING || !el || !motionOK()) return; if (Date.now() - PENDING.t > 2500) { PENDING = null; return; }
+    const dir = PENDING.dir; PENDING = null;
+    try { el.animate(dir === 'out' ? [{ transform: 'scale(1.5)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }] : [{ transform: 'scale(.62)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }],
+      { duration: 380, easing: 'cubic-bezier(.2,.7,.3,1)' }); } catch (e) {}
+  }
+  function zoomInto(svg, target, then) {
+    if (!svg || !motionOK() || !svg.animate) { setPending('in'); then(); return; }
+    const r = svg.getBoundingClientRect(), t = (target && target.getBoundingClientRect) ? target.getBoundingClientRect() : r;
+    const ox = t.left + t.width / 2 - r.left, oy = t.top + t.height / 2 - r.top;
+    svg.style.transformOrigin = `${f1(ox)}px ${f1(oy)}px`;
+    let done = false; const go = () => { if (done) return; done = true; setPending('in'); then(); };
+    try { const a = svg.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(2.6)', opacity: 0 }], { duration: 340, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }); a.onfinish = go; setTimeout(go, 600); } catch (e) { go(); }
+  }
+  /* 位置列 */
+  let CRUMBS = null, crumbSig = '';
+  const hubHref = () => { const a = document.getElementById('pe115-home'); return (a && a.getAttribute('href')) || 'periodicexam_115.html'; };
+  const crumbCSS = `#pe-crumb{position:fixed; left:12px; bottom:12px; z-index:2147483000; display:flex; align-items:center; gap:2px; max-width:calc(100vw - 96px); overflow-x:auto; scrollbar-width:none;
+      background:#1f2433; color:#fff; border-radius:99px; padding:5px 8px; box-shadow:0 4px 14px rgba(0,0,0,.25); font:700 14px/1.2 'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif}
+    #pe-crumb::-webkit-scrollbar{display:none}
+    #pe-crumb a,#pe-crumb button{all:unset; cursor:pointer; white-space:nowrap; padding:5px 8px; border-radius:99px; color:#c9d3ff}
+    #pe-crumb a:hover,#pe-crumb button:hover,#pe-crumb a:focus-visible,#pe-crumb button:focus-visible{background:rgba(255,255,255,.14); color:#fff; outline:none}
+    #pe-crumb .cur{white-space:nowrap; padding:5px 8px; color:#fff} #pe-crumb .sep{color:#6b7394; padding:0 1px}
+    body.pe-crumb-on #pe115-home{display:none !important} body.pe-crumb-on #pe-scene .pm-place{display:none}
+    @media (max-width:700px){ #pe-crumb{font-size:13px; left:8px; bottom:8px; max-width:calc(100vw - 70px)} }
+    @media print{ #pe-crumb{display:none} }
+    details.pm-rules{margin:14px 0; border:1px dashed #cfd4dc; border-radius:14px; padding:8px 14px; background:rgba(255,255,255,.6)}
+    details.pm-rules > summary{cursor:pointer; font-weight:800; color:#475467; font-size:15px} details.pm-rules[open] > summary{margin-bottom:6px}`;
+  function crumbTick() {
+    if (!CRUMBS) return;
+    let list = []; try { list = CRUMBS() || []; } catch (e) { list = []; }
+    const all = [{ label: '🌏 全景', href: hubHref() }].concat(list);
+    const sig = all.map(c => c.label).join('›');
+    let nav = document.getElementById('pe-crumb');
+    if (!document.getElementById('pe115-crumb-css')) { const st = document.createElement('style'); st.id = 'pe115-crumb-css'; st.textContent = crumbCSS; document.head.appendChild(st); }
+    if (!nav) { nav = document.createElement('nav'); nav.id = 'pe-crumb'; nav.setAttribute('aria-label', '目前位置'); document.body.appendChild(nav); document.body.classList.add('pe-crumb-on'); }
+    if (sig === crumbSig) return; crumbSig = sig; nav._list = all;
+    nav.innerHTML = all.map((c, i) => (i ? '<span class="sep">›</span>' : '') + (i === all.length - 1 ? `<span class="cur" aria-current="location">${esc(c.label)}</span>`
+      : c.href ? `<a href="${esc(c.href)}" data-ci="${i}">${esc(c.label)}</a>` : `<button type="button" data-ci="${i}">${esc(c.label)}</button>`)).join('');
+    nav.scrollLeft = nav.scrollWidth;
+  }
+  document.addEventListener('click', e => {
+    const a = e.target.closest && e.target.closest('#pe-crumb [data-ci]'); if (!a) return;
+    const nav = document.getElementById('pe-crumb'), c = nav._list[+a.dataset.ci]; if (!c) return;
+    if (c.href) { try { sessionStorage.setItem(ZKEY, 'out'); } catch (err) {} return; }
+    e.preventDefault(); setPending('out'); try { c.go(); } catch (err) { console.warn('PE115Map.crumb', err); } window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  /* 精簡說明：📌 怎麼用、闖關規則預設收合（同一個元素只收一次，學生打開後不會再被關上） */
+  let RULES = [];
+  function tidyTick() {
+    document.querySelectorAll('details.pe-howto:not([data-pm-c])').forEach(d => { d.setAttribute('data-pm-c', ''); d.open = false; });
+    RULES.forEach(rule => { const sel = rule && rule.sel ? rule.sel : rule; resolve(sel).forEach(el => { if (!el || el.closest('details.pm-rules') || el.hasAttribute('data-pm-r')) return;
+      const grp = [].concat(el); if (rule && rule.prev && el.previousElementSibling) grp.unshift(el.previousElementSibling);
+      const d = document.createElement('details'); d.className = 'pm-rules'; el = grp[0];
+      d.innerHTML = '<summary>📜 闖關規則（星等、解鎖條件）</summary>'; el.setAttribute('data-pm-r', ''); el.parentNode.insertBefore(d, el); grp.forEach(x => d.appendChild(x)); }); });
+  }
+  window.PE115Map = { crumbs(fn) { CRUMBS = fn; schedule(); }, rules(sels) { RULES = RULES.concat(sels); schedule(); },
+    drillTo(key, pred) { const box_ = document.querySelector(`.pe-map[data-pm="${key}"]`); let idx = null;
+      if (pred && box_ && box_._items) { idx = box_._items.findIndex(it => pred(it.name)); if (idx < 0) idx = null; }
+      DRILL[key] = idx; SEL[key] = null; if (box_) box_.dataset.sig = ''; schedule(); },
+    drilled(key) { const box_ = document.querySelector(`.pe-map[data-pm="${key}"]`), d = DRILL[key]; return (box_ && box_._items && d != null && box_._items[d]) ? box_._items[d].name : null; },
+    zoomTo(el, then) { const svg = el && el.closest && el.closest('svg'); zoomInto(svg, el, then); },
+    add(cfg) { CONFIGS.push(cfg); schedule(); }, district(cfg) { DCONFIGS.push(cfg); schedule(); }, scene(cfg) { SCENE = cfg; sceneSchedule(); }, refresh: schedule, kinds: Object.keys(L) };
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
 </script>
@@ -1671,6 +1814,12 @@ PE115Map.add({
     correct: () => document.querySelector('#cardBody .feedback.ok') ? ((document.querySelector('#cardBody .prompt') || {}).textContent || '').slice(0, 40) : ''
   });
 })();
+/* 位置列：🌏 全景 › 成語島 › 第一關（捲到作答卡時） */
+PE115Map.crumbs(() => {
+  const isle = { label: '成語島', go: () => window.scrollTo({ top: 0, behavior: 'smooth' }) };
+  const c = document.querySelector('.workspace > article.card'), pill = ((document.getElementById('runPill') || {}).textContent || '').split('·')[0].trim();
+  return c && pill && c.getBoundingClientRect().top < window.innerHeight * 0.7 ? [isle, { label: pill }] : [{ label: '成語島' }];
+});
 </script>
 </body>
 </html>
