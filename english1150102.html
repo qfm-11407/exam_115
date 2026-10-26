@@ -1164,6 +1164,7 @@ body{padding-bottom:64px}
 </style>
 <script>(function(){var m=location.pathname.match(/115010(\d)\.html?$/i),a=document.getElementById('pe115-home');if(m&&a)a.href='periodicexam_115.html#exam'+m[1];})();</script>
 
+
 <script id="pe115-map">
 /* ===== PE115 島嶼地圖元件（各練習頁共用，內容一字不差；各頁設定寫在 pe115-map-config） =====
    用法：PE115Map.add({ key, anchor, items, hide, name, sub, kind, color, locked, apart })
@@ -1561,7 +1562,87 @@ body{padding-bottom:64px}
   window.addEventListener('resize', () => { const m = window.innerWidth < 700; if (m !== lastMode) { lastMode = m; schedule(); } });
   window.addEventListener('storage', e => { if (e.key === VIEW_KEY) { document.querySelectorAll('.pe-map').forEach(b => b.dataset.sig = ''); schedule(); } });
   function start() { addCSS(); new MutationObserver(muts => { if (muts.some(m => !(m.target.closest && m.target.closest('.pe-map')))) schedule(); }).observe(document.body, { childList: true, subtree: true }); schedule(); }
-  window.PE115Map = { add(cfg) { CONFIGS.push(cfg); schedule(); }, refresh: schedule, kinds: Object.keys(L) };
+
+  /* ===================================================================
+     作答背景（PE115Map.scene）：作答時畫面下方顯示「淡淡的」所在島嶼，小船依作答進度航向該島
+     - 背景只佔畫面下方約 20%（手機約 70px），低彩度、不放小人小物；題目小卡維持不透明白底
+     - 小卡不晃動，只加陰影與水面倒影營造「浮在海上」的感覺
+     - 答對時背景島嶼微微亮一下；右下「🌫️」可關閉背景（記在 pe115:scene）；模擬段考預設精簡
+     cfg：{ active(), card(), kind(), color(), place(), progress() → [已答, 總題數], correct() → 本題是否剛答對, compact() }
+     =================================================================== */
+  const SCENE_KEY = 'pe115:scene';
+  const sceneOn = () => { try { return localStorage.getItem(SCENE_KEY) !== 'off'; } catch (e) { return true; } };
+  let SCENE = null, sceneSig = '', lastOk = '';
+  const sceneCSS = `#pe-scene{position:fixed; left:0; right:0; bottom:0; height:clamp(120px,21vh,210px); z-index:-1; pointer-events:none; overflow:hidden; transition:height .3s ease, opacity .3s}
+  #pe-scene svg{position:absolute; left:0; bottom:0; width:100%; height:100%; -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 55%); mask-image:linear-gradient(to bottom, transparent 0, #000 55%)}
+  #pe-scene .pm-art{opacity:.42; transition:opacity .6s ease} #pe-scene.glow .pm-art{opacity:.72}
+  #pe-scene .pm-place{position:absolute; left:14px; top:8px; font:700 13px/1.4 'Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif; color:#4a6b78; background:rgba(255,255,255,.75); padding:3px 10px; border-radius:99px; white-space:nowrap; max-width:calc(100% - 90px); overflow:hidden; text-overflow:ellipsis}
+  #pe-scene-btn{all:unset; cursor:pointer; position:fixed; right:12px; bottom:12px; z-index:2147482999; font:700 13px/1 'Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif; color:#3d5a66; background:rgba(255,255,255,.92); padding:8px 12px; border-radius:99px; box-shadow:0 2px 8px rgba(0,0,0,.12)}
+  #pe-scene-btn:focus-visible{outline:3px solid #3b5bdb}
+  #pe-scene.off{height:34px; background:none} #pe-scene.off svg,#pe-scene.off .pm-place{display:none}
+  #pe-scene.compact{height:clamp(70px,11vh,110px)} #pe-scene.compact .pm-place{display:none}
+  body.pe-scene-on{padding-bottom:calc(clamp(120px,21vh,210px) + 70px) !important}
+  body.pe-scene-on.pe-scene-compact{padding-bottom:calc(clamp(70px,11vh,110px) + 70px) !important}
+  /* 飄浮小卡：上緣受光、下緣 6px 厚度（像一片實體卡片）、三層由近到遠的陰影，再加水面上的投影；小卡本身不移動 */
+  .pm-float{position:relative; z-index:1; border-color:#ece6da !important;
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.95), inset 0 -1px 0 rgba(0,0,0,.04),
+      0 1px 0 #ebe5d9, 0 2px 0 #e6dfd2, 0 3px 0 #e1d9cb, 0 4px 0 #dcd3c4, 0 5px 0 #d6ccbc, 0 6px 0 #cfc5b4,
+      0 9px 10px rgba(40,60,70,.10), 0 22px 34px rgba(30,80,110,.16), 0 46px 70px -24px rgba(20,90,120,.30) !important}
+  .pm-float::before{content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; z-index:-1;
+    background:linear-gradient(180deg, rgba(255,255,255,.55) 0, rgba(255,255,255,0) 90px)}
+  .pm-float::after{content:''; position:absolute; left:8%; right:8%; bottom:-46px; height:30px; border-radius:50%;
+    background:radial-gradient(closest-side, rgba(30,110,140,.26), rgba(30,110,140,.10) 60%, rgba(30,110,140,0)); pointer-events:none; z-index:-1}
+  @media (max-width:700px){ .pm-float::after{bottom:-30px; height:20px} }
+  @media (max-width:700px){ #pe-scene-btn{padding:8px 10px; font-size:16px} #pe-scene{height:72px} #pe-scene .pm-place{font-size:11.5px; top:5px} body.pe-scene-on{padding-bottom:150px !important} #pe-scene.compact{height:54px} }
+  @media print{ #pe-scene,#pe-scene-btn{display:none} body.pe-scene-on{padding-bottom:0 !important} }`;
+  function sceneArt(cfg, w) {
+    const narrow = w < 700, W = narrow ? 640 : 1600, H = 260, ix = narrow ? 500 : 1330, iy = 150;
+    const c = toHex(cfg.color()), kind = cfg.kind();
+    let s = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs>
+      <linearGradient id="pmSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eaf6f8" stop-opacity="0"/><stop offset=".45" stop-color="#d6eff2" stop-opacity=".7"/><stop offset="1" stop-color="#a9dbe3"/></linearGradient>
+      <filter id="pmSoft"><feColorMatrix type="saturate" values="0.45"/></filter></defs>
+      <rect width="${W}" height="${H}" fill="url(#pmSky)"/>
+      <g class="pm-art" filter="url(#pmSoft)">`;
+    const r = rng(11); for (let i = 0; i < W / 40; i++) { const x = r() * W, y = 150 + r() * 100, ww = 10 + r() * 14; s += `<path d="M${f1(x)},${f1(y)}q${f1(ww / 2)},-4 ${f1(ww)},0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/>`; }
+    const islet = (x, y, k) => `<g transform="translate(${x},${y}) scale(${k})"><ellipse cx="0" cy="18" rx="70" ry="22" fill="#efe3c4"/><ellipse cx="0" cy="12" rx="56" ry="17" fill="#c4e5aa"/>${tree(-18, 12, 1)}${tree(16, 16, 0.8, '#6ab04c')}${pine(2, 6, 0.9)}</g>`;
+    s += narrow ? islet(120, 150, 0.55) : islet(330, 150, 0.6) + islet(760, 140, 0.5);
+    s += `<line x1="${narrow ? 40 : 90}" y1="232" x2="${ix - 70}" y2="232" stroke="#fff" stroke-width="3" stroke-dasharray="2 12" stroke-linecap="round" opacity=".9"/>`;
+    s += `<g transform="translate(${ix},${iy}) scale(${narrow ? 0.62 : 0.78})">${islandSVG(kind, c, 92, false).replace(/<ellipse class="pm-ring"[^>]*\/>/, '')}</g>`;
+    s += `</g><g class="pm-boatpos"><g transform="translate(0,226)"><ellipse cx="0" cy="8" rx="20" ry="4" fill="rgba(10,50,70,.15)"/><path d="M-17,0h34l-6,8h-22z" fill="#fff"/><path d="M-17,0h34l-1.5,2.5h-31z" fill="${c}" opacity=".7"/>
+      <line x1="0" y1="0" x2="0" y2="-28" stroke="#6b7c85" stroke-width="1.5"/><path d="M1,-27l14,22h-14z" fill="#fff"/><path d="M-1,-21l-10,16h10z" fill="#f1f3f5"/><path d="M0,-28l9,3l-9,3z" fill="${c}"/></g></g></svg>`;
+    return { svg: s, x0: narrow ? 40 : 90, x1: ix - 100 };
+  }
+  function sceneTick() {
+    const cfgs = SCENE ? [SCENE] : []; const cfg = cfgs[0]; if (!cfg) return;
+    let el = document.getElementById('pe-scene'), act = false;
+    try { act = !!cfg.active(); } catch (e) {}
+    if (!act) { if (el) el.remove(); const ob = document.getElementById('pe-scene-btn'); if (ob) ob.remove(); document.body.classList.remove('pe-scene-on', 'pe-scene-compact'); sceneSig = ''; return; }
+    if (!document.getElementById('pe115-scene-css')) { const st = document.createElement('style'); st.id = 'pe115-scene-css'; st.textContent = sceneCSS; document.head.appendChild(st); }
+    const on = sceneOn(), compact = !!(cfg.compact && cfg.compact()), w = window.innerWidth;
+    const kb = window.visualViewport && window.visualViewport.height < window.innerHeight * 0.72;   // 手機鍵盤跳出時收起
+    if (!el) { el = document.createElement('div'); el.id = 'pe-scene'; document.body.appendChild(el); }
+    const sig = [cfg.kind(), cfg.color(), w < 700, on].join('|');
+    if (sig !== sceneSig) { sceneSig = sig; const art = on ? sceneArt(cfg, w) : null;
+      el.innerHTML = (art ? art.svg : '') + `<span class="pm-place"></span>`;
+      el._x = art ? [art.x0, art.x1] : null; }
+    let btn = document.getElementById('pe-scene-btn');
+    if (!btn) { btn = document.createElement('button'); btn.type = 'button'; btn.id = 'pe-scene-btn'; document.body.appendChild(btn); }
+    const bt = w < 700 ? (on ? '🌫️' : '🏝️') : (on ? '🌫️ 專注模式' : '🏝️ 顯示背景'); if (btn.textContent !== bt) { btn.textContent = bt; btn.title = on ? '關閉作答背景' : '開啟作答背景'; }
+    el.classList.toggle('off', !on); el.classList.toggle('compact', on && (compact || kb));
+    el.style.display = kb && w < 700 ? 'none' : '';
+    document.body.classList.toggle('pe-scene-on', on); document.body.classList.toggle('pe-scene-compact', on && compact);
+    const pl = el.querySelector('.pm-place'); if (pl) { const t = '📍 ' + (cfg.place ? cfg.place() : ''); if (pl.textContent !== t) pl.textContent = t; }
+    const b = el.querySelector('.pm-boatpos'); if (b && el._x) { const [d, n] = cfg.progress ? cfg.progress() : [0, 1]; const x = el._x[0] + (el._x[1] - el._x[0]) * Math.min(1, n ? d / n : 0);
+      b.style.transition = 'transform .8s ease'; b.style.transform = `translateX(${f1(x)}px)`; }
+    const card = cfg.card && cfg.card(); if (card && !card.classList.contains('pm-float')) card.classList.add('pm-float');
+    const ok = cfg.correct && cfg.correct(); if (ok && ok !== lastOk) { el.classList.add('glow'); setTimeout(() => el.classList.remove('glow'), 1100); } lastOk = ok || '';
+  }
+  let sq = false; const sceneSchedule = () => { if (!sq) { sq = true; requestAnimationFrame(() => { sq = false; try { sceneTick(); } catch (e) { console.warn('PE115Map.scene', e); } }); } };
+  document.addEventListener('click', e => { if (e.target.closest && e.target.closest('#pe-scene-btn')) { try { localStorage.setItem(SCENE_KEY, sceneOn() ? 'off' : 'on'); } catch (err) {} sceneSig = ''; sceneSchedule(); } });
+  window.addEventListener('scroll', sceneSchedule, { passive: true });
+  window.addEventListener('resize', sceneSchedule); if (window.visualViewport) window.visualViewport.addEventListener('resize', sceneSchedule);
+  new MutationObserver(m => { if (SCENE && m.some(x => !(x.target.closest && x.target.closest('#pe-scene, #pe-scene-btn')) && x.target.id !== 'pe-scene-btn')) sceneSchedule(); }).observe(document.documentElement, { childList: true, subtree: true });
+  window.PE115Map = { add(cfg) { CONFIGS.push(cfg); schedule(); }, scene(cfg) { SCENE = cfg; sceneSchedule(); }, refresh: schedule, kinds: Object.keys(L) };
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
 </script>
@@ -1574,6 +1655,17 @@ PE115Map.add({
   kind: el => { const m = ((el.getAttribute('onclick') || '').match(/'(\w+)'/) || [])[1]; return { L3: 'well', L4: 'studio', R2: 'blocks' }[m] || 'trophy'; },
   color: el => getComputedStyle(el.querySelector('.ttl')).color,
   locked: el => el.classList.contains('locked')
+});
+/* 作答背景：淡淡的所在島嶼＋航向該島的小船（模擬段考預設精簡） */
+PE115Map.scene({
+  active: () => !!document.querySelector('#app > .qcard'),
+  card: () => document.querySelector('#app > .qcard'),
+  kind: () => { try { if (Q.mode === 'exam') return 'trophy'; return { L3: 'well', L4: 'studio', R2: 'blocks' }[Q.L.id] || 'blocks'; } catch (e) { return 'blocks'; } },
+  color: () => { try { return Q.L.color || '#7048e8'; } catch (e) { return '#7048e8'; } },
+  place: () => { try { return Q.mode === 'exam' ? '英文島 › 模擬段考' : `英文島 › ${Q.L.title} › ${Q.U.title}${Q.retry ? '（錯題重練）' : ''}`; } catch (e) { return '英文島'; } },
+  progress: () => { try { const n = Q.items.length; return [Q.mode === 'exam' ? Q.ans.filter(x => x != null).length : Q.res.filter(Boolean).length, n]; } catch (e) { return [0, 1]; } },
+  correct: () => { try { const r = Q.res[Q.i]; return r && r.ok ? 'q' + Q.i + (Q.retry ? 'r' : '') : ''; } catch (e) { return ''; } },
+  compact: () => { try { return Q.mode === 'exam'; } catch (e) { return false; } }
 });
 </script>
 </body>
