@@ -337,6 +337,12 @@ window.PE115 = (function () {
 <style id="pe115-boot">
 /* 開頁防閃爍：元件接手前，先藏起會被島嶼名牌、地圖取代的原區塊（元件載入後由元件控制顯示） */
 details.pe-howto:not([data-pm-c]) > :not(summary){display:none}
+/* 跨頁換場：入口網站與各科頁之間用瀏覽器的 View Transition 平順接續（地圖框由上一頁的位置變形到下一頁；不支援的瀏覽器照舊） */
+@view-transition { navigation: auto; }
+.pe-map .pm-sea { view-transition-name: pe-world; }
+::view-transition-group(pe-world) { animation-duration: .5s; animation-timing-function: cubic-bezier(.2,.7,.3,1); }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .35s; }
+@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; } }
 section.hero{display:none}
 html.pe-mapview #levelMap{display:none}
 </style>
@@ -952,6 +958,7 @@ body{padding-bottom:64px}
 </style>
 <script>(function(){var m=location.pathname.match(/115010(\d)\.html?$/i),a=document.getElementById('pe115-home');if(m&&a)a.href='periodicexam_115.html#exam'+m[1];})();</script>
 <script>(function(){try{var m=location.pathname.match(/115010(\d)\.html?$/i),cn=["","一","二","三","四","五"];if(m&&cn[+m[1]]){var t="八年級成語 第"+cn[+m[1]]+"次段考強化練習";document.title=t;var h=document.getElementById("peTitle");if(h)h.textContent=t;}var r=document.getElementById("peRange");if(r&&typeof LEVELS!=="undefined"&&LEVELS.length)r.textContent="範圍："+LEVELS.map(function(l){return l.subtitle}).join("、");}catch(e){}})();</script>
+
 
 
 
@@ -1908,7 +1915,7 @@ body{padding-bottom:64px}
     if (c.href) { try { sessionStorage.setItem(ZKEY, 'out'); } catch (err) {}
       const w = [...document.querySelectorAll('.pe-map svg[data-wv]')].find(x => x.getBoundingClientRect().height > 0);   // 世界地圖：鏡頭先飛回全景再換頁
       if (w && motionOK() && !e.ctrlKey && !e.metaKey) { e.preventDefault(); let gone = false; const go = () => { if (!gone) { gone = true; location.href = c.href; } };
-        flyView(w, w.getAttribute('viewBox'), w.getAttribute('data-wv'), 750, go); setTimeout(go, 1300); }
+        flyView(w, w.getAttribute('viewBox'), w.getAttribute('data-wv'), 650, go); setTimeout(go, 1200); }
       return; }
     e.preventDefault(); setPending('out'); try { c.go(); } catch (err) { console.warn('PE115Map.crumb', err); } window.scrollTo({ top: 0, behavior: 'smooth' });
   });

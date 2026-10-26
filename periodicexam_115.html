@@ -193,6 +193,12 @@ h1{margin:4px 0 6px; font-size:clamp(1.6rem,4.2vw,2.5rem); line-height:1.25}
 .map-tools{position:absolute; top:12px; right:12px; z-index:4; display:flex; gap:8px; align-items:center}
 .map-tools .view-tg,.map-tools .guide-btn{box-shadow:0 2px 10px rgba(0,0,0,.15); border-color:transparent}
 @media (max-width:700px){ .map-tools{top:auto; bottom:10px; right:10px} .map-tools .view-tg button,.map-tools .guide-btn{padding:6px 10px; font-size:.85rem} }
+/* 跨頁換場：與各科頁共用 View Transition，地圖框平順變形到下一頁（不支援的瀏覽器照舊用縮放動畫） */
+@view-transition { navigation: auto; }
+#mapwrap { view-transition-name: pe-world; }
+::view-transition-group(pe-world) { animation-duration: .5s; animation-timing-function: cubic-bezier(.2,.7,.3,1); }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .35s; }
+@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; } }
 /* ---------- ❓ 怎麼玩 ---------- */
 .guide-btn{border:1px solid var(--line); background:var(--card); color:var(--ink); padding:8px 14px; border-radius:10px; cursor:pointer; font-weight:700}
 .guide-btn:hover{border-color:var(--accent)}
@@ -766,8 +772,15 @@ function route() {
 function openGuide(on) { const g = document.getElementById('guide'); g.hidden = !on; if (on) g.querySelector('.guide-x').focus(); }
 /* 縮放轉場：往科目島前進時鏡頭拉近被選的島；從科目頁回來時拉遠（裝置設定「減少動態效果」時關閉） */
 const motionOK = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+const crossDocVT = !!(window.CSS && CSS.supports && CSS.supports('view-transition-name: x') && 'onpagereveal' in window);
 function zoomGo(href) {
   try { sessionStorage.setItem('pe115:zoom', 'in'); } catch (e) {}
+  /* 支援跨頁換場的瀏覽器：鏡頭先往島拉近一點，再交給換場；科目頁會接著從全景飛進該科 */
+  if (crossDocVT && motionOK()) { const svg = document.querySelector('#mapwrap svg'), g = SEL && document.querySelector(`.isl[data-isl="${SEL}"]`);
+    if (svg && g && svg.animate) { const r = svg.getBoundingClientRect(), b = g.getBoundingClientRect(); svg.style.transformOrigin = `${b.left + b.width / 2 - r.left}px ${b.top + b.height / 2 - r.top}px`;
+      let gone = false; const go = () => { if (!gone) { gone = true; location.href = href; } };
+      svg.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }], { duration: 220, easing: 'ease-in', fill: 'forwards' }).onfinish = go; setTimeout(go, 400); return; }
+    location.href = href; return; }
   const svg = document.querySelector('#mapwrap svg'), g = SEL && document.querySelector(`.isl[data-isl="${SEL}"]`);
   if (!svg || !g || !motionOK() || !svg.animate) { location.href = href; return; }
   const r = svg.getBoundingClientRect(), t = g.getBoundingClientRect();
@@ -780,6 +793,7 @@ function zoomGo(href) {
 function arriveHub() {
   let z = null; try { z = sessionStorage.getItem('pe115:zoom'); if (z === 'out') sessionStorage.removeItem('pe115:zoom'); } catch (e) {}
   const svg = document.querySelector('#mapwrap svg');
+  if (z === 'out' && crossDocVT) return;   // 由換場接續，不再另外縮放
   if (z === 'out' && svg && svg.animate && motionOK()) svg.animate([{ transform: 'scale(1.5)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], { duration: 420, easing: 'cubic-bezier(.2,.7,.3,1)' });
 }
 window.addEventListener('pageshow', e => { if (e.persisted) { const svg = document.querySelector('#mapwrap svg'); if (svg) { svg.getAnimations && svg.getAnimations().forEach(a => a.cancel()); } } });
