@@ -1034,6 +1034,7 @@ body{padding-bottom:64px}
 <script>(function(){var m=location.pathname.match(/115010(\d)\.html?$/i),a=document.getElementById('pe115-home');if(m&&a)a.href='periodicexam_115.html#exam'+m[1];})();</script>
 
 
+
 <script id="pe115-map">
 /* ===== PE115 島嶼地圖元件（各練習頁共用，內容一字不差；各頁設定寫在 pe115-map-config） =====
    用法：PE115Map.add({ key, anchor, items, hide, name, sub, kind, color, locked, apart })
@@ -1255,6 +1256,62 @@ body{padding-bottom:64px}
       s += line([22, -8], [22, -74], '#f59f00', 3) + line([40, 4], [40, -66], '#f59f00', 3) + line([22, -74], [40, -66], '#f59f00', 3) + line([10, -80], [64, -56], '#f08c00', 3.5) + line([56, -60], [56, -36], '#495057', 1);
       s += `<rect x="51" y="-36" width="10" height="6" fill="#1971c2"/>` + `<path d="M30,30h44l-6,8h-34z" fill="#495057"/><rect x="40" y="22" width="12" height="8" fill="#e03131"/><rect x="54" y="22" width="12" height="8" fill="#fab005"/>`;
       return s + flag(-62, -8, c) + pine(-66, 18, 0.7) + person(-4, 30, 2); },
+    /* ---- 街區建築（小單元用） ---- */
+    belltower: c => { let s = shadow(-4, 0, 30) + box(-4, -6, 40, 40, 30, '#e9dcc4') + onLeft(-4, -6, 40, 40, 0, `<path d="M15,0v-12a5 5 0 0 1 10 0v12z" fill="#6d4c33"/>`);  // 國字注音：鐘鼓樓＋ㄅㄆㄇ匾
+      s += box(-4, -6, 30, 30, 18, c, 30) + onLeft(-4, -6, 30, 30, 30, `<rect x="5" y="-15" width="20" height="10" rx="2" fill="#fff8e1"/><text x="15" y="-7.4" font-size="7.5" font-weight="800" text-anchor="middle" fill="${shade(c, -0.3)}">ㄅㄆㄇ</text>`) + roof(-4, -6, 44, 44, 48, 18, '#3d4558');
+      return s + `<circle cx="-4" cy="-74" r="3" fill="#f59f00"/>` + tree(46, 10, 0.9) + pine(-56, 14, 0.8) + person(28, 30, 2); },
+    academy: c => { let s = shadow(0, 0, 40) + box(0, -6, 70, 34, 24, '#f1e3c8') + onLeft(0, -6, 70, 34, 0, [8, 22, 48, 62].map(v => `<rect x="${v}" y="-18" width="7" height="12" fill="${shade(c, 0.55)}"/>`).join('') + `<rect x="31" y="-20" width="12" height="20" fill="#6d4c33"/>`);  // 注釋：書院
+      s += roof(0, -6, 82, 44, 24, 18, '#4a4f5c') + onLeft(0, -6, 82, 44, 26, `<rect x="27" y="-9" width="28" height="7" rx="1" fill="#f8e7a8"/><text x="41" y="-3.6" font-size="5.6" font-weight="800" text-anchor="middle" fill="${c}">書院</text>`);
+      return s + tree(-52, 18, 0.8) + tree(54, 16, 0.75, '#6ab04c') + person(-14, 30, 4) + person(16, 32, 0); },
+    school: c => { let s = shadow(0, 0, 44) + box(0, -6, 78, 32, 30, '#f8f1e4') + onLeft(0, -6, 78, 32, 0, [6, 20, 50, 64].map(v => `<rect x="${v}" y="-24" width="9" height="9" fill="#d0ebff" stroke="${shade(c, 0.2)}" stroke-width="1"/>`).join('') + `<rect x="33" y="-20" width="12" height="20" fill="${shade(c, -0.15)}"/>`);  // 課本／課文／課後練習：學校
+      s += box(0, -6, 82, 36, 4, c, 30) + box(0, -6, 18, 16, 16, '#f8f1e4', 34) + onLeft(0, -6, 18, 16, 34, `<circle cx="9" cy="-8" r="5" fill="#fff" stroke="${c}" stroke-width="1.4"/><line x1="9" y1="-8" x2="9" y2="-11.5" stroke="#333" stroke-width="1"/>`) + roof(0, -6, 22, 20, 50, 10, c);
+      return s + flag(-48, -24, c) + tree(52, 14, 0.8) + person(-20, 32, 1) + person(10, 34, 5); },
+    workshop: (c, anim) => { let s = shadow(-6, 0, 40) + box(-10, -6, 60, 34, 28, '#e9ecef') + onLeft(-10, -6, 60, 34, 0, `<rect x="6" y="-20" width="22" height="20" fill="#adb5bd"/>${[8, 12, 16, 20, 24].map(v => `<line x1="6" y1="${-v}" x2="28" y2="${-v}" stroke="#868e96" stroke-width="1"/>`).join('')}`);  // 文法／句型／習作：齒輪工坊
+      s += roof(-10, -6, 64, 38, 28, 12, shade(c, -0.1));
+      const gear = (x, y, r, col) => { let t = ''; for (let i = 0; i < 8; i++) t += `<rect x="${x - 2.5}" y="${y - r - 4}" width="5" height="6" fill="${col}" transform="rotate(${i * 45} ${x} ${y})"/>`; return t + `<circle cx="${x}" cy="${y}" r="${r}" fill="${col}"/><circle cx="${x}" cy="${y}" r="${r * 0.38}" fill="#fff"/>`; };
+      s += gear(38, -40, 12, c) + gear(54, -24, 8, shade(c, 0.3));
+      return s + tree(-56, 18, 0.8) + person(24, 30, 3) + person(-24, 30, 6); },
+    detective: c => { let s = shadow(-8, 0, 34) + box(-10, -6, 46, 34, 24, '#f4efe4') + roof(-10, -6, 52, 40, 24, 14, shade(c, -0.15));  // 改錯：放大鏡偵探所
+      s += onLeft(-10, -6, 46, 34, 0, `<rect x="16" y="-16" width="12" height="16" fill="#6d4c33"/>`);
+      s += `<circle cx="38" cy="-40" r="16" fill="rgba(208,235,255,.75)" stroke="${c}" stroke-width="5"/><line x1="49" y1="-28" x2="62" y2="-14" stroke="${shade(c, -0.3)}" stroke-width="7" stroke-linecap="round"/><text x="38" y="-35" font-size="14" font-weight="900" text-anchor="middle" fill="${shade(c, -0.3)}">字</text>`;
+      return s + tree(-58, 16, 0.8) + pine(60, 18, 0.7) + person(10, 32, 2); },
+    press: c => { let s = shadow(-4, 0, 40) + box(-6, -6, 64, 34, 34, '#eef1f4') + onLeft(-6, -6, 64, 34, 0, `<rect x="4" y="-30" width="56" height="10" fill="${c}"/><text x="32" y="-22.5" font-size="7" font-weight="900" text-anchor="middle" fill="#fff">NEWS 閱讀</text>${[8, 22, 36, 50].map(v => `<rect x="${v}" y="-16" width="7" height="9" fill="#d0ebff"/>`).join('')}`);  // 閱讀／克漏字：報社
+      s += box(-6, -6, 68, 38, 4, shade(c, -0.2), 34);
+      s += `<g transform="translate(38,18)"><rect x="-12" y="-8" width="24" height="16" rx="2" fill="#fff" stroke="#ced4da"/><line x1="-8" y1="-3" x2="8" y2="-3" stroke="#adb5bd"/><line x1="-8" y1="1" x2="8" y2="1" stroke="#adb5bd"/><line x1="-8" y1="5" x2="4" y2="5" stroke="#adb5bd"/></g>`;
+      return s + tree(-56, 16, 0.8) + person(14, 34, 4) + person(-24, 32, 1); },
+    post: c => { let s = shadow(-6, 0, 38) + box(-8, -6, 58, 34, 28, '#fff4e6') + roof(-8, -6, 64, 40, 28, 14, '#2b8a3e');  // 翻譯：郵局＋郵筒
+      s += onLeft(-8, -6, 58, 34, 0, `<rect x="22" y="-18" width="12" height="18" fill="#6d4c33"/><rect x="4" y="-24" width="14" height="10" fill="#d0ebff"/><rect x="40" y="-24" width="14" height="10" fill="#d0ebff"/>`) + onLeft(-8, -6, 58, 34, 28, `<text x="29" y="6" font-size="0">.</text>`);
+      s += cyl(44, 14, 7, 22, '#2b8a3e') + `<rect x="39" y="-4" width="10" height="2" fill="#fff"/>` + `<path d="M30,-46h18v12h-18z" fill="#fff" stroke="${c}" stroke-width="1.5"/><path d="M30,-46l9,7l9,-7" fill="none" stroke="${c}" stroke-width="1.5"/>`;
+      return s + tree(-56, 18, 0.8) + person(18, 34, 0); },
+    timer: c => { let s = shadow(0, 2, 30) + box(0, -2, 34, 34, 10, '#dee2e6');  // 速測：碼錶塔
+      s += `<rect x="-5" y="-60" width="10" height="8" fill="${shade(c, -0.2)}"/><circle cx="0" cy="-34" r="24" fill="#fff" stroke="${c}" stroke-width="6"/><line x1="0" y1="-34" x2="0" y2="-50" stroke="#e03131" stroke-width="3" stroke-linecap="round"/><line x1="0" y1="-34" x2="10" y2="-30" stroke="#333" stroke-width="2"/>` + [0, 90, 180, 270].map(a => `<rect x="-1" y="-56" width="2" height="5" fill="${c}" transform="rotate(${a} 0 -34)"/>`).join('');
+      return s + `<path d="M30,-50l10,-6M32,-40l12,-2M30,-30l10,4" stroke="${c}" stroke-width="2.4" stroke-linecap="round"/>` + tree(-52, 14, 0.8) + pine(52, 16, 0.7) + person(-22, 30, 5); },
+    kiosk: c => { let s = shadow(0, 2, 34) + `<rect x="-30" y="-44" width="4" height="46" fill="#8b5e3c"/><rect x="26" y="-44" width="4" height="46" fill="#8b5e3c"/>`;  // 重點卡：公告欄
+      s += `<rect x="-34" y="-58" width="68" height="40" rx="3" fill="#c08552"/><rect x="-30" y="-54" width="60" height="32" fill="#f8f1e4"/>` + [[-26, -51, '#fff3bf'], [-6, -50, '#d3f9d8'], [12, -52, '#ffe3e3'], [-18, -36, '#d0ebff'], [4, -36, '#fff3bf']].map(([x, y, col]) => `<rect x="${x}" y="${y}" width="14" height="11" fill="${col}" stroke="rgba(0,0,0,.08)"/>`).join('') + poly([[-38, -58], [38, -58], [30, -68], [-30, -68]], c);
+      return s + tree(-58, 16, 0.8) + tree(56, 14, 0.75, '#6ab04c') + person(-12, 30, 3) + person(14, 32, 6); },
+    music: c => { let s = shadow(-6, 0, 36) + box(-10, -4, 52, 24, 18, '#212529') + onLeft(-10, -4, 52, 24, 18, '') + poly([ISO(-10, -4, -26, 12, 18), ISO(-10, -4, 26, 12, 18), ISO(-10, -4, 26, 4, 18), ISO(-10, -4, -26, 4, 18)], '#f8f9fa');  // 多變的聲音：鋼琴＋音符
+      for (let i = -22; i < 26; i += 6) { const a = ISO(-10, -4, i, 4, 18.5), b = ISO(-10, -4, i, 12, 18.5); s += line(a, b, '#495057', 0.8); }
+      s += `<g fill="${c}"><circle cx="34" cy="-30" r="5"/><rect x="38" y="-56" width="2.4" height="26"/><circle cx="50" cy="-40" r="5"/><rect x="54" y="-66" width="2.4" height="26"/><rect x="38" y="-58" width="18.4" height="5"/></g>`;
+      return s + tree(-58, 16, 0.8) + person(18, 32, 1); },
+    mirror: c => { let s = '';  // 反射與面鏡：平面鏡＋凹凸面鏡
+      s += shadow(-24, 2, 18) + `<rect x="-27" y="-6" width="6" height="10" fill="#868e96"/><path d="M-44,-60h40v52h-40z" fill="#e7f5ff" stroke="#adb5bd" stroke-width="3"/><path d="M-40,-56l14,0l-26,30z" fill="#fff" opacity=".8"/>`;
+      s += shadow(30, 6, 16) + `<rect x="27" y="-4" width="6" height="12" fill="#868e96"/><path d="M14,-46q16,16 32,0v30q-16,-14 -32,0z" fill="#d0ebff" stroke="#adb5bd" stroke-width="2.5"/>`;
+      s += line([-60, -40], [-24, -32], '#fab005', 2) + line([-24, -32], [-56, -16], '#fab005', 2);
+      return s + tree(58, 18, 0.7) + pine(-62, 18, 0.7) + person(2, 32, 4); },
+    lens: c => { let s = shadow(-4, 2, 28) + `<rect x="-6" y="-14" width="5" height="18" fill="#868e96"/><ellipse cx="-4" cy="-38" rx="9" ry="24" fill="rgba(208,235,255,.85)" stroke="${c}" stroke-width="3"/>`;  // 透鏡成像
+      s += line([-64, -50], [-8, -50], '#fab005', 2) + line([-8, -50], [44, -18], '#fab005', 2) + line([-64, -30], [0, -30], '#fab005', 2) + line([0, -30], [44, -18], '#fab005', 2);
+      s += `<path d="M-62,-14l0,-36l-6,8z" fill="#e8590c"/><rect x="44" y="-30" width="20" height="26" fill="#fff" stroke="#ced4da"/><path d="M54,-12l0,-12" stroke="#e8590c" stroke-width="2"/>`;
+      return s + tree(-58, 18, 0.7) + person(20, 32, 2); },
+    telescope: c => { let s = shadow(-4, 0, 38) + cyl(-6, -6, 30, 26, '#f1f3f5') + `<path d="M-36,-32a30 26 0 0 1 60 0z" fill="${shade(c, 0.4)}"/><path d="M-6,-58a30 26 0 0 1 30 26h-30z" fill="${shade(c, 0.2)}"/>`;  // 光學儀器：天文台望遠鏡
+      s += `<rect x="-14" y="-56" width="12" height="26" fill="#495057"/>` + line([-8, -52], [28, -82], '#343a40', 9) + line([28, -82], [34, -86], '#868e96', 11);
+      s += onLeft(-6, -6, 30, 30, 0, '');
+      return s + tree(46, 16, 0.8) + pine(-62, 14, 0.7) + person(26, 32, 3); },
+    prism: c => { let s = `<path d="M-70,10a70 60 0 0 1 140 0" fill="none" stroke="#ff8787" stroke-width="5" opacity=".7"/><path d="M-62,10a62 52 0 0 1 124 0" fill="none" stroke="#ffd43b" stroke-width="5" opacity=".7"/><path d="M-54,10a54 44 0 0 1 108 0" fill="none" stroke="#69db7c" stroke-width="5" opacity=".7"/><path d="M-46,10a46 36 0 0 1 92 0" fill="none" stroke="#74c0fc" stroke-width="5" opacity=".7"/><path d="M-38,10a38 28 0 0 1 76 0" fill="none" stroke="#b197fc" stroke-width="5" opacity=".7"/>`;  // 光與顏色：彩虹＋三稜鏡
+      s += shadow(0, 8, 20) + `<path d="M-18,8l18,-34l18,34z" fill="#e7f5ff" stroke="#74c0fc" stroke-width="2"/>`;
+      return s + person(-30, 32, 0) + person(30, 30, 5); },
+    pool: c => { let s = `<ellipse cx="-4" cy="6" rx="58" ry="26" fill="#74c0fc"/><ellipse cx="-4" cy="6" rx="52" ry="22" fill="#a5d8ff"/>` + [10, 20, 30, 40].map(r => `<ellipse cx="-4" cy="6" rx="${r}" ry="${f1(r * 0.42)}" fill="none" stroke="#e7f5ff" stroke-width="1.8"/>`).join('');  // 波的種類／折射：水波池
+      s += `<path d="M-60,-30q10,-12 20,0t20,0t20,0t20,0" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/>` + line([30, -40], [30, 4], '#868e96', 2) + line([30, -40], [12, -4], '#fab005', 2);
+      return s + tree(58, -10, 0.8) + pine(-66, -6, 0.7) + person(48, 30, 1); },
     mountain: (c, anim) => { let s = `<path d="M-30,-4 C-20,10 -40,18 -14,26 S 10,40 26,46" fill="none" stroke="#74c0fc" stroke-width="6" stroke-linecap="round"/>`;
       s += cone(-6, -24, 30, 46, '#8c9a6b') + cone(-34, -6, 40, 64, '#7d8f5a') + cone(-34, -48, 13.3, 22, '#f8f9fa') + turbine(42, -14, anim) + turbine(62, 2, anim);
       s += shadow(34, 30, 12) + `<rect x="31" y="22" width="6" height="8" fill="#868e96"/><circle cx="34" cy="13" r="11" fill="#4dabf7"/><path d="M27,9c3,-4 8,-3 9,1s-3,6 -6,5z M37,14c2,-2 5,0 4,3s-4,2 -4,0z" fill="#69db7c"/><ellipse cx="34" cy="13" rx="11" ry="3.2" fill="none" stroke="${c}" stroke-width="1.4"/>`;
@@ -1336,6 +1393,126 @@ body{padding-bottom:64px}
     return s + '</svg>';
   }
 
+  /* ---------- 街區：tiles = [{ name, sub, kind, color, locked, acts: [{ label, el, ghost }] }] ---------- */
+  function tileArt(kind, c) {
+    return `<svg viewBox="-118 -118 236 204" aria-hidden="true"><g class="pm-l">${islandSVG(kind, c, 82, false).replace(/<ellipse class="pm-ring"[^>]*\/>/, '')}</g></svg>`;
+  }
+  function districtHTML(title, tiles) {
+    return `<div class="pm-district">${title ? `<div class="pm-dt-head">🏙️ ${esc(title)}</div>` : ''}<div class="pm-dt-grid">${tiles.map((t, i) => { const c = toHex(t.color || '#3b5bdb');
+      return `<div class="pm-dt${t.locked ? ' locked' : ''}" style="--pmc:${c}">
+        <button type="button" class="pm-dt-art" data-t="${i}" data-a="0" aria-label="${esc(t.name)}${t.locked ? '（尚未解鎖）' : ''}">${tileArt(t.kind, c)}</button>
+        <div class="pm-dt-name">${t.locked ? '🔒 ' : ''}${esc(t.name)}</div><div class="pm-dt-sub${/★/.test(t.sub || '') ? ' st' : ''}">${esc(t.sub || '')}</div>
+        <div class="pm-dt-acts">${(t.acts || []).map((a, k) => `<button type="button" class="${a.ghost ? 'ghost' : ''}" data-t="${i}" data-a="${k}" ${a.title ? `title="${esc(a.title)}"` : ''}>${esc(a.label)}</button>`).join('')}</div></div>`; }).join('')}</div></div>`;
+  }
+  function districtClick(e, host) {
+    const b = e.target.closest('[data-t][data-a]'); if (!b || !host._tiles) return false;
+    const t = host._tiles[+b.dataset.t], a = t && t.acts && t.acts[+b.dataset.a];
+    e.preventDefault(); e.stopPropagation();
+    if (a && a.el) { const box_ = host.closest('.pe-map'); if (box_ && host.classList.contains('pm-panel')) { SEL[box_.dataset.pm] = null; host.hidden = true; const sea = host.closest('.pm-street'); if (sea) sea._sel = null; } a.el.click(); }
+    return true;
+  }
+
+  /* ---------- 街區平面圖：一座大島上的街道，小單元＝沿街的建築（全景 → 科目島 → 街區 → 建築） ---------- */
+  function streetLayout(n, narrow) {
+    const pos = [];
+    if (narrow) {
+      const rows = Math.ceil(n / 2), W = 640, y0 = 330, dy = 290, H = y0 + (rows - 1) * dy + 420;
+      for (let i = 0; i < n; i++) { const r = Math.floor(i / 2), side = i % 2; pos.push([side ? 470 : 170, y0 + r * dy + (side ? 40 : 0)]); }
+      const top = 150, bot = H - 70;
+      return { W, H, narrow, pos, plaza: [320, y0 + rows * dy - 40],
+        plate: [[40, top + 90], [320, top], [600, top + 90], [600, bot - 90], [320, bot], [40, bot - 90]], front: [3, 4, 5],
+        road: [[320, top + 40], [320, bot - 60]] };
+    }
+    const cols = Math.max(2, Math.ceil(n / 2)), dx = 285, x0 = 220, W = Math.max(1100, x0 + (cols - 1) * dx + 420), H = 620;
+    for (let i = 0; i < n; i++) { const c = Math.floor(i / 2), back = i % 2 === 0; pos.push([x0 + c * dx + (back ? 0 : 40), back ? 300 : 470]); }
+    const l = 50, r = W - 50, top = 170, bot = 520;
+    return { W, H, narrow, pos, plaza: [x0 + cols * dx + 20, 385],
+      plate: [[l, 345], [l + 110, top], [r - 110, top], [r, 345], [r - 110, bot], [l + 110, bot]], front: [3, 4, 5],
+      road: [[l + 70, 372], [r - 70, 372]] };
+  }
+  function streetSVG(tiles, landmark, lc, sel) {
+    const narrow = window.innerWidth < 700, Lo = streetLayout(tiles.length, narrow), T = 34, c = toHex(lc || '#3b5bdb'), rand = rng(tiles.length * 17 + 3);
+    let s = `<svg viewBox="0 0 ${Lo.W} ${Lo.H}" role="img" aria-label="街區平面圖：點選建築查看練習" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif">
+      <defs><linearGradient id="pmSea2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd6df"/><stop offset="1" stop-color="#5cb8c9"/></linearGradient>
+      <linearGradient id="pmBeam" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#fff3bf"/><stop offset="1" stop-color="#fff3bf" stop-opacity="0"/></linearGradient>
+      <filter id="pmGray"><feColorMatrix type="saturate" values="0.15"/></filter></defs><rect width="${Lo.W}" height="${Lo.H}" fill="url(#pmSea2)"/>`;
+    for (let i = 0; i < (Lo.W * Lo.H) / 9000; i++) { const x = rand() * Lo.W, y = rand() * Lo.H, w = 10 + rand() * 12;
+      s += `<path class="pm-wave" style="animation-delay:-${(rand() * 4).toFixed(1)}s" d="M${f1(x)},${f1(y)}q${f1(w / 2)},-5 ${f1(w)},0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`; }
+    const P = Lo.plate, grow = (pts, k, dy) => { const cx = pts.reduce((a, p) => a + p[0], 0) / pts.length, cy = pts.reduce((a, p) => a + p[1], 0) / pts.length;
+      return pts.map(([x, y]) => [cx + (x - cx) * k, cy + (y - cy) * k + dy]); };
+    const sides = (pts, y0, y1, cols) => Lo.front.map((i, k) => { const a = pts[i % pts.length], b = pts[(i + 1) % pts.length];
+      return poly([[a[0], a[1] + y0], [b[0], b[1] + y0], [b[0], b[1] + y1], [a[0], a[1] + y1]], cols[k % cols.length]); }).join('');
+    const ring = grow(P, 1.04, T - 8);
+    s += poly(grow(P, 1.1, T + 6), 'rgba(255,255,255,.35)') + `<ellipse cx="${Lo.W / 2}" cy="${Lo.H / 2 + T}" rx="${Lo.W * 0.47}" ry="${Lo.H * 0.4}" fill="rgba(10,50,70,.10)"/>`;
+    s += sides(ring, 0, 10, ['#c9b58b', '#d8c69f', '#e2d3b0']) + poly(ring, '#efe3c4');
+    s += sides(P, 0, 10, [shade(c, -0.25), shade(c, -0.05), shade(c, 0.12)]) + sides(P, 10, T - 8, ['#a99f8e', '#bdb4a3', '#d0c8b8']) + poly(P, '#b7dc9e') + poly(grow(P, 0.95, 0), '#c4e5aa');
+    /* 街道：主街＋通往每棟建築的小巷 */
+    const [A, B] = Lo.road, rw = 34, road = (a, b, w, col) => { const dx = b[0] - a[0], dy = b[1] - a[1], L_ = Math.hypot(dx, dy) || 1, nx = -dy / L_ * w / 2, ny = dx / L_ * w / 2;
+      return poly([[a[0] + nx, a[1] + ny], [b[0] + nx, b[1] + ny], [b[0] - nx, b[1] - ny], [a[0] - nx, a[1] - ny]], col); };
+    tiles.forEach((t, i) => { const [x, y] = Lo.pos[i]; const m = Lo.narrow ? [320, y + 8] : [x, 372]; s += road([x, y + 8], m, 18, '#e9e3d6'); });
+    s += road(A, B, rw + 10, '#e9e3d6') + road(A, B, rw, '#cfc8b9') + line(A, B, '#fff', 2.5, 'stroke-dasharray="12 12" opacity=".9"');
+    /* 行道樹與路燈 */
+    const along = (t, off) => Lo.narrow ? [A[0] + off, A[1] + (B[1] - A[1]) * t] : [A[0] + (B[0] - A[0]) * t, A[1] + off];
+    for (let k = 1; k < 9; k++) { const t = k / 9; const p1 = along(t, -30), p2 = along(t + 0.05, 30);
+      if (k % 2) s += tree(p1[0], p1[1], 0.7, '#6ab04c'); else s += `<line x1="${f1(p2[0])}" y1="${f1(p2[1])}" x2="${f1(p2[0])}" y2="${f1(p2[1] - 26)}" stroke="#868e96" stroke-width="2"/><circle cx="${f1(p2[0])}" cy="${f1(p2[1] - 27)}" r="3.5" fill="#fff3bf"/>`; }
+    /* 草地上的樹叢與小花圃（避開建築、街道與廣場），讓街區更像一座小鎮 */
+    const near = (x, y) => Lo.pos.some(([a, b]) => Math.hypot(a - x, (b - y) * 1.6) < 125) || Math.hypot(Lo.plaza[0] - x, (Lo.plaza[1] - y) * 1.6) < 120 ||
+      (Lo.narrow ? Math.abs(x - 320) < 55 : Math.abs(y - 372) < 45);
+    const inPlate = (x, y) => { let inside = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside; } return inside; };
+    const fill = rng(tiles.length * 7 + 1), deco = [];
+    for (let k = 0; k < 400 && deco.length < (Lo.narrow ? 16 : 22); k++) { const x = 60 + fill() * (Lo.W - 120), y = 120 + fill() * (Lo.H - 200);
+      if (!inPlate(x, y - 6) || !inPlate(x, y + 20) || near(x, y) || deco.some(([a, b]) => Math.hypot(a - x, b - y) < 46)) continue; deco.push([x, y]); }
+    deco.sort((a, b) => a[1] - b[1]).forEach(([x, y], k) => { s += k % 5 === 4 ? `<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="16" ry="7" fill="#f3d9e4"/><circle cx="${f1(x - 5)}" cy="${f1(y - 1)}" r="2.5" fill="#f783ac"/><circle cx="${f1(x + 5)}" cy="${f1(y + 1)}" r="2.5" fill="#fcc419"/>` : k % 3 ? tree(x, y, 0.85, k % 2 ? '#5fa35a' : '#6ab04c') : pine(x, y, 0.85); });
+    /* 地標廣場（本課代表建築，不能點） */
+    const [px, py] = Lo.plaza;
+    s += `<ellipse cx="${px}" cy="${py + 6}" rx="70" ry="34" fill="${shade(c, 0.78)}" stroke="${shade(c, 0.5)}" stroke-width="2"/>`;
+    s += `<g transform="translate(${px},${py}) scale(.62)" opacity=".95">${(L[landmark] || L.pavilion)(c, false)}</g>`;
+    s += `<g transform="translate(${px},${py + 52})"><rect x="-44" y="-13" width="88" height="24" rx="12" fill="rgba(255,255,255,.85)"/><text y="4" font-size="13" font-weight="800" text-anchor="middle" fill="${shade(c, -0.3)}">地標廣場</text></g>`;
+    /* 建築：由後往前畫 */
+    const lab = Lo.narrow ? 1.25 : 1;
+    tiles.map((t, i) => i).sort((a, b) => Lo.pos[a][1] - Lo.pos[b][1]).forEach(i => { const t = tiles[i], [x, y] = Lo.pos[i], tc = toHex(t.color || c);
+      s += `<g class="pm-isl pm-bld${sel === i ? ' sel' : ''}" data-t="${i}" transform="translate(${x},${y})" tabindex="0" role="button" aria-label="${esc(t.name + '：' + (t.sub || ''))}${t.locked ? '（尚未解鎖）' : ''}"><g class="pm-lift">
+        <ellipse class="pm-ring" cx="0" cy="6" rx="84" ry="37" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="10 8"/>
+        <ellipse cx="0" cy="6" rx="72" ry="31" fill="${shade(tc, 0.85)}" stroke="${shade(tc, 0.55)}" stroke-width="1.5"/>
+        <g transform="scale(${Lo.narrow ? 1 : 0.86})" ${t.locked ? 'filter="url(#pmGray)" opacity=".75"' : ''}>${(L[t.kind] || L.school)(tc, false)}</g>
+        ${t.locked ? `<g transform="translate(34,-60)"><circle r="15" fill="#fff"/><text y="6" font-size="17" text-anchor="middle">🔒</text></g>` : ''}
+        <g transform="translate(0,${f1(48 * lab)}) scale(${lab})">${labelSVG(i + 1, t.name, t.sub || '', tc, 0, /★/.test(t.sub || '') && /★/.test((t.sub || '').replace(/☆/g, '')))}</g>
+      </g></g>`; });
+    return s + '</svg>';
+  }
+  function openBuilding(sea, t, keep) {
+    const tiles = sea._tiles, tl = tiles && tiles[t], panel = sea.querySelector('.pm-panel'); if (!tl || !panel) return;
+    sea._sel = t; sea.querySelectorAll('.pm-bld').forEach(g => g.classList.toggle('sel', +g.dataset.t === t));
+    panel._tiles = tiles; panel.classList.remove('pm-dock');
+    panel.innerHTML = `<span class="pm-cap">${String(t + 1).padStart(2, '0')}　${esc(tl.name)}</span><button type="button" class="pm-x" aria-label="關閉">✕</button>
+      <div class="pm-bp" style="--pmc:${toHex(tl.color || '#3b5bdb')}"><div class="pm-bp-name">${tl.locked ? '🔒 ' : ''}${esc(tl.name)}</div>
+      ${tl.desc ? `<div class="pm-bp-desc">${esc(tl.desc)}</div>` : ''}<div class="pm-bp-sub${/★/.test(tl.sub || '') ? ' st' : ''}">${esc(tl.sub || '')}</div>
+      <div class="pm-dt-acts">${(tl.acts || []).map((a, k) => `<button type="button" class="${a.ghost ? 'ghost' : ''}" data-t="${t}" data-a="${k}" ${a.title ? `title="${esc(a.title)}"` : ''}>${esc(a.label)}</button>`).join('')}</div></div>`;
+    panel.hidden = false; panel.scrollTop = 0;
+    if (!keep) { const f = panel.querySelector('.pm-dt-acts button'); if (f) f.focus({ preventScroll: true }); try { panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {} }
+  }
+  const DRILL = {};
+  const DCONFIGS = [];
+  function buildDistrict(cfg) {
+    const anchor = resolve(cfg.anchor)[0]; let host = document.querySelector(`.pe-map[data-pd="${cfg.key}"]`);
+    if (!anchor || !anchor.isConnected) { if (host) host.remove(); return; }
+    const els = resolve(cfg.items).filter(e => !e.closest('.pe-map')); if (!els.length) { if (host) host.remove(); return; }
+    const view = getView(), tiles = els.map((el, i) => cfg.tile(el, i));
+    const title = cfg.title ? cfg.title() : '';
+    const sig = view + (window.innerWidth < 700 ? 't' : 'w') + title + tiles.map(t => t.name + t.sub + t.kind + t.locked + (t.acts || []).map(a => a.label).join(',')).join('|');
+    resolve(cfg.hide || cfg.anchor).forEach(h => { if (!h.closest('.pe-map')) h.style.display = view === 'map' ? 'none' : ''; });
+    if (host && host.dataset.sig === sig && host.nextElementSibling === anchor) { host._tiles = tiles; const sea0 = host.querySelector('.pm-sea'); if (sea0) sea0._tiles = tiles; const p0 = host.querySelector('.pm-panel'); if (p0 && p0._tiles) p0._tiles = tiles; return; }
+    if (host) host.remove();
+    host = document.createElement('div'); host.className = 'pe-map'; host.dataset.pd = cfg.key; host.dataset.sig = sig;
+    const lm = cfg.landmark ? cfg.landmark() : ['pavilion', '#3b5bdb'];
+    host.innerHTML = `<div class="pe-map-bar"><span class="pm-tip">${view === 'map' ? '🏙️ ' + esc(title || '街區') + '：點建築查看練習再出發' : ''}</span>
+      <span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🏙️ 街區</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div>` +
+      (view === 'map' ? `<div class="pm-sea pm-street">${streetSVG(tiles, lm[0], lm[1] || (tiles[0] || {}).color, host._sel)}<div class="pm-panel" hidden></div></div>` : '');
+    const sea = host.querySelector('.pm-sea'); if (sea) sea._tiles = tiles;
+    anchor.parentNode.insertBefore(host, anchor);
+  }
+
   /* ---------- CSS ---------- */
   const css = `.pe-map{margin:16px 0 22px; font-family:'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif}
   .pe-map-bar{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:0 0 8px}
@@ -1360,6 +1537,32 @@ body{padding-bottom:64px}
   .pm-panel .pm-cap{position:absolute; top:14px; left:16px; font-size:13px; font-weight:700; color:#667085}
   .pm-panel .pm-card{width:100% !important; max-width:none !important; margin:0 !important; transform:none !important}
   @media (max-width:700px){.pm-panel{position:fixed; left:8px; right:8px; bottom:8px; width:auto; transform:none; max-height:70vh} .pm-sea{border-radius:16px}}
+  /* 街區（小單元選單）：每個小單元一棟建築，按鈕就在建築下方 */
+  .pm-district{background:linear-gradient(180deg,#eef8fa,#c9eaf0); border-radius:20px; padding:14px; margin:0 0 6px; box-sizing:border-box}
+  .pm-dt-head{font-weight:800; color:#2f4b57; margin:0 4px 10px; font-size:16px}
+  .pm-dt-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:12px}
+  .pm-dt{background:rgba(255,255,255,.78); border-radius:16px; padding:6px 10px 12px; display:flex; flex-direction:column; align-items:center; text-align:center; box-shadow:0 4px 14px rgba(30,80,110,.10); min-width:0}
+  .pm-dt-art{all:unset; cursor:pointer; width:100%; display:block; border-radius:12px}
+  .pm-dt-art svg{width:100%; height:132px; display:block; overflow:hidden}
+  .pm-dt-art .pm-l{transition:transform .25s ease} .pm-dt-art:hover .pm-l,.pm-dt-art:focus-visible .pm-l{transform:translateY(-8px)}
+  .pm-dt-art:focus-visible{outline:3px solid #3b5bdb; outline-offset:2px}
+  .pm-dt-name{font-weight:800; font-size:15.5px; color:#1f2433; line-height:1.35}
+  .pm-dt-sub{font-size:13px; color:#667085; margin-top:2px; min-height:1.2em; line-height:1.4}
+  .pm-dt-sub.st{color:#e8590c; font-weight:700}
+  .pm-dt-acts{display:flex; flex-wrap:wrap; justify-content:center; gap:6px; margin-top:8px}
+  .pm-dt-acts button{all:unset; cursor:pointer; padding:6px 13px; border-radius:99px; background:var(--pmc,#3b5bdb); color:#fff; font-weight:700; font-size:14px; line-height:1.3; font-family:inherit}
+  .pm-dt-acts button.ghost{background:#fff; color:#475467; box-shadow:inset 0 0 0 1px #d0d5dd}
+  .pm-dt-acts button:focus-visible{outline:3px solid #1f2433; outline-offset:2px}
+  .pm-dt.locked .pm-dt-art svg{filter:grayscale(.85) opacity(.7)}
+  .pm-panel.pm-dock{position:relative; left:auto; bottom:auto; transform:none; width:auto; max-height:none; margin:0 14px 14px; box-shadow:0 6px 20px rgba(0,0,0,.18)}
+  @media (max-width:700px){.pm-panel.pm-dock{position:fixed; left:8px; right:8px; bottom:8px; margin:0; max-height:72vh}}
+  .pm-panel .pm-district{margin:0; padding:10px} .pm-panel .pm-dt-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  @media (max-width:520px){.pm-dt-grid{grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px} .pm-dt-art svg{height:110px} .pm-dt-name{font-size:14.5px}}
+  .pm-street .pm-back{all:unset; position:absolute; left:12px; top:12px; z-index:5; cursor:pointer; background:rgba(255,255,255,.95); color:#1f2433; font-weight:800; font-size:14px; padding:7px 14px; border-radius:99px; box-shadow:0 2px 8px rgba(0,0,0,.15); font-family:inherit}
+  .pm-street .pm-back:focus-visible{outline:3px solid #3b5bdb}
+  .pm-bp{padding:2px 4px 4px} .pm-bp-name{font-size:19px; font-weight:800; color:#1f2433} .pm-bp-desc{font-size:14px; color:#475467; margin-top:2px}
+  .pm-bp-sub{font-size:14px; color:#667085; margin-top:4px} .pm-bp-sub.st{color:#e8590c; font-weight:700}
+  .pm-bp .pm-dt-acts{justify-content:flex-start; margin-top:12px} .pm-bp .pm-dt-acts button{padding:9px 18px; font-size:15px}
   @media print{.pe-map{display:none}}`;
   function addCSS() { if (document.getElementById('pe115-map-css')) return; const st = document.createElement('style'); st.id = 'pe115-map-css'; st.textContent = css; document.head.appendChild(st); }
 
@@ -1376,23 +1579,39 @@ body{padding-bottom:64px}
     const view = getView(), mode = window.innerWidth < 700 ? 't' : 'w';
     const items = els.map((el, i) => ({ el, name: (cfg.name(el, i) || '').trim(), sub: (cfg.sub ? cfg.sub(el, i) : '') || '', kind: cfg.kind(el, i), color: toHex(cfg.color ? cfg.color(el, i) : '#3b5bdb'),
       locked: cfg.locked ? !!cfg.locked(el, i) : false, apart: cfg.apart ? !!cfg.apart(el, i) : false }));
-    const sig = view + mode + items.map(it => it.name + it.sub + it.locked + it.kind).join('|');
+    const dr0 = DRILL[cfg.key], drT = (dr0 != null && els[dr0] && cfg.tiles) ? cfg.tiles(els[dr0], dr0).map(t => t.name + t.sub + t.locked).join(',') : '';
+    const sig = view + mode + (dr0 != null ? 'D' + dr0 + drT : '') + items.map(it => it.name + it.sub + it.locked + it.kind).join('|');
     resolve(cfg.hide || cfg.anchor).forEach(h => { if (!h.closest('.pe-map')) h.style.display = view === 'map' ? 'none' : ''; });
     if (box_ && box_.dataset.sig === sig && box_.nextElementSibling === anchor) { box_._items = items; return; }
     if (box_) box_.remove();
-    box_ = document.createElement('div'); box_.className = 'pe-map'; box_.dataset.pm = cfg.key; box_.dataset.sig = sig; box_._items = items;
+    box_ = document.createElement('div'); box_.className = 'pe-map'; box_.dataset.pm = cfg.key; box_.dataset.sig = sig; box_._items = items; box_._cfg = cfg;
     const sel = SEL[cfg.key];
     box_.innerHTML = `<div class="pe-map-bar"><span class="pm-tip">${view === 'map' ? '🗺️ 點選島嶼，查看內容後再出發' : ''}</span>
       <span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🗺️ 地圖</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div>` +
       (view === 'map' ? `<div class="pm-sea">${mapSVG(cfg, items, sel)}<div class="pm-panel" hidden></div></div>` : '');
     anchor.parentNode.insertBefore(box_, anchor);
-    if (view === 'map' && sel != null && items[sel]) openPanel(box_, sel, true);
+    const dr = DRILL[cfg.key];
+    if (view === 'map' && dr != null && items[dr] && cfg.tiles) openPanel(box_, dr, true);
+    else if (view === 'map' && sel != null && items[sel]) openPanel(box_, sel, true);
   }
   function openPanel(box_, i, keep) {
     const items = box_._items, panel = box_.querySelector('.pm-panel'); if (!panel) return;
     SEL[box_.dataset.pm] = i;
     box_.querySelectorAll('.pm-isl').forEach(g => g.classList.toggle('sel', +g.dataset.i === i));
-    const it = items[i]; const cl = it.el.cloneNode(true);
+    const it = items[i], cfg = box_._cfg;
+    const tiles = cfg && cfg.tiles ? cfg.tiles(it.el, i) : null;
+    if (tiles && tiles.length) {   // 有多個小單元的島：放大進入該島的街區平面圖
+      DRILL[box_.dataset.pm] = i; SEL[box_.dataset.pm] = null;
+      const sea = box_.querySelector('.pm-sea'); if (!sea) return;
+      sea.classList.add('pm-street'); sea._tiles = tiles; sea._sel = null;
+      const isle = (typeof cfg.island === 'function' ? cfg.island() : cfg.island) || '島嶼';
+      sea.innerHTML = streetSVG(tiles, it.kind, it.color, null) + `<button type="button" class="pm-back">← 回${esc(isle)}全圖</button><div class="pm-panel" hidden></div>`;
+      const tip = box_.querySelector('.pm-tip'); if (tip) tip.textContent = `🏙️ ${isle} › ${it.name} 街區：點建築查看練習再出發`;
+      if (!keep) { try { sea.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {} const g = sea.querySelector('.pm-bld'); if (g) g.focus({ preventScroll: true }); }
+      return;
+    }
+    panel._tiles = null; panel.classList.remove('pm-dock');
+    const cl = it.el.cloneNode(true);
     cl.style.display = ''; cl.classList.add('pm-card');
     [cl, ...cl.querySelectorAll('*')].forEach(e => { if (e.hasAttribute('onclick')) { e.setAttribute('data-pm-act', ''); e.removeAttribute('onclick'); } if (e.id) e.removeAttribute('id'); });
     panel.innerHTML = `<span class="pm-cap">${String(i + 1).padStart(2, '0')}　${esc(it.name)}</span><button type="button" class="pm-x" aria-label="關閉">✕</button>`;
@@ -1414,18 +1633,22 @@ body{padding-bottom:64px}
 
   document.addEventListener('click', e => {
     const box_ = e.target.closest && e.target.closest('.pe-map'); if (!box_) return;
+    const dh = e.target.closest('.pm-panel') || e.target.closest('.pm-district'); if (dh && dh._tiles && districtClick(e, dh)) return;
     const v = e.target.closest('[data-pmv]');
-    if (v) { setView(v.dataset.pmv); SEL[box_.dataset.pm] = null; box_.dataset.sig = ''; refresh(); return; }
-    if (e.target.closest('.pm-x')) { closePanel(box_); return; }
+    if (v) { setView(v.dataset.pmv); SEL[box_.dataset.pm] = null; DRILL[box_.dataset.pm] = null; document.querySelectorAll('.pe-map').forEach(b => b.dataset.sig = ''); refresh(); return; }
+    if (e.target.closest('.pm-back')) { DRILL[box_.dataset.pm] = null; box_.dataset.sig = ''; refresh(); return; }
+    const sea = e.target.closest('.pm-street');
+    if (e.target.closest('.pm-x')) { if (sea) { const p = sea.querySelector('.pm-panel'); p.hidden = true; p.innerHTML = ''; sea._sel = null; sea.querySelectorAll('.pm-bld.sel').forEach(g => g.classList.remove('sel')); } else closePanel(box_); return; }
+    const bld = e.target.closest('.pm-bld'); if (bld && sea) { openBuilding(sea, +bld.dataset.t); return; }
     const isl = e.target.closest('.pm-isl'); if (isl) openPanel(box_, +isl.dataset.i);
   });
   document.addEventListener('keydown', e => {
     const isl = e.target.closest && e.target.closest('.pm-isl');
-    if (isl && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openPanel(isl.closest('.pe-map'), +isl.dataset.i); }
+    if (isl && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (isl.classList.contains('pm-bld')) openBuilding(isl.closest('.pm-street'), +isl.dataset.t); else openPanel(isl.closest('.pe-map'), +isl.dataset.i); }
     if (e.key === 'Escape') document.querySelectorAll('.pe-map').forEach(closePanel);
   });
   let queued = false;
-  function refresh() { queued = false; CONFIGS.forEach(c => { try { build(c); } catch (err) { console.warn('PE115Map', c.key, err); } }); }
+  function refresh() { queued = false; CONFIGS.forEach(c => { try { build(c); } catch (err) { console.warn('PE115Map', c.key, err); } }); DCONFIGS.forEach(c => { try { buildDistrict(c); } catch (err) { console.warn('PE115Map.district', c.key, err); } }); }
   const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(refresh); } };
   let lastMode = window.innerWidth < 700;
   window.addEventListener('resize', () => { const m = window.innerWidth < 700; if (m !== lastMode) { lastMode = m; schedule(); } });
@@ -1511,7 +1734,7 @@ body{padding-bottom:64px}
   window.addEventListener('scroll', sceneSchedule, { passive: true });
   window.addEventListener('resize', sceneSchedule); if (window.visualViewport) window.visualViewport.addEventListener('resize', sceneSchedule);
   new MutationObserver(m => { if (SCENE && m.some(x => !(x.target.closest && x.target.closest('#pe-scene, #pe-scene-btn')) && x.target.id !== 'pe-scene-btn')) sceneSchedule(); }).observe(document.documentElement, { childList: true, subtree: true });
-  window.PE115Map = { add(cfg) { CONFIGS.push(cfg); schedule(); }, scene(cfg) { SCENE = cfg; sceneSchedule(); }, refresh: schedule, kinds: Object.keys(L) };
+  window.PE115Map = { add(cfg) { CONFIGS.push(cfg); schedule(); }, district(cfg) { DCONFIGS.push(cfg); schedule(); }, scene(cfg) { SCENE = cfg; sceneSchedule(); }, refresh: schedule, kinds: Object.keys(L) };
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
 </script>
@@ -1535,6 +1758,19 @@ PE115Map.scene({
   progress: () => { try { const n = Q.items.length; return [Q.mode === 'exam' ? Q.ans.filter(x => x != null).length : Q.res.filter(Boolean).length, n]; } catch (e) { return [0, 1]; } },
   correct: () => { try { const r = Q.res[Q.i]; return r && r.ok ? 'q' + Q.i + (Q.retry ? 'r' : '') : ''; } catch (e) { return ''; } },
   compact: () => { try { return Q.mode === 'exam'; } catch (e) { return false; } }
+});
+/* 課次頁：小單元 → 街區建築（注音＝鐘鼓樓、注釋＝書院、課文選擇＝學堂、特色單元＝該課地標、句型＝工坊、改錯＝偵探所、閱讀＝報社、模擬段考＝獎盃台） */
+PE115Map.district({
+  key: 'units', anchor: '#app > .units', items: '#app > .units > .ucard',
+  landmark: () => { const b = document.querySelector('#app .banner'), h = b ? b.querySelector('h2').textContent : '', m = ((b && b.getAttribute('style')) || '').match(/#[0-9a-f]{6}/i);
+    return [{ 第四課: 'lotus', 第五課: 'hourglass', 第六課: 'birdtree', 段考複習: 'trophy' }[h] || 'pavilion', m ? m[0] : '#c2255c']; },
+  title: () => { const b = document.querySelector('#app .banner'); if (!b) return ''; const en = ((b.querySelector('.en') || {}).textContent || '').split('｜')[0]; return `${b.querySelector('h2').textContent}${/課$/.test(b.querySelector('h2').textContent) ? ' ' + en : ''} 街區`; },
+  tile: el => { const name = el.querySelector('.t').textContent.replace(/^\d+\.\s*/, ''), lesson = (document.querySelector('#app .banner h2') || {}).textContent || '';
+    const kind = /注音/.test(name) ? 'belltower' : /注釋/.test(name) ? 'academy' : /課文選擇/.test(name) ? 'school' : /句型/.test(name) ? 'workshop' : /改錯/.test(name) ? 'detective' : /閱讀/.test(name) ? 'press' : /模擬/.test(name) ? 'trophy' : ({ 第四課: 'lotus', 第五課: 'hourglass', 第六課: 'birdtree' }[lesson] || 'pavilion');
+    const color = (((document.querySelector('#app .banner') || {}).getAttribute || (() => ''))
+      .call(document.querySelector('#app .banner'), 'style') || '').match(/#[0-9a-f]{6}/i);
+    const locked = el.classList.contains('locked');
+    return { name, sub: (() => { const s = el.querySelector('.s'); if (!s) return ''; const c = s.cloneNode(true); c.querySelectorAll('.off').forEach(x => { x.textContent = '☆'; }); return c.textContent.trim(); })(), kind, color: color ? color[0] : '#c2255c', locked, acts: [{ label: locked ? '🔒 看解鎖條件' : '出發 →', el }] }; }
 });
 </script>
 </body>
