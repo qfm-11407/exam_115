@@ -241,6 +241,19 @@ footer{margin-top:28px;text-align:center;color:#8b8577;font-size:14px}
 .pe-howto li b{white-space:nowrap}
 @media print{.pe-howto{display:none}}
 </style>
+<style id="pe115-boot">
+/* 開頁防閃爍：元件接手前，先藏起會被島嶼名牌、地圖取代的原區塊（元件載入後由元件控制顯示） */
+details.pe-howto:not([data-pm-c]) > :not(summary){display:none}
+#app > .hero{display:none}
+html.pe-mapview #app > .grid, html.pe-mapview #app > .units{display:none}
+</style>
+<script id="pe115-boot-js">
+(function () { var d = document.documentElement, v = 'map';
+  try { v = localStorage.getItem('pe115:view') || 'map'; } catch (e) {}
+  if (v !== 'list') d.classList.add('pe-mapview');
+  if (/^#(civics|history|geography)$/.test(location.hash)) d.classList.add('pe-hash');
+})();
+</script>
 </head>
 <body>
 <div id="app" class="wrap"></div>
@@ -1471,7 +1484,7 @@ body{padding-bottom:64px}
     /* 地標廣場（本課代表建築，不能點） */
     const [px, py] = Lo.plaza;
     /* 本課看板（可點）：廣場上的地標＋公告看板，顯示本課星星與完成站數 */
-    const lab0 = Lo.narrow ? 1.25 : 1;
+    const lab0 = Lo.narrow ? 1.1 : 1;
     s += `<g class="pm-isl pm-bld pm-plaza${sel === 'board' ? ' sel' : ''}" transform="translate(${px},${py})" tabindex="0" role="button" aria-label="本課看板：已完成 ${info.done} / ${info.total} 站"><g class="pm-lift">
       <ellipse class="pm-ring" cx="0" cy="6" rx="84" ry="40" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="10 8"/>
       <ellipse cx="0" cy="6" rx="74" ry="35" fill="${shade(c, 0.78)}" stroke="${shade(c, 0.5)}" stroke-width="2"/>
@@ -1483,7 +1496,7 @@ body{padding-bottom:64px}
       <g transform="translate(0,${f1(58 * lab0)}) scale(${lab0})">${labelSVG('★', '本課看板', info.m ? `★ ${info.s} / ${info.m}・已完成 ${info.done}/${info.total}` : `已完成 ${info.done} / ${info.total} 站`, c, 0, info.s > 0)}</g>
     </g></g>`;
     /* 建築：由後往前畫 */
-    const lab = Lo.narrow ? 1.25 : 1;
+    const lab = Lo.narrow ? 1.1 : 1;
     tiles.map((t, i) => i).sort((a, b) => Lo.pos[a][1] - Lo.pos[b][1]).forEach(i => { const t = tiles[i], [x, y] = Lo.pos[i], tc = toHex(t.color || c);
       s += `<g class="pm-isl pm-bld${sel === i ? ' sel' : ''}" data-t="${i}" transform="translate(${x},${y})" tabindex="0" role="button" aria-label="${esc(t.name + '：' + (t.sub || ''))}${t.locked ? '（尚未解鎖）' : ''}"><g class="pm-lift">
         <ellipse class="pm-ring" cx="0" cy="6" rx="84" ry="37" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="10 8"/>
@@ -1554,9 +1567,10 @@ body{padding-bottom:64px}
     if (host) host.remove();
     host = document.createElement('div'); host.className = 'pe-map'; host.dataset.pd = cfg.key; host.dataset.sig = sig;
     const lm = cfg.landmark ? cfg.landmark() : ['pavilion', '#3b5bdb'];
-    host.innerHTML = `<div class="pe-map-bar"><span class="pm-tip">${view === 'map' ? '🏙️ ' + esc(title || '街區') + '：點建築直接開始練習' : ''}</span>
-      <span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🏙️ 街區</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div>` +
-      (view === 'map' ? `<div class="pm-sea pm-street">${streetSVG(tiles, lm[0], lm[1] || (tiles[0] || {}).color, host._sel)}<div class="pm-panel" hidden></div></div>` : '');
+    /* 地圖導覽模式：位置列在地圖左上、切換鈕在地圖右上，按鈕都在地圖上；清單模式才在上方顯示切換鈕 */
+    host.innerHTML = view === 'map'
+      ? `<div class="pm-sea pm-street">${streetSVG(tiles, lm[0], lm[1] || (tiles[0] || {}).color, host._sel)}<div class="pm-ov-tl" data-crumb-slot></div><div class="pm-ov-tr"><span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🏙️ 街區</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div><div class="pm-panel" hidden></div></div>`
+      : `<div class="pe-map-bar"><span class="pm-tip"></span><span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🏙️ 街區</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div>`;
     const sea = host.querySelector('.pm-sea'); if (sea) { setTimeout(() => arrive(sea.querySelector('svg')), 0); sea._tiles = tiles; sea._title = (title || '').replace(/\s*街區$/, ''); sea._lc = lm[1] || (tiles[0] || {}).color; sea._boardEx = cfg.board; }
     anchor.parentNode.insertBefore(host, anchor);
   }
@@ -1564,6 +1578,11 @@ body{padding-bottom:64px}
   /* ---------- CSS ---------- */
   const css = `.pe-map{margin:16px 0 22px; font-family:'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif}
   .pe-map-bar{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin:0 0 8px}
+  .pm-ov-tl{position:absolute; left:12px; top:12px; z-index:6; max-width:calc(100% - 210px)}
+  .pm-ov-tr{position:absolute; right:12px; top:12px; z-index:6}
+  .pm-ov-tr .pm-tg{box-shadow:0 2px 10px rgba(0,0,0,.15); border:0}
+  .pm-ov-tl:empty{display:none}
+  @media (max-width:700px){ .pm-ov-tl{left:8px; top:8px; max-width:calc(100% - 16px)} .pm-ov-tr{right:8px; top:auto; bottom:8px} .pm-ov-tr .pm-tg button{padding:6px 10px; font-size:13px} }
   .pe-map-bar .pm-tip{font-size:15px; color:#667085; font-weight:600}
   .pm-tg{display:inline-flex; border:1px solid #d0d5dd; border-radius:10px; overflow:hidden; background:#fff}
   .pm-tg button{all:unset; cursor:pointer; padding:7px 14px; font-size:15px; font-weight:700; color:#667085; font-family:inherit}
@@ -1618,7 +1637,7 @@ body{padding-bottom:64px}
   .pm-bd-list button:hover,.pm-bd-list button:focus-visible{background:#eef2ff; outline:none} .pm-bd-list button.nx{box-shadow:inset 0 0 0 2px var(--pmc,#3b5bdb)}
   .pm-bd-no{font-weight:800; color:var(--pmc,#3b5bdb); font-size:13px} .pm-bd-nm{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap} .pm-bd-st{color:#f59f00; letter-spacing:1px; font-size:13px; white-space:nowrap}
   .pm-bd-list button.ok .pm-bd-nm::after{content:' ✔'; color:#2b8a3e; font-weight:800}
-  .pm-toast{position:absolute; left:50%; top:16px; transform:translate(-50%,-8px); z-index:8; background:#1f2433; color:#fff; font-weight:700; font-size:15px; padding:10px 16px; border-radius:14px; max-width:calc(100% - 40px); box-shadow:0 6px 18px rgba(0,0,0,.25); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s}
+  .pm-toast{position:absolute; left:50%; top:56px; transform:translate(-50%,-8px); z-index:8; background:#1f2433; color:#fff; font-weight:700; font-size:15px; padding:10px 16px; border-radius:14px; max-width:calc(100% - 40px); box-shadow:0 6px 18px rgba(0,0,0,.25); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s}
   .pm-toast.on{opacity:1; transform:translate(-50%,0)}
   .pm-bd-tools{display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:10px; font-size:13px; color:#667085}
   .pm-bd-tools button{all:unset; cursor:pointer; padding:4px 10px; border-radius:99px; box-shadow:inset 0 0 0 1px #d0d5dd; font-size:13px; color:#475467; font-family:inherit}
@@ -1650,9 +1669,9 @@ body{padding-bottom:64px}
     if (box_) box_.remove();
     box_ = document.createElement('div'); box_.className = 'pe-map'; box_.dataset.pm = cfg.key; box_.dataset.sig = sig; box_._items = items; box_._cfg = cfg;
     const sel = SEL[cfg.key];
-    box_.innerHTML = `<div class="pe-map-bar"><span class="pm-tip">${view === 'map' ? '🗺️ 點島嶼直接出發' : ''}</span>
-      <span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🗺️ 地圖</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div>` +
-      (view === 'map' ? `<div class="pm-sea">${mapSVG(cfg, items, sel)}<div class="pm-panel" hidden></div></div>` : '');
+    box_.innerHTML = view === 'map'
+      ? `<div class="pm-sea">${mapSVG(cfg, items, sel)}<div class="pm-ov-tl" data-crumb-slot></div><div class="pm-ov-tr"><span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🗺️ 地圖</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div><div class="pm-panel" hidden></div></div>`
+      : `<div class="pe-map-bar"><span class="pm-tip"></span><span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🗺️ 地圖</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div>`;
     anchor.parentNode.insertBefore(box_, anchor);
     const dr = DRILL[cfg.key];
     if (!(view === 'map' && dr != null && items[dr] && cfg.tiles)) arrive(box_.querySelector('.pm-sea svg'));
@@ -1701,8 +1720,8 @@ body{padding-bottom:64px}
       const isle = (typeof cfg.island === 'function' ? cfg.island() : cfg.island) || '島嶼';
       if (!keep && !sea._zooming) { const svg0 = sea.querySelector('svg'), g0 = box_.querySelector(`.pm-isl[data-i="${i}"]`);
         if (svg0 && g0 && motionOK()) { sea._zooming = true; zoomInto(svg0, g0, () => { sea._zooming = false; openPanel(box_, i, 'z'); }); return; } }
-      sea.innerHTML = streetSVG(tiles, it.kind, it.color, null) + `<button type="button" class="pm-back">← 回${esc(isle)}全圖</button><div class="pm-panel" hidden></div>`;
-      const tip = box_.querySelector('.pm-tip'); if (tip) tip.textContent = `🏙️ ${isle} › ${it.name} 街區：點建築直接開始練習`;
+      const tgS = sea.querySelector('.pm-ov-tr'), tgH = tgS ? tgS.innerHTML : '';
+      sea.innerHTML = streetSVG(tiles, it.kind, it.color, null) + `<div class="pm-ov-tl" data-crumb-slot></div><div class="pm-ov-tr">${tgH}</div><div class="pm-panel" hidden></div>`; crumbSig = '';
       if (keep === 'z' || (keep && PENDING)) arrive(sea.querySelector('svg'));
       requestAnimationFrame(() => { try { crumbTick(); } catch (e) {} });
       if (!keep) { try { sea.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {} const g = sea.querySelector('.pm-bld'); if (g) g.focus({ preventScroll: true }); }
@@ -1753,7 +1772,7 @@ body{padding-bottom:64px}
     if (e.key === 'Escape') document.querySelectorAll('.pe-map').forEach(closePanel);
   });
   let queued = false;
-  function refresh() { queued = false; CONFIGS.forEach(c => { try { build(c); } catch (err) { console.warn('PE115Map', c.key, err); } }); DCONFIGS.forEach(c => { try { buildDistrict(c); } catch (err) { console.warn('PE115Map.district', c.key, err); } });
+  function refresh() { queued = false; document.documentElement.classList.toggle('pe-mapview', getView() === 'map'); CONFIGS.forEach(c => { try { build(c); } catch (err) { console.warn('PE115Map', c.key, err); } }); DCONFIGS.forEach(c => { try { buildDistrict(c); } catch (err) { console.warn('PE115Map.district', c.key, err); } });
     try { tidyTick(); } catch (err) {} try { crumbTick(); } catch (err) {} try { headTick(); } catch (err) { console.warn('PE115Map.head', err); } }
   const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(refresh); } };
   let lastMode = window.innerWidth < 700;
@@ -1869,7 +1888,13 @@ body{padding-bottom:64px}
   /* 位置列 */
   let CRUMBS = null, crumbSig = '';
   const hubHref = () => { const a = document.getElementById('pe115-home'); return (a && a.getAttribute('href')) || 'periodicexam_115.html'; };
-  const crumbCSS = `#pe-crumb{position:fixed; left:12px; bottom:12px; z-index:2147483000; display:flex; align-items:center; gap:2px; max-width:calc(100vw - 96px); overflow-x:auto; scrollbar-width:none;
+  const crumbCSS = `.pm-crumb{display:flex; align-items:center; gap:2px; overflow-x:auto; scrollbar-width:none; background:#1f2433; color:#fff; border-radius:99px; padding:5px 8px; box-shadow:0 4px 14px rgba(0,0,0,.25); font:700 14px/1.2 'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif; box-sizing:border-box}
+    .pm-crumb::-webkit-scrollbar{display:none} .pm-crumb[hidden]{display:none !important}
+    .pm-crumb a,.pm-crumb button{all:unset; cursor:pointer; white-space:nowrap; padding:5px 8px; border-radius:99px; color:#c9d3ff}
+    .pm-crumb a:hover,.pm-crumb button:hover,.pm-crumb a:focus-visible,.pm-crumb button:focus-visible{background:rgba(255,255,255,.14); color:#fff; outline:none}
+    .pm-crumb .cur{white-space:nowrap; padding:5px 8px; color:#fff} .pm-crumb .sep{color:#6b7394; padding:0 1px}
+    .pm-crumb-in{max-width:100%; background:rgba(31,36,51,.92)}
+    #pe-crumb{position:fixed; left:12px; bottom:12px; z-index:2147483000; display:flex; align-items:center; gap:2px; max-width:calc(100vw - 96px); overflow-x:auto; scrollbar-width:none;
       background:#1f2433; color:#fff; border-radius:99px; padding:5px 8px; box-shadow:0 4px 14px rgba(0,0,0,.25); font:700 14px/1.2 'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif}
     #pe-crumb::-webkit-scrollbar{display:none}
     #pe-crumb a,#pe-crumb button{all:unset; cursor:pointer; white-space:nowrap; padding:5px 8px; border-radius:99px; color:#c9d3ff}
@@ -1884,18 +1909,25 @@ body{padding-bottom:64px}
     if (!CRUMBS) return;
     let list = []; try { list = CRUMBS() || []; } catch (e) { list = []; }
     const all = [{ label: '🌏 全景', href: hubHref() }].concat(list);
-    const sig = all.map(c => c.label).join('›');
+    /* 有地圖在畫面上時，位置列放在地圖左上角；作答等沒有地圖的畫面，放在左下角（作答背景的海面上） */
+    const slot = [...document.querySelectorAll('.pe-map [data-crumb-slot]')].find(e => e.parentElement && e.parentElement.offsetParent !== null);
     let nav = document.getElementById('pe-crumb');
     if (!document.getElementById('pe115-crumb-css')) { const st = document.createElement('style'); st.id = 'pe115-crumb-css'; st.textContent = crumbCSS; document.head.appendChild(st); }
-    if (!nav) { nav = document.createElement('nav'); nav.id = 'pe-crumb'; nav.setAttribute('aria-label', '目前位置'); document.body.appendChild(nav); document.body.classList.add('pe-crumb-on'); }
-    if (sig === crumbSig) return; crumbSig = sig; nav._list = all;
-    nav.innerHTML = all.map((c, i) => (i ? '<span class="sep">›</span>' : '') + (i === all.length - 1 ? `<span class="cur" aria-current="location">${esc(c.label)}</span>`
+    if (!nav) { nav = document.createElement('nav'); nav.id = 'pe-crumb'; nav.className = 'pm-crumb'; nav.setAttribute('aria-label', '目前位置'); document.body.appendChild(nav); document.body.classList.add('pe-crumb-on'); }
+    const host = slot || nav, sig = (slot ? 'S' : 'F') + all.map(c => c.label).join('›');
+    nav.hidden = !!slot;
+    if (sig === crumbSig && host.childElementCount) return; crumbSig = sig;
+    document.querySelectorAll('.pe-map [data-crumb-slot]').forEach(e => { if (e !== slot) e.innerHTML = ''; });
+    let inner = host === nav ? nav : host.querySelector('.pm-crumb');
+    if (!inner) { host.innerHTML = '<nav class="pm-crumb pm-crumb-in" aria-label="目前位置"></nav>'; inner = host.firstChild; }
+    inner._list = all;
+    inner.innerHTML = all.map((c, i) => (i ? '<span class="sep">›</span>' : '') + (i === all.length - 1 ? `<span class="cur" aria-current="location">${esc(c.label)}</span>`
       : c.href ? `<a href="${esc(c.href)}" data-ci="${i}">${esc(c.label)}</a>` : `<button type="button" data-ci="${i}">${esc(c.label)}</button>`)).join('');
-    nav.scrollLeft = nav.scrollWidth;
+    inner.scrollLeft = inner.scrollWidth;
   }
   document.addEventListener('click', e => {
-    const a = e.target.closest && e.target.closest('#pe-crumb [data-ci]'); if (!a) return;
-    const nav = document.getElementById('pe-crumb'), c = nav._list[+a.dataset.ci]; if (!c) return;
+    const a = e.target.closest && e.target.closest('.pm-crumb [data-ci]'); if (!a) return;
+    const nav = a.closest('.pm-crumb'), c = nav._list[+a.dataset.ci]; if (!c) return;
     if (c.href) { try { sessionStorage.setItem(ZKEY, 'out'); } catch (err) {} return; }
     e.preventDefault(); setPending('out'); try { c.go(); } catch (err) { console.warn('PE115Map.crumb', err); } window.scrollTo({ top: 0, behavior: 'smooth' });
   });

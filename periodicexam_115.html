@@ -189,6 +189,10 @@ h1{margin:4px 0 6px; font-size:clamp(1.6rem,4.2vw,2.5rem); line-height:1.25}
 }
 
 
+
+.map-tools{position:absolute; top:12px; right:12px; z-index:4; display:flex; gap:8px; align-items:center}
+.map-tools .view-tg,.map-tools .guide-btn{box-shadow:0 2px 10px rgba(0,0,0,.15); border-color:transparent}
+@media (max-width:700px){ .map-tools{top:auto; bottom:10px; right:10px} .map-tools .view-tg button,.map-tools .guide-btn{padding:6px 10px; font-size:.85rem} }
 /* ---------- ❓ 怎麼玩 ---------- */
 .guide-btn{border:1px solid var(--line); background:var(--card); color:var(--ink); padding:8px 14px; border-radius:10px; cursor:pointer; font-weight:700}
 .guide-btn:hover{border-color:var(--accent)}
@@ -423,15 +427,15 @@ function renderExam(n) {
   if (CUR !== n) SEL = '';
   CUR = n;
   document.getElementById('kicker').textContent = `八年級・${e.name}`;
-  document.getElementById('tools').innerHTML = `
-      <div class="view-tg" role="group" aria-label="顯示方式">
+  /* 地圖導覽模式：切換鈕與「❓ 怎麼玩」放在地圖右上角（按鈕都在地圖上）；清單模式才放在頁首 */
+  const tools = `<div class="view-tg" role="group" aria-label="顯示方式">
         <button type="button" data-view="map" aria-pressed="${VIEW === 'map'}">🗺️ 地圖</button>
         <button type="button" data-view="list" aria-pressed="${VIEW === 'list'}">📋 清單</button>
       </div>
-      <button type="button" class="guide-btn" data-guide>❓ 怎麼玩</button>
-      ${VIEW === 'list' ? `<div class="exam-prog">${progress(list)}</div>` : ''}`;
+      <button type="button" class="guide-btn" data-guide>❓ 怎麼玩</button>`;
+  document.getElementById('tools').innerHTML = VIEW === 'list' ? tools + `<div class="exam-prog">${progress(list)}</div>` : '';
   const body = VIEW === 'map'
-    ? `<div class="map-wrap" id="mapwrap">${islandMap(e, list)}
+    ? `<div class="map-wrap" id="mapwrap">${islandMap(e, list)}<div class="map-tools">${tools}</div>
          <div class="isl-panel" id="islpanel" ${SEL ? '' : 'hidden'}>${SEL ? panelHTML(list) : ''}</div></div>`
     : `<div class="grid">${list.map(card).join('')}</div>`;
   document.getElementById('main').innerHTML = body;
