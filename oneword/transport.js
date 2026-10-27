@@ -1,5 +1,5 @@
 import { config } from './config.js';
-const validBackend = value => { try { const u=new URL(value);return u.origin==='https://script.google.com'&&/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname); } catch { return false; } };
+const validBackend = value => { try { const u=new URL(value);return u.origin==='https://script.google.com'&&/^\/(?:macros\/s|a\/macros\/[A-Za-z0-9.-]+\/s)\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname); } catch { return false; } };
 const trustedGoogleOrigin = value => { try { const u=new URL(value);return u.protocol==='https:'&&(u.hostname==='script.google.com'||u.hostname.endsWith('.googleusercontent.com')); }catch{return false;} };
 const wait = ms => new Promise(resolve=>setTimeout(resolve,ms));
 function saved(key){try{return localStorage.getItem(key)||'';}catch{return '';}}
@@ -58,5 +58,5 @@ export class GASClient {
   dispose(){clearTimeout(this.readyTimer);if(this.listener)window.removeEventListener('message',this.listener);this.frame?.remove();for(const task of this.pending.values()){clearTimeout(task.timer);task.reject(new Error('連線已重設'));}this.pending.clear();this.frame=null;this.peer=null;this.ready=null;}
 }
 export const client = new GASClient();
-export function saveBackend(url){if(!validBackend(url))throw new Error('請輸入 https://script.google.com/macros/s/…/exec 格式的部署網址');try{localStorage.setItem('oneword:backend',url);}catch{}return url;}
+export function saveBackend(url){if(!validBackend(url))throw new Error('請輸入有效的 GAS 正式部署網址（script.google.com，結尾為 /exec）');try{localStorage.setItem('oneword:backend',url);}catch{}return url;}
 export { validBackend, trustedGoogleOrigin };

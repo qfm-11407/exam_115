@@ -175,6 +175,8 @@ if (page === 'screen') {
 
 if(page==='home') {
   $('backend-url').value=client.backend; $('site-origin').textContent=location.origin;
+  $('backend-details').open=!client.backend;
+  $('backend-description').textContent=client.backend?'已預設教室雲端後端，可直接進入教師端或學生端，不需重新貼上網址。':'尚未設定教室雲端後端，請展開下方設定並測試連線。';
   const entryLinks=Array.from(document.querySelectorAll('a[href="./teacher.html"],a[href="./student.html"]'),a=>({node:a,file:a.getAttribute('href').includes('teacher')?'teacher.html':'student.html'}));
   function updateEntryLinks(){entryLinks.forEach(item=>{item.node.href=client.pageURL(item.file);});}
   updateEntryLinks();
