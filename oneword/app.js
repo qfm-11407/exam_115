@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261027-cloud-3';
+import { client, GASClient, saveBackend } from './transport.js?v=20261027-cloud-4';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -47,9 +47,18 @@ if (page === 'teacher') {
     $('draw-info').textContent=q ? '已抽中「'+q.idiom+'」，挖空第 '+(q.blankIndex+1)+' 字。題庫 '+idiomCount+' 則，共 '+(idiomCount*4)+' 種題型。' : '按「隨機抽題」預覽下一題。';
     if(q?.id!==displayedQuestionId){$('accepted').value=(q?.accepted||[]).join('，');displayedQuestionId=q?.id;}
   }
+  function renderAIStatus() {
+    const configured=Boolean(admin?.settings.configured),active=Boolean(room?.round&&room.round.phase!=='revealed');
+    $('ai-ready-status').textContent=configured?'AI 金鑰：後端已設定':'AI 金鑰：後端尚未設定';
+    $('create-ai-room-button').hidden=!configured||room?.mode==='live';
+    $('create-ai-room-button').disabled=active;
+    $('ai-mode-note').textContent=room?.mode==='live'?'目前房間：AI 正式判讀。學生交卷後會呼叫 AI。':active?'目前房間：流程演練。請先截止並揭曉本題，再建立 AI 正式比賽。':configured?'目前'+(room?'房間：流程演練。':'尚未建立房間。')+'按「建立 AI 正式比賽」建立新房間；套用設定不會改變現有房間模式。':'請確認後端已設定 API 金鑰，或在「AI 設定」中填入金鑰。僅套用模型設定不會新增金鑰。';
+  }
   function renderTeacher() {
+    renderAIStatus();
     $('welcome-panel').hidden = Boolean(room); $('room-dashboard').hidden = !room; if (!room) return;
     const round = room.round, writing = round?.phase === 'writing', ready = !round || round.phase === 'revealed';
+    $('room-mode').textContent=room.mode==='live'?'AI 正式判讀':'流程演練（不使用 AI）';
     $('practice-banner').hidden = room.mode !== 'practice'; $('room-title').textContent = room.title; $('room-code').textContent = room.code;
     $('open-screen').href = client.pageURL('screen.html',room.code); $('open-play').href = client.pageURL('student.html',room.code); $('export-link').href = '#';
     updateJoinLink();
@@ -75,12 +84,13 @@ if (page === 'teacher') {
   refresh();
   if(!client.backend)$('login-error').textContent='請先回首頁設定 GAS 後端連線。';
   const createDialog = () => { $('room-dialog').showModal(); $('new-mode').value = admin?.settings.configured ? 'live' : 'practice'; updateModeNote(); };
+  $('create-ai-room-button').onclick = () => { if(!admin?.settings.configured)return; if(room?.round&&room.round.phase!=='revealed'){toast('請先截止並揭曉目前題目，再建立新比賽',true);return;} createDialog(); $('new-mode').value='live'; updateModeNote(); };
   $('new-room-button').onclick = createDialog; $('welcome-create').onclick = createDialog;
   function updateModeNote() { const live = $('new-mode').value === 'live'; $('mode-note').textContent = live ? 'AI 會自動判定單字對錯，使用您的 API 額度。' : '演練不辨識筆跡，對錯為預設測試結果。'; $('mode-note').className = `notice ${live ? '' : 'amber'}`; }
   $('new-mode').onchange = updateModeNote;
   $('room-form').onsubmit = async event => { event.preventDefault(); try { await api('/api/admin/rooms', { title: $('new-title').value, mode: $('new-mode').value }); $('room-dialog').close(); previousPhase = undefined; await refresh(); toast('房間已建立，請讓平板加入'); } catch (error) { toast(error.message, true); } };
   $('settings-button').onclick = () => { $('api-model').value = admin.settings.model; $('concurrency').value = admin.settings.concurrency; $('settings-dialog').showModal(); };
-  $('settings-form').onsubmit = async event => { event.preventDefault(); try { await api('/api/admin/settings', { key: $('api-key').value.trim(), model: $('api-model').value.trim(), concurrency: Number($('concurrency').value) }); $('api-key').value = ''; $('settings-dialog').close(); await refresh(); toast('AI 設定已套用；可建立 AI 正式比賽'); } catch (error) { toast(error.message, true); } };
+  $('settings-form').onsubmit = async event => { event.preventDefault(); try { const result=await api('/api/admin/settings', { key: $('api-key').value.trim(), model: $('api-model').value.trim(), concurrency: Number($('concurrency').value) }); $('api-key').value = ''; $('settings-dialog').close(); admin.settings.configured=Boolean(result.configured); renderAIStatus(); await refresh(); toast(result.configured?(room?.mode==='live'?'AI 設定已套用；目前房間為 AI 正式判讀':'AI 設定已套用；請按「建立 AI 正式比賽」，現有房間模式不變'):'模型設定已套用，但後端尚未設定 API 金鑰',!result.configured); } catch (error) { toast(error.message, true); } };
   $('question-form').onsubmit = async event => {
     event.preventDefault(); if (!room) return;
     try { await api(`/api/admin/rooms/${room.code}/start`, { draftId: room.draft?.id, seconds: Number($('seconds').value), accepted: $('accepted').value.split(/[,，、\s]+/).filter(Boolean) }); await refresh(); }
