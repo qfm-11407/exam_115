@@ -1,4 +1,4 @@
-import { config } from './config.js?v=20261027-cloud-2';
+import { config } from './config.js?v=20261027-cloud-3';
 const validBackend = value => { try { const u=new URL(value);return u.origin==='https://script.google.com'&&/^\/(?:macros\/s|a\/macros\/[A-Za-z0-9.-]+\/s)\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname); } catch { return false; } };
 const trustedGoogleOrigin = value => { try { const u=new URL(value);return u.protocol==='https:'&&(u.hostname==='script.google.com'||u.hostname.endsWith('.googleusercontent.com')); }catch{return false;} };
 const wait = ms => new Promise(resolve=>setTimeout(resolve,ms));
@@ -20,7 +20,7 @@ export class GASClient {
       };
       window.addEventListener('message',this.listener);
       this.readyTimer=setTimeout(()=>{reject(new Error('GAS 連線逾時：請確認 /exec 網址、網頁應用程式存取權限，以及 GAS 的 ALLOWED_ORIGINS'));this.dispose();},30000);
-      const frame=document.createElement('iframe');frame.hidden=true;frame.title='OneWord 雲端連線';frame.referrerPolicy='no-referrer';const url=new URL(this.backend);url.searchParams.set('channel',this.channel);frame.src=url.href;this.frame=frame;document.body.append(frame);
+      const frame=document.createElement('iframe');frame.hidden=true;frame.title='OneWord 雲端連線';frame.referrerPolicy='no-referrer';const url=new URL(this.backend);url.pathname=url.pathname.replace(/^\/a\/macros\/[^/]+\/s\//,'/macros/s/');url.searchParams.set('channel',this.channel);frame.src=url.href;this.frame=frame;document.body.append(frame);
     });
     return this.ready;
   }
