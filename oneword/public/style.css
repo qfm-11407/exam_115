@@ -16,3 +16,5 @@
 
 /* Student IDs remain strings, including leading zeroes. */
 .form-row{grid-template-columns:1fr 1fr}.player-chip{flex-wrap:wrap}.player-chip .seat-number{font-family:ui-monospace,monospace;font-size:11px;overflow-wrap:anywhere}.answer-card-head{flex-wrap:wrap}.answer-seat{overflow-wrap:anywhere;font-size:11px;letter-spacing:.02em}.answer-name:empty{display:none}.rank-name small{display:block;font-family:ui-monospace,monospace;overflow-wrap:anywhere}.rank-name{min-width:0;overflow-wrap:anywhere}
+
+.idiom-draw-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}#draw-info{margin:0 0 18px;font-size:11px}.question-editor textarea[readonly]{background:#f8faf5}.answer-input[readonly]{font-size:57px;color:var(--green);background:#f5f7f0}.question-editor textarea{letter-spacing:.045em}@media(max-width:540px){.idiom-draw-bar{align-items:flex-start}.idiom-draw-bar .muted{font-size:10px}}

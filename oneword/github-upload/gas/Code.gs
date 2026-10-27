@@ -1,19 +1,11 @@
 /** OneWord cloud backend. All helpers end in _ so google.script.run exposes only rpc/doGet. */
-var ONEWORD_VERSION_ = '2.0.1';
-var QUESTIONS_ = [
-  {prompt:'「陶ㄧㄝˇ性情」的「ㄧㄝˇ」應寫哪個字？',answer:'冶',seconds:30},
-  {prompt:'「名列前ㄇㄠˊ」的「ㄇㄠˊ」應寫哪個字？',answer:'茅',seconds:30},
-  {prompt:'「再接再ㄌㄧˋ」的「ㄌㄧˋ」應寫哪個字？',answer:'厲',seconds:30},
-  {prompt:'「迫不ㄐㄧˊ待」的「ㄐㄧˊ」應寫哪個字？',answer:'及',seconds:30},
-  {prompt:'「一ㄔㄡˊ莫展」的「ㄔㄡˊ」應寫哪個字？',answer:'籌',seconds:35},
-  {prompt:'「相形見ㄔㄨˋ」的「ㄔㄨˋ」應寫哪個字？',answer:'絀',seconds:30},
-  {prompt:'「半途而ㄈㄟˋ」的「ㄈㄟˋ」應寫哪個字？',answer:'廢',seconds:30},
-  {prompt:'「ㄇㄛˋ不關心」的「ㄇㄛˋ」應寫哪個字？',answer:'漠',seconds:30},
-  {prompt:'「不ㄒㄧㄝˋ努力」的「ㄒㄧㄝˋ」應寫哪個字？',answer:'懈',seconds:35},
-  {prompt:'「美輪美ㄏㄨㄢˋ」的「ㄏㄨㄢˋ」應寫哪個字？',answer:'奐',seconds:30},
-  {prompt:'「ㄨㄟˋ雨綢繆」的「ㄨㄟˋ」應寫哪個字？',answer:'未',seconds:25},
-  {prompt:'「有ㄓˋ一同」的「ㄓˋ」應寫哪個字？',answer:'志',seconds:25}
-];
+var ONEWORD_VERSION_ = '2.1.0';
+var IDIOMS_ = [{"idiom":"金蘭之交","page":178,"levelId":1},{"idiom":"長袖善舞","page":178,"levelId":1},{"idiom":"長驅直入","page":178,"levelId":1},{"idiom":"門庭若市","page":178,"levelId":1},{"idiom":"雨後春筍","page":178,"levelId":1},{"idiom":"青出於藍","page":179,"levelId":1},{"idiom":"青雲直上","page":179,"levelId":1},{"idiom":"亭亭玉立","page":179,"levelId":1},{"idiom":"非池中物","page":179,"levelId":1},{"idiom":"信口雌黃","page":180,"levelId":1},{"idiom":"信手拈來","page":180,"levelId":1},{"idiom":"信而有徵","page":180,"levelId":1},{"idiom":"信誓旦旦","page":180,"levelId":1},{"idiom":"信賞必罰","page":180,"levelId":1},{"idiom":"冠冕堂皇","page":181,"levelId":1},{"idiom":"冠蓋相望","page":181,"levelId":1},{"idiom":"削足適履","page":181,"levelId":1},{"idiom":"前功盡棄","page":181,"levelId":1},{"idiom":"前車之鑑","page":181,"levelId":1},{"idiom":"前呼後擁","page":182,"levelId":1},{"idiom":"前倨後恭","page":182,"levelId":1},{"idiom":"勉為其難","page":182,"levelId":1},{"idiom":"南柯一夢","page":182,"levelId":1},{"idiom":"南腔北調","page":182,"levelId":1},{"idiom":"南極星輝","page":183,"levelId":1},{"idiom":"南橘北枳","page":183,"levelId":1},{"idiom":"南轅北轍","page":183,"levelId":1},{"idiom":"厚此薄彼","page":183,"levelId":1},{"idiom":"咬文嚼字","page":184,"levelId":1},{"idiom":"咬牙切齒","page":184,"levelId":1},{"idiom":"品頭論足","page":184,"levelId":1},{"idiom":"哄堂大笑","page":184,"levelId":1},{"idiom":"咫尺天涯","page":185,"levelId":1},{"idiom":"垂拱而治","page":185,"levelId":1},{"idiom":"垂涎三尺","page":185,"levelId":1},{"idiom":"垂頭喪氣","page":185,"levelId":1},{"idiom":"屋舍儼然","page":185,"levelId":1},{"idiom":"屏氣凝神","page":186,"levelId":1},{"idiom":"待字閨中","page":186,"levelId":1},{"idiom":"待價而沽","page":186,"levelId":1},{"idiom":"徇私舞弊","page":186,"levelId":1},{"idiom":"後生可畏","page":186,"levelId":1},{"idiom":"後來居上","page":187,"levelId":1},{"idiom":"後起之秀","page":187,"levelId":1},{"idiom":"後顧之憂","page":187,"levelId":1},{"idiom":"怒髮衝冠","page":187,"levelId":1},{"idiom":"急公好義","page":187,"levelId":1},{"idiom":"急征暴歛","page":187,"levelId":1},{"idiom":"急流勇退","page":188,"levelId":1},{"idiom":"急轉直下","page":188,"levelId":1},{"idiom":"怨天尤人","page":188,"levelId":1},{"idiom":"怨聲載道","page":188,"levelId":1},{"idiom":"恆河沙數","page":189,"levelId":1},{"idiom":"恃才傲物","page":189,"levelId":1},{"idiom":"恍然大悟","page":189,"levelId":1},{"idiom":"按部就班","page":189,"levelId":1},{"idiom":"按圖索驥","page":189,"levelId":1},{"idiom":"拭目以待","page":190,"levelId":1},{"idiom":"披荊斬棘","page":190,"levelId":1},{"idiom":"指日可待","page":190,"levelId":1},{"idiom":"指桑罵槐","page":190,"levelId":1},{"idiom":"指鹿為馬","page":191,"levelId":1},{"idiom":"拾人牙慧","page":191,"levelId":1},{"idiom":"拾人涕唾","page":191,"levelId":1},{"idiom":"拾遺補闕","page":191,"levelId":1},{"idiom":"挑撥離間","page":192,"levelId":1},{"idiom":"政通人和","page":192,"levelId":1},{"idiom":"故弄玄虛","page":192,"levelId":1},{"idiom":"故步自封","page":192,"levelId":1},{"idiom":"故態復萌","page":192,"levelId":1},{"idiom":"既往不咎","page":193,"levelId":1},{"idiom":"春風化雨","page":193,"levelId":1},{"idiom":"春風滿面","page":193,"levelId":1},{"idiom":"春寒料峭","page":193,"levelId":1},{"idiom":"春樹暮雲","page":193,"levelId":1},{"idiom":"昭然若揭","page":194,"levelId":2},{"idiom":"柔茹剛吐","page":194,"levelId":2},{"idiom":"柔腸寸斷","page":194,"levelId":2},{"idiom":"枯木逢春","page":194,"levelId":2},{"idiom":"枯樹生花","page":195,"levelId":2},{"idiom":"柳暗花明","page":195,"levelId":2},{"idiom":"枵腹從公","page":195,"levelId":2},{"idiom":"殃及池魚","page":195,"levelId":2},{"idiom":"洋洋大觀","page":195,"levelId":2},{"idiom":"洪福齊天","page":196,"levelId":2},{"idiom":"流芳百世","page":196,"levelId":2},{"idiom":"流離失所","page":196,"levelId":2},{"idiom":"流金鑠石","page":196,"levelId":2},{"idiom":"津津樂道","page":196,"levelId":2},{"idiom":"洞天福地","page":197,"levelId":2},{"idiom":"洞燭機先","page":197,"levelId":2},{"idiom":"洗心革面","page":197,"levelId":2},{"idiom":"洗手奉職","page":197,"levelId":2},{"idiom":"洗耳恭聽","page":197,"levelId":2},{"idiom":"活靈活現","page":198,"levelId":2},{"idiom":"洛陽紙貴","page":198,"levelId":2},{"idiom":"為人作嫁","page":198,"levelId":2},{"idiom":"狡兔三窟","page":198,"levelId":2},{"idiom":"玲瓏剔透","page":199,"levelId":2},{"idiom":"甚囂塵上","page":199,"levelId":2},{"idiom":"眉飛色舞","page":199,"levelId":2},{"idiom":"相形見絀","page":199,"levelId":2},{"idiom":"相得益彰","page":200,"levelId":2},{"idiom":"相提並論","page":200,"levelId":2},{"idiom":"相敬如賓","page":200,"levelId":2},{"idiom":"相濡以沫","page":200,"levelId":2},{"idiom":"秋扇見捐","page":200,"levelId":2},{"idiom":"秋毫無犯","page":201,"levelId":2},{"idiom":"穿壁引光","page":201,"levelId":2},{"idiom":"穿鑿附會","page":201,"levelId":2},{"idiom":"紅顏薄命","page":202,"levelId":2},{"idiom":"約定俗成","page":202,"levelId":2},{"idiom":"紈袴子弟","page":202,"levelId":2},{"idiom":"美輪美奐","page":202,"levelId":2},{"idiom":"背道而馳","page":202,"levelId":2},{"idiom":"茅塞頓開","page":203,"levelId":2},{"idiom":"苦口婆心","page":203,"levelId":2},{"idiom":"苦盡甘來","page":203,"levelId":2},{"idiom":"苟延殘喘","page":203,"levelId":2},{"idiom":"負荊請罪","page":203,"levelId":2},{"idiom":"迫不及待","page":204,"levelId":2},{"idiom":"迫在眉睫","page":204,"levelId":2},{"idiom":"重蹈覆轍","page":204,"levelId":2},{"idiom":"面面相覷","page":204,"levelId":2},{"idiom":"音容宛在","page":204,"levelId":2},{"idiom":"風行草偃","page":205,"levelId":2},{"idiom":"風花雪月","page":205,"levelId":2},{"idiom":"風姿綽約","page":205,"levelId":2},{"idiom":"風起雲湧","page":205,"levelId":2},{"idiom":"風雲際會","page":206,"levelId":2},{"idiom":"風馳電掣","page":206,"levelId":2},{"idiom":"風聲鶴唳","page":206,"levelId":2},{"idiom":"飛來橫禍","page":206,"levelId":2},{"idiom":"飛揚跋扈","page":206,"levelId":2},{"idiom":"飛黃騰達","page":207,"levelId":2},{"idiom":"飛蛾投火","page":207,"levelId":2},{"idiom":"食古不化","page":207,"levelId":2},{"idiom":"食不知味","page":207,"levelId":2},{"idiom":"食言而肥","page":208,"levelId":2},{"idiom":"食指大動","page":208,"levelId":2},{"idiom":"食髓知味","page":208,"levelId":2},{"idiom":"首如飛蓬","page":208,"levelId":2},{"idiom":"首屈一指","page":208,"levelId":2},{"idiom":"香消玉殞","page":209,"levelId":2},{"idiom":"乘風破浪","page":209,"levelId":2},{"idiom":"俯仰無愧","page":209,"levelId":2},{"idiom":"俯拾即是","page":209,"levelId":2},{"idiom":"俯首貼耳","page":209,"levelId":2}];
+function drawIdiomQuestion_(random){
+  random=random||Math.random;
+  var item=IDIOMS_[Math.floor(random()*IDIOMS_.length)],chars=Array.from(item.idiom),blankIndex=Math.floor(random()*4);
+  return {id:uid_().slice(0,16),idiom:item.idiom,blankIndex:blankIndex,prompt:'「'+chars.map(function(char,index){return index===blankIndex?'□':char;}).join('')+'」請填入缺少的一字。',answer:chars[blankIndex],sourcePage:item.page,seconds:30};
+}
 function props_(){return PropertiesService.getScriptProperties();}
 function cache_(){return CacheService.getScriptCache();}
 function uid_(){return Utilities.getUuid().replace(/-/g,'')+Utilities.getUuid().replace(/-/g,'');}
@@ -70,9 +62,9 @@ function player_(room,token){var player=room.players.find(function(p){return equ
 function publicRoom_(room,admin){
   var r=room.round,shown=r&&r.phase!=='writing',revealed=r&&r.phase==='revealed';
   var players=room.players.map(function(p){var s=r&&r.submissions[p.id];return {id:p.id,studentId:p.studentId,name:p.name,score:p.score||0,submitted:Boolean(s&&s.fileId),status:!s||!s.fileId?'waiting':revealed?s.status:'submitted',imageUrl:shown&&s&&s.fileId?'gas-image:'+r.id+'/'+p.id:null,correct:revealed&&s&&s.status==='done'?s.correct:null};});
-  var round=r?{id:r.id,number:r.number,prompt:r.prompt,phase:r.phase,deadline:r.deadline,seconds:r.seconds,answer:revealed?r.answer:null,submitted:players.filter(function(p){return p.submitted;}).length}:null;
-  if(admin&&r){round.answer=r.answer;round.accepted=r.accepted;var subs=Object.keys(r.submissions).map(function(k){return r.submissions[k];});round.judged=subs.filter(function(s){return s.status==='done';}).length;round.pending=subs.filter(function(s){return ['uploading','queued','judging'].indexOf(s.status)>=0;}).length;round.unresolved=subs.filter(function(s){return ['error','uncertain','upload-error'].indexOf(s.status)>=0;}).length;players.forEach(function(p){var sub=r.submissions[p.id];p.judgeStatus=sub?sub.status:'waiting';p.error=sub&&sub.error||'';});}
-  return {code:room.code,title:room.title,mode:room.mode,points:10,revision:room.revision,serverTime:Date.now(),round:round,players:players,usage:admin?room.usage:null};
+  var round=r?{id:r.id,number:r.number,prompt:r.prompt,phase:r.phase,deadline:r.deadline,seconds:r.seconds,answer:revealed?r.answer:null,idiom:revealed?r.idiom||null:null,submitted:players.filter(function(p){return p.submitted;}).length}:null;
+  if(admin&&r){round.idiom=r.idiom||null;round.blankIndex=r.blankIndex;round.answer=r.answer;round.accepted=r.accepted;var subs=Object.keys(r.submissions).map(function(k){return r.submissions[k];});round.judged=subs.filter(function(s){return s.status==='done';}).length;round.pending=subs.filter(function(s){return ['uploading','queued','judging'].indexOf(s.status)>=0;}).length;round.unresolved=subs.filter(function(s){return ['error','uncertain','upload-error'].indexOf(s.status)>=0;}).length;players.forEach(function(p){var sub=r.submissions[p.id];p.judgeStatus=sub?sub.status:'waiting';p.error=sub&&sub.error||'';});}
+  return {code:room.code,title:room.title,mode:room.mode,points:10,revision:room.revision,serverTime:Date.now(),round:round,players:players,draft:admin?room.draft||null:null,usage:admin?room.usage:null};
 }
 function settings_(){var p=props_();return {configured:Boolean(p.getProperty('OPENAI_API_KEY')),model:p.getProperty('OPENAI_MODEL')||'gpt-4.1-mini',concurrency:Math.max(1,Math.min(3,Number(p.getProperty('CONCURRENCY')||2)))};}
 function dispatch_(action,data,auth){
@@ -91,7 +83,7 @@ function dispatch_(action,data,auth){
   teacher_(auth);
   if(action==='adminState'){
     var code=data.room||props_().getProperty('ACTIVE_ROOM');
-    return {settings:settings_(),addresses:[],questions:QUESTIONS_,room:code?publicRoom_(readRoom_(code),true):null};
+    return {settings:settings_(),addresses:[],idiomCount:IDIOMS_.length,room:code?publicRoom_(readRoom_(code),true):null};
   }
   if(action==='settings'){
     assert_(typeof data.model==='string'&&/^[a-zA-Z0-9._-]{1,100}$/.test(data.model),400,'模型名稱格式不正確');
@@ -102,7 +94,7 @@ function dispatch_(action,data,auth){
   if(action==='createRoom')return createRoom_(data);
   if(action==='worker')return worker_(data.room);
   if(action==='export')return export_(data.room);
-  if(['start','close','reveal','retry'].indexOf(action)>=0)return roundAction_(action,data);
+  if(['draw','start','close','reveal','retry'].indexOf(action)>=0)return roundAction_(action,data);
   throw problem_(404,'找不到操作');
 }
 function createRoom_(data){return locked_(function(){
@@ -113,7 +105,7 @@ function createRoom_(data){return locked_(function(){
   var code;do{code=uid_().slice(0,6).toUpperCase();}while(all['ROOM_'+code]);
   var folder=root_().createFolder(Utilities.formatDate(new Date(),'Asia/Taipei','yyyyMMdd-HHmmss')+'-'+code);
   var file=folder.createFile('room-state.json','{}','application/json');
-  var room={code:code,title:String(data.title||'單字擂台').trim().slice(0,40),mode:data.mode,folderId:folder.getId(),fileId:file.getId(),players:[],round:null,roundCount:0,history:[],revision:0,usage:{input:0,output:0,calls:0}};
+  var room={code:code,title:String(data.title||'單字擂台').trim().slice(0,40),mode:data.mode,folderId:folder.getId(),fileId:file.getId(),players:[],draft:drawIdiomQuestion_(),round:null,roundCount:0,history:[],revision:0,usage:{input:0,output:0,calls:0}};
   saveRoom_(room);props_().setProperties({['ROOM_'+code]:file.getId(),ACTIVE_ROOM:code});return {room:publicRoom_(room,true)};
 });}
 function join_(data){return locked_(function(){
@@ -127,21 +119,22 @@ function join_(data){return locked_(function(){
 });}
 function roundAction_(action,data){return locked_(function(){
   var room=readRoom_(data.room,true),r=room.round;
+  if(action==='draw'){assert_(!r||r.phase==='revealed',409,'請先結束並揭曉目前題目');room.draft=drawIdiomQuestion_();saveRoom_(room);return {room:publicRoom_(room,true)};}
   if(action==='start'){
     assert_(!r||r.phase==='revealed',409,'請先截止並揭曉目前題目');assert_(room.players.length>0,409,'請至少一位參賽者加入');assert_(room.roundCount<100,409,'本場已達 100 題');
-    assert_(typeof data.prompt==='string'&&data.prompt.trim()&&data.prompt.length<=240&&singleHan_(data.answer),400,'請輸入題目與一個正確國字');
+    assert_(room.draft&&typeof data.draftId==='string'&&data.draftId===room.draft.id,409,'題目預覽已變更，請重新確認抽題結果');var q=room.draft;
     assert_(Number.isInteger(data.seconds)&&data.seconds>=10&&data.seconds<=180,400,'作答時間須為 10～180 秒');var accepted=data.accepted||[];assert_(Array.isArray(accepted)&&accepted.length<=8&&accepted.every(singleHan_),400,'允許字形每個限一個國字');
     var folder=DriveApp.getFolderById(room.folderId);
     if(r){var archive=folder.createFile('round-'+r.number+'-results.json',JSON.stringify(r),'application/json');room.history.push({number:r.number,fileId:archive.getId()});}
     room.roundCount++;var images=folder.createFolder('round-'+String(room.roundCount).padStart(3,'0'));
-    room.round={id:uid_().slice(0,16),number:room.roundCount,prompt:data.prompt.trim(),answer:data.answer.normalize('NFC'),accepted:accepted,seconds:data.seconds,deadline:Date.now()+data.seconds*1000,phase:'writing',folderId:images.getId(),submissions:{}};
+    room.round={id:uid_().slice(0,16),number:room.roundCount,prompt:q.prompt,answer:q.answer,idiom:q.idiom,blankIndex:q.blankIndex,sourcePage:q.sourcePage,accepted:accepted,seconds:data.seconds,deadline:Date.now()+data.seconds*1000,phase:'writing',folderId:images.getId(),submissions:{}};room.draft=null;
   }else{
     assert_(r,409,'尚未開始出題');
     if(action==='close'&&r.phase==='writing')r.phase='closed';
     if(action==='reveal'){
       assert_(r.phase!=='writing',409,'請先截止作答');
       assert_(!Object.values(r.submissions).some(function(s){return ['uploading','queued','judging'].indexOf(s.status)>=0;}),409,'仍有答案上傳或判讀中');
-      if(r.phase!=='revealed'){room.players.forEach(function(p){if(r.submissions[p.id]&&r.submissions[p.id].correct===true&&r.submissions[p.id].status==='done')p.score+=10;});r.phase='revealed';}
+      if(r.phase!=='revealed'){room.players.forEach(function(p){if(r.submissions[p.id]&&r.submissions[p.id].correct===true&&r.submissions[p.id].status==='done')p.score+=10;});r.phase='revealed';room.draft=drawIdiomQuestion_();}
     }
     if(action==='retry'){
       assert_(r.phase!=='revealed',409,'已揭曉結果不再重複判讀');

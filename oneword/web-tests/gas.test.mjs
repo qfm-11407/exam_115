@@ -18,7 +18,7 @@ function fixture(){
   const auth=call('login',{pin:properties.get('TEACHER_PIN')}).data.token;
   function room(mode='practice'){return call('createRoom',{title:'學號測試',mode},auth).data.room;}
   function admin(){return call('adminState',{},auth).data.room;}
-  function start(code){return call('start',{room:code,prompt:'請寫一字',answer:'冶',seconds:30},auth);}
+  function start(code){return call('start',{room:code,draftId:admin().draft.id,seconds:30},auth);}
   return {context,call,auth,room,admin,start,properties,cache,files,folders,state};
 }
 function png(){const b=Buffer.alloc(64);Buffer.from('89504e470d0a1a0a','hex').copy(b);Buffer.from('IHDR').copy(b,12);b.writeUInt32BE(512,16);b.writeUInt32BE(512,20);return 'data:image/png;base64,'+b.toString('base64');}
@@ -76,7 +76,7 @@ test('unknown handwriting gets two passes and stays unscored; deadlined rounds r
 });
 
 test('history is archived to Drive, scores carry to the next question, and settings never echo keys',()=>{
-  const f=fixture(),r=f.room(),p=join(f,r.code);assert.equal(f.call('start',{room:r.code,prompt:'test',answer:'陶冶',seconds:30},f.auth).status,400);f.start(r.code);submit(f,r.code,p);f.call('worker',{room:r.code},f.auth);f.call('close',{room:r.code},f.auth);f.call('reveal',{room:r.code},f.auth);f.start(r.code);
+  const f=fixture(),r=f.room(),p=join(f,r.code);assert.equal(f.call('start',{room:r.code,draftId:'stale-preview',seconds:30},f.auth).status,409);f.start(r.code);submit(f,r.code,p);f.call('worker',{room:r.code},f.auth);f.call('close',{room:r.code},f.auth);f.call('reveal',{room:r.code},f.auth);f.start(r.code);
   assert.ok([...f.files.values()].some(file=>file.name==='round-1-results.json'));assert.equal(f.admin().players[0].score,10);assert.ok(f.call('export',{room:r.code},f.auth).data.csv.includes('1410701'));
   f.call('settings',{key:'sk-test-not-a-real-key',model:'gpt-4.1-mini',concurrency:3},f.auth);assert.equal(JSON.stringify(f.call('adminState',{},f.auth)).includes('sk-test'),false);assert.equal(f.call('settings',{model:'x',concurrency:4},f.auth).status,400);
 });
@@ -104,4 +104,30 @@ test('legacy tokens belonging to accounts outside the whitelist cannot restore, 
   assert.equal(f.call('submit',{room:r.code,roundId,image},p.token).status,403);
   assert.equal(f.call('studentWorker',{room:r.code,roundId},p.token).status,403);
   assert.equal(f.state.aiCalls,0);
+});
+
+
+test('GAS independently draws an idiom and one of its four letters for all 592 combinations',()=>{
+  const f=fixture(),entries=JSON.parse(readFileForBank_());
+  function readFileForBank_(){return JSON.stringify(f.context.IDIOMS_);}
+  assert.equal(entries.length,148);
+  for(let i=0;i<entries.length;i++)for(let blank=0;blank<4;blank++){
+    let call=0;const draws=[(i+0.25)/entries.length,(blank+0.25)/4],q=f.context.drawIdiomQuestion_(()=>draws[call++]);
+    assert.equal(call,2);assert.equal(q.idiom,entries[i].idiom);assert.equal(q.blankIndex,blank);assert.equal(q.answer,Array.from(q.idiom)[blank]);assert.equal((q.prompt.match(/□/g)||[]).length,1);
+  }
+});
+
+test('teacher draws privately; stale previews fail, client answers cannot replace the selected letter, and full idioms appear only after reveal',()=>{
+  const f=fixture(),r=f.room(),p=join(f,r.code),original=r.draft;
+  assert.ok(original.id);assert.equal(f.call('draw',{room:r.code}).status,401);
+  const preview=f.call('draw',{room:r.code},f.auth).data.room.draft;assert.notEqual(preview.id,original.id);
+  const before=f.call('room',{room:r.code}).data;assert.equal(before.draft,null);assert.equal(JSON.stringify(before).includes(preview.id),false);
+  assert.equal(f.call('start',{room:r.code,draftId:original.id,seconds:30},f.auth).status,409);
+  const started=f.call('start',{room:r.code,draftId:preview.id,seconds:30,prompt:'不要使用這個題目',answer:'假假'},f.auth);assert.equal(started.ok,true);
+  assert.equal(started.data.room.round.answer,preview.answer);assert.equal(started.data.room.round.prompt,preview.prompt);assert.equal(started.data.room.round.idiom,preview.idiom);
+  const secret=f.call('room',{room:r.code}).data;assert.equal(secret.round.answer,null);assert.equal(secret.round.idiom,null);assert.equal(secret.draft,null);
+  assert.equal(f.call('draw',{room:r.code},f.auth).status,409);
+  f.call('close',{room:r.code},f.auth);f.call('reveal',{room:r.code},f.auth);
+  const done=f.call('room',{room:r.code}).data;assert.equal(done.round.idiom,preview.idiom);assert.equal(done.round.answer,preview.answer);assert.equal(done.draft,null);
+  const next=f.admin().draft;assert.ok(next.id);assert.notEqual(next.id,preview.id);f.call('reveal',{room:r.code},f.auth);assert.equal(f.admin().draft.id,next.id);
 });

@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import os from 'node:os';
 import { spawn } from 'node:child_process';
-import { questions } from './questions.mjs';
+import { idiomBank, drawIdiomQuestion } from './questions.mjs';
 import { judgeCharacter } from './ai.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -60,11 +60,11 @@ export async function createArena(options = {}) {
     });
     return { code: room.code, title: room.title, mode: room.mode, points: room.points, serverTime: Date.now(), players: rows,
       round: round ? { id: round.id, number: room.rounds.length, prompt: round.prompt, phase: round.phase, deadline: round.deadline, seconds: round.seconds,
-        answer: revealed ? round.answer : null, submitted: rows.filter(p => p.submitted).length } : null };
+        answer: revealed ? round.answer : null, idiom: revealed ? round.idiom||null : null, submitted: rows.filter(p => p.submitted).length } : null };
   }
   function adminState(room) {
     const state = publicState(room), round = current(room);
-    return { ...state, round: round ? { ...state.round, answer: round.answer, accepted: round.accepted,
+    return { ...state, draft:room.draft||null, round: round ? { ...state.round, idiom:round.idiom||null, blankIndex:round.blankIndex, answer: round.answer, accepted: round.accepted,
       judged: Object.values(round.submissions).filter(s => s.status === 'done').length,
       pending: Object.values(round.submissions).filter(s => ['queued', 'judging'].includes(s.status)).length,
       unresolved: Object.values(round.submissions).filter(s => ['error', 'uncertain'].includes(s.status)).length } : null,
@@ -155,7 +155,7 @@ export async function createArena(options = {}) {
         requireAdmin(req);
         if (req.method === 'GET' && pathname === '/api/admin/state') {
           const room = url.searchParams.get('room') ? getRoom(url.searchParams.get('room')) : rooms.get(activeRoom);
-          return json(res, { settings: { configured: Boolean(settings.key), model: settings.model, concurrency: settings.concurrency }, addresses: networkAddresses(server.address().port), questions,
+          return json(res, { settings: { configured: Boolean(settings.key), model: settings.model, concurrency: settings.concurrency }, addresses: networkAddresses(server.address().port), idiomCount:idiomBank.length,
             room: room ? { ...adminState(room), usage: room.usage } : null });
         }
         if (req.method === 'POST' && pathname === '/api/admin/settings') {
@@ -175,11 +175,11 @@ export async function createArena(options = {}) {
           if (!['live', 'practice'].includes(data.mode)) throw fail(400, '請選擇比賽模式');
           if (data.mode === 'live' && !settings.key) throw fail(400, '請先設定 API 金鑰，或選擇流程演練');
           let code; do { code = id(3).toUpperCase(); } while (rooms.has(code));
-          const room = { code, title: String(data.title || '單字擂台').trim().slice(0, 40), mode: data.mode, points: 10, players: [], rounds: [], usage: { input: 0, output: 0, calls: 0 } };
+          const room = { code, title: String(data.title || '單字擂台').trim().slice(0, 40), mode: data.mode, points: 10, players: [], draft:{id:id(8),...drawIdiomQuestion()}, rounds: [], usage: { input: 0, output: 0, calls: 0 } };
           if (activeRoom && rooms.has(activeRoom)) closeRound(rooms.get(activeRoom));
           rooms.set(code, room); activeRoom = code; save(); return json(res, { room: adminState(room) }, 201);
         }
-        const match = pathname.match(/^\/api\/admin\/rooms\/([A-F0-9]{6})\/(start|close|reveal|retry|export)$/);
+        const match = pathname.match(/^\/api\/admin\/rooms\/([A-F0-9]{6})\/(draw|start|close|reveal|retry|export)$/);
         if (match) {
           const room = getRoom(match[1]), action = match[2];
           if (action === 'export' && req.method === 'GET') {
@@ -193,22 +193,23 @@ export async function createArena(options = {}) {
           }
           if (req.method !== 'POST') throw fail(405, '操作方式不正確');
           const round = current(room);
+          if (action === 'draw') { if (round && round.phase !== 'revealed') throw fail(409,'請先結束並揭曉目前題目'); room.draft={id:id(8),...drawIdiomQuestion()}; broadcast(room); return json(res,{room:adminState(room)}); }
           if (action === 'start') {
             const data = await body(req);
             if (round && round.phase !== 'revealed') throw fail(409, '請先截止並揭曉目前題目');
             if (!room.players.length) throw fail(409, '請至少一位參賽者加入後再開始');
             if (room.rounds.length >= 100) throw fail(409, '本場已達 100 題，請建立新比賽');
-            if (!han(data.answer) || typeof data.prompt !== 'string' || !data.prompt.trim() || data.prompt.length > 240) throw fail(400, '請輸入題目與一個正確國字');
+            if (!room.draft || data.draftId !== room.draft.id) throw fail(409,'題目預覽已變更，請重新確認抽題結果'); const q=room.draft;
             const accepted = data.accepted || [];
             if (!Array.isArray(accepted) || accepted.length > 8 || !accepted.every(han)) throw fail(400, '每個允許字形都必須是一個國字');
             if (!Number.isInteger(data.seconds) || data.seconds < 10 || data.seconds > 180) throw fail(400, '作答時間須為 10～180 秒');
-            const next = { id: id(8), prompt: data.prompt.trim(), answer: data.answer.normalize('NFC'), accepted, seconds: data.seconds, deadline: Date.now() + data.seconds * 1000, phase: 'writing', submissions: {} };
-            room.rounds.push(next); timers.set(room.code, setTimeout(() => closeRound(room), data.seconds * 1000)); broadcast(room);
+            const next = { id: id(8), prompt:q.prompt,answer:q.answer,idiom:q.idiom,blankIndex:q.blankIndex,sourcePage:q.sourcePage,accepted, seconds: data.seconds, deadline: Date.now() + data.seconds * 1000, phase: 'writing', submissions: {} };
+            room.draft=null; room.rounds.push(next); timers.set(room.code, setTimeout(() => closeRound(room), data.seconds * 1000)); broadcast(room);
           } else if (action === 'close') closeRound(room);
           else if (action === 'reveal') {
             if (!round || round.phase === 'writing') throw fail(409, '請先截止作答，再揭曉結果');
             if (Object.values(round.submissions).some(s => ['queued', 'judging'].includes(s.status))) throw fail(409, 'AI 尚在判讀，完成後即可揭曉');
-            round.phase = 'revealed'; broadcast(room);
+            if(round.phase!=='revealed'){round.phase = 'revealed';room.draft={id:id(8),...drawIdiomQuestion()};} broadcast(room);
           } else if (action === 'retry') {
             if (!round || round.phase === 'revealed') throw fail(409, '已揭曉的結果不再重複判讀');
             for (const sub of Object.values(round.submissions)) if (['error', 'uncertain'].includes(sub.status)) schedule(room, round, sub);

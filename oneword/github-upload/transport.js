@@ -38,7 +38,7 @@ export class GASClient {
     else if(r==='/api/join')action='join';
     else if(r==='/api/submit')action='submit';
     else if(r==='/api/room'){action='room';payload={room:u.searchParams.get('room')};}
-    else{const m=r.match(/^\/api\/admin\/rooms\/([A-F0-9]{6})\/(start|close|reveal|retry|export)$/);if(!m)throw new Error('找不到操作');action=m[2];payload={...payload,room:m[1]};}
+    else{const m=r.match(/^\/api\/admin\/rooms\/([A-F0-9]{6})\/(draw|start|close|reveal|retry|export)$/);if(!m)throw new Error('找不到操作');action=m[2];payload={...payload,room:m[1]};}
     const retry=['adminState','room','submit'].includes(action)?2:0;
     return this.rpc(action,payload,playerToken||this.token,retry);
   }

@@ -46,9 +46,9 @@ test('student enters a string student ID, writes, submits once, locks and receiv
 });
 
 test('teacher controller loads, hides auth form, displays string IDs and keeps correct answers out of candidate statuses',async()=>{
-  const room=state();room.usage={input:0,output:0,calls:0};room.players[0].judgeStatus='waiting';
-  const f=await pageFixture('teacher',async()=>({status:200,body:{settings:{configured:false,model:'gpt-4.1-mini',concurrency:3},addresses:['http://192.168.1.2:4178'],questions:[{prompt:'請寫一字',answer:'冶',seconds:30}],room}}));
-  assert.equal(f.get('login-panel').hidden,true);assert.equal(f.get('teacher-app').hidden,false);assert.equal(f.get('answer').value,'冶');assert.ok(f.get('teacher-players').innerHTML.includes('1410701'));assert.ok(f.get('join-url').value.includes('/play?room=ABCDEF'));assert.equal(f.get('practice-banner').hidden,false);
+  const room=state();room.usage={input:0,output:0,calls:0};room.draft={id:'draft1',idiom:'金蘭之交',blankIndex:0,prompt:'「□蘭之交」請填入缺少的一字。',answer:'金'};room.players[0].judgeStatus='waiting';
+  const f=await pageFixture('teacher',async()=>({status:200,body:{settings:{configured:false,model:'gpt-4.1-mini',concurrency:3},addresses:['http://192.168.1.2:4178'],idiomCount:148,room}}));
+  assert.equal(f.get('login-panel').hidden,true);assert.equal(f.get('teacher-app').hidden,false);assert.equal(f.get('answer').value,'金');assert.ok(f.get('teacher-players').innerHTML.includes('1410701'));assert.ok(f.get('join-url').value.includes('/play?room=ABCDEF'));assert.equal(f.get('practice-banner').hidden,false);
 });
 
 test('screen controller conceals handwriting and verdicts while writing, then displays independent images and boolean results',async()=>{
@@ -67,4 +67,17 @@ test('student page rejects an unlisted ID before making a backend request',async
   f.get('join-code').value='ABCDEF';f.get('join-student-id').value='1410716';
   await f.get('join-form').onsubmit({preventDefault(){}});
   assert.equal(f.calls.length,0);assert.ok(f.get('join-error').textContent.includes('不在允許名單'));
+});
+
+
+test('teacher random-draw button refreshes the preview; starting sends only the draft ID and timing rules',async()=>{
+  const room=state();room.usage={input:0,output:0,calls:0};room.draft={id:'draft1',idiom:'金蘭之交',blankIndex:0,prompt:'「□蘭之交」請填入缺少的一字。',answer:'金'};room.players[0].judgeStatus='waiting';
+  const f=await pageFixture('teacher',async(url,options)=>{
+    if(url.endsWith('/draw')){room.draft={id:'draft2',idiom:'金蘭之交',blankIndex:3,prompt:'「金蘭之□」請填入缺少的一字。',answer:'交'};return {status:200,body:{room}};}
+    if(url.endsWith('/start')){const payload=JSON.parse(options.body);assert.equal(payload.draftId,'draft2');assert.equal('prompt' in payload,false);assert.equal('answer' in payload,false);return {status:200,body:{room}};}
+    return {status:200,body:{settings:{configured:false,model:'gpt-4.1-mini',concurrency:2},addresses:['http://192.168.1.2:4178'],idiomCount:148,room}};
+  });
+  await f.get('draw-button').onclick();assert.equal(f.get('answer').value,'交');assert.ok(f.get('question-prompt').value.includes('金蘭之□'));
+  f.get('answer').value='錯';f.get('question-prompt').value='改寫題目';f.get('seconds').value='30';await f.get('question-form').onsubmit({preventDefault(){}});
+  assert.equal(f.calls.filter(c=>c.url.endsWith('/start')).length,1);
 });

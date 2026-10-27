@@ -22,14 +22,14 @@ function connect(code,receive) {
   return client.subscribe(code,state=>{offset=state.serverTime-Date.now();liveState=state;receive(state);},(ok,message)=>{connection(ok);if(!ok&&message)toast(message,true);},document.body.dataset.page==='screen');
 }
 `+s.slice(end);
-s=s.replace("let room, admin, refreshing = false, bank = [], selectedNetwork = '', previousPhase;", "let room, admin, refreshing = false, bank = [], previousPhase, workers = 0;\n  function pumpWorkers() { if (!room?.round?.pending) return; const count=Math.min(admin.settings.concurrency,room.round.pending); while(workers<count) { workers++; client.rpc('worker',{room:room.code}).catch(error=>toast(error.message,true)).finally(()=>{workers--;}); } }");
+s=s.replace("let room, admin, refreshing = false, idiomCount = 0, selectedNetwork = '', previousPhase;", "let room, admin, refreshing = false, idiomCount = 0, previousPhase, workers = 0;\n  function pumpWorkers() { if (!room?.round?.pending) return; const count=Math.min(admin.settings.concurrency,room.round.pending); while(workers<count) { workers++; client.rpc('worker',{room:room.code}).catch(error=>toast(error.message,true)).finally(()=>{workers--;}); } }");
 s=s.replace('if (refreshing || document.hidden) return; refreshing = true;', 'if (!client.backend || !client.token || refreshing) return; refreshing = true;');
 s=s.replace('renderTeacher();\n    } catch (error)', 'renderTeacher(); pumpWorkers();\n    } catch (error)');
 s=s.replace("if (error.status === 401) { $('login-panel')", "if (error.status === 401) { client.token=''; $('login-error').textContent=error.message; $('login-panel')");
 s=s.replace("$('open-screen').href = `/screen?room=${room.code}`; $('open-play').href = `/play?room=${room.code}`; $('export-link').href = `/api/admin/rooms/${room.code}/export`;", "$('open-screen').href = client.pageURL('screen.html',room.code); $('open-play').href = client.pageURL('student.html',room.code); $('export-link').href = '#';");
 const networkStart=s.indexOf('    const addresses = admin.addresses'),networkEnd=s.indexOf("    $('round-label')",networkStart);
 if(networkStart<0||networkEnd<0)throw new Error('Cannot locate LAN controls');s=s.slice(0,networkStart)+"    updateJoinLink();\n"+s.slice(networkEnd);
-const joinStart=s.indexOf('  function updateJoinLink()'),joinEnd=s.indexOf("  $('question-bank').onchange",joinStart);
+const joinStart=s.indexOf('  function updateJoinLink()'),joinEnd=s.indexOf("  $('draw-button').onclick",joinStart);
 s=s.slice(0,joinStart)+"  function updateJoinLink() { if (room) $('join-url').value = client.pageURL('student.html',room.code); }\n  $('export-link').onclick=async event=>{event.preventDefault();if(!room)return;try{const result=await api(`/api/admin/rooms/${room.code}/export`);const url=URL.createObjectURL(new Blob([result.csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=result.filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(error){toast(error.message,true);}};\n"+s.slice(joinEnd);
 const hashStart=s.indexOf('  const hash = new URLSearchParams(location.hash'),hashEnd=s.indexOf('  const createDialog',hashStart);
 s=s.slice(0,hashStart)+"  refresh();\n  if(!client.backend)$('login-error').textContent='請先回首頁設定 GAS 後端連線。';\n"+s.slice(hashEnd);

@@ -54,7 +54,7 @@ async function fixture(opts={}) {
   return {app,base,call,dataDir,fetch:fetchLocal,async cleanup(){await app.shutdown();await removeTestDir(dataDir);}};
 }
 const createRoom=async(f,mode='practice')=>(await f.call('/api/admin/rooms',{title:'測試單字',mode})).body.room;
-const start=async(f,code,data={})=>f.call(`/api/admin/rooms/${code}/start`,{prompt:'請寫「陶ㄧㄝˇ」的第二個字',answer:'冶',seconds:10,...data});
+const start=async(f,code,data={})=>f.call(`/api/admin/rooms/${code}/start`,{draftId:(await admin(f)).draft?.id,seconds:10,...data});
 const admin=async f=>(await f.call('/api/admin/state')).body.room;
 
 test('28 simultaneous submissions stay secret until reveal; duplicate delivery and reveal never charge or score twice',async()=>{
@@ -91,8 +91,8 @@ test('single-character validation, deadline close, authentication, PNG size and 
     assert.equal((await f.call('/api/join',{room:code,studentId:'1410707'})).status,409);
     assert.equal(p.player.studentId,'1410707');
     assert.equal((await f.call('/api/join',{room:code,studentId:7})).status,403);
-    assert.equal((await start(f,code,{answer:'陶冶'})).status,400);
-    assert.equal((await start(f,code,{answer:'A'})).status,400);
+    assert.equal((await start(f,code,{draftId:'stale-preview'})).status,409);
+    assert.equal((await start(f,code,{draftId:''})).status,409);
     const round=(await start(f,code)).body.room.round;
     assert.equal((await f.call('/api/submit',{room:code,roundId:round.id,image})).status,401);
     assert.equal((await f.call('/api/submit',{room:code,roundId:round.id,image:'data:image/png;base64,AAAA'},p.token)).status,400);
