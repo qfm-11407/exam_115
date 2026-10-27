@@ -1,9 +1,9 @@
-import { config } from './config.js';
+import { config } from './config.js?v=20261027-cloud-2';
 const validBackend = value => { try { const u=new URL(value);return u.origin==='https://script.google.com'&&/^\/(?:macros\/s|a\/macros\/[A-Za-z0-9.-]+\/s)\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname); } catch { return false; } };
 const trustedGoogleOrigin = value => { try { const u=new URL(value);return u.protocol==='https:'&&(u.hostname==='script.google.com'||u.hostname.endsWith('.googleusercontent.com')); }catch{return false;} };
 const wait = ms => new Promise(resolve=>setTimeout(resolve,ms));
 function saved(key){try{return localStorage.getItem(key)||'';}catch{return '';}}
-const initial = new URLSearchParams(location.search).get('backend') || config.gasUrl || saved('oneword:backend');
+const initial = [new URLSearchParams(location.search).get('backend'), config.gasUrl, saved('oneword:backend')].find(validBackend) || '';
 export class GASClient {
   constructor(url=initial) { this.backend=validBackend(url)?url:'';this.ready=null;this.frame=null;this.peer=null;this.peerOrigin='';this.pending=new Map();this.sequence=0;this.imageCache=new Map();this.token='';try{this.token=sessionStorage.getItem(`oneword:teacher:${this.backend}`)||'';}catch{} }
   connect() {
