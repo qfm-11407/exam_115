@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261028-effects-250';
+import { client, GASClient, saveBackend } from './transport.js?v=20261029-tablet-260';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -51,7 +51,7 @@ if (page === 'teacher') {
   function canManageRooms(){return Boolean(admin?.features?.roomManagement);}
   function renderAIStatus() {
     const configured=Boolean(admin?.settings.configured),management=canManageRooms();
-    $('app-version').textContent='網頁 v2.5.0 · GAS '+(admin?.version||'未回報版本');
+    $('app-version').textContent='網頁 v2.6.0 · GAS '+(admin?.version||'未回報版本');
     $('ai-ready-status').textContent=configured?'AI 金鑰：後端已設定':'AI 金鑰：後端尚未設定';
     $('create-ai-room-button').hidden=false;$('create-ai-room-button').disabled=!configured;
     $('backend-update-note').hidden=management;
@@ -283,7 +283,7 @@ if(page==='home') {
   $('backend-details').open=!client.backend;
   $('backend-description').textContent=client.backend?'已預設教室雲端後端，可直接進入教師端或學生端，不需重新貼上網址。':'尚未設定教室雲端後端，請展開下方設定並測試連線。';
   const entryLinks=Array.from(document.querySelectorAll('a[href="./teacher.html"],a[href="./student.html"]'),a=>({node:a,file:a.getAttribute('href').includes('teacher')?'teacher.html':'student.html'}));
-  function updateEntryLinks(){entryLinks.forEach(item=>{item.node.href=client.pageURL(item.file);});}
+  function updateEntryLinks(){entryLinks.forEach(item=>{item.node.href=item.file==='student.html'&&client.backend?client.studentURL():client.pageURL(item.file);});}
   updateEntryLinks();
   $('backend-form').onsubmit=async event=>{event.preventDefault();const button=$('backend-form').querySelector('button');button.disabled=true;let tester;try{const url=saveBackend($('backend-url').value.trim());tester=new GASClient(url);$('backend-status').textContent='正在連接 GAS…';await tester.rpc('ping',{},'',0);$('backend-status').textContent='連線成功。現在可以進入教師控制台或學生作答頁。';client.dispose();client.backend=url;updateEntryLinks();}catch(error){$('backend-status').textContent=error.message;}finally{tester?.dispose();button.disabled=false;}};
 }
