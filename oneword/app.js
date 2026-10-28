@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261027-cloud-4';
+import { client, GASClient, saveBackend } from './transport.js?v=20261028-rooms-22';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -14,7 +14,7 @@ function connect(code,receive) {
 function connection(connected) { const el = $('connection'); if (!el) return; el.textContent = connected ? '已連線' : '重新連線中'; el.className = `connection ${connected ? 'connected' : 'offline'}`; }
 function remaining(round) { return round?.phase === 'writing' ? Math.max(0, Math.ceil((round.deadline - Date.now() - offset) / 1000)) : null; }
 function timerText(round) { const left = remaining(round); return left !== null ? String(left).padStart(2, '0') : round?.phase === 'revealed' ? '✓' : round?.phase === 'closed' ? '00' : '—'; }
-function phaseLabel(round) { return !round ? '等待出題' : ({ writing:'作答進行中', closed:'作答已截止', revealed:'結果已揭曉' })[round.phase]; }
+function phaseLabel(round) { return !round ? '等待出題' : ({ writing:'作答進行中', closed:'作答已截止', revealed:'結果已揭曉', cancelled:'本題已取消' })[round.phase]; }
 function rankRows(players, max = 60) {
   return [...players].sort((a, b) => b.score - a.score || a.studentId.localeCompare(b.studentId, 'en', { numeric: true })).slice(0, max).map((p, i) => `<div class="rank-row"><span class="rank-number">${i + 1}</span><span class="rank-name"><small>${studentId(p)}</small>${escape(p.name)}</span><strong>${p.score}<small>分</small></strong></div>`).join('') || '<p class="list-empty">參賽者加入後顯示排名</p>';
 }
@@ -29,6 +29,7 @@ if (page === 'teacher') {
   let room, admin, refreshing = false, idiomCount = 0, previousPhase, workers = 0;
   function pumpWorkers() { if (!room?.round?.pending) return; const count=Math.min(admin.settings.concurrency,room.round.pending); while(workers<count) { workers++; client.rpc('worker',{room:room.code}).catch(error=>toast(error.message,true)).finally(()=>{workers--;}); } }
   let displayedQuestionId = null;
+  let pendingCreateRoom='',replacementRequired=false,roomsLoaded=false,roomsLoading=false;
   $('help-button').onclick = () => $('help-dialog').showModal();
   async function refresh() {
     if (!client.backend || !client.token || refreshing) return; refreshing = true;
@@ -47,24 +48,29 @@ if (page === 'teacher') {
     $('draw-info').textContent=q ? '已抽中「'+q.idiom+'」，挖空第 '+(q.blankIndex+1)+' 字。題庫 '+idiomCount+' 則，共 '+(idiomCount*4)+' 種題型。' : '按「隨機抽題」預覽下一題。';
     if(q?.id!==displayedQuestionId){$('accepted').value=(q?.accepted||[]).join('，');displayedQuestionId=q?.id;}
   }
+  function canManageRooms(){return Boolean(admin?.features?.roomManagement);}
   function renderAIStatus() {
-    const configured=Boolean(admin?.settings.configured),active=Boolean(room?.round&&room.round.phase!=='revealed');
+    const configured=Boolean(admin?.settings.configured),management=canManageRooms();
     $('ai-ready-status').textContent=configured?'AI 金鑰：後端已設定':'AI 金鑰：後端尚未設定';
-    $('create-ai-room-button').hidden=!configured||room?.mode==='live';
-    $('create-ai-room-button').disabled=active;
-    $('ai-mode-note').textContent=room?.mode==='live'?'目前房間：AI 正式判讀。學生交卷後會呼叫 AI。':active?'目前房間：流程演練。請先截止並揭曉本題，再建立 AI 正式比賽。':configured?'目前'+(room?'房間：流程演練。':'尚未建立房間。')+'按「建立 AI 正式比賽」建立新房間；套用設定不會改變現有房間模式。':'請確認後端已設定 API 金鑰，或在「AI 設定」中填入金鑰。僅套用模型設定不會新增金鑰。';
+    $('create-ai-room-button').hidden=false;$('create-ai-room-button').disabled=!configured;
+    $('backend-update-note').hidden=management;
+    $('room-manager').hidden=!management;
+    $('end-room-button').hidden=!management;$('delete-room-button').hidden=!management;
+    $('ai-mode-note').textContent=!configured?'後端尚未讀到 API 金鑰。請確認 GAS 指令碼屬性名稱是 OPENAI_API_KEY，或在「AI 設定」中填入金鑰。':room?.ended?'目前測驗已結束，可直接建立新的 AI 挑戰。':room?.mode==='live'?'目前房間：AI 正式判讀。學生交卷後會呼叫 AI。':'按「建立 AI 正式比賽」確認新房間；若有尚未結束的測驗，可勾選先結束再建立。';
+    if(management&&!roomsLoaded&&!roomsLoading){roomsLoaded=true;loadRooms();}
   }
   function renderTeacher() {
     renderAIStatus();
     $('welcome-panel').hidden = Boolean(room); $('room-dashboard').hidden = !room; if (!room) return;
-    const round = room.round, writing = round?.phase === 'writing', ready = !round || round.phase === 'revealed';
+    const round = room.round, writing = !room.ended&&round?.phase === 'writing', ready = !room.ended&&(!round || round.phase === 'revealed');
     $('room-mode').textContent=room.mode==='live'?'AI 正式判讀':'流程演練（不使用 AI）';
+    $('room-status').textContent=room.ended?'已結束':'開放中';$('end-room-button').disabled=Boolean(room.ended);
     $('practice-banner').hidden = room.mode !== 'practice'; $('room-title').textContent = room.title; $('room-code').textContent = room.code;
     $('open-screen').href = client.pageURL('screen.html',room.code); $('open-play').href = client.pageURL('student.html',room.code); $('export-link').href = '#';
     updateJoinLink();
     $('round-label').textContent = round ? `第 ${round.number} 題` : '尚未開始'; $('phase-pill').textContent = phaseLabel(round); $('phase-pill').className = `pill ${writing ? 'active-pill' : 'neutral'}`;
     $('teacher-countdown').textContent = timerText(round); $('submitted-count').textContent = `${round?.submitted || 0} / ${room.players.length}`; $('judged-count').textContent = round?.judged || 0; $('player-count').textContent = `${room.players.length} 人`;
-    $('close-button').disabled = !writing; $('reveal-button').disabled = !round || round.phase !== 'closed' || round.pending > 0; $('retry-button').hidden = !round || !round.unresolved || round.phase === 'revealed';
+    $('close-button').disabled = !writing; $('reveal-button').disabled = room.ended || !round || round.phase !== 'closed' || round.pending > 0; $('retry-button').hidden = room.ended || !round || !round.unresolved || round.phase === 'revealed';
     showQuestion(); $('draw-button').disabled = !ready; $('start-button').disabled = !ready || !room.players.length || !room.draft; $('start-button').textContent = round?.phase === 'revealed' ? '開始下一題 →' : '開始作答 →';
     ['question-prompt','answer','seconds','accepted'].forEach(id => { $(id).disabled = !ready; });
     document.querySelectorAll('[data-step]').forEach(el => el.classList.toggle('current', el.dataset.step === round?.phase));
@@ -74,6 +80,7 @@ if (page === 'teacher') {
     $('leaderboard').innerHTML = rankRows(room.players, 8); const u = room.usage;
     $('usage-info').textContent = room.mode === 'practice' ? '流程演練・API 用量為 0' : `${u.calls} 次有效判讀回應 · 輸入 ${u.input.toLocaleString()} / 輸出 ${u.output.toLocaleString()} tokens`;
 
+    if(room.ended){$('draw-info').textContent='測驗已結束；已揭曉成績保留。請建立新測驗繼續。';$('judge-summary').textContent='本測驗已結束，未揭曉的當題不計分。';}
     previousPhase = round?.phase;
   }
   function updateJoinLink() { if (room) $('join-url').value = client.pageURL('student.html',room.code); }
@@ -83,14 +90,28 @@ if (page === 'teacher') {
   $('login-form').onsubmit = async event => { event.preventDefault(); try { await login($('pin').value); } catch (error) { $('login-error').textContent = error.message; } };
   refresh();
   if(!client.backend)$('login-error').textContent='請先回首頁設定 GAS 後端連線。';
-  const createDialog = () => { $('room-dialog').showModal(); $('new-mode').value = admin?.settings.configured ? 'live' : 'practice'; updateModeNote(); };
-  $('create-ai-room-button').onclick = () => { if(!admin?.settings.configured)return; if(room?.round&&room.round.phase!=='revealed'){toast('請先截止並揭曉目前題目，再建立新比賽',true);return;} createDialog(); $('new-mode').value='live'; updateModeNote(); };
+  function updateRoomConfirmation(){ $('room-create-submit').disabled=replacementRequired&&!$('end-current-confirm').checked; }
+  const createDialog = () => {
+    pendingCreateRoom=room?.code||'';replacementRequired=canManageRooms()&&Boolean(room&&!room.ended);
+    $('end-current-container').hidden=!replacementRequired;$('end-current-confirm').checked=false;
+    $('end-current-description').textContent=replacementRequired?'目前測驗「'+room.title+'」（'+room.code+'）將結束。尚未揭曉的當題取消、不計分；學生須使用新房號加入。':'';
+    $('room-create-error').textContent='';$('room-dialog').showModal();$('new-mode').value=admin?.settings.configured?'live':'practice';updateModeNote();updateRoomConfirmation();
+  };
+  $('end-current-confirm').onchange=updateRoomConfirmation;
+  $('create-ai-room-button').onclick=()=>{if(!admin?.settings.configured){$('settings-button').onclick();return;}createDialog();$('new-mode').value='live';updateModeNote();};
   $('new-room-button').onclick = createDialog; $('welcome-create').onclick = createDialog;
   function updateModeNote() { const live = $('new-mode').value === 'live'; $('mode-note').textContent = live ? 'AI 會自動判定單字對錯，使用您的 API 額度。' : '演練不辨識筆跡，對錯為預設測試結果。'; $('mode-note').className = `notice ${live ? '' : 'amber'}`; }
   $('new-mode').onchange = updateModeNote;
-  $('room-form').onsubmit = async event => { event.preventDefault(); try { await api('/api/admin/rooms', { title: $('new-title').value, mode: $('new-mode').value }); $('room-dialog').close(); previousPhase = undefined; await refresh(); toast('房間已建立，請讓平板加入'); } catch (error) { toast(error.message, true); } };
+  $('room-form').onsubmit = async event => {
+    event.preventDefault();if(replacementRequired&&!$('end-current-confirm').checked){$('room-create-error').textContent='請先勾選結束目前測驗，或取消後回到原測驗。';return;}
+    $('room-create-submit').disabled=true;
+    try {const request={title:$('new-title').value,mode:$('new-mode').value};if(canManageRooms()){request.previousRoom=pendingCreateRoom;request.endCurrent=replacementRequired&&$('end-current-confirm').checked;}
+      const result=await api('/api/admin/rooms',request);if(result.room){room=result.room;admin.room=room;liveState=room;renderTeacher();}
+      $('room-dialog').close();previousPhase=undefined;await refresh();if(canManageRooms())await loadRooms();toast('房間已建立，請讓學生使用新房號加入');
+    }catch(error){$('room-create-error').textContent=error.message;toast(error.message,true);}finally{updateRoomConfirmation();}
+  };
   $('settings-button').onclick = () => { $('api-model').value = admin.settings.model; $('concurrency').value = admin.settings.concurrency; $('settings-dialog').showModal(); };
-  $('settings-form').onsubmit = async event => { event.preventDefault(); try { const result=await api('/api/admin/settings', { key: $('api-key').value.trim(), model: $('api-model').value.trim(), concurrency: Number($('concurrency').value) }); $('api-key').value = ''; $('settings-dialog').close(); admin.settings.configured=Boolean(result.configured); renderAIStatus(); await refresh(); toast(result.configured?(room?.mode==='live'?'AI 設定已套用；目前房間為 AI 正式判讀':'AI 設定已套用；請按「建立 AI 正式比賽」，現有房間模式不變'):'模型設定已套用，但後端尚未設定 API 金鑰',!result.configured); } catch (error) { toast(error.message, true); } };
+  $('settings-form').onsubmit = async event => { event.preventDefault(); try { const result=await api('/api/admin/settings', { key: $('api-key').value.trim(), model: $('api-model').value.trim(), concurrency: Number($('concurrency').value) }); $('api-key').value = ''; $('settings-dialog').close(); admin.settings.configured=Boolean(result.configured); renderAIStatus(); await refresh(); if(result.configured&&(!room||room.ended||room.mode!=='live')){createDialog();$('new-mode').value='live';updateModeNote();toast('AI 設定已儲存；請確認建立 AI 挑戰，原房間在確認前維持不變');}else toast(result.configured?'AI 設定已套用；目前房間為 AI 正式判讀':'模型設定已套用，但後端尚未設定 API 金鑰',!result.configured); } catch (error) { toast(error.message, true); } };
   $('question-form').onsubmit = async event => {
     event.preventDefault(); if (!room) return;
     try { await api(`/api/admin/rooms/${room.code}/start`, { draftId: room.draft?.id, seconds: Number($('seconds').value), accepted: $('accepted').value.split(/[,，、\s]+/).filter(Boolean) }); await refresh(); }
@@ -98,6 +119,24 @@ if (page === 'teacher') {
   };
   for (const action of ['close','reveal','retry']) $(action + '-button').onclick = async () => { if (!room) return; try { $(action + '-button').disabled = true; await api(`/api/admin/rooms/${room.code}/${action}`, {}); await refresh(); } catch (error) { toast(error.message, true); renderTeacher(); } };
   $('copy-link').onclick = async () => { const url = $('join-url').value; try { if (!navigator.clipboard) throw new Error(); await navigator.clipboard.writeText(url); toast('已複製平板作答網址'); } catch { $('join-url').focus(); $('join-url').select(); toast('已選取網址，請按 Ctrl+C 或長按複製'); } };
+  async function loadRooms(){
+    if(!canManageRooms()||roomsLoading)return;roomsLoading=true;
+    try{const result=await api('/api/admin/rooms/list'),selected=$('saved-room-select').value;
+      $('saved-room-select').innerHTML=result.rooms.map(item=>'<option value="'+escape(item.code)+'">'+escape(item.title)+' · '+item.code+' · '+(item.ended?'已結束':'開放中')+' · '+(item.mode==='live'?'AI':'演練')+'</option>').join('');
+      $('saved-room-select').value=result.rooms.some(item=>item.code===selected)?selected:result.active||result.rooms[0]?.code||'';
+      $('room-manager-status').textContent='共 '+result.rooms.length+' 場測驗。刪除後舊房號失效，Drive 備份保留。';
+    }catch(error){$('room-manager-status').textContent=error.message;}finally{roomsLoading=false;}
+  }
+  async function deleteRoom(code){
+    if(!code||!canManageRooms())return;
+    if(!confirm('確定刪除房號 '+code+' 的測驗？未結束的測驗會一併結束，未揭曉當題不計分。測驗從清單移除，Drive 圖片與成績備份保留。'))return;
+    try{await api('/api/admin/rooms/'+code+'/delete',{});if(room?.code===code){room=null;admin.room=null;liveState=null;renderTeacher();}await refresh();await loadRooms();toast('測驗已刪除；Drive 備份保留');}catch(error){toast(error.message,true);}
+  }
+  $('refresh-rooms-button').onclick=loadRooms;
+  $('end-room-button').onclick=async()=>{if(!room||room.ended||!canManageRooms())return;const code=room.code;if(!confirm('確定結束房號 '+code+' 的測驗？尚未揭曉的當題取消、不計分。已揭曉成績保留。'))return;try{const result=await api('/api/admin/rooms/'+code+'/end',{});room=result.room;admin.room=room;liveState=room;renderTeacher();await loadRooms();toast('測驗已結束，可以建立新的 AI 挑戰');}catch(error){toast(error.message,true);}};
+  $('delete-room-button').onclick=()=>deleteRoom(room?.code);
+  $('delete-saved-room-button').onclick=()=>deleteRoom($('saved-room-select').value);
+  $('load-room-button').onclick=async()=>{const code=$('saved-room-select').value;if(!code||!canManageRooms())return;try{const result=await api('/api/admin/rooms/'+code+'/select',{});room=result.room;admin.room=room;liveState=room;renderTeacher();await refresh();}catch(error){toast(error.message,true);}};
   setInterval(refresh, 3500); setInterval(() => { if (room) $('teacher-countdown').textContent = timerText(room.round); }, 250);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
 }
@@ -119,7 +158,7 @@ if (page === 'play') {
     $('play-practice').hidden = state.mode !== 'practice'; $('player-identity').textContent = `學號 ${own.studentId} · ${own.name}`; $('play-room').textContent = `房號 ${state.code}`;
     $('play-round').textContent = round ? `第 ${String(round.number).padStart(2,'0')} 題 · 只寫一個字` : '等待教師出題'; $('play-prompt').textContent = round?.prompt || '好好握筆，準備上場。';
     $('play-countdown').textContent = timerText(round);
-    const writing = round?.phase === 'writing' && remaining(round) > 0;
+    const writing = !state.ended&&round?.phase === 'writing' && remaining(round) > 0;
     pad.enabled = Boolean(writing && !submitted && !sending); $('submit-button').disabled = !pad.enabled;
     ['undo','eraser','clear'].forEach(id => { $(id).disabled = !pad.enabled; });
     const lock = !writing || submitted;
@@ -136,6 +175,7 @@ if (page === 'play') {
       $('own-result').className = `own-result ${done && !own.correct ? 'wrong' : ''}`;
       $('lock-message').textContent = '本題已揭曉'; $('lock-detail').textContent = '等待教師開始下一題。';
     }
+    if(state.ended){$('play-round').textContent='本測驗已結束';$('lock-message').textContent='測驗已結束';$('lock-detail').textContent='請使用教師提供的新房號加入下一場';$('write-state').textContent='已結束';}
   }
   async function join(data) {
     const result = await api('/api/join', data); identity = result; storage.set(`oneword:${client.backend}:player:${data.room}`, result);
@@ -172,8 +212,9 @@ if (page === 'screen') {
     $('screen-grid').innerHTML = state.players.map(p => {
       const done = revealed && p.status === 'done', correct = done && p.correct;
       const paper = shown && p.imageUrl ? `<img src="${p.imageUrl}" alt="${studentId(p)} 的手寫答案" data-image="${p.imageUrl}" data-label="${escape(`${studentId(p)} · ${p.name}`)}">` : shown ? '<span class="empty-ink">未交卷</span>' : `<div class="paper-state"><b>${p.submitted ? '✓' : '✎'}</b><span>${p.submitted ? '已交卷・答案保密' : round ? '專心作答中' : '準備就緒'}</span></div>`;
-      return `<article class="answer-card ${revealed ? 'revealed' : ''} ${done ? correct ? 'correct' : 'wrong' : ''}"><div class="answer-card-head"><span class="answer-seat">${studentId(p)}</span><span class="answer-name">${escape(p.name)}</span><span class="answer-score">${p.score} 分</span></div><div class="answer-paper">${paper}</div><div class="answer-foot"><span>${revealed ? done ? correct ? '+10 分' : '+0 分' : p.submitted ? '無法判定' : '未交卷' : shown ? '等待揭曉' : p.submitted ? '答案已鎖定' : '一人一字'}</span><span class="${done ? 'answer-verdict' : 'pending-verdict'}">${done ? correct ? '✓' : '✗' : revealed && p.submitted ? '—' : '·'}</span></div></article>`;
+      return `<article class="answer-card ${revealed ? 'revealed' : ''} ${done ? correct ? 'correct' : 'wrong' : ''}"><div class="answer-card-head"><span class="answer-seat">${studentId(p)}</span><span class="answer-name">${escape(p.name)}</span><span class="answer-score">${p.score} 分</span></div><div class="answer-paper">${paper}</div><div class="answer-foot"><span>${revealed ? done ? correct ? '+10 分' : '+0 分' : p.submitted ? '無法判定' : '未交卷' : state.ended ? '測驗已結束' : shown ? '等待揭曉' : p.submitted ? '答案已鎖定' : '一人一字'}</span><span class="${done ? 'answer-verdict' : 'pending-verdict'}">${done ? correct ? '✓' : '✗' : revealed && p.submitted ? '—' : '·'}</span></div></article>`;
     }).join('') || '<div class="screen-empty"><span>筆</span><h2>擂台已準備就緒</h2><p>參賽者加入後，會依座號出現在這裡。</p></div>';
+    if(state.ended){$('screen-phase').textContent='測驗已結束';$('screen-timer-label').textContent='已結束';$('screen-subtitle').textContent='已揭曉成績保留。請使用教師提供的新房號加入下一場。';$('screen-prompt').textContent='本場測驗已結束';}
     $('screen-ranking').innerHTML = rankRows(state.players); $('screen-grid').hidden = rankings; $('screen-ranking').hidden = !rankings;
   };
   if (code) connect(code, render); else { $('screen-subtitle').textContent = '請從教師控制台按「開啟大螢幕」進入。'; connection(false); }
