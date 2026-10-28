@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261028-rooms-22';
+import { client, GASClient, saveBackend } from './transport.js?v=20261028-modes-221';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -51,12 +51,14 @@ if (page === 'teacher') {
   function canManageRooms(){return Boolean(admin?.features?.roomManagement);}
   function renderAIStatus() {
     const configured=Boolean(admin?.settings.configured),management=canManageRooms();
+    $('app-version').textContent='網頁 v2.2.1 · GAS '+(admin?.version||'未回報版本');
     $('ai-ready-status').textContent=configured?'AI 金鑰：後端已設定':'AI 金鑰：後端尚未設定';
     $('create-ai-room-button').hidden=false;$('create-ai-room-button').disabled=!configured;
     $('backend-update-note').hidden=management;
     $('room-manager').hidden=!management;
     $('end-room-button').hidden=!management;$('delete-room-button').hidden=!management;
     $('ai-mode-note').textContent=!configured?'後端尚未讀到 API 金鑰。請確認 GAS 指令碼屬性名稱是 OPENAI_API_KEY，或在「AI 設定」中填入金鑰。':room?.ended?'目前測驗已結束，可直接建立新的 AI 挑戰。':room?.mode==='live'?'目前房間：AI 正式判讀。學生交卷後會呼叫 AI。':'按「建立 AI 正式比賽」確認新房間；若有尚未結束的測驗，可勾選先結束再建立。';
+    if($('room-dialog').open){updateModeNote();updateRoomConfirmation();}
     if(management&&!roomsLoaded&&!roomsLoading){roomsLoaded=true;loadRooms();}
   }
   function renderTeacher() {
@@ -90,7 +92,7 @@ if (page === 'teacher') {
   $('login-form').onsubmit = async event => { event.preventDefault(); try { await login($('pin').value); } catch (error) { $('login-error').textContent = error.message; } };
   refresh();
   if(!client.backend)$('login-error').textContent='請先回首頁設定 GAS 後端連線。';
-  function updateRoomConfirmation(){ $('room-create-submit').disabled=replacementRequired&&!$('end-current-confirm').checked; }
+  function updateRoomConfirmation(){ $('room-create-submit').disabled=(replacementRequired&&!$('end-current-confirm').checked)||($('new-mode').value==='live'&&!admin?.settings.configured); }
   const createDialog = () => {
     pendingCreateRoom=room?.code||'';replacementRequired=canManageRooms()&&Boolean(room&&!room.ended);
     $('end-current-container').hidden=!replacementRequired;$('end-current-confirm').checked=false;
@@ -100,10 +102,18 @@ if (page === 'teacher') {
   $('end-current-confirm').onchange=updateRoomConfirmation;
   $('create-ai-room-button').onclick=()=>{if(!admin?.settings.configured){$('settings-button').onclick();return;}createDialog();$('new-mode').value='live';updateModeNote();};
   $('new-room-button').onclick = createDialog; $('welcome-create').onclick = createDialog;
-  function updateModeNote() { const live = $('new-mode').value === 'live'; $('mode-note').textContent = live ? 'AI 會自動判定單字對錯，使用您的 API 額度。' : '演練不辨識筆跡，對錯為預設測試結果。'; $('mode-note').className = `notice ${live ? '' : 'amber'}`; }
-  $('new-mode').onchange = updateModeNote;
+  function updateModeNote() {
+    const live=$('new-mode').value==='live',configured=Boolean(admin?.settings.configured);
+    $('mode-choice-practice').checked=!live;$('mode-choice-live').checked=live;
+    $('mode-key-status').textContent=configured?'GAS 已讀到 API 金鑰設定，不需重填。':'GAS 尚未讀到 API 金鑰設定；AI 選項仍顯示，但建立前需先完成設定。';
+    $('mode-note').textContent=live?(configured?'AI 會自動判定單字對錯，使用您的 API 額度。':'目前已選 AI 正式判讀；請先檢查 GAS 的 OPENAI_API_KEY 或按「檢查 AI 設定」。'):'演練不辨識筆跡，對錯為預設測試結果。';
+    $('mode-note').className='notice '+(live&&configured?'':'amber');updateRoomConfirmation();
+  }
+  for(const mode of ['practice','live'])$('mode-choice-'+mode).onchange=()=>{if($('mode-choice-'+mode).checked){$('new-mode').value=mode;updateModeNote();}};
+  $('mode-settings-button').onclick=()=>{$('room-dialog').close();$('settings-button').onclick();};
+  $('new-mode').onchange=updateModeNote;
   $('room-form').onsubmit = async event => {
-    event.preventDefault();if(replacementRequired&&!$('end-current-confirm').checked){$('room-create-error').textContent='請先勾選結束目前測驗，或取消後回到原測驗。';return;}
+    event.preventDefault();if($('new-mode').value==='live'&&!admin?.settings.configured){$('room-create-error').textContent='GAS 尚未讀到 API 金鑰，請先檢查 AI 設定。';return;}if(replacementRequired&&!$('end-current-confirm').checked){$('room-create-error').textContent='請先勾選結束目前測驗，或取消後回到原測驗。';return;}
     $('room-create-submit').disabled=true;
     try {const request={title:$('new-title').value,mode:$('new-mode').value};if(canManageRooms()){request.previousRoom=pendingCreateRoom;request.endCurrent=replacementRequired&&$('end-current-confirm').checked;}
       const result=await api('/api/admin/rooms',request);if(result.room){room=result.room;admin.room=room;liveState=room;renderTeacher();}
