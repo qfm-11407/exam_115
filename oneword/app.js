@@ -1,10 +1,10 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261028-modes-221';
+import { client, GASClient, saveBackend } from './transport.js?v=20261028-rejoin-230';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
 const studentId = p => escape(p.studentId || '');
-const storage = { get(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } }, set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} } };
+const storage = { get(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } }, set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }, remove(key) { try { localStorage.removeItem(key); } catch {} } };
 let toastTimer, offset = 0, liveState = null;
 function toast(message, error = false) { if (!$('toast')) return; $('toast').textContent = message; $('toast').classList.toggle('error', error); $('toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('toast').hidden = true; }, 5000); }
 async function api(url,data,token) { return client.request(url,data,token); }
@@ -51,11 +51,12 @@ if (page === 'teacher') {
   function canManageRooms(){return Boolean(admin?.features?.roomManagement);}
   function renderAIStatus() {
     const configured=Boolean(admin?.settings.configured),management=canManageRooms();
-    $('app-version').textContent='網頁 v2.2.1 · GAS '+(admin?.version||'未回報版本');
+    $('app-version').textContent='網頁 v2.3.0 · GAS '+(admin?.version||'未回報版本');
     $('ai-ready-status').textContent=configured?'AI 金鑰：後端已設定':'AI 金鑰：後端尚未設定';
     $('create-ai-room-button').hidden=false;$('create-ai-room-button').disabled=!configured;
     $('backend-update-note').hidden=management;
     $('room-manager').hidden=!management;
+    $('player-management-note').textContent=admin?.features?.playerManagement?'移除學生連線後，同學號可重新加入；已交卷答案與累計成績保留。':'移除學生功能需更新 GAS Code.gs 至 2.3.0，並將原部署更新為新版本。';
     $('end-room-button').hidden=!management;$('delete-room-button').hidden=!management;
     $('ai-mode-note').textContent=!configured?'後端尚未讀到 API 金鑰。請確認 GAS 指令碼屬性名稱是 OPENAI_API_KEY，或在「AI 設定」中填入金鑰。':room?.ended?'目前測驗已結束，可直接建立新的 AI 挑戰。':room?.mode==='live'?'目前房間：AI 正式判讀。學生交卷後會呼叫 AI。':'按「建立 AI 正式比賽」確認新房間；若有尚未結束的測驗，可勾選先結束再建立。';
     if($('room-dialog').open){updateModeNote();updateRoomConfirmation();}
@@ -78,14 +79,14 @@ if (page === 'teacher') {
     document.querySelectorAll('[data-step]').forEach(el => el.classList.toggle('current', el.dataset.step === round?.phase));
     $('judge-summary').textContent = !round ? '交卷後即在背景判讀，結果暫時隱藏。' : round.pending ? `${round.pending} 份正在排隊或判讀中，${round.judged} 份已完成。` : round.unresolved ? `${round.unresolved} 份未完成判讀，可先重試；揭曉後這些答案標示「無法判定」，不判錯。` : round.phase === 'revealed' ? '結果已揭曉並計分，可準備下一題。' : round.submitted ? '目前交卷均已判讀完成，截止後即可揭曉。' : '等待參賽者交卷。';
     const status = { uploading:'保存中', 'upload-error':'上傳待重試', queued:'排隊', judging:'判讀中', done:'已判讀', error:'判讀失敗', uncertain:'辨識不明', waiting:'待交卷' };
-    $('teacher-players').innerHTML = room.players.map(p => `<div class="player-chip ${p.submitted ? 'submitted' : ''}" title="${escape(p.error)}"><span class="seat-number">${studentId(p)}</span><span class="player-name">${escape(p.name)}</span><span class="player-status ${p.judgeStatus === 'error' ? 'failed' : ''}">${round?.phase === 'revealed' && p.status === 'done' ? p.correct ? '✓' : '✗' : status[p.judgeStatus] || '待交卷'}</span></div>`).join('') || '<p class="list-empty">分享平板網址，等待第一位參賽者加入。</p>';
+    $('teacher-players').innerHTML = room.players.map(p => `<div class="player-chip ${p.submitted ? 'submitted' : ''}" title="${escape(p.error)}"><span class="seat-number">${studentId(p)}</span><span class="player-name">${escape(p.name)}</span><span class="player-status ${p.judgeStatus === 'error' ? 'failed' : ''}">${round?.phase === 'revealed' && p.status === 'done' ? p.correct ? '✓' : '✗' : status[p.judgeStatus] || '待交卷'}</span>${admin?.features?.playerManagement?`<button type="button" class="remove-player-button" data-remove-player="${escape(p.id)}" data-connection-version="${Number(p.connectionVersion)||0}" aria-label="移除學號 ${studentId(p)} 的連線" ${room.ended?'disabled':''}>移除</button>`:''}</div>`).join('') || '<p class="list-empty">分享平板網址，等待第一位參賽者加入。</p>';
     $('leaderboard').innerHTML = rankRows(room.players, 8); const u = room.usage;
     $('usage-info').textContent = room.mode === 'practice' ? '流程演練・API 用量為 0' : `${u.calls} 次有效判讀回應 · 輸入 ${u.input.toLocaleString()} / 輸出 ${u.output.toLocaleString()} tokens`;
 
     if(room.ended){$('draw-info').textContent='測驗已結束；已揭曉成績保留。請建立新測驗繼續。';$('judge-summary').textContent='本測驗已結束，未揭曉的當題不計分。';}
     previousPhase = round?.phase;
   }
-  function updateJoinLink() { if (room) $('join-url').value = client.pageURL('student.html',room.code); }
+  function updateJoinLink() { if (room) setJoinLink(client.pageURL('student.html',room.code)); }
   $('export-link').onclick=async event=>{event.preventDefault();if(!room)return;try{const result=await api(`/api/admin/rooms/${room.code}/export`);const url=URL.createObjectURL(new Blob([result.csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=result.filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(error){toast(error.message,true);}};
   $('draw-button').onclick=async()=>{if(!room)return;try{$('draw-button').disabled=true;await api('/api/admin/rooms/'+room.code+'/draw',{});await refresh();}catch(error){toast(error.message,true);renderTeacher();}};
   async function login(pin) { await api('/api/login', { pin }); $('pin').value = ''; $('login-error').textContent = ''; await refresh(); }
@@ -128,7 +129,24 @@ if (page === 'teacher') {
     catch (error) { toast(error.message, true); }
   };
   for (const action of ['close','reveal','retry']) $(action + '-button').onclick = async () => { if (!room) return; try { $(action + '-button').disabled = true; await api(`/api/admin/rooms/${room.code}/${action}`, {}); await refresh(); } catch (error) { toast(error.message, true); renderTeacher(); } };
-  $('copy-link').onclick = async () => { const url = $('join-url').value; try { if (!navigator.clipboard) throw new Error(); await navigator.clipboard.writeText(url); toast('已複製平板作答網址'); } catch { $('join-url').focus(); $('join-url').select(); toast('已選取網址，請按 Ctrl+C 或長按複製'); } };
+  function setJoinLink(url){if($('join-url').value!==url)$('join-copy-status').textContent='';$('join-url').value=url;}
+  async function copyJoinURL(){
+    const input=$('join-url'),url=input.value;if(!url){toast('請先建立測驗，再複製作答網址',true);return;}
+    let copied=false;
+    try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url);copied=true;}}catch{}
+    if(!copied){input.focus();input.select();input.setSelectionRange?.(0,url.length);try{copied=Boolean(document.execCommand?.('copy'));}catch{}}
+    const message=copied?'已複製作答網址（含房號）':'無法自動複製，已選取網址；請按 Ctrl+C 或長按複製';
+    $('join-copy-status').textContent=message;toast(message,!copied);
+  }
+  $('copy-link').onclick=copyJoinURL;$('copy-join-url').onclick=copyJoinURL;
+  $('teacher-players').onclick=async event=>{
+    const button=event.target.closest('[data-remove-player]');if(!button||!room||!admin?.features?.playerManagement)return;
+    const code=room.code,playerId=button.dataset.removePlayer,connectionVersion=Number(button.dataset.connectionVersion),student=room.players.find(p=>p.id===playerId);
+    if(!student||!confirm('確定移除學號 '+student.studentId+' 的舊裝置連線？同學號可以重新加入；累計成績與已交卷答案保留，已交卷者不能重寫本題。'))return;
+    button.disabled=true;
+    try{const result=await api('/api/admin/rooms/'+code+'/remove-player',{playerId,connectionVersion});if(room?.code===code){room=result.room;admin.room=room;liveState=room;renderTeacher();}toast('已移除舊連線，同學號現在可重新加入');}
+    catch(error){toast(error.message,true);}finally{button.disabled=false;}
+  };
   async function loadRooms(){
     if(!canManageRooms()||roomsLoading)return;roomsLoading=true;
     try{const result=await api('/api/admin/rooms/list'),selected=$('saved-room-select').value;
@@ -155,11 +173,16 @@ if (page === 'play') {
   const params = new URLSearchParams(location.search), code = params.get('room')?.toUpperCase() || '';
   $('join-code').value = code;
   if(!client.backend)$('join-error').textContent='請使用教師分享的完整作答網址，或回首頁設定 GAS 後端。';
-  let identity = null, stream = null, state = null, activeRound = null, submitted = false, sending = false;
+  let identity = null, stream = null, state = null, activeRound = null, submitted = false, sending = false, joining = false;
   let pad; pad = new InkPad($('handwriting'), () => { if (!pad) return; $('canvas-hint').hidden = pad.strokes.length > 0; if (state?.round && identity) storage.set(`oneword:${client.backend}:draft:${state.code}`, { round: activeRound, strokes: pad.strokes }); });
+  function resetPlayer(message){
+    const roomCode=state?.code||$('join-code').value;const student=identity?.player;stream?.close();stream=null;pad.enabled=false;submitted=false;sending=false;activeRound=null;identity=null;state=null;storage.remove(`oneword:${client.backend}:player:${roomCode}`);$('join-code').value=roomCode;if(student?.studentId)$('join-student-id').value=student.studentId;
+    $('submit-button').disabled=true;['undo','eraser','clear'].forEach(id=>{$(id).disabled=true;});$('writing-panel').hidden=true;$('join-panel').hidden=false;$('join-error').textContent=message;connection(false);
+  }
   function renderPlay(next) {
+    if(!identity||!next)return;
     state = next; const round = state.round, own = state.players.find(p => p.id === identity?.player.id);
-    if (!own) return;
+    if (!own) { resetPlayer('教師已移除此裝置連線，請重新輸入學號加入。原有成績與已交卷答案會保留。'); return; }
     if (activeRound !== round?.id) {
       activeRound = round?.id; const draft = storage.get(`oneword:${client.backend}:draft:${state.code}`); pad.clear();
       if (draft && draft.round === activeRound && Array.isArray(draft.strokes)) { pad.strokes = draft.strokes; pad.render(); }
@@ -188,9 +211,11 @@ if (page === 'play') {
     if(state.ended){$('play-round').textContent='本測驗已結束';$('lock-message').textContent='測驗已結束';$('lock-detail').textContent='請使用教師提供的新房號加入下一場';$('write-state').textContent='已結束';}
   }
   async function join(data) {
-    const result = await api('/api/join', data); identity = result; storage.set(`oneword:${client.backend}:player:${data.room}`, result);
-    $('join-panel').hidden = true; $('writing-panel').hidden = false; if (stream) stream.close(); stream = connect(data.room, renderPlay);
-    history.replaceState(null, '', client.pageURL('student.html',data.room));
+    if(joining)return;joining=true;$('join-submit').disabled=true;$('join-submit').textContent='正在連線…';$('join-status').textContent='正在連接教室雲端後端，請稍候…';$('join-error').textContent='';
+    try{const result=await api('/api/join',data);identity=result;storage.set(`oneword:${client.backend}:player:${data.room}`,result);
+      $('join-panel').hidden=true;$('writing-panel').hidden=false;if(stream)stream.close();stream=connect(data.room,renderPlay);history.replaceState(null, '', client.pageURL('student.html',data.room));
+    }catch(error){if(data.token&&error.status===401)storage.remove(`oneword:${client.backend}:player:${data.room}`);throw error;}
+    finally{joining=false;$('join-submit').disabled=false;$('join-submit').textContent='加入比賽 →';$('join-status').textContent='';}
   }
   $('join-form').onsubmit = async event => { event.preventDefault(); try { const room = $('join-code').value.trim().toUpperCase(), id = $('join-student-id').value.trim(); if (!allowedStudentId(id)) throw new Error('此學號不在允許名單，無法登入'); await join({ room, studentId: id, name: $('join-name').value }); } catch (error) { $('join-error').textContent = error.message; } };
   const saved = storage.get(`oneword:${client.backend}:player:${code}`);
@@ -203,7 +228,7 @@ if (page === 'play') {
     const roundId = state.round.id, image = pad.export(); sending = true; renderPlay(state);
     try { await api('/api/submit', { room: state.code, roundId, image }, identity.token); submitted = true; client.rpc('studentWorker',{room:state.code,roundId},identity.token).catch(()=>{}); toast('圖片已保存，等待統一揭曉'); }
     catch (error) { toast(error.message, true); }
-    finally { sending = false; try { const latest = await api(`/api/room?room=${state.code}`); liveState = latest; renderPlay(latest); } catch { renderPlay(state); } }
+    finally { sending = false; if(!identity||!state)return; try { const latest = await api(`/api/room?room=${state.code}`); liveState = latest; renderPlay(latest); } catch { renderPlay(state); } }
   };
   setInterval(() => { if (!state?.round) return; $('play-countdown').textContent = timerText(state.round); $('play-countdown').classList.toggle('urgent', remaining(state.round) !== null && remaining(state.round) <= 5); if (state.round.phase === 'writing' && remaining(state.round) === 0) { pad.enabled = false; $('submit-button').disabled = true; ['undo','eraser','clear'].forEach(id => { $(id).disabled = true; }); $('write-state').textContent = '時間到'; } }, 200);
 }
