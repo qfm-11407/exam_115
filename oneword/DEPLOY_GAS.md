@@ -2,9 +2,9 @@
 
 不用教師電腦啟動 Node.js，也不用學生連教師電腦 IP。GitHub Pages 提供網頁；GAS 接收交卷、存圖並呼叫 AI；圖片屬於部署 GAS 的教師帳號。
 
-## 已部署使用者更新至 2.3.0
+## 已部署使用者更新至 2.4.0
 
-請先看 [UPDATE_2.3.0.md](UPDATE_2.3.0.md)。本次新增移除學生連線與重新加入功能，除了上傳網頁，也必須更新原 GAS 專案的 Code.gs，再於原部署選「新版本」。GAS 金鑰、教師登入碼與 Drive 資料夾設定會保留，不需重新初始化。
+請先看 [UPDATE_2.4.0.md](UPDATE_2.4.0.md)。本次新增手機直連學生頁，除了上傳網頁，也必須更新原 GAS 專案的 Code.gs 並新增 Student HTML，再於原部署選「新版本」。GAS 金鑰、教師登入碼與 Drive 資料夾設定會保留，不需重新初始化。
 
 ## 一、上傳 GitHub Pages
 
@@ -18,7 +18,7 @@
 
 1. 使用要保存圖片的教師 Google 帳號，前往 https://script.google.com/ 建立專案。
 2. 貼上 `gas/Code.gs` 全文。
-3. 新增 **HTML** 檔，名稱填 `Bridge`，貼上 `gas/Bridge.html` 全文。
+3. 新增 **HTML** 檔，名稱填 `Bridge`，貼上 `gas/Bridge.html` 全文；另新增名為 `Student` 的 HTML，貼上 `gas/Student.html` 全文。
 4. 在專案設定顯示 appsscript.json，將 `gas/appsscript.json` 貼入。
 5. 在 **專案設定 → 指令碼屬性（Script Properties）** 設定：
 
@@ -60,7 +60,7 @@ export const config = {
 ## 四、第一場測試
 
 1. 教師建立「流程演練」房間。**演練不辨識筆跡**：加入順序為 3 的倍數者顯示錯，其餘顯示對；所有畫面均標示演練，API 用量為 0。
-2. 複製平板作答網址，學生開啟 `student.html?room=房號`，輸入允許的學號加入；同房間防重複學號。
+2. 複製平板作答網址，學生開啟教師分享的 GAS 直連作答網址，輸入允許的學號加入；同房間防重複學號。
 3. 教師開啟大螢幕頁 `screen.html?room=房號`，確認隨機成語填空題後開始。
 4. 學生在格內寫一個字，截止前按送出。確認 Drive 的本場／本題資料夾出現以學號命名的 PNG。
 5. 截止後展示筆跡，判讀完成後統一揭曉 ✓／✗，測試排名與 CSV。

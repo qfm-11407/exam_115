@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261028-rejoin-230';
+import { client, GASClient, saveBackend } from './transport.js?v=20261028-direct-240';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -51,7 +51,7 @@ if (page === 'teacher') {
   function canManageRooms(){return Boolean(admin?.features?.roomManagement);}
   function renderAIStatus() {
     const configured=Boolean(admin?.settings.configured),management=canManageRooms();
-    $('app-version').textContent='網頁 v2.3.0 · GAS '+(admin?.version||'未回報版本');
+    $('app-version').textContent='網頁 v2.4.0 · GAS '+(admin?.version||'未回報版本');
     $('ai-ready-status').textContent=configured?'AI 金鑰：後端已設定':'AI 金鑰：後端尚未設定';
     $('create-ai-room-button').hidden=false;$('create-ai-room-button').disabled=!configured;
     $('backend-update-note').hidden=management;
@@ -69,7 +69,7 @@ if (page === 'teacher') {
     $('room-mode').textContent=room.mode==='live'?'AI 正式判讀':'流程演練（不使用 AI）';
     $('room-status').textContent=room.ended?'已結束':'開放中';$('end-room-button').disabled=Boolean(room.ended);
     $('practice-banner').hidden = room.mode !== 'practice'; $('room-title').textContent = room.title; $('room-code').textContent = room.code;
-    $('open-screen').href = client.pageURL('screen.html',room.code); $('open-play').href = client.pageURL('student.html',room.code); $('export-link').href = '#';
+    $('open-screen').href = client.pageURL('screen.html',room.code); $('open-play').href = studentEntryURL(room.code); $('export-link').href = '#';
     updateJoinLink();
     $('round-label').textContent = round ? `第 ${round.number} 題` : '尚未開始'; $('phase-pill').textContent = phaseLabel(round); $('phase-pill').className = `pill ${writing ? 'active-pill' : 'neutral'}`;
     $('teacher-countdown').textContent = timerText(round); $('submitted-count').textContent = `${round?.submitted || 0} / ${room.players.length}`; $('judged-count').textContent = round?.judged || 0; $('player-count').textContent = `${room.players.length} 人`;
@@ -86,7 +86,8 @@ if (page === 'teacher') {
     if(room.ended){$('draw-info').textContent='測驗已結束；已揭曉成績保留。請建立新測驗繼續。';$('judge-summary').textContent='本測驗已結束，未揭曉的當題不計分。';}
     previousPhase = round?.phase;
   }
-  function updateJoinLink() { if (room) setJoinLink(client.pageURL('student.html',room.code)); }
+  function studentEntryURL(code){return admin?.features?.directStudent?client.studentURL(code):client.pageURL('student.html',code); }
+  function updateJoinLink() { if (room) setJoinLink(studentEntryURL(room.code)); }
   $('export-link').onclick=async event=>{event.preventDefault();if(!room)return;try{const result=await api(`/api/admin/rooms/${room.code}/export`);const url=URL.createObjectURL(new Blob([result.csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=result.filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(error){toast(error.message,true);}};
   $('draw-button').onclick=async()=>{if(!room)return;try{$('draw-button').disabled=true;await api('/api/admin/rooms/'+room.code+'/draw',{});await refresh();}catch(error){toast(error.message,true);renderTeacher();}};
   async function login(pin) { await api('/api/login', { pin }); $('pin').value = ''; $('login-error').textContent = ''; await refresh(); }
@@ -173,10 +174,13 @@ if (page === 'play') {
   const params = new URLSearchParams(location.search), code = params.get('room')?.toUpperCase() || '';
   $('join-code').value = code;
   if(!client.backend)$('join-error').textContent='請使用教師分享的完整作答網址，或回首頁設定 GAS 後端。';
+  function updateDirectStudentLink(){const link=$('direct-student-link');link.hidden=!client.backend;if(client.backend)link.href=client.studentURL($('join-code').value.trim().toUpperCase());}
+  updateDirectStudentLink();$('join-code').addEventListener('input',updateDirectStudentLink);
   let identity = null, stream = null, state = null, activeRound = null, submitted = false, sending = false, joining = false;
+  const joinClaims=new Map();
   let pad; pad = new InkPad($('handwriting'), () => { if (!pad) return; $('canvas-hint').hidden = pad.strokes.length > 0; if (state?.round && identity) storage.set(`oneword:${client.backend}:draft:${state.code}`, { round: activeRound, strokes: pad.strokes }); });
   function resetPlayer(message){
-    const roomCode=state?.code||$('join-code').value;const student=identity?.player;stream?.close();stream=null;pad.enabled=false;submitted=false;sending=false;activeRound=null;identity=null;state=null;storage.remove(`oneword:${client.backend}:player:${roomCode}`);$('join-code').value=roomCode;if(student?.studentId)$('join-student-id').value=student.studentId;
+    const roomCode=state?.code||$('join-code').value;const student=identity?.player;stream?.close();stream=null;pad.enabled=false;submitted=false;sending=false;activeRound=null;identity=null;state=null;storage.remove(`oneword:${client.backend}:player:${roomCode}`);if(student?.studentId){storage.remove(`oneword:${client.backend}:claim:${roomCode}:${student.studentId}`);joinClaims.delete(`oneword:${client.backend}:claim:${roomCode}:${student.studentId}`);}$('join-code').value=roomCode;if(student?.studentId)$('join-student-id').value=student.studentId;
     $('submit-button').disabled=true;['undo','eraser','clear'].forEach(id=>{$(id).disabled=true;});$('writing-panel').hidden=true;$('join-panel').hidden=false;$('join-error').textContent=message;connection(false);
   }
   function renderPlay(next) {
@@ -211,10 +215,12 @@ if (page === 'play') {
     if(state.ended){$('play-round').textContent='本測驗已結束';$('lock-message').textContent='測驗已結束';$('lock-detail').textContent='請使用教師提供的新房號加入下一場';$('write-state').textContent='已結束';}
   }
   async function join(data) {
-    if(joining)return;joining=true;$('join-submit').disabled=true;$('join-submit').textContent='正在連線…';$('join-status').textContent='正在連接教室雲端後端，請稍候…';$('join-error').textContent='';
+    if(joining)return;
+    if(!data.token&&data.studentId){const key=`oneword:${client.backend}:claim:${data.room}:${data.studentId}`;let claim=joinClaims.get(key)||storage.get(key);if(typeof claim!=='string'||!/^[a-f0-9]{64}$/.test(claim)){claim=Array.from(crypto.getRandomValues(new Uint8Array(32)),n=>n.toString(16).padStart(2,'0')).join('');storage.set(key,claim);}joinClaims.set(key,claim);data={...data,joinKey:claim};}
+    joining=true;$('join-submit').disabled=true;$('join-submit').textContent='正在連線…';$('join-status').textContent='正在連接教室雲端後端，請稍候…';$('join-error').textContent='';
     try{const result=await api('/api/join',data);identity=result;storage.set(`oneword:${client.backend}:player:${data.room}`,result);
       $('join-panel').hidden=true;$('writing-panel').hidden=false;if(stream)stream.close();stream=connect(data.room,renderPlay);history.replaceState(null, '', client.pageURL('student.html',data.room));
-    }catch(error){if(data.token&&error.status===401)storage.remove(`oneword:${client.backend}:player:${data.room}`);throw error;}
+    }catch(error){if(error.status===401){const old=storage.get(`oneword:${client.backend}:player:${data.room}`),id=data.studentId||old?.player?.studentId;storage.remove(`oneword:${client.backend}:player:${data.room}`);if(id){storage.remove(`oneword:${client.backend}:claim:${data.room}:${id}`);joinClaims.delete(`oneword:${client.backend}:claim:${data.room}:${id}`);}}throw error;}
     finally{joining=false;$('join-submit').disabled=false;$('join-submit').textContent='加入比賽 →';$('join-status').textContent='';}
   }
   $('join-form').onsubmit = async event => { event.preventDefault(); try { const room = $('join-code').value.trim().toUpperCase(), id = $('join-student-id').value.trim(); if (!allowedStudentId(id)) throw new Error('此學號不在允許名單，無法登入'); await join({ room, studentId: id, name: $('join-name').value }); } catch (error) { $('join-error').textContent = error.message; } };
