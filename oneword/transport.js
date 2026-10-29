@@ -1,4 +1,4 @@
-import { config } from './config.js?v=20261029-tablet-260';
+import { config } from './config.js?v=20261029-grace-270';
 const validBackend = value => { try { const u=new URL(value);return u.origin==='https://script.google.com'&&/^\/(?:macros\/s|a\/macros\/[A-Za-z0-9.-]+\/s)\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname); } catch { return false; } };
 const trustedGoogleOrigin = value => { try { const u=new URL(value);return u.protocol==='https:'&&(u.hostname==='script.google.com'||u.hostname.endsWith('.googleusercontent.com')); }catch{return false;} };
 const wait = ms => new Promise(resolve=>setTimeout(resolve,ms));
@@ -46,7 +46,7 @@ export class GASClient {
   studentURL(room){if(!this.backend)return this.pageURL('student.html',room);const u=new URL(this.backend);u.pathname=u.pathname.replace(/^\/a\/macros\/[^/]+\/s\//,'/macros/s/');u.search='';u.hash='';u.searchParams.set('view','student');if(room)u.searchParams.set('room',room);return u.href;}
   pageURL(file,room) { const u=new URL(file,location.href);u.search='';u.hash='';if(room)u.searchParams.set('room',room);if(this.backend&&this.backend!==config.gasUrl)u.searchParams.set('backend',this.backend);return u.href; }
   async hydrate(state) {
-    if(!state.round||state.round.phase==='writing')return state;
+    if(!state.round||!['closed','revealed','cancelled'].includes(state.round.phase))return state;
     const count=state.players.filter(p=>p.imageUrl).length;if(!count)return state;
     const key=`${state.code}:${state.round.id}:${count}`;
     if(!this.imageCache.has(key)){const images=await this.rpc('images',{room:state.code,roundId:state.round.id},'',1);this.imageCache.clear();this.imageCache.set(key,images);}

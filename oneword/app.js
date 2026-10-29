@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261029-tablet-260';
+import { client, GASClient, saveBackend } from './transport.js?v=20261029-grace-270';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -13,8 +13,8 @@ function connect(code,receive) {
 }
 function connection(connected) { const el = $('connection'); if (!el) return; el.textContent = connected ? '已連線' : '重新連線中'; el.className = `connection ${connected ? 'connected' : 'offline'}`; }
 function remaining(round) { return round?.phase === 'writing' ? Math.max(0, Math.ceil((round.deadline - Date.now() - offset) / 1000)) : null; }
-function timerText(round) { const left = remaining(round); return left !== null ? String(left).padStart(2, '0') : round?.phase === 'revealed' ? '✓' : round?.phase === 'closed' ? '00' : '—'; }
-function phaseLabel(round) { if(round?.phase==='closed'&&round.closeReason==='all-submitted')return '全員已交卷'; return !round ? '等待出題' : ({ writing:'作答進行中', closed:'作答已截止', revealed:'結果已揭曉', cancelled:'本題已取消' })[round.phase]; }
+function timerText(round) { const left = remaining(round); return left !== null ? String(left).padStart(2, '0') : round?.phase === 'revealed' ? '✓' : ['closed','collecting'].includes(round?.phase) ? '00' : '—'; }
+function phaseLabel(round) { if(round?.phase==='closed'&&round.closeReason==='all-submitted')return '全員已交卷'; return !round ? '等待出題' : ({ writing:'作答進行中', collecting:'傳送緩衝中', closed:'作答已截止', revealed:'結果已揭曉', cancelled:'本題已取消' })[round.phase]; }
 function rankRows(players, max = 60) {
   return [...players].sort((a, b) => b.score - a.score || a.studentId.localeCompare(b.studentId, 'en', { numeric: true })).slice(0, max).map((p, i) => `<div class="rank-row"><span class="rank-number">${i + 1}</span><span class="rank-name"><small>${studentId(p)}</small>${escape(p.name)}</span><strong>${p.score}<small>分</small></strong></div>`).join('') || '<p class="list-empty">參賽者加入後顯示排名</p>';
 }
@@ -51,7 +51,7 @@ if (page === 'teacher') {
   function canManageRooms(){return Boolean(admin?.features?.roomManagement);}
   function renderAIStatus() {
     const configured=Boolean(admin?.settings.configured),management=canManageRooms();
-    $('app-version').textContent='網頁 v2.6.0 · GAS '+(admin?.version||'未回報版本');
+    $('app-version').textContent='網頁 v2.7.0 · GAS '+(admin?.version||'未回報版本');
     $('ai-ready-status').textContent=configured?'AI 金鑰：後端已設定':'AI 金鑰：後端尚未設定';
     $('create-ai-room-button').hidden=false;$('create-ai-room-button').disabled=!configured;
     $('backend-update-note').hidden=management;
@@ -67,6 +67,7 @@ if (page === 'teacher') {
     $('welcome-panel').hidden = Boolean(room); $('room-dashboard').hidden = !room; if (!room) return;
     const round = room.round, writing = !room.ended&&round?.phase === 'writing', ready = !room.ended&&(!round || round.phase === 'revealed');
     $('auto-close-note').hidden=!admin?.features?.autoClose;
+    $('auto-close-note').textContent=admin?.features?.submissionGrace?'作答時間到後保留 5 秒傳送緩衝，暫不公開筆跡。全員已存圖則提早截止；手動截止會立即結束接收。':'全員交卷後自動截止，直接展示筆跡；對錯仍由教師統一揭曉。';
     $('room-mode').textContent=room.mode==='live'?'AI 正式判讀':'流程演練（不使用 AI）';
     $('room-status').textContent=room.ended?'已結束':'開放中';$('end-room-button').disabled=Boolean(room.ended);
     $('practice-banner').hidden = room.mode !== 'practice'; $('room-title').textContent = room.title; $('room-code').textContent = room.code;
@@ -74,16 +75,17 @@ if (page === 'teacher') {
     updateJoinLink();
     $('round-label').textContent = round ? `第 ${round.number} 題` : '尚未開始'; $('phase-pill').textContent = phaseLabel(round); $('phase-pill').className = `pill ${writing ? 'active-pill' : 'neutral'}`;
     $('teacher-countdown').textContent = timerText(round); $('submitted-count').textContent = `${round?.submitted || 0} / ${room.players.length}`; $('judged-count').textContent = round?.judged || 0; $('player-count').textContent = `${room.players.length} 人`;
-    $('close-button').disabled = !writing; $('reveal-button').disabled = room.ended || !round || round.phase !== 'closed' || round.pending > 0; $('retry-button').hidden = room.ended || !round || !round.unresolved || round.phase === 'revealed';
+    $('close-button').disabled = room.ended||!['writing','collecting'].includes(round?.phase); $('reveal-button').disabled = room.ended || !round || round.phase !== 'closed' || round.pending > 0; $('retry-button').hidden = room.ended || !round || !round.unresolved || round.phase === 'revealed';
     showQuestion(); $('draw-button').disabled = !ready; $('start-button').disabled = !ready || !room.players.length || !room.draft; $('start-button').textContent = round?.phase === 'revealed' ? '開始下一題 →' : '開始作答 →';
     ['question-prompt','answer','seconds','accepted'].forEach(id => { $(id).disabled = !ready; });
-    document.querySelectorAll('[data-step]').forEach(el => el.classList.toggle('current', el.dataset.step === round?.phase));
+    document.querySelectorAll('[data-step]').forEach(el => el.classList.toggle('current', el.dataset.step === (round?.phase==='collecting'?'writing':round?.phase)));
     $('judge-summary').textContent = !round ? '交卷後即在背景判讀，結果暫時隱藏。' : round.pending ? `${round.pending} 份正在排隊或判讀中，${round.judged} 份已完成。` : round.unresolved ? `${round.unresolved} 份未完成判讀，可先重試；揭曉後這些答案標示「無法判定」，不判錯。` : round.phase === 'revealed' ? '結果已揭曉並計分，可準備下一題。' : round.submitted ? '目前交卷均已判讀完成，截止後即可揭曉。' : '等待參賽者交卷。';
     const status = { uploading:'保存中', 'upload-error':'上傳待重試', queued:'排隊', judging:'判讀中', done:'已判讀', error:'判讀失敗', uncertain:'辨識不明', waiting:'待交卷' };
     $('teacher-players').innerHTML = room.players.map(p => `<div class="player-chip ${p.submitted ? 'submitted' : ''}" title="${escape(p.error)}"><span class="seat-number">${studentId(p)}</span><span class="player-name">${escape(p.name)}</span><span class="player-status ${p.judgeStatus === 'error' ? 'failed' : ''}">${round?.phase === 'revealed' && p.status === 'done' ? p.correct ? '✓' : '✗' : status[p.judgeStatus] || '待交卷'}</span>${admin?.features?.playerManagement?`<button type="button" class="remove-player-button" data-remove-player="${escape(p.id)}" data-connection-version="${Number(p.connectionVersion)||0}" aria-label="移除學號 ${studentId(p)} 的連線" ${room.ended?'disabled':''}>移除</button>`:''}</div>`).join('') || '<p class="list-empty">分享平板網址，等待第一位參賽者加入。</p>';
     $('leaderboard').innerHTML = rankRows(room.players, 8); const u = room.usage;
     $('usage-info').textContent = room.mode === 'practice' ? '流程演練・API 用量為 0' : `${u.calls} 次有效判讀回應 · 輸入 ${u.input.toLocaleString()} / 輸出 ${u.output.toLocaleString()} tokens`;
 
+    if(round?.phase==='collecting')$('judge-summary').textContent='作答時間到，正在接收延遲交卷；緩衝結束後才展示筆跡與開放揭曉。';
     if(room.ended){$('draw-info').textContent='測驗已結束；已揭曉成績保留。請建立新測驗繼續。';$('judge-summary').textContent='本測驗已結束，未揭曉的當題不計分。';}
     previousPhase = round?.phase;
   }
@@ -179,7 +181,7 @@ if (page === 'play') {
   updateDirectStudentLink();$('join-code').addEventListener('input',updateDirectStudentLink);
   let identity = null, stream = null, state = null, activeRound = null, submitted = false, sending = false, joining = false;
   const joinClaims=new Map();
-  let lastStudentVerdict='';
+  let lastStudentVerdict='',frozenSubmission=null,deadlineLockedRound='';
   let pad; pad = new InkPad($('handwriting'), () => { if (!pad) return; $('canvas-hint').hidden = pad.strokes.length > 0; if (state?.round && identity) storage.set(`oneword:${client.backend}:draft:${state.code}`, { round: activeRound, strokes: pad.strokes }); });
   function applyStudentVerdict(round,own){
     const decided=round?.phase==='revealed'&&own.submitted&&own.status==='done'&&typeof own.correct==='boolean';
@@ -191,7 +193,7 @@ if (page === 'play') {
   }
   function resetPlayer(message){
     document.body.dataset.verdict='';document.body.dataset.resultEffect='';lastStudentVerdict='';
-    const roomCode=state?.code||$('join-code').value;const student=identity?.player;stream?.close();stream=null;pad.enabled=false;submitted=false;sending=false;activeRound=null;identity=null;state=null;storage.remove(`oneword:${client.backend}:player:${roomCode}`);if(student?.studentId){storage.remove(`oneword:${client.backend}:claim:${roomCode}:${student.studentId}`);joinClaims.delete(`oneword:${client.backend}:claim:${roomCode}:${student.studentId}`);}$('join-code').value=roomCode;if(student?.studentId)$('join-student-id').value=student.studentId;
+    const roomCode=state?.code||$('join-code').value;const student=identity?.player;stream?.close();stream=null;pad.enabled=false;submitted=false;sending=false;activeRound=null;frozenSubmission=null;storage.remove(`oneword:${client.backend}:pending:${roomCode}`);identity=null;state=null;storage.remove(`oneword:${client.backend}:player:${roomCode}`);if(student?.studentId){storage.remove(`oneword:${client.backend}:claim:${roomCode}:${student.studentId}`);joinClaims.delete(`oneword:${client.backend}:claim:${roomCode}:${student.studentId}`);}$('join-code').value=roomCode;if(student?.studentId)$('join-student-id').value=student.studentId;
     $('submit-button').disabled=true;['undo','eraser','clear'].forEach(id=>{$(id).disabled=true;});$('writing-panel').hidden=true;$('join-panel').hidden=false;$('join-error').textContent=message;connection(false);
   }
   function renderPlay(next) {
@@ -199,7 +201,7 @@ if (page === 'play') {
     state = next; const round = state.round, own = state.players.find(p => p.id === identity?.player.id);
     if (!own) { resetPlayer('教師已移除此裝置連線，請重新輸入學號加入。原有成績與已交卷答案會保留。'); return; }
     if (activeRound !== round?.id) {
-      activeRound = round?.id; const draft = storage.get(`oneword:${client.backend}:draft:${state.code}`); pad.clear();
+      activeRound = round?.id; const pending=storage.get(`oneword:${client.backend}:pending:${state.code}`);frozenSubmission=pending?.roundId===activeRound&&pending?.playerId===identity.player.id?pending:null; const draft = storage.get(`oneword:${client.backend}:draft:${state.code}`); pad.clear();
       if (draft && draft.round === activeRound && Array.isArray(draft.strokes)) { pad.strokes = draft.strokes; pad.render(); }
     }
     submitted = own.submitted;
@@ -207,15 +209,20 @@ if (page === 'play') {
     $('play-round').textContent = round ? `第 ${String(round.number).padStart(2,'0')} 題 · 只寫一個字` : '等待教師出題'; $('play-prompt').textContent = round?.prompt || '好好握筆，準備上場。';
     $('play-countdown').textContent = timerText(round);
     const writing = !state.ended&&round?.phase === 'writing' && remaining(round) > 0;
-    pad.enabled = Boolean(writing && !submitted && !sending); $('submit-button').disabled = !pad.enabled;
+    pad.enabled = Boolean(writing && !submitted && !sending && !frozenSubmission);
+    const retryFrozen=Boolean(frozenSubmission&&!state.ended&&round&&!['revealed','cancelled'].includes(round.phase));
+    $('submit-button').disabled = sending||submitted||!(pad.enabled||retryFrozen);
     ['undo','eraser','clear'].forEach(id => { $(id).disabled = !pad.enabled; });
-    const lock = !writing || submitted;
+    const lock = !writing || submitted || Boolean(frozenSubmission);
     $('canvas-lock').hidden = !lock;
     $('lock-symbol').textContent = !round ? '✦' : submitted ? '✓' : '⌛';
     $('lock-message').textContent = !round ? '等待出題' : submitted ? '已交卷' : '作答已截止';
     $('lock-detail').textContent = !round ? '教師開始後，就可以在這裡寫字。' : submitted ? '答案已鎖定，等待統一揭曉。' : '本題沒有送出答案，等待下一題。';
     $('write-state').textContent = !round ? '等待開始' : submitted ? '答案已送出' : writing ? '作答中' : '已截止';
-    $('submit-button').textContent = sending ? '正在送出…' : submitted ? '✓ 已送出答案' : '送出答案 →';
+    $('submit-button').textContent = sending ? '正在送出…' : submitted ? '✓ 已送出答案' : frozenSubmission ? '重送已鎖定答案 →' : '送出答案 →';
+    const collecting=round?.phase==='collecting'||(round?.phase==='writing'&&remaining(round)===0&&Date.now()+offset<(round.submissionDeadline||round.deadline));
+    if(!submitted&&(frozenSubmission||collecting)){$('lock-message').textContent=sending?'答案傳送中':frozenSubmission?'筆跡已鎖定':'作答時間到';$('lock-detail').textContent=frozenSubmission?'正在確認交卷；可重送同一份答案，不能修改筆跡。':'正在接收延遲交卷，手寫區已鎖定。';$('write-state').textContent=sending?'傳送中':collecting?'傳送緩衝中':'等待交卷確認';}
+    $('play-message').textContent=collecting?'作答已結束，保留 5 秒接收延遲交卷。':frozenSubmission&&!submitted?'若尚未確認成功，可重送已鎖定答案。':'請在倒數結束前送出，送出後無法修改。';
     $('own-result').hidden = round?.phase !== 'revealed';
     if (round?.phase === 'revealed') {
       const done = own.submitted&&own.status === 'done'&&typeof own.correct==='boolean';
@@ -240,32 +247,34 @@ if (page === 'play') {
   $('undo').onclick = () => pad.undo(); $('clear').onclick = () => { if (pad.enabled) pad.clear(); };
   $('eraser').onclick = () => { pad.eraser = !pad.eraser; $('eraser').setAttribute('aria-pressed', String(pad.eraser)); $('eraser').textContent = pad.eraser ? '✎ 改用黑筆' : '▱ 橡皮擦'; };
   $('submit-button').onclick = async () => {
-    if (!pad.enabled || sending || submitted) return;
-    if (!pad.hasInk()) return toast('請先在格內寫一個字', true);
-    const roundId = state.round.id, image = pad.export(); sending = true; renderPlay(state);
+    if (sending || submitted || !state?.round || state.ended || ['revealed','cancelled'].includes(state.round.phase)) return;
+    if (!frozenSubmission&&(!pad.enabled||remaining(state.round)<=0)){renderPlay(state);return;}
+    if (!frozenSubmission&&!pad.hasInk()) return toast('請先在格內寫一個字', true);
+    if(!frozenSubmission){frozenSubmission={roundId:state.round.id,image:pad.export(),playerId:identity.player.id};storage.set(`oneword:${client.backend}:pending:${state.code}`,frozenSubmission);}
+    const {roundId,image}=frozenSubmission; sending = true; renderPlay(state);
     try { await api('/api/submit', { room: state.code, roundId, image }, identity.token); submitted = true; client.rpc('studentWorker',{room:state.code,roundId},identity.token).catch(()=>{}); toast('圖片已保存，等待統一揭曉'); }
     catch (error) { toast(error.message, true); }
     finally { sending = false; if(!identity||!state)return; try { const latest = await api(`/api/room?room=${state.code}`); liveState = latest; renderPlay(latest); } catch { renderPlay(state); } }
   };
-  setInterval(() => { if (!state?.round) return; $('play-countdown').textContent = timerText(state.round); $('play-countdown').classList.toggle('urgent', remaining(state.round) !== null && remaining(state.round) <= 5); if (state.round.phase === 'writing' && remaining(state.round) === 0) { pad.enabled = false; $('submit-button').disabled = true; ['undo','eraser','clear'].forEach(id => { $(id).disabled = true; }); $('write-state').textContent = '時間到'; } }, 200);
+  setInterval(() => { if (!state?.round) return; $('play-countdown').textContent=timerText(state.round); $('play-countdown').classList.toggle('urgent',remaining(state.round)!==null&&remaining(state.round)<=5); if(state.round.phase==='writing'&&remaining(state.round)===0&&deadlineLockedRound!==state.round.id){deadlineLockedRound=state.round.id;renderPlay(state);} }, 200);
 }
 
 if (page === 'screen') {
   const code = new URLSearchParams(location.search).get('room')?.toUpperCase(); let state, rankings = false, effectRound='';const shownVerdicts=new Set();
   const render = next => {
-    state = next; const round = state.round, shown = round && round.phase !== 'writing', revealed = round?.phase === 'revealed';
+    state = next; const round = state.round, shown = round && ['closed','revealed','cancelled'].includes(round.phase), revealed = round?.phase === 'revealed';
     if(effectRound!==round?.id){effectRound=round?.id||'';shownVerdicts.clear();}
     $('screen-practice').hidden = state.mode !== 'practice'; $('screen-mode').textContent = state.mode === 'practice' ? '流程演練' : 'AI 正式判讀';
     $('screen-room').textContent = state.code; $('screen-title').textContent = state.title; $('screen-round').textContent = round ? `第 ${String(round.number).padStart(2,'0')} 題` : '等待參賽者加入';
     $('screen-phase').textContent = phaseLabel(round); $('screen-prompt').textContent = round?.prompt || '每一筆，都是你的實力。'; $('screen-countdown').textContent = timerText(round);
-    $('screen-timer-label').textContent = !round ? '準備落筆' : round.phase === 'writing' ? '秒後截止' : round.phase === 'closed' ? '作答已截止' : '結果已揭曉';
-    $('screen-subtitle').textContent = revealed ? `本題正解：${round.answer}${round.idiom ? ` · 完整成語：${round.idiom}` : ''}` : shown ? round.closeReason==='all-submitted'?'全員已交卷，等待教師統一揭曉對錯。':'作答已截止，等待教師統一揭曉對錯。' : round ? '只寫一個字，寫好後請在平板按下送出。' : '請在平板開啟作答頁，輸入房號加入。';
+    $('screen-timer-label').textContent = !round ? '準備落筆' : round.phase === 'writing' ? '秒後截止' : round.phase === 'collecting' ? '傳送緩衝中' : round.phase === 'closed' ? '作答已截止' : '結果已揭曉';
+    $('screen-subtitle').textContent = revealed ? `本題正解：${round.answer}${round.idiom ? ` · 完整成語：${round.idiom}` : ''}` : shown ? round.closeReason==='all-submitted'?'全員已交卷，等待教師統一揭曉對錯。':'作答已截止，等待教師統一揭曉對錯。' : round?.phase==='collecting' ? '作答時間到，正在接收延遲交卷；筆跡暫不公開。' : round ? '只寫一個字，寫好後請在平板按下送出。' : '請在平板開啟作答頁，輸入房號加入。';
     $('screen-progress').textContent = round ? `${round.submitted} / ${state.players.length} 人已交卷` : `${state.players.length} 人已加入`;
     $('screen-footer-hint').textContent = revealed ? '答對加 10 分 · 原始筆跡保留' : shown ? '點選筆跡圖片，可以放大查看' : '作答期間不公開筆跡與結果';
     $('screen-grid').innerHTML = state.players.map(p => {
       const done = revealed && p.submitted && p.status === 'done' && typeof p.correct==='boolean', correct = done && p.correct;
       const key=round?.id+':'+p.id+':'+p.correct,enter=done&&!shownVerdicts.has(key);if(done)shownVerdicts.add(key);
-      const paper = shown && p.imageUrl ? `<img src="${p.imageUrl}" alt="${studentId(p)} 的手寫答案" data-image="${p.imageUrl}" data-label="${escape(`${studentId(p)} · ${p.name}`)}">` : shown ? '<span class="empty-ink">未交卷</span>' : `<div class="paper-state"><b>${p.submitted ? '✓' : '✎'}</b><span>${p.submitted ? '已交卷・答案保密' : round ? '專心作答中' : '準備就緒'}</span></div>`;
+      const paper = shown && p.imageUrl ? `<img src="${p.imageUrl}" alt="${studentId(p)} 的手寫答案" data-image="${p.imageUrl}" data-label="${escape(`${studentId(p)} · ${p.name}`)}">` : shown ? '<span class="empty-ink">未交卷</span>' : `<div class="paper-state"><b>${p.submitted ? '✓' : '✎'}</b><span>${p.submitted ? '已交卷・答案保密' : round?.phase==='collecting' ? '等待交卷確認' : round ? '專心作答中' : '準備就緒'}</span></div>`;
       return `<article class="answer-card ${revealed ? 'revealed' : ''} ${done ? correct ? 'correct' : 'wrong' : ''} ${enter?'result-enter':''}"><div class="answer-card-head"><span class="answer-seat">${studentId(p)}</span><span class="answer-name">${escape(p.name)}</span><span class="answer-score">${p.score} 分</span></div><div class="answer-paper">${paper}</div><div class="answer-foot"><span>${revealed ? done ? correct ? '答對 ＋10 分' : '答錯 ＋0 分' : p.submitted ? '無法判定' : '未交卷' : state.ended ? '測驗已結束' : shown ? '等待揭曉' : p.submitted ? '答案已鎖定' : '一人一字'}</span><span class="${done ? 'answer-verdict' : 'pending-verdict'}">${done ? correct ? '✓' : '✗' : revealed && p.submitted ? '—' : '·'}</span></div></article>`;
     }).join('') || '<div class="screen-empty"><span>筆</span><h2>擂台已準備就緒</h2><p>參賽者加入後，會依座號出現在這裡。</p></div>';
     if(state.ended){$('screen-phase').textContent='測驗已結束';$('screen-timer-label').textContent='已結束';$('screen-subtitle').textContent='已揭曉成績保留。請使用教師提供的新房號加入下一場。';$('screen-prompt').textContent='本場測驗已結束';}
