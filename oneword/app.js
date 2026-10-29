@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261029-auto-290';
+import { client, GASClient, saveBackend } from './transport.js?v=20261029-join-link-291';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -78,7 +78,7 @@ function createWorkerPump({run,changed,error}){
   function canManageRooms(){return Boolean(admin?.features?.roomManagement);}
   function renderAIStatus() {
     const configured=Boolean(admin?.settings.configured),management=canManageRooms();
-    $('app-version').textContent='網頁 v2.9.0 · GAS '+(admin?.version||'未回報版本');
+    $('app-version').textContent='網頁 v2.9.1 · GAS '+(admin?.version||'未回報版本');
     $('ai-ready-status').textContent=configured?'AI 金鑰：後端已設定':'AI 金鑰：後端尚未設定';
     $('create-ai-room-button').hidden=false;$('create-ai-room-button').disabled=!configured;
     $('backend-update-note').hidden=management;
@@ -184,7 +184,7 @@ function createWorkerPump({run,changed,error}){
   $('auto-enabled').onchange=()=>{if(room)renderTeacher();};
   for(const action of ['pause-series','resume-series'])$(action).onclick=async()=>{if(!room)return;try{await api('/api/admin/rooms/'+room.code+'/'+action,{});await refresh();}catch(error){toast(error.message,true);}};
   for (const action of ['close','reveal','retry']) $(action + '-button').onclick = async () => { if (!room) return; try { $(action + '-button').disabled = true; await api(`/api/admin/rooms/${room.code}/${action}`, {}); await refresh(); } catch (error) { toast(error.message, true); renderTeacher(); } };
-  function setJoinLink(url){if($('join-url').value!==url)$('join-copy-status').textContent='';$('join-url').value=url;}
+  function setJoinLink(url){if($('join-url').value!==url)$('join-copy-status').textContent='';$('join-url').value=url;$('open-join-url').href=url;$('open-join-url').hidden=!url;}
   async function copyJoinURL(){
     const input=$('join-url'),url=input.value;if(!url){toast('請先建立測驗，再複製作答網址',true);return;}
     let copied=false;
