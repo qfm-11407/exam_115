@@ -1,4 +1,4 @@
-import { config } from './config.js?v=20261029-grace-270';
+import { config } from './config.js?v=20261029-auto-290';
 const validBackend = value => { try { const u=new URL(value);return u.origin==='https://script.google.com'&&/^\/(?:macros\/s|a\/macros\/[A-Za-z0-9.-]+\/s)\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname); } catch { return false; } };
 const trustedGoogleOrigin = value => { try { const u=new URL(value);return u.protocol==='https:'&&(u.hostname==='script.google.com'||u.hostname.endsWith('.googleusercontent.com')); }catch{return false;} };
 const wait = ms => new Promise(resolve=>setTimeout(resolve,ms));
@@ -39,7 +39,7 @@ export class GASClient {
     else if(r==='/api/join')action='join';
     else if(r==='/api/submit')action='submit';
     else if(r==='/api/room'){action='room';payload={room:u.searchParams.get('room')};}
-    else{const m=r.match(/^\/api\/admin\/rooms\/([A-F0-9]{6})\/(draw|start|close|reveal|retry|export|end|delete|select|remove-player)$/);if(!m)throw new Error('找不到操作');action=({end:'endRoom',delete:'deleteRoom',select:'selectRoom','remove-player':'removePlayer'})[m[2]]||m[2];payload={...payload,room:m[1]};}
+    else{const m=r.match(/^\/api\/admin\/rooms\/([A-F0-9]{6})\/(draw|start|close|reveal|retry|export|end|delete|select|remove-player|start-series|pause-series|resume-series)$/);if(!m)throw new Error('找不到操作');action=({end:'endRoom',delete:'deleteRoom',select:'selectRoom','remove-player':'removePlayer'})[m[2]]||m[2];payload={...payload,room:m[1]};}
     const retry=['adminState','room','submit','join'].includes(action)?2:0;
     return this.rpc(action,payload,playerToken||this.token,retry);
   }
@@ -47,14 +47,18 @@ export class GASClient {
   pageURL(file,room) { const u=new URL(file,location.href);u.search='';u.hash='';if(room)u.searchParams.set('room',room);if(this.backend&&this.backend!==config.gasUrl)u.searchParams.set('backend',this.backend);return u.href; }
   async hydrate(state) {
     if(!state.round||!['closed','revealed','cancelled'].includes(state.round.phase))return state;
-    const count=state.players.filter(p=>p.imageUrl).length;if(!count)return state;
-    const key=`${state.code}:${state.round.id}:${count}`;
-    if(!this.imageCache.has(key)){const images=await this.rpc('images',{room:state.code,roundId:state.round.id},'',1);this.imageCache.clear();this.imageCache.set(key,images);}
-    const images=this.imageCache.get(key);return {...state,players:state.players.map(p=>({...p,imageUrl:images[p.id]||null}))};
+    const wanted=state.players.filter(p=>p.imageUrl);if(!wanted.length)return state;
+    const key=state.code+':'+state.round.id;
+    if(!this.imageCache.has(key)){this.imageCache.clear();this.imageCache.set(key,{images:{},pending:null});}
+    const entry=this.imageCache.get(key);
+    if(entry.pending)await entry.pending;
+    const missing=wanted.filter(p=>!entry.images[p.id]).map(p=>p.id);
+    if(missing.length){entry.pending=this.rpc('images',{room:state.code,roundId:state.round.id,playerIds:missing},'',1).then(images=>Object.assign(entry.images,images));try{await entry.pending;}finally{entry.pending=null;}}
+    return {...state,players:state.players.map(p=>({...p,imageUrl:entry.images[p.id]||null}))};
   }
   subscribe(code,receive,onConnection,images=false) {
-    let closed=false,timer,last='';
-    const poll=async()=>{try{let state=await this.rpc('room',{room:code},'',1);if(closed)return;onConnection(true);const version=String(state.revision)+':'+state.round?.phase;if(last!==version){if(images)state=await this.hydrate(state);if(closed)return;last=version;receive(state);}}catch(error){if(!closed)onConnection(false,error.message);}finally{if(!closed)timer=setTimeout(poll,Math.max(2500,config.pollMs||3500)+Math.random()*800);}};
+    let closed=false,timer,last='',latest=null;
+    const poll=async()=>{try{let state=await this.rpc('room',{room:code},'',1);if(closed)return;onConnection(true);latest=state;const version=String(state.revision)+':'+state.round?.phase;if(last!==version){if(images)state=await this.hydrate(state);if(closed)return;last=version;receive(state);}}catch(error){if(!closed)onConnection(false,error.message);}finally{if(!closed)timer=setTimeout(poll,((images&&(!latest?.round||['collecting','closed'].includes(latest.round.phase)||(latest.round.phase==='writing'&&latest.round.deadline-latest.serverTime<=8000)))?1200:Math.max(2500,config.pollMs||3500))+Math.random()*(images?300:800));}};
     poll();return{close(){closed=true;clearTimeout(timer);}};
   }
   dispose(){clearTimeout(this.readyTimer);if(this.listener)window.removeEventListener('message',this.listener);this.frame?.remove();for(const task of this.pending.values()){clearTimeout(task.timer);task.reject(new Error('連線已重設'));}this.pending.clear();this.frame=null;this.peer=null;this.ready=null;}

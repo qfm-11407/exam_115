@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261029-grace-270';
+import { client, GASClient, saveBackend } from './transport.js?v=20261029-auto-290';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -15,6 +15,15 @@ function connection(connected) { const el = $('connection'); if (!el) return; el
 function remaining(round) { return round?.phase === 'writing' ? Math.max(0, Math.ceil((round.deadline - Date.now() - offset) / 1000)) : null; }
 function timerText(round) { const left = remaining(round); return left !== null ? String(left).padStart(2, '0') : round?.phase === 'revealed' ? '✓' : ['closed','collecting'].includes(round?.phase) ? '00' : '—'; }
 function phaseLabel(round) { if(round?.phase==='closed'&&round.closeReason==='all-submitted')return '全員已交卷'; return !round ? '等待出題' : ({ writing:'作答進行中', collecting:'傳送緩衝中', closed:'作答已截止', revealed:'結果已揭曉', cancelled:'本題已取消' })[round.phase]; }
+function sequenceText(state){
+  const a=state?.automation;if(!a?.enabled)return '';
+  const count=state.round?.number||0,prefix='第 '+count+' / '+a.totalQuestions+' 題';
+  if(a.status==='completed')return '本次 '+a.totalQuestions+' 題已完成，總成績已結算。';
+  if(a.status==='stopped')return '本次自動測驗已結束。';
+  if(a.status==='paused')return prefix+' · '+(a.pauseReason==='judging'?'判讀或存圖失敗，等待教師處理。':a.pauseReason==='empty'?'目前無參賽者，等待教師繼續。':'自動流程已暫停，當題計時與判讀仍繼續。');
+  if(a.nextAt){const left=Math.max(0,Math.ceil((a.nextAt-Date.now()-offset)/1000));return prefix+' · '+left+' 秒後'+(count>=a.totalQuestions?'結算總成績':'進入下一題');}
+  return prefix+' · '+(state.round?.phase==='closed'?'正在判讀，完成後自動公布。':state.round?.phase==='collecting'?'接收延遲交卷中。':'全員交卷或時間到後自動公布。');
+}
 function rankRows(players, max = 60) {
   return [...players].sort((a, b) => b.score - a.score || a.studentId.localeCompare(b.studentId, 'en', { numeric: true })).slice(0, max).map((p, i) => `<div class="rank-row"><span class="rank-number">${i + 1}</span><span class="rank-name"><small>${studentId(p)}</small>${escape(p.name)}</span><strong>${p.score}<small>分</small></strong></div>`).join('') || '<p class="list-empty">參賽者加入後顯示排名</p>';
 }
@@ -26,9 +35,27 @@ bindDialogs();
 const page = document.body.dataset.page;
 
 if (page === 'teacher') {
-  let room, admin, refreshing = false, idiomCount = 0, previousPhase, workers = 0;
-  function pumpWorkers() { if (!room?.round?.pending) return; const count=Math.min(admin.settings.concurrency,room.round.pending); while(workers<count) { workers++; client.rpc('worker',{room:room.code}).catch(error=>toast(error.message,true)).finally(()=>{workers--;}); } }
-  let displayedQuestionId = null;
+  let room, admin, refreshing = false, idiomCount = 0, previousPhase, refreshTimer;
+// Runs inside the teacher controller. An idle/error result waits for the next state sync.
+function createWorkerPump({run,changed,error}){
+ let current=null,active=0;
+ function same(target){return current&&current.code===target.code&&current.roundId===target.roundId&&current.enabled;}
+ function pump(){
+  if(!current?.enabled)return;
+  const target={...current},limit=Math.min(target.limit,target.pending);
+  while(active<limit){active++;(async()=>{
+   try{while(same(target)){const result=await run({room:target.code,roundId:target.roundId});if(result?.processed)changed();if(!result?.processed||!result.remainingQueued)break;}}
+   catch(problem){error(problem);}
+   finally{active--;if(current&&(current.code!==target.code||current.roundId!==target.roundId))pump();}
+  })();}
+ }
+ return {sync(state){current=state;pump();}};
+}
+
+  const workerPumpRunner=createWorkerPump({run:data=>client.rpc('worker',data),changed:()=>{clearTimeout(refreshTimer);refreshTimer=setTimeout(refresh,180);},error:error=>toast(error.message,true)});
+  function pumpWorkers(){workerPumpRunner.sync({code:room?.code,roundId:room?.round?.id,pending:room?.round?.pending||0,limit:admin?.settings?.concurrency||2,enabled:Boolean(room&&!room.ended&&room.round&&room.round.phase!=='revealed')});}
+  function scheduleRefresh(){clearTimeout(refreshTimer);const urgent=room?.round&&((room.automation?.enabled&&room.automation.status==='running')||room.round.pending>0||room.round.phase==='collecting'||(room.round.phase==='writing'&&remaining(room.round)<=8));refreshTimer=setTimeout(refresh,urgent?1500:3500);}
+  let displayedQuestionId = null,autoSettingsRoom='';
   let pendingCreateRoom='',replacementRequired=false,roomsLoaded=false,roomsLoading=false;
   $('help-button').onclick = () => $('help-dialog').showModal();
   async function refresh() {
@@ -40,18 +67,18 @@ if (page === 'teacher') {
       $('key-status').textContent = data.settings.configured ? '已設定金鑰（不顯示內容）' : '尚未設定 API 金鑰';
       room = data.room; liveState = room; if (room) offset = room.serverTime - Date.now(); renderTeacher(); pumpWorkers();
     } catch (error) { if (error.status === 401) { client.token=''; $('login-error').textContent=error.message; $('login-panel').hidden = false; $('teacher-app').hidden = true; $('settings-button').hidden = true; } else toast(error.message, true); }
-    finally { refreshing = false; }
+    finally { refreshing = false; scheduleRefresh(); }
   }
   function showQuestion() {
     const ready=!room.round||room.round.phase==='revealed',q=ready?room.draft:room.round;
     $('question-prompt').value=q?.prompt||''; $('answer').value=q?.answer||'';
-    $('draw-info').textContent=q ? '已抽中「'+q.idiom+'」，挖空第 '+(q.blankIndex+1)+' 字。題庫 '+idiomCount+' 則，共 '+(idiomCount*4)+' 種題型。' : '按「隨機抽題」預覽下一題。';
+    $('draw-info').textContent=q ? '已抽中「'+q.idiom+'」，挖空第 '+(q.blankIndex+1)+' 字。題庫 '+idiomCount+' 則，共 '+(idiomCount*4)+' 種題型；本場成語不重複。' : '按「隨機抽題」預覽下一題。';
     if(q?.id!==displayedQuestionId){$('accepted').value=(q?.accepted||[]).join('，');displayedQuestionId=q?.id;}
   }
   function canManageRooms(){return Boolean(admin?.features?.roomManagement);}
   function renderAIStatus() {
     const configured=Boolean(admin?.settings.configured),management=canManageRooms();
-    $('app-version').textContent='網頁 v2.7.0 · GAS '+(admin?.version||'未回報版本');
+    $('app-version').textContent='網頁 v2.9.0 · GAS '+(admin?.version||'未回報版本');
     $('ai-ready-status').textContent=configured?'AI 金鑰：後端已設定':'AI 金鑰：後端尚未設定';
     $('create-ai-room-button').hidden=false;$('create-ai-room-button').disabled=!configured;
     $('backend-update-note').hidden=management;
@@ -61,6 +88,22 @@ if (page === 'teacher') {
     $('ai-mode-note').textContent=!configured?'後端尚未讀到 API 金鑰。請確認 GAS 指令碼屬性名稱是 OPENAI_API_KEY，或在「AI 設定」中填入金鑰。':room?.ended?'目前測驗已結束，可直接建立新的 AI 挑戰。':room?.mode==='live'?'目前房間：AI 正式判讀。學生交卷後會呼叫 AI。':'按「建立 AI 正式比賽」確認新房間；若有尚未結束的測驗，可勾選先結束再建立。';
     if($('room-dialog').open){updateModeNote();updateRoomConfirmation();}
     if(management&&!roomsLoaded&&!roomsLoading){roomsLoaded=true;loadRooms();}
+  }
+  function renderAutoControls(){
+    const available=Boolean(admin?.features?.autoSequence),a=room?.automation,fresh=!room?.round;
+    $('auto-settings').hidden=!available;
+    if(autoSettingsRoom!==room?.code){autoSettingsRoom=room?.code;$('auto-enabled').checked=true;$('auto-total').value='10';$('auto-reveal-seconds').value='8';}
+    if(a?.enabled){$('auto-enabled').checked=true;$('auto-total').value=a.totalQuestions;$('auto-reveal-seconds').value=a.revealSeconds;$('seconds').value=a.seconds;}
+    const selected=available&&$('auto-enabled').checked;
+    $('auto-enabled').disabled=!fresh||Boolean(room?.ended);$('auto-total').max=String(idiomCount||148);
+    for(const id of ['auto-total','auto-reveal-seconds'])$(id).disabled=!selected||!fresh||Boolean(room?.ended);
+    $('auto-status').textContent=a?.enabled?sequenceText(room):fresh?'設定題數後按「開始整場自動測驗」，學生須先加入。':'本場以手動模式開始；整場自動測驗請另建新測驗。';
+    $('pause-series').hidden=!a?.enabled||a.status!=='running'||Boolean(room.ended);
+    $('resume-series').hidden=!a?.enabled||a.status!=='paused'||Boolean(room.ended);
+    if(a?.enabled){$('draw-button').disabled=true;$('start-button').disabled=true;['seconds','accepted'].forEach(id=>{$(id).disabled=true;});$('start-button').textContent=room.ended?'本次測驗已完成':'整場自動進行中';}
+    else if(fresh&&selected)$('start-button').textContent='開始整場自動測驗 →';
+    $('reveal-button').textContent=a?.status==='paused'&&a.pauseReason==='judging'?'略過未判定並繼續':'揭曉對錯 ✦';
+    if(a?.status==='paused'&&a.pauseReason==='judging')$('judge-summary').textContent='自動流程已暫停。請重試判讀或讓學生重送；也可按「略過未判定並繼續」，未判定答案不計分。';
   }
   function renderTeacher() {
     renderAIStatus();
@@ -73,7 +116,7 @@ if (page === 'teacher') {
     $('practice-banner').hidden = room.mode !== 'practice'; $('room-title').textContent = room.title; $('room-code').textContent = room.code;
     $('open-screen').href = client.pageURL('screen.html',room.code); $('open-play').href = studentEntryURL(room.code); $('export-link').href = '#';
     updateJoinLink();
-    $('round-label').textContent = round ? `第 ${round.number} 題` : '尚未開始'; $('phase-pill').textContent = phaseLabel(round); $('phase-pill').className = `pill ${writing ? 'active-pill' : 'neutral'}`;
+    $('round-label').textContent = round ? `第 ${round.number}${room.automation?.enabled?' / '+room.automation.totalQuestions:''} 題` : '尚未開始'; $('phase-pill').textContent = phaseLabel(round); $('phase-pill').className = `pill ${writing ? 'active-pill' : 'neutral'}`;
     $('teacher-countdown').textContent = timerText(round); $('submitted-count').textContent = `${round?.submitted || 0} / ${room.players.length}`; $('judged-count').textContent = round?.judged || 0; $('player-count').textContent = `${room.players.length} 人`;
     $('close-button').disabled = room.ended||!['writing','collecting'].includes(round?.phase); $('reveal-button').disabled = room.ended || !round || round.phase !== 'closed' || round.pending > 0; $('retry-button').hidden = room.ended || !round || !round.unresolved || round.phase === 'revealed';
     showQuestion(); $('draw-button').disabled = !ready; $('start-button').disabled = !ready || !room.players.length || !room.draft; $('start-button').textContent = round?.phase === 'revealed' ? '開始下一題 →' : '開始作答 →';
@@ -85,7 +128,11 @@ if (page === 'teacher') {
     $('leaderboard').innerHTML = rankRows(room.players, 8); const u = room.usage;
     $('usage-info').textContent = room.mode === 'practice' ? '流程演練・API 用量為 0' : `${u.calls} 次有效判讀回應 · 輸入 ${u.input.toLocaleString()} / 輸出 ${u.output.toLocaleString()} tokens`;
 
+    $('performance-panel').hidden=!admin?.features?.performance;
+    const performance=round?.performance;const labels={acceptMs:'受理等候',saveMs:'圖片保存',queueMs:'等待判讀',aiMs:'AI 判讀',totalMs:'受理至判讀完成'};
+    $('performance-info').textContent=performance?Object.entries(labels).map(([key,label])=>label+'：'+(performance[key]?.count?(performance[key].average/1000).toFixed(2)+' 秒（'+performance[key].count+' 份）':'尚無紀錄')).join('；'):'開始作答後顯示本題速度紀錄。';
     if(round?.phase==='collecting')$('judge-summary').textContent='作答時間到，正在接收延遲交卷；緩衝結束後才展示筆跡與開放揭曉。';
+    renderAutoControls();
     if(room.ended){$('draw-info').textContent='測驗已結束；已揭曉成績保留。請建立新測驗繼續。';$('judge-summary').textContent='本測驗已結束，未揭曉的當題不計分。';}
     previousPhase = round?.phase;
   }
@@ -129,9 +176,13 @@ if (page === 'teacher') {
   $('settings-form').onsubmit = async event => { event.preventDefault(); try { const result=await api('/api/admin/settings', { key: $('api-key').value.trim(), model: $('api-model').value.trim(), concurrency: Number($('concurrency').value) }); $('api-key').value = ''; $('settings-dialog').close(); admin.settings.configured=Boolean(result.configured); renderAIStatus(); await refresh(); if(result.configured&&(!room||room.ended||room.mode!=='live')){createDialog();$('new-mode').value='live';updateModeNote();toast('AI 設定已儲存；請確認建立 AI 挑戰，原房間在確認前維持不變');}else toast(result.configured?'AI 設定已套用；目前房間為 AI 正式判讀':'模型設定已套用，但後端尚未設定 API 金鑰',!result.configured); } catch (error) { toast(error.message, true); } };
   $('question-form').onsubmit = async event => {
     event.preventDefault(); if (!room) return;
-    try { await api(`/api/admin/rooms/${room.code}/start`, { draftId: room.draft?.id, seconds: Number($('seconds').value), accepted: $('accepted').value.split(/[,，、\s]+/).filter(Boolean) }); await refresh(); }
-    catch (error) { toast(error.message, true); }
+    const automatic=Boolean(admin?.features?.autoSequence&&$('auto-enabled').checked&&!room.round);
+    $('start-button').disabled=true;
+    try { await api('/api/admin/rooms/'+room.code+'/'+(automatic?'start-series':'start'), { draftId:room.draft?.id,seconds:Number($('seconds').value),accepted:$('accepted').value.split(/[,，、\s]+/).filter(Boolean),...(automatic?{totalQuestions:Number($('auto-total').value),revealSeconds:Number($('auto-reveal-seconds').value)}:{}) }); await refresh(); }
+    catch (error) { toast(error.message, true); renderTeacher(); }
   };
+  $('auto-enabled').onchange=()=>{if(room)renderTeacher();};
+  for(const action of ['pause-series','resume-series'])$(action).onclick=async()=>{if(!room)return;try{await api('/api/admin/rooms/'+room.code+'/'+action,{});await refresh();}catch(error){toast(error.message,true);}};
   for (const action of ['close','reveal','retry']) $(action + '-button').onclick = async () => { if (!room) return; try { $(action + '-button').disabled = true; await api(`/api/admin/rooms/${room.code}/${action}`, {}); await refresh(); } catch (error) { toast(error.message, true); renderTeacher(); } };
   function setJoinLink(url){if($('join-url').value!==url)$('join-copy-status').textContent='';$('join-url').value=url;}
   async function copyJoinURL(){
@@ -169,7 +220,7 @@ if (page === 'teacher') {
   $('delete-room-button').onclick=()=>deleteRoom(room?.code);
   $('delete-saved-room-button').onclick=()=>deleteRoom($('saved-room-select').value);
   $('load-room-button').onclick=async()=>{const code=$('saved-room-select').value;if(!code||!canManageRooms())return;try{const result=await api('/api/admin/rooms/'+code+'/select',{});room=result.room;admin.room=room;liveState=room;renderTeacher();await refresh();}catch(error){toast(error.message,true);}};
-  setInterval(refresh, 3500); setInterval(() => { if (room) $('teacher-countdown').textContent = timerText(room.round); }, 250);
+  scheduleRefresh(); setInterval(() => { if (room){$('teacher-countdown').textContent = timerText(room.round);if(room.automation?.enabled)$('auto-status').textContent=sequenceText(room);} }, 250);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
 }
 
@@ -183,6 +234,11 @@ if (page === 'play') {
   const joinClaims=new Map();
   let lastStudentVerdict='',frozenSubmission=null,deadlineLockedRound='';
   let pad; pad = new InkPad($('handwriting'), () => { if (!pad) return; $('canvas-hint').hidden = pad.strokes.length > 0; if (state?.round && identity) storage.set(`oneword:${client.backend}:draft:${state.code}`, { round: activeRound, strokes: pad.strokes }); });
+  function updatePlaySequence(){
+    if(!state?.automation?.enabled||!identity)return;const own=state.players.find(p=>p.id===identity.player.id);if(!own)return;
+    if(state.automation.status==='completed'){$('play-message').textContent=sequenceText(state)+' 你的總分：'+own.score+' 分。';$('lock-detail').textContent='總分 '+own.score+' 分，感謝參加。';}
+    else if(state.round?.phase==='revealed'||state.automation.status==='paused'){$('play-message').textContent=sequenceText(state);$('lock-detail').textContent=sequenceText(state);}
+  }
   function applyStudentVerdict(round,own){
     const decided=round?.phase==='revealed'&&own.submitted&&own.status==='done'&&typeof own.correct==='boolean';
     const tone=decided?(own.correct?'correct':'wrong'):'',key=decided?round.id+':'+own.id+':'+tone:'';
@@ -206,7 +262,7 @@ if (page === 'play') {
     }
     submitted = own.submitted;
     $('play-practice').hidden = state.mode !== 'practice'; $('player-identity').textContent = `學號 ${own.studentId} · ${own.name}`; $('play-room').textContent = `房號 ${state.code}`;
-    $('play-round').textContent = round ? `第 ${String(round.number).padStart(2,'0')} 題 · 只寫一個字` : '等待教師出題'; $('play-prompt').textContent = round?.prompt || '好好握筆，準備上場。';
+    $('play-round').textContent = round ? `第 ${String(round.number).padStart(2,'0')}${state.automation?.enabled?' / '+state.automation.totalQuestions:''} 題 · 只寫一個字` : '等待教師出題'; $('play-prompt').textContent = round?.prompt || '好好握筆，準備上場。';
     $('play-countdown').textContent = timerText(round);
     const writing = !state.ended&&round?.phase === 'writing' && remaining(round) > 0;
     pad.enabled = Boolean(writing && !submitted && !sending && !frozenSubmission);
@@ -231,6 +287,7 @@ if (page === 'play') {
     }
     applyStudentVerdict(round,own);
     if(state.ended){$('play-round').textContent='本測驗已結束';$('lock-message').textContent='測驗已結束';$('lock-detail').textContent='請使用教師提供的新房號加入下一場';$('write-state').textContent='已結束';}
+    updatePlaySequence();
   }
   async function join(data) {
     if(joining)return;
@@ -256,11 +313,11 @@ if (page === 'play') {
     catch (error) { toast(error.message, true); }
     finally { sending = false; if(!identity||!state)return; try { const latest = await api(`/api/room?room=${state.code}`); liveState = latest; renderPlay(latest); } catch { renderPlay(state); } }
   };
-  setInterval(() => { if (!state?.round) return; $('play-countdown').textContent=timerText(state.round); $('play-countdown').classList.toggle('urgent',remaining(state.round)!==null&&remaining(state.round)<=5); if(state.round.phase==='writing'&&remaining(state.round)===0&&deadlineLockedRound!==state.round.id){deadlineLockedRound=state.round.id;renderPlay(state);} }, 200);
+  setInterval(() => { if (!state?.round) return; updatePlaySequence();$('play-countdown').textContent=timerText(state.round); $('play-countdown').classList.toggle('urgent',remaining(state.round)!==null&&remaining(state.round)<=5); if(state.round.phase==='writing'&&remaining(state.round)===0&&deadlineLockedRound!==state.round.id){deadlineLockedRound=state.round.id;renderPlay(state);} }, 200);
 }
 
 if (page === 'screen') {
-  const code = new URLSearchParams(location.search).get('room')?.toUpperCase(); let state, rankings = false, effectRound='';const shownVerdicts=new Set();
+  const code = new URLSearchParams(location.search).get('room')?.toUpperCase(); let state, rankings = false, effectRound='',completedScreenRoom='';const shownVerdicts=new Set();
   const render = next => {
     state = next; const round = state.round, shown = round && ['closed','revealed','cancelled'].includes(round.phase), revealed = round?.phase === 'revealed';
     if(effectRound!==round?.id){effectRound=round?.id||'';shownVerdicts.clear();}
@@ -278,13 +335,14 @@ if (page === 'screen') {
       return `<article class="answer-card ${revealed ? 'revealed' : ''} ${done ? correct ? 'correct' : 'wrong' : ''} ${enter?'result-enter':''}"><div class="answer-card-head"><span class="answer-seat">${studentId(p)}</span><span class="answer-name">${escape(p.name)}</span><span class="answer-score">${p.score} 分</span></div><div class="answer-paper">${paper}</div><div class="answer-foot"><span>${revealed ? done ? correct ? '答對 ＋10 分' : '答錯 ＋0 分' : p.submitted ? '無法判定' : '未交卷' : state.ended ? '測驗已結束' : shown ? '等待揭曉' : p.submitted ? '答案已鎖定' : '一人一字'}</span><span class="${done ? 'answer-verdict' : 'pending-verdict'}">${done ? correct ? '✓' : '✗' : revealed && p.submitted ? '—' : '·'}</span></div></article>`;
     }).join('') || '<div class="screen-empty"><span>筆</span><h2>擂台已準備就緒</h2><p>參賽者加入後，會依座號出現在這裡。</p></div>';
     if(state.ended){$('screen-phase').textContent='測驗已結束';$('screen-timer-label').textContent='已結束';$('screen-subtitle').textContent='已揭曉成績保留。請使用教師提供的新房號加入下一場。';$('screen-prompt').textContent='本場測驗已結束';}
+    $('screen-auto-status').textContent=sequenceText(state);if(state.automation?.status==='completed'){if(completedScreenRoom!==state.code){completedScreenRoom=state.code;rankings=true;}$('screen-prompt').textContent='本次 '+state.automation.totalQuestions+' 題已完成';$('screen-subtitle').textContent='總成績已結算，感謝全班參加。';$('screen-phase').textContent='全部完成';$('ranking-toggle').textContent=rankings?'回到答案牆 ↗':'查看排行榜 ↗';}
     $('screen-ranking').innerHTML = rankRows(state.players); $('screen-grid').hidden = rankings; $('screen-ranking').hidden = !rankings;
   };
   if (code) connect(code, render); else { $('screen-subtitle').textContent = '請從教師控制台按「開啟大螢幕」進入。'; connection(false); }
   $('ranking-toggle').onclick = () => { rankings = !rankings; $('ranking-toggle').textContent = rankings ? '回到答案牆 ↗' : '查看排行榜 ↗'; if (state) render(state); };
   $('fullscreen-button').onclick = async () => { try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); } catch { toast('此瀏覽器無法啟用全螢幕'); } };
   $('screen-grid').onclick = event => { const img = event.target.closest('[data-image]'); if (!img) return; $('enlarged-image').src = img.dataset.image; $('enlarged-label').textContent = img.dataset.label; $('image-dialog').showModal(); };
-  setInterval(() => { if (state) { $('screen-countdown').textContent = timerText(state.round); $('screen-countdown').classList.toggle('urgent', remaining(state.round) !== null && remaining(state.round) <= 5); } }, 200);
+  setInterval(() => { if (state) { $('screen-auto-status').textContent=sequenceText(state); $('screen-countdown').textContent = timerText(state.round); $('screen-countdown').classList.toggle('urgent', remaining(state.round) !== null && remaining(state.round) <= 5); } }, 200);
 }
 
 if(page==='home') {
