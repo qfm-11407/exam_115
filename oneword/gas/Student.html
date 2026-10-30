@@ -117,7 +117,9 @@ body[data-page=play] #play-practice{margin:0}
 @media(max-width:370px){body[data-page=play] .play-main{padding-left:10px;padding-right:10px}body[data-page=play] .join-panel{padding:18px}body[data-page=play] .form-row{grid-template-columns:minmax(0,1fr)}body[data-page=play] .pen-description{display:none}}
 
 .auto-settings{border:1px solid var(--line);border-radius:10px;padding:16px;margin:18px 0}.auto-settings legend{font-size:14px;font-weight:700}.auto-settings .confirm-line{flex-direction:row;align-items:center;margin-bottom:14px}.auto-settings .form-row{grid-template-columns:1fr 1fr}.auto-settings .control-buttons:has(button:not([hidden])){padding-bottom:4px}.auto-settings #auto-status{font-size:13px;font-weight:700;color:var(--green);margin-top:12px}.screen-question .screen-auto-status{color:#f3d497;font-size:15px;font-weight:700;margin-top:10px}
-</style></head><body data-page="play"><header class="topbar"><span class="brand"><span class="brand-mark">字</span><span>單字擂台<small>WORD ARENA</small></span></span><span id="connection" class="connection">尚未加入</span></header><main class="play-main"><section id="join-panel" class="card join-panel"><span class="kicker">YOUR TURN TO WRITE</span><p class="muted student-layout-note">平板、手機皆可作答，支援直向與橫向。</p><h1>準備落筆。</h1><p class="muted">限本班學號加入</p><form id="join-form"><label>房號<input id="join-code" maxlength="6" placeholder="六位房號" required autocapitalize="characters" autocomplete="off"></label><div class="form-row"><label>學號<input id="join-student-id" type="text" inputmode="numeric" maxlength="7" pattern="^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$" title="限本班學號加入" placeholder="請輸入學號" autocomplete="off" required></label><label>暱稱（選填）<input id="join-name" maxlength="12" placeholder="你的名字"></label></div><button id="join-submit" class="button primary wide" type="submit">加入比賽 →</button></form><p><a id="direct-student-link" class="setup-doc-link" hidden>開啟平板模式（建議平板、手機使用） ↗</a></p><p class="muted">平板模式 v2.9.0</p><p id="join-status" class="muted" role="status" aria-live="polite"></p><p id="join-error" class="form-error" role="alert"></p></section><div id="writing-panel" hidden><div id="play-practice" class="notice amber" hidden>流程演練中・不辨識實際筆跡</div><div class="play-meta"><span id="player-identity" class="pill neutral"></span><span id="play-room" class="tiny-label"></span></div><section class="play-question"><div class="question-overline"><span id="play-round" class="kicker">等待出題</span><span id="play-countdown" class="timer-badge">—</span></div><h1 id="play-prompt">好好握筆，準備上場。</h1></section><div class="writing-card"><div class="writing-instruction"><span>請補上成語中缺少的 <b>一個字</b></span><span id="write-state">等待教師開始</span></div><div class="canvas-wrap"><canvas id="handwriting" width="512" height="512" aria-label="單字手寫作答區"></canvas><span id="canvas-hint" class="canvas-hint">在這裡寫字</span><div id="canvas-lock" class="canvas-lock" hidden><span id="lock-symbol">✓</span><strong id="lock-message">已交卷</strong><small id="lock-detail">答案已鎖定，等待統一揭曉。</small></div></div><div class="drawing-toolbar"><button id="undo" class="tool-button" type="button">↶ 復原</button><button id="eraser" class="tool-button" type="button" aria-pressed="false">▱ 橡皮擦</button><button id="clear" class="tool-button" type="button">清除</button><span class="pen-description">黑筆・單字</span></div></div><button id="submit-button" class="button primary wide submit-button" disabled>送出答案 →</button><p id="play-message" class="play-message" role="status">請在倒數結束前送出，送出後無法修改。</p><div id="own-result" class="own-result" role="status" aria-live="polite" hidden></div></div></main><div id="toast" class="toast" role="status" hidden></div><script>const boot = <?!= boot ?>;
+
+.wall-layout-panel{margin-bottom:20px}.wall-layout-panel summary{font-size:15px;font-weight:700;cursor:pointer}.wall-layout-panel form{margin:16px 0;align-items:end;max-width:600px}.wall-layout-panel .form-row{grid-template-columns:minmax(0,1fr) auto}@media(max-width:480px){.wall-layout-panel .form-row{grid-template-columns:minmax(0,1fr)}}
+</style></head><body data-page="play"><header class="topbar"><span class="brand"><span class="brand-mark">字</span><span>單字擂台<small>WORD ARENA</small></span></span><span id="connection" class="connection">尚未加入</span></header><main class="play-main"><section id="join-panel" class="card join-panel"><span class="kicker">YOUR TURN TO WRITE</span><p class="muted student-layout-note">平板、手機皆可作答，支援直向與橫向。</p><h1>準備落筆。</h1><p class="muted">限本班學號加入</p><form id="join-form"><label>房號<input id="join-code" maxlength="6" placeholder="六位房號" required autocapitalize="characters" autocomplete="off"></label><div class="form-row"><label>學號<input id="join-student-id" type="text" inputmode="numeric" maxlength="7" pattern="^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$" title="限本班學號加入" placeholder="請輸入學號" autocomplete="off" required></label><label>暱稱（選填）<input id="join-name" maxlength="12" placeholder="你的名字"></label></div><button id="join-submit" class="button primary wide" type="submit">加入比賽 →</button></form><p><a id="direct-student-link" class="setup-doc-link" hidden>開啟平板模式（建議平板、手機使用） ↗</a></p><p class="muted">平板模式 v2.10.1</p><p id="join-status" class="muted" role="status" aria-live="polite"></p><p id="join-error" class="form-error" role="alert"></p></section><div id="writing-panel" hidden><div id="play-practice" class="notice amber" hidden>流程演練中・不辨識實際筆跡</div><div class="play-meta"><span id="player-identity" class="pill neutral"></span><span id="play-room" class="tiny-label"></span></div><section class="play-question"><div class="question-overline"><span id="play-round" class="kicker">等待出題</span><span id="play-countdown" class="timer-badge">—</span></div><h1 id="play-prompt">好好握筆，準備上場。</h1></section><div class="writing-card"><div class="writing-instruction"><span>請補上成語中缺少的 <b>一個字</b></span><span id="write-state">等待教師開始</span></div><div class="canvas-wrap"><canvas id="handwriting" width="512" height="512" aria-label="單字手寫作答區"></canvas><span id="canvas-hint" class="canvas-hint">在這裡寫字</span><div id="canvas-lock" class="canvas-lock" hidden><span id="lock-symbol">✓</span><strong id="lock-message">已交卷</strong><small id="lock-detail">答案已鎖定，等待統一揭曉。</small></div></div><div class="drawing-toolbar"><button id="undo" class="tool-button" type="button">↶ 復原</button><button id="eraser" class="tool-button" type="button" aria-pressed="false">▱ 橡皮擦</button><button id="clear" class="tool-button" type="button">清除</button><span class="pen-description">黑筆・單字</span></div></div><button id="submit-button" class="button primary wide submit-button" disabled>送出答案 →</button><p id="play-message" class="play-message" role="status">請在倒數結束前送出，送出後無法修改。</p><div id="own-result" class="own-result" role="status" aria-live="polite" hidden></div></div></main><div id="toast" class="toast" role="status" hidden></div><script>const boot = <?!= boot ?>;
 class InkPad {
   constructor(canvas, onChange) {
     this.canvas = canvas; this.ctx = canvas.getContext('2d', { willReadFrequently: true }); this.strokes = []; this.enabled = false; this.eraser = false; this.active = null; this.pointer = null; this.onChange = onChange;
@@ -176,7 +178,8 @@ async function api(route,data,token=''){
   else if(url.pathname==='/api/submit')action='submit';
   else if(url.pathname==='/api/room'){action='room';payload={room:url.searchParams.get('room')};}
   else throw new Error('找不到學生操作');
-  return nativeRPC(action,payload,token,action==='join'||action==='room'||action==='submit'?1:0);
+  // Submission retries belong to the student controller, which keeps one frozen answer.
+  return nativeRPC(action,payload,token,action==='join'||action==='room'?1:0);
 }
 function connect(code,receive){
   let closed=false,timer,last='',latest=null;
@@ -199,8 +202,8 @@ function sequenceText(state){
   if(a.nextAt){const left=Math.max(0,Math.ceil((a.nextAt-Date.now()-offset)/1000));return prefix+' · '+left+' 秒後'+(count>=a.totalQuestions?'結算總成績':'進入下一題');}
   return prefix+' · '+(state.round?.phase==='closed'?'正在判讀，完成後自動公布。':state.round?.phase==='collecting'?'接收延遲交卷中。':'全員交卷或時間到後自動公布。');
 }
-function rankRows(players, max = 60) {
-  return [...players].sort((a, b) => b.score - a.score || a.studentId.localeCompare(b.studentId, 'en', { numeric: true })).slice(0, max).map((p, i) => `<div class="rank-row"><span class="rank-number">${i + 1}</span><span class="rank-name"><small>${studentId(p)}</small>${escape(p.name)}</span><strong>${p.score}<small>分</small></strong></div>`).join('') || '<p class="list-empty">參賽者加入後顯示排名</p>';
+function rankRows(players, max = 60, start = 0) {
+  return [...players].sort((a, b) => b.score - a.score || a.studentId.localeCompare(b.studentId, 'en', { numeric: true })).slice(start, start+max).map((p, i) => `<div class="rank-row"><span class="rank-number">${start + i + 1}</span><span class="rank-name"><small>${studentId(p)}</small>${escape(p.name)}</span><strong>${p.score}<small>分</small></strong></div>`).join('') || '<p class="list-empty">參賽者加入後顯示排名</p>';
 }
 function bindDialogs() {
   document.querySelectorAll('.dialog-close').forEach(button => button.addEventListener('click', () => button.closest('dialog').close()));
@@ -215,6 +218,37 @@ if (page === 'play') {
   let identity = null, stream = null, state = null, activeRound = null, submitted = false, sending = false, joining = false;
   const joinClaims=new Map();
   let lastStudentVerdict='',frozenSubmission=null,deadlineLockedRound='';
+  let retryTimer=null,retryAttempt=0,confirmedRound='',stoppedRetryRound='',uploadError='',deliveryEpoch=0;
+  function cancelUploadRetry(){clearTimeout(retryTimer);retryTimer=null;}
+  function canRetryUpload(){return Boolean(identity&&state?.round&&frozenSubmission&&frozenSubmission.roundId===state.round.id&&frozenSubmission.playerId===identity.player.id&&!state.ended&&!submitted&&!sending&&!['revealed','cancelled'].includes(state.round.phase)&&stoppedRetryRound!==state.round.id);}
+  function scheduleUploadRetry(){
+    if(!canRetryUpload()){cancelUploadRetry();return;}
+    if(retryTimer!==null)return;
+    const delay=Math.min(12000,1500*2**Math.min(3,Math.max(0,retryAttempt-1)))+Math.floor(Math.random()*1000);
+    retryTimer=setTimeout(()=>{retryTimer=null;return transmitFrozen();},delay);
+  }
+  async function transmitFrozen(){
+    if(!identity||!state?.round||!frozenSubmission||sending||submitted||state.ended||['revealed','cancelled'].includes(state.round.phase))return;
+    cancelUploadRetry();
+    const {roundId,image,playerId}=frozenSubmission,roomCode=state.code,token=identity.token,epoch=deliveryEpoch;
+    if(roundId!==state.round.id||playerId!==identity.player.id)return;
+    const current=()=>epoch===deliveryEpoch&&identity?.token===token&&state?.code===roomCode&&state?.round?.id===roundId&&!state.ended&&!['revealed','cancelled'].includes(state.round.phase);
+    sending=true;stoppedRetryRound='';renderPlay(state);
+    try{
+      await api('/api/submit',{room:roomCode,roundId,image},token);
+      if(!current())return;
+      confirmedRound=roundId;uploadError='';cancelUploadRetry();storage.remove(`oneword:direct:pending:${roomCode}`);
+      submitted = true; nativeRPC('studentWorker',{room:state.code,roundId},identity.token,0).catch(()=>{}); toast('圖片已保存，等待統一揭曉');
+    }catch(error){
+      if(!current()||submitted||confirmedRound===roundId)return;
+      retryAttempt++;uploadError=error.message;
+      const retryable=error.retryable||![400,401,403,404,409,410,422].includes(error.status);
+      if(!retryable){stoppedRetryRound=roundId;toast(error.message,true);}
+      else if(retryAttempt===1)toast('尚未確認交卷，會保留原圖並自動重試。',true);
+    }finally{
+      if(epoch===deliveryEpoch&&identity?.token===token&&state?.code===roomCode&&state?.round?.id===roundId){sending=false;renderPlay(state);}
+    }
+  }
   let pad; pad = new InkPad($('handwriting'), () => { if (!pad) return; $('canvas-hint').hidden = pad.strokes.length > 0; if (state?.round && identity) storage.set(`oneword:direct:draft:${state.code}`, { round: activeRound, strokes: pad.strokes }); });
   function updatePlaySequence(){
     if(!state?.automation?.enabled||!identity)return;const own=state.players.find(p=>p.id===identity.player.id);if(!own)return;
@@ -230,6 +264,7 @@ if (page === 'play') {
     if(decided){$('lock-symbol').textContent=own.correct?'✓':'✗';$('lock-message').textContent=own.correct?'答對了！':'答錯了';$('lock-detail').textContent='結果已揭曉，等待教師開始下一題。';}
   }
   function resetPlayer(message){
+    cancelUploadRetry();deliveryEpoch++;confirmedRound='';stoppedRetryRound='';uploadError='';retryAttempt=0;
     document.body.dataset.verdict='';document.body.dataset.resultEffect='';lastStudentVerdict='';
     const roomCode=state?.code||$('join-code').value;const student=identity?.player;stream?.close();stream=null;pad.enabled=false;submitted=false;sending=false;activeRound=null;frozenSubmission=null;storage.remove(`oneword:direct:pending:${roomCode}`);identity=null;state=null;storage.remove(`oneword:direct:player:${roomCode}`);if(student?.studentId){storage.remove(`oneword:direct:claim:${roomCode}:${student.studentId}`);joinClaims.delete(`oneword:direct:claim:${roomCode}:${student.studentId}`);}$('join-code').value=roomCode;if(student?.studentId)$('join-student-id').value=student.studentId;
     $('submit-button').disabled=true;['undo','eraser','clear'].forEach(id=>{$(id).disabled=true;});$('writing-panel').hidden=true;$('join-panel').hidden=false;$('join-error').textContent=message;connection(false);
@@ -239,10 +274,13 @@ if (page === 'play') {
     state = next; const round = state.round, own = state.players.find(p => p.id === identity?.player.id);
     if (!own) { resetPlayer('教師已移除此裝置連線，請重新輸入學號加入。原有成績與已交卷答案會保留。'); return; }
     if (activeRound !== round?.id) {
+      cancelUploadRetry();deliveryEpoch++;sending=false;retryAttempt=0;confirmedRound='';stoppedRetryRound='';uploadError='';
       activeRound = round?.id; const pending=storage.get(`oneword:direct:pending:${state.code}`);frozenSubmission=pending?.roundId===activeRound&&pending?.playerId===identity.player.id?pending:null; const draft = storage.get(`oneword:direct:draft:${state.code}`); pad.clear();
       if (draft && draft.round === activeRound && Array.isArray(draft.strokes)) { pad.strokes = draft.strokes; pad.render(); }
     }
-    submitted = own.submitted;
+    if(own.submitted){confirmedRound=round?.id||'';storage.remove(`oneword:direct:pending:${state.code}`);}
+    submitted = Boolean(own.submitted||(round?.id&&confirmedRound===round.id));
+    if(submitted)cancelUploadRetry();
     $('play-practice').hidden = state.mode !== 'practice'; $('player-identity').textContent = `學號 ${own.studentId} · ${own.name}`; $('play-room').textContent = `房號 ${state.code}`;
     $('play-round').textContent = round ? `第 ${String(round.number).padStart(2,'0')}${state.automation?.enabled?' / '+state.automation.totalQuestions:''} 題 · 只寫一個字` : '等待教師出題'; $('play-prompt').textContent = round?.prompt || '好好握筆，準備上場。';
     $('play-countdown').textContent = timerText(round);
@@ -261,6 +299,13 @@ if (page === 'play') {
     const collecting=round?.phase==='collecting'||(round?.phase==='writing'&&remaining(round)===0&&Date.now()+offset<(round.submissionDeadline||round.deadline));
     if(!submitted&&(frozenSubmission||collecting)){$('lock-message').textContent=sending?'答案傳送中':frozenSubmission?'筆跡已鎖定':'作答時間到';$('lock-detail').textContent=frozenSubmission?'正在確認交卷；可重送同一份答案，不能修改筆跡。':'正在接收延遲交卷，手寫區已鎖定。';$('write-state').textContent=sending?'傳送中':collecting?'傳送緩衝中':'等待交卷確認';}
     $('play-message').textContent=collecting?'作答已結束，保留 5 秒接收延遲交卷。':frozenSubmission&&!submitted?'若尚未確認成功，可重送已鎖定答案。':'請在倒數結束前送出，送出後無法修改。';
+    if(frozenSubmission&&!submitted&&!state.ended&&!['revealed','cancelled'].includes(round?.phase)){
+      const stopped=stoppedRetryRound===round?.id;
+      $('lock-message').textContent=sending?'答案傳送中':stopped?'交卷尚未完成':'等待自動重試';
+      $('lock-detail').textContent=stopped?uploadError:'原始筆跡已鎖定；系統會錯開時間重送，確認保存成功才算交卷。';
+      $('play-message').textContent=stopped?uploadError:'正在確認交卷'+(retryAttempt?'，已遇到 '+retryAttempt+' 次暫時性失敗':'')+'；系統會自動重試，也可按下方重送。';
+      $('submit-button').textContent=sending?'正在送出…':'重送已鎖定答案 →';
+    }
     $('own-result').hidden = round?.phase !== 'revealed';
     if (round?.phase === 'revealed') {
       const done = own.submitted&&own.status === 'done'&&typeof own.correct==='boolean';
@@ -270,6 +315,7 @@ if (page === 'play') {
     applyStudentVerdict(round,own);
     if(state.ended){$('play-round').textContent='本測驗已結束';$('lock-message').textContent='測驗已結束';$('lock-detail').textContent='請使用教師提供的新房號加入下一場';$('write-state').textContent='已結束';}
     updatePlaySequence();
+    scheduleUploadRetry();
   }
   async function join(data) {
     if(joining)return;
@@ -290,11 +336,9 @@ if (page === 'play') {
     if (!frozenSubmission&&(!pad.enabled||remaining(state.round)<=0)){renderPlay(state);return;}
     if (!frozenSubmission&&!pad.hasInk()) return toast('請先在格內寫一個字', true);
     if(!frozenSubmission){frozenSubmission={roundId:state.round.id,image:pad.export(),playerId:identity.player.id};storage.set(`oneword:direct:pending:${state.code}`,frozenSubmission);}
-    const {roundId,image}=frozenSubmission; sending = true; renderPlay(state);
-    try { await api('/api/submit', { room: state.code, roundId, image }, identity.token); submitted = true; nativeRPC('studentWorker',{room:state.code,roundId},identity.token,0).catch(()=>{}); toast('圖片已保存，等待統一揭曉'); }
-    catch (error) { toast(error.message, true); }
-    finally { sending = false; if(!identity||!state)return; try { const latest = await api(`/api/room?room=${state.code}`); liveState = latest; renderPlay(latest); } catch { renderPlay(state); } }
+    await transmitFrozen();
   };
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&canRetryUpload()){cancelUploadRetry();scheduleUploadRetry();}});
   setInterval(() => { if (!state?.round) return; updatePlaySequence();$('play-countdown').textContent=timerText(state.round); $('play-countdown').classList.toggle('urgent',remaining(state.round)!==null&&remaining(state.round)<=5); if(state.round.phase==='writing'&&remaining(state.round)===0&&deadlineLockedRound!==state.round.id){deadlineLockedRound=state.round.id;renderPlay(state);} }, 200);
 }
 

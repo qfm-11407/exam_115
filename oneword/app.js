@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261029-join-link-291';
+import { client, GASClient, saveBackend } from './transport.js?v=20261030-retry-2101';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -24,8 +24,8 @@ function sequenceText(state){
   if(a.nextAt){const left=Math.max(0,Math.ceil((a.nextAt-Date.now()-offset)/1000));return prefix+' · '+left+' 秒後'+(count>=a.totalQuestions?'結算總成績':'進入下一題');}
   return prefix+' · '+(state.round?.phase==='closed'?'正在判讀，完成後自動公布。':state.round?.phase==='collecting'?'接收延遲交卷中。':'全員交卷或時間到後自動公布。');
 }
-function rankRows(players, max = 60) {
-  return [...players].sort((a, b) => b.score - a.score || a.studentId.localeCompare(b.studentId, 'en', { numeric: true })).slice(0, max).map((p, i) => `<div class="rank-row"><span class="rank-number">${i + 1}</span><span class="rank-name"><small>${studentId(p)}</small>${escape(p.name)}</span><strong>${p.score}<small>分</small></strong></div>`).join('') || '<p class="list-empty">參賽者加入後顯示排名</p>';
+function rankRows(players, max = 60, start = 0) {
+  return [...players].sort((a, b) => b.score - a.score || a.studentId.localeCompare(b.studentId, 'en', { numeric: true })).slice(start, start+max).map((p, i) => `<div class="rank-row"><span class="rank-number">${start + i + 1}</span><span class="rank-name"><small>${studentId(p)}</small>${escape(p.name)}</span><strong>${p.score}<small>分</small></strong></div>`).join('') || '<p class="list-empty">參賽者加入後顯示排名</p>';
 }
 function bindDialogs() {
   document.querySelectorAll('.dialog-close').forEach(button => button.addEventListener('click', () => button.closest('dialog').close()));
@@ -55,7 +55,7 @@ function createWorkerPump({run,changed,error}){
   const workerPumpRunner=createWorkerPump({run:data=>client.rpc('worker',data),changed:()=>{clearTimeout(refreshTimer);refreshTimer=setTimeout(refresh,180);},error:error=>toast(error.message,true)});
   function pumpWorkers(){workerPumpRunner.sync({code:room?.code,roundId:room?.round?.id,pending:room?.round?.pending||0,limit:admin?.settings?.concurrency||2,enabled:Boolean(room&&!room.ended&&room.round&&room.round.phase!=='revealed')});}
   function scheduleRefresh(){clearTimeout(refreshTimer);const urgent=room?.round&&((room.automation?.enabled&&room.automation.status==='running')||room.round.pending>0||room.round.phase==='collecting'||(room.round.phase==='writing'&&remaining(room.round)<=8));refreshTimer=setTimeout(refresh,urgent?1500:3500);}
-  let displayedQuestionId = null,autoSettingsRoom='';
+  let displayedQuestionId = null,autoSettingsRoom='',screenLayoutRoom='',screenLayoutDirty=false,screenLayoutSaving=false;
   let pendingCreateRoom='',replacementRequired=false,roomsLoaded=false,roomsLoading=false;
   $('help-button').onclick = () => $('help-dialog').showModal();
   async function refresh() {
@@ -78,7 +78,7 @@ function createWorkerPump({run,changed,error}){
   function canManageRooms(){return Boolean(admin?.features?.roomManagement);}
   function renderAIStatus() {
     const configured=Boolean(admin?.settings.configured),management=canManageRooms();
-    $('app-version').textContent='網頁 v2.9.1 · GAS '+(admin?.version||'未回報版本');
+    $('app-version').textContent='網頁 v2.10.1 · GAS '+(admin?.version||'未回報版本');
     $('ai-ready-status').textContent=configured?'AI 金鑰：後端已設定':'AI 金鑰：後端尚未設定';
     $('create-ai-room-button').hidden=false;$('create-ai-room-button').disabled=!configured;
     $('backend-update-note').hidden=management;
@@ -105,6 +105,21 @@ function createWorkerPump({run,changed,error}){
     $('reveal-button').textContent=a?.status==='paused'&&a.pauseReason==='judging'?'略過未判定並繼續':'揭曉對錯 ✦';
     if(a?.status==='paused'&&a.pauseReason==='judging')$('judge-summary').textContent='自動流程已暫停。請重試判讀或讓學生重送；也可按「略過未判定並繼續」，未判定答案不計分。';
   }
+  function renderDisplaySettings(){
+    $('wall-layout-panel').hidden=!admin?.features?.displayLayout;
+    if(screenLayoutRoom!==room?.code){screenLayoutRoom=room?.code;screenLayoutDirty=false;$('wall-layout-status').textContent='';}
+    const columns=room?.display?.columns||6;
+    if(!screenLayoutDirty&&!screenLayoutSaving)$('wall-columns').value=String(columns);
+    $('wall-columns').disabled=screenLayoutSaving;$('wall-layout-apply').disabled=screenLayoutSaving;
+    $('wall-layout-summary').textContent='目前每排 '+columns+' 格、'+Math.ceil(24/columns)+' 列；每頁最多 24 人，超過可翻頁。';
+  }
+  $('wall-columns').onchange=()=>{screenLayoutDirty=true;const columns=Number($('wall-columns').value);$('wall-layout-status').textContent='尚未套用：每排 '+columns+' 格、'+Math.ceil(24/columns)+' 列。';};
+  $('wall-layout-form').onsubmit=async event=>{
+    event.preventDefault();if(!room||screenLayoutSaving)return;const code=room.code,columns=Number($('wall-columns').value);screenLayoutSaving=true;renderDisplaySettings();
+    try{const result=await api('/api/admin/rooms/'+code+'/display',{columns});if(room?.code===code){screenLayoutDirty=false;room=result.room;admin.room=room;liveState=room;$('wall-layout-status').textContent='已套用，大螢幕會自動同步。';renderTeacher();}}
+    catch(error){if(room?.code===code)$('wall-layout-status').textContent=error.message;toast(error.message,true);}
+    finally{screenLayoutSaving=false;if(room?.code===code)renderDisplaySettings();}
+  };
   function renderTeacher() {
     renderAIStatus();
     $('welcome-panel').hidden = Boolean(room); $('room-dashboard').hidden = !room; if (!room) return;
@@ -132,7 +147,7 @@ function createWorkerPump({run,changed,error}){
     const performance=round?.performance;const labels={acceptMs:'受理等候',saveMs:'圖片保存',queueMs:'等待判讀',aiMs:'AI 判讀',totalMs:'受理至判讀完成'};
     $('performance-info').textContent=performance?Object.entries(labels).map(([key,label])=>label+'：'+(performance[key]?.count?(performance[key].average/1000).toFixed(2)+' 秒（'+performance[key].count+' 份）':'尚無紀錄')).join('；'):'開始作答後顯示本題速度紀錄。';
     if(round?.phase==='collecting')$('judge-summary').textContent='作答時間到，正在接收延遲交卷；緩衝結束後才展示筆跡與開放揭曉。';
-    renderAutoControls();
+    renderAutoControls();renderDisplaySettings();
     if(room.ended){$('draw-info').textContent='測驗已結束；已揭曉成績保留。請建立新測驗繼續。';$('judge-summary').textContent='本測驗已結束，未揭曉的當題不計分。';}
     previousPhase = round?.phase;
   }
@@ -233,6 +248,37 @@ if (page === 'play') {
   let identity = null, stream = null, state = null, activeRound = null, submitted = false, sending = false, joining = false;
   const joinClaims=new Map();
   let lastStudentVerdict='',frozenSubmission=null,deadlineLockedRound='';
+  let retryTimer=null,retryAttempt=0,confirmedRound='',stoppedRetryRound='',uploadError='',deliveryEpoch=0;
+  function cancelUploadRetry(){clearTimeout(retryTimer);retryTimer=null;}
+  function canRetryUpload(){return Boolean(identity&&state?.round&&frozenSubmission&&frozenSubmission.roundId===state.round.id&&frozenSubmission.playerId===identity.player.id&&!state.ended&&!submitted&&!sending&&!['revealed','cancelled'].includes(state.round.phase)&&stoppedRetryRound!==state.round.id);}
+  function scheduleUploadRetry(){
+    if(!canRetryUpload()){cancelUploadRetry();return;}
+    if(retryTimer!==null)return;
+    const delay=Math.min(12000,1500*2**Math.min(3,Math.max(0,retryAttempt-1)))+Math.floor(Math.random()*1000);
+    retryTimer=setTimeout(()=>{retryTimer=null;return transmitFrozen();},delay);
+  }
+  async function transmitFrozen(){
+    if(!identity||!state?.round||!frozenSubmission||sending||submitted||state.ended||['revealed','cancelled'].includes(state.round.phase))return;
+    cancelUploadRetry();
+    const {roundId,image,playerId}=frozenSubmission,roomCode=state.code,token=identity.token,epoch=deliveryEpoch;
+    if(roundId!==state.round.id||playerId!==identity.player.id)return;
+    const current=()=>epoch===deliveryEpoch&&identity?.token===token&&state?.code===roomCode&&state?.round?.id===roundId&&!state.ended&&!['revealed','cancelled'].includes(state.round.phase);
+    sending=true;stoppedRetryRound='';renderPlay(state);
+    try{
+      await api('/api/submit',{room:roomCode,roundId,image},token);
+      if(!current())return;
+      confirmedRound=roundId;uploadError='';cancelUploadRetry();storage.remove(`oneword:${client.backend}:pending:${roomCode}`);
+      submitted = true; client.rpc('studentWorker',{room:state.code,roundId},identity.token).catch(()=>{}); toast('圖片已保存，等待統一揭曉');
+    }catch(error){
+      if(!current()||submitted||confirmedRound===roundId)return;
+      retryAttempt++;uploadError=error.message;
+      const retryable=error.retryable||![400,401,403,404,409,410,422].includes(error.status);
+      if(!retryable){stoppedRetryRound=roundId;toast(error.message,true);}
+      else if(retryAttempt===1)toast('尚未確認交卷，會保留原圖並自動重試。',true);
+    }finally{
+      if(epoch===deliveryEpoch&&identity?.token===token&&state?.code===roomCode&&state?.round?.id===roundId){sending=false;renderPlay(state);}
+    }
+  }
   let pad; pad = new InkPad($('handwriting'), () => { if (!pad) return; $('canvas-hint').hidden = pad.strokes.length > 0; if (state?.round && identity) storage.set(`oneword:${client.backend}:draft:${state.code}`, { round: activeRound, strokes: pad.strokes }); });
   function updatePlaySequence(){
     if(!state?.automation?.enabled||!identity)return;const own=state.players.find(p=>p.id===identity.player.id);if(!own)return;
@@ -248,6 +294,7 @@ if (page === 'play') {
     if(decided){$('lock-symbol').textContent=own.correct?'✓':'✗';$('lock-message').textContent=own.correct?'答對了！':'答錯了';$('lock-detail').textContent='結果已揭曉，等待教師開始下一題。';}
   }
   function resetPlayer(message){
+    cancelUploadRetry();deliveryEpoch++;confirmedRound='';stoppedRetryRound='';uploadError='';retryAttempt=0;
     document.body.dataset.verdict='';document.body.dataset.resultEffect='';lastStudentVerdict='';
     const roomCode=state?.code||$('join-code').value;const student=identity?.player;stream?.close();stream=null;pad.enabled=false;submitted=false;sending=false;activeRound=null;frozenSubmission=null;storage.remove(`oneword:${client.backend}:pending:${roomCode}`);identity=null;state=null;storage.remove(`oneword:${client.backend}:player:${roomCode}`);if(student?.studentId){storage.remove(`oneword:${client.backend}:claim:${roomCode}:${student.studentId}`);joinClaims.delete(`oneword:${client.backend}:claim:${roomCode}:${student.studentId}`);}$('join-code').value=roomCode;if(student?.studentId)$('join-student-id').value=student.studentId;
     $('submit-button').disabled=true;['undo','eraser','clear'].forEach(id=>{$(id).disabled=true;});$('writing-panel').hidden=true;$('join-panel').hidden=false;$('join-error').textContent=message;connection(false);
@@ -257,10 +304,13 @@ if (page === 'play') {
     state = next; const round = state.round, own = state.players.find(p => p.id === identity?.player.id);
     if (!own) { resetPlayer('教師已移除此裝置連線，請重新輸入學號加入。原有成績與已交卷答案會保留。'); return; }
     if (activeRound !== round?.id) {
+      cancelUploadRetry();deliveryEpoch++;sending=false;retryAttempt=0;confirmedRound='';stoppedRetryRound='';uploadError='';
       activeRound = round?.id; const pending=storage.get(`oneword:${client.backend}:pending:${state.code}`);frozenSubmission=pending?.roundId===activeRound&&pending?.playerId===identity.player.id?pending:null; const draft = storage.get(`oneword:${client.backend}:draft:${state.code}`); pad.clear();
       if (draft && draft.round === activeRound && Array.isArray(draft.strokes)) { pad.strokes = draft.strokes; pad.render(); }
     }
-    submitted = own.submitted;
+    if(own.submitted){confirmedRound=round?.id||'';storage.remove(`oneword:${client.backend}:pending:${state.code}`);}
+    submitted = Boolean(own.submitted||(round?.id&&confirmedRound===round.id));
+    if(submitted)cancelUploadRetry();
     $('play-practice').hidden = state.mode !== 'practice'; $('player-identity').textContent = `學號 ${own.studentId} · ${own.name}`; $('play-room').textContent = `房號 ${state.code}`;
     $('play-round').textContent = round ? `第 ${String(round.number).padStart(2,'0')}${state.automation?.enabled?' / '+state.automation.totalQuestions:''} 題 · 只寫一個字` : '等待教師出題'; $('play-prompt').textContent = round?.prompt || '好好握筆，準備上場。';
     $('play-countdown').textContent = timerText(round);
@@ -279,6 +329,13 @@ if (page === 'play') {
     const collecting=round?.phase==='collecting'||(round?.phase==='writing'&&remaining(round)===0&&Date.now()+offset<(round.submissionDeadline||round.deadline));
     if(!submitted&&(frozenSubmission||collecting)){$('lock-message').textContent=sending?'答案傳送中':frozenSubmission?'筆跡已鎖定':'作答時間到';$('lock-detail').textContent=frozenSubmission?'正在確認交卷；可重送同一份答案，不能修改筆跡。':'正在接收延遲交卷，手寫區已鎖定。';$('write-state').textContent=sending?'傳送中':collecting?'傳送緩衝中':'等待交卷確認';}
     $('play-message').textContent=collecting?'作答已結束，保留 5 秒接收延遲交卷。':frozenSubmission&&!submitted?'若尚未確認成功，可重送已鎖定答案。':'請在倒數結束前送出，送出後無法修改。';
+    if(frozenSubmission&&!submitted&&!state.ended&&!['revealed','cancelled'].includes(round?.phase)){
+      const stopped=stoppedRetryRound===round?.id;
+      $('lock-message').textContent=sending?'答案傳送中':stopped?'交卷尚未完成':'等待自動重試';
+      $('lock-detail').textContent=stopped?uploadError:'原始筆跡已鎖定；系統會錯開時間重送，確認保存成功才算交卷。';
+      $('play-message').textContent=stopped?uploadError:'正在確認交卷'+(retryAttempt?'，已遇到 '+retryAttempt+' 次暫時性失敗':'')+'；系統會自動重試，也可按下方重送。';
+      $('submit-button').textContent=sending?'正在送出…':'重送已鎖定答案 →';
+    }
     $('own-result').hidden = round?.phase !== 'revealed';
     if (round?.phase === 'revealed') {
       const done = own.submitted&&own.status === 'done'&&typeof own.correct==='boolean';
@@ -288,6 +345,7 @@ if (page === 'play') {
     applyStudentVerdict(round,own);
     if(state.ended){$('play-round').textContent='本測驗已結束';$('lock-message').textContent='測驗已結束';$('lock-detail').textContent='請使用教師提供的新房號加入下一場';$('write-state').textContent='已結束';}
     updatePlaySequence();
+    scheduleUploadRetry();
   }
   async function join(data) {
     if(joining)return;
@@ -308,19 +366,25 @@ if (page === 'play') {
     if (!frozenSubmission&&(!pad.enabled||remaining(state.round)<=0)){renderPlay(state);return;}
     if (!frozenSubmission&&!pad.hasInk()) return toast('請先在格內寫一個字', true);
     if(!frozenSubmission){frozenSubmission={roundId:state.round.id,image:pad.export(),playerId:identity.player.id};storage.set(`oneword:${client.backend}:pending:${state.code}`,frozenSubmission);}
-    const {roundId,image}=frozenSubmission; sending = true; renderPlay(state);
-    try { await api('/api/submit', { room: state.code, roundId, image }, identity.token); submitted = true; client.rpc('studentWorker',{room:state.code,roundId},identity.token).catch(()=>{}); toast('圖片已保存，等待統一揭曉'); }
-    catch (error) { toast(error.message, true); }
-    finally { sending = false; if(!identity||!state)return; try { const latest = await api(`/api/room?room=${state.code}`); liveState = latest; renderPlay(latest); } catch { renderPlay(state); } }
+    await transmitFrozen();
   };
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&canRetryUpload()){cancelUploadRetry();scheduleUploadRetry();}});
   setInterval(() => { if (!state?.round) return; updatePlaySequence();$('play-countdown').textContent=timerText(state.round); $('play-countdown').classList.toggle('urgent',remaining(state.round)!==null&&remaining(state.round)<=5); if(state.round.phase==='writing'&&remaining(state.round)===0&&deadlineLockedRound!==state.round.id){deadlineLockedRound=state.round.id;renderPlay(state);} }, 200);
 }
 
 if (page === 'screen') {
-  const code = new URLSearchParams(location.search).get('room')?.toUpperCase(); let state, rankings = false, effectRound='',completedScreenRoom='';const shownVerdicts=new Set();
+  const code = new URLSearchParams(location.search).get('room')?.toUpperCase(); let state, rankings = false, effectRound='',completedScreenRoom='',screenPage=0;const shownVerdicts=new Set();
   const render = next => {
     state = next; const round = state.round, shown = round && ['closed','revealed','cancelled'].includes(round.phase), revealed = round?.phase === 'revealed';
     if(effectRound!==round?.id){effectRound=round?.id||'';shownVerdicts.clear();}
+    const count=state.players.length,pageCount=Math.max(1,Math.ceil(count/24));
+    if(state.automation?.status==='completed'&&completedScreenRoom!==state.code){completedScreenRoom=state.code;rankings=true;screenPage=0;}
+    screenPage=Math.max(0,Math.min(screenPage,pageCount-1));
+    const first=screenPage*24,roster=[...state.players].sort((a,b)=>a.studentId.localeCompare(b.studentId,'en',{numeric:true})),visible=roster.slice(first,first+24);
+    const columns=Number.isInteger(state.display?.columns)&&state.display.columns>=3&&state.display.columns<=8?state.display.columns:6;
+    document.body.dataset.wallColumns=String(columns);document.body.dataset.wallRows=String(Math.ceil(24/columns));
+    $('wall-page-controls').hidden=pageCount===1;$('wall-prev').disabled=screenPage===0;$('wall-next').disabled=screenPage===pageCount-1;
+    $('wall-page-label').textContent='第 '+(screenPage+1)+' / '+pageCount+' 頁';
     $('screen-practice').hidden = state.mode !== 'practice'; $('screen-mode').textContent = state.mode === 'practice' ? '流程演練' : 'AI 正式判讀';
     $('screen-room').textContent = state.code; $('screen-title').textContent = state.title; $('screen-round').textContent = round ? `第 ${String(round.number).padStart(2,'0')} 題` : '等待參賽者加入';
     $('screen-phase').textContent = phaseLabel(round); $('screen-prompt').textContent = round?.prompt || '每一筆，都是你的實力。'; $('screen-countdown').textContent = timerText(round);
@@ -328,18 +392,20 @@ if (page === 'screen') {
     $('screen-subtitle').textContent = revealed ? `本題正解：${round.answer}${round.idiom ? ` · 完整成語：${round.idiom}` : ''}` : shown ? round.closeReason==='all-submitted'?'全員已交卷，等待教師統一揭曉對錯。':'作答已截止，等待教師統一揭曉對錯。' : round?.phase==='collecting' ? '作答時間到，正在接收延遲交卷；筆跡暫不公開。' : round ? '只寫一個字，寫好後請在平板按下送出。' : '請在平板開啟作答頁，輸入房號加入。';
     $('screen-progress').textContent = round ? `${round.submitted} / ${state.players.length} 人已交卷` : `${state.players.length} 人已加入`;
     $('screen-footer-hint').textContent = revealed ? '答對加 10 分 · 原始筆跡保留' : shown ? '點選筆跡圖片，可以放大查看' : '作答期間不公開筆跡與結果';
-    $('screen-grid').innerHTML = state.players.map(p => {
+    $('screen-grid').innerHTML = visible.map(p => {
       const done = revealed && p.submitted && p.status === 'done' && typeof p.correct==='boolean', correct = done && p.correct;
       const key=round?.id+':'+p.id+':'+p.correct,enter=done&&!shownVerdicts.has(key);if(done)shownVerdicts.add(key);
       const paper = shown && p.imageUrl ? `<img src="${p.imageUrl}" alt="${studentId(p)} 的手寫答案" data-image="${p.imageUrl}" data-label="${escape(`${studentId(p)} · ${p.name}`)}">` : shown ? '<span class="empty-ink">未交卷</span>' : `<div class="paper-state"><b>${p.submitted ? '✓' : '✎'}</b><span>${p.submitted ? '已交卷・答案保密' : round?.phase==='collecting' ? '等待交卷確認' : round ? '專心作答中' : '準備就緒'}</span></div>`;
       return `<article class="answer-card ${revealed ? 'revealed' : ''} ${done ? correct ? 'correct' : 'wrong' : ''} ${enter?'result-enter':''}"><div class="answer-card-head"><span class="answer-seat">${studentId(p)}</span><span class="answer-name">${escape(p.name)}</span><span class="answer-score">${p.score} 分</span></div><div class="answer-paper">${paper}</div><div class="answer-foot"><span>${revealed ? done ? correct ? '答對 ＋10 分' : '答錯 ＋0 分' : p.submitted ? '無法判定' : '未交卷' : state.ended ? '測驗已結束' : shown ? '等待揭曉' : p.submitted ? '答案已鎖定' : '一人一字'}</span><span class="${done ? 'answer-verdict' : 'pending-verdict'}">${done ? correct ? '✓' : '✗' : revealed && p.submitted ? '—' : '·'}</span></div></article>`;
-    }).join('') || '<div class="screen-empty"><span>筆</span><h2>擂台已準備就緒</h2><p>參賽者加入後，會依座號出現在這裡。</p></div>';
+    }).join('')+Array.from({length:24-visible.length},(_,i)=>'<article class="answer-card empty-slot" aria-label="第 '+(visible.length+i+1)+' 格未使用"><div class="answer-card-head">待加入</div><div class="answer-paper"><span class="empty-slot-mark">—</span></div><div class="answer-foot"><span>未使用</span></div></article>').join('');
     if(state.ended){$('screen-phase').textContent='測驗已結束';$('screen-timer-label').textContent='已結束';$('screen-subtitle').textContent='已揭曉成績保留。請使用教師提供的新房號加入下一場。';$('screen-prompt').textContent='本場測驗已結束';}
-    $('screen-auto-status').textContent=sequenceText(state);if(state.automation?.status==='completed'){if(completedScreenRoom!==state.code){completedScreenRoom=state.code;rankings=true;}$('screen-prompt').textContent='本次 '+state.automation.totalQuestions+' 題已完成';$('screen-subtitle').textContent='總成績已結算，感謝全班參加。';$('screen-phase').textContent='全部完成';$('ranking-toggle').textContent=rankings?'回到答案牆 ↗':'查看排行榜 ↗';}
-    $('screen-ranking').innerHTML = rankRows(state.players); $('screen-grid').hidden = rankings; $('screen-ranking').hidden = !rankings;
+    $('screen-auto-status').textContent=sequenceText(state);if(state.automation?.status==='completed'){$('screen-prompt').textContent='本次 '+state.automation.totalQuestions+' 題已完成';$('screen-subtitle').textContent='總成績已結算，感謝全班參加。';$('screen-phase').textContent='全部完成';$('ranking-toggle').textContent=rankings?'回到答案牆 ↗':'查看排行榜 ↗';}
+    $('screen-ranking').innerHTML = rankRows(state.players,24,first); $('screen-grid').hidden = rankings; $('screen-ranking').hidden = !rankings;
   };
   if (code) connect(code, render); else { $('screen-subtitle').textContent = '請從教師控制台按「開啟大螢幕」進入。'; connection(false); }
-  $('ranking-toggle').onclick = () => { rankings = !rankings; $('ranking-toggle').textContent = rankings ? '回到答案牆 ↗' : '查看排行榜 ↗'; if (state) render(state); };
+  $('wall-prev').onclick=()=>{if(screenPage>0){screenPage--;if(state)render(state);}};
+  $('wall-next').onclick=()=>{if(state&&screenPage<Math.ceil(state.players.length/24)-1){screenPage++;render(state);}};
+  $('ranking-toggle').onclick = () => { rankings = !rankings;screenPage=0; $('ranking-toggle').textContent = rankings ? '回到答案牆 ↗' : '查看排行榜 ↗'; if (state) render(state); };
   $('fullscreen-button').onclick = async () => { try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); } catch { toast('此瀏覽器無法啟用全螢幕'); } };
   $('screen-grid').onclick = event => { const img = event.target.closest('[data-image]'); if (!img) return; $('enlarged-image').src = img.dataset.image; $('enlarged-label').textContent = img.dataset.label; $('image-dialog').showModal(); };
   setInterval(() => { if (state) { $('screen-auto-status').textContent=sequenceText(state); $('screen-countdown').textContent = timerText(state.round); $('screen-countdown').classList.toggle('urgent', remaining(state.round) !== null && remaining(state.round) <= 5); } }, 200);

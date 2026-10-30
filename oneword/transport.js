@@ -1,4 +1,4 @@
-import { config } from './config.js?v=20261029-join-link-291';
+import { config } from './config.js?v=20261030-retry-2101';
 const validBackend = value => { try { const u=new URL(value);return u.origin==='https://script.google.com'&&/^\/(?:macros\/s|a\/macros\/[A-Za-z0-9.-]+\/s)\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname); } catch { return false; } };
 const trustedGoogleOrigin = value => { try { const u=new URL(value);return u.protocol==='https:'&&(u.hostname==='script.google.com'||u.hostname.endsWith('.googleusercontent.com')); }catch{return false;} };
 const wait = ms => new Promise(resolve=>setTimeout(resolve,ms));
@@ -39,8 +39,8 @@ export class GASClient {
     else if(r==='/api/join')action='join';
     else if(r==='/api/submit')action='submit';
     else if(r==='/api/room'){action='room';payload={room:u.searchParams.get('room')};}
-    else{const m=r.match(/^\/api\/admin\/rooms\/([A-F0-9]{6})\/(draw|start|close|reveal|retry|export|end|delete|select|remove-player|start-series|pause-series|resume-series)$/);if(!m)throw new Error('找不到操作');action=({end:'endRoom',delete:'deleteRoom',select:'selectRoom','remove-player':'removePlayer'})[m[2]]||m[2];payload={...payload,room:m[1]};}
-    const retry=['adminState','room','submit','join'].includes(action)?2:0;
+    else{const m=r.match(/^\/api\/admin\/rooms\/([A-F0-9]{6})\/(draw|start|close|reveal|retry|export|end|delete|select|remove-player|start-series|pause-series|resume-series|display)$/);if(!m)throw new Error('找不到操作');action=({end:'endRoom',delete:'deleteRoom',select:'selectRoom','remove-player':'removePlayer'})[m[2]]||m[2];payload={...payload,room:m[1]};}
+    const retry=['adminState','room','join'].includes(action)?2:0;
     return this.rpc(action,payload,playerToken||this.token,retry);
   }
   studentURL(room){if(!this.backend)return this.pageURL('student.html',room);const u=new URL(this.backend);u.pathname=u.pathname.replace(/^\/a\/macros\/[^/]+\/s\//,'/macros/s/');u.search='';u.hash='';u.searchParams.set('view','student');if(room)u.searchParams.set('room',room);return u.href;}
