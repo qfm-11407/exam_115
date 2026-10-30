@@ -4,6 +4,7 @@ import {stdin,stdout} from 'node:process';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 
+export const runnerVersion='1.2.0';
 export const allowedIds=[...Array.from({length:15},(_,i)=>String(1410701+i)),...Array.from({length:13},(_,i)=>String(1420716+i))];
 export function options(args){
  const o={site:'https://qfm-11407.github.io/exam_115/oneword/',seconds:180,timeout:180,students:28,sendAt:null,channel:'chrome',keepRoom:false};
@@ -22,9 +23,41 @@ export function options(args){
 }
 export function summarize(report){
  const rows=report.students||[],starts=rows.map(r=>r.clickedAt).filter(Number.isFinite);
- return{kind:'real-gas-browser-test',realGAS:report.gasReached===true,requestedStudentPages:report.requestedStudents,connectedStudents:rows.filter(r=>r.joined).length,totalPages:report.openedPages||0,submitted:rows.filter(r=>r.serverSaved).length,uiConfirmed:rows.filter(r=>r.uiConfirmed).length,imagesVerified:rows.filter(r=>r.imageVerified).length,submitCalls:rows.reduce((n,r)=>n+r.attempts,0),clickSpreadMs:starts.length?Math.max(...starts)-Math.min(...starts):null,passed:!report.error&&report.completed===true&&rows.length===report.requestedStudents&&rows.every(r=>r.joined&&r.serverSaved&&r.uiConfirmed&&r.imageVerified)};
+ return{kind:'real-gas-browser-test',runnerVersion:report.runnerVersion,backendVersion:report.backendVersion,realGAS:report.gasReached===true,requestedStudentPages:report.requestedStudents,connectedStudents:rows.filter(r=>r.joined).length,totalPages:report.openedPages||0,submitted:rows.filter(r=>r.serverSaved).length,uiConfirmed:rows.filter(r=>r.uiConfirmed).length,imagesVerified:rows.filter(r=>r.imageVerified).length,submitCalls:rows.reduce((n,r)=>n+r.attempts,0),clickSpreadMs:starts.length?Math.max(...starts)-Math.min(...starts):null,passed:!report.error&&report.completed===true&&rows.length===report.requestedStudents&&rows.every(r=>r.joined&&r.serverSaved&&r.uiConfirmed&&r.imageVerified)};
+}
+export function updateSavedRows(rows,players,now=Date.now()){
+ for(const row of rows){const p=players.find(p=>p.studentId===row.studentId);if(p?.submitted){row.serverSaved=true;if(!row.savedObservedAt)row.savedObservedAt=now;}row.judgeStatus=p?.judgeStatus;if(p?.error)row.serverError=p.error;}
+}
+export function verifySavedImages(rows,players,hashes){
+ for(const row of rows){const p=players.find(p=>p.studentId===row.studentId);row.imageVerified=Boolean(row.imageHash&&hashes[p?.id]===row.imageHash);if(row.imageVerified)row.serverSaved=true;}
+}
+async function observeStudents(clients,room){
+ updateSavedRows(clients.map(c=>c.row),room.players);
+ await Promise.all(clients.map(async c=>{c.row.uiConfirmed=await c.frame.locator('#submit-button').evaluate(el=>el.disabled&&el.textContent.includes('已送出'));}));
 }
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+export async function waitForRoundStart({readState,room,timeout=120000,now=Date.now,wait=sleep,sample=()=>{}}){
+ const started=now();let lastError='';
+ while(now()-started<timeout){
+  let admin;
+  try{admin=await readState();}
+  catch(error){
+   sample({elapsedMs:now()-started,status:error.status||0,error:String(error.message).slice(0,240)});
+   if([400,401,403,404].includes(error.status))throw error;
+   lastError=error.message;await wait(2000);continue;
+  }
+  const state=admin.room,round=state?.round;
+  sample({elapsedMs:now()-started,room:state?.code||null,ended:Boolean(state?.ended),roundId:round?.id||null,phase:round?.phase||null});
+  if(!state||state.code!==room||state.ended)throw Error('等待出題時測試房間已切換或結束');
+  if(state.mode!=='practice')throw Error('測試房間不是流程演練，停止測試');
+  if(round?.id){
+   if(round.phase==='writing'&&(!Number.isFinite(round.deadline)||!Number.isFinite(state.serverTime)||round.deadline>state.serverTime))return admin;
+   throw Error('測試題目已建立，但作答階段已結束（'+round.phase+'）');
+  }
+  await wait(2000);
+ }
+ throw Error('等待 GAS 確認題目開始逾時'+(lastError?'；最後連線錯誤：'+lastError:''));
+}
 async function pool(items,limit,run){let next=0;await Promise.all(Array.from({length:Math.min(limit,items.length)},async()=>{while(next<items.length){const index=next++;await run(items[index],index);}}));}
 async function appFrame(page){
  const end=Date.now()+60000;
@@ -40,6 +73,7 @@ async function teacherAction(page,action,data={}){
   if(!match)throw Error('教師端版本不支援測試');
   const {client}=await import(new URL(match[1],script.src).href);
   if(action==='state')return client.request('/api/admin/state');
+  if(action==='stateOnce')return client.rpc('adminState',{},client.token,0);
   if(action==='end')return client.request('/api/admin/rooms/'+data.room+'/end',{});
   if(action==='imageHashes'){
    const images=await client.rpc('images',data,'',0),out={};
@@ -59,7 +93,7 @@ export async function main(args=process.argv.slice(2)){
  const o=options(args);let chromium;
  try{({chromium}=await import('../.local/ui-loadtest/node_modules/playwright-core/index.mjs'));}
  catch{throw Error('請執行 oneword/TEST_GAS_30.cmd，首次會安裝測試所需套件。');}
- const report={startedAt:new Date().toISOString(),requestedStudents:o.students,seconds:o.seconds,sendAt:o.sendAt,openedPages:0,realDrive:false,mode:'practice',students:[],events:[],completed:false},title='OneWord 壓測 '+new Date().toISOString().slice(0,19);
+ const report={runnerVersion,stage:'setup',startedAt:new Date().toISOString(),requestedStudents:o.students,seconds:o.seconds,sendAt:o.sendAt,openedPages:0,realDrive:false,mode:'practice',students:[],events:[],completed:false},title='OneWord 壓測 '+new Date().toISOString().slice(0,19);
  let browser,teacher,createdCode='',createdRound='';const rl=createInterface({input:stdin,output:stdout});
  const outDir=new URL('../.local/gas-loadtest/',import.meta.url);await mkdir(outDir,{recursive:true});
  const outFile=new URL('gas-'+new Date().toISOString().replace(/[:.]/g,'-')+'.json',outDir);
@@ -69,6 +103,7 @@ export async function main(args=process.argv.slice(2)){
   report.openedPages++;
   await teacher.goto(new URL('teacher.html',o.site).href,{waitUntil:'domcontentloaded',timeout:60000});
   console.log('測試規模：'+o.students+' 個學生頁＋教師＋大螢幕。使用流程演練，會實際存圖至 Drive。');
+  console.log('測試工具版本：'+runnerVersion);
   await rl.question('請在剛開啟的瀏覽器登入教師端，完成後回此視窗按 Enter：');
   await teacher.locator('#teacher-app').waitFor({state:'visible',timeout:30000});
   let admin=await teacherAction(teacher,'state');
@@ -80,11 +115,13 @@ export async function main(args=process.argv.slice(2)){
   admin=await teacherAction(teacher,'state');
   if(admin.room?.title!==title||admin.room?.mode!=='practice')throw Error('未成功建立獨立的流程演練測驗');
   createdCode=admin.room.code;report.room=createdCode;report.backendVersion=admin.version;
+  console.log('GAS 後端版本：'+admin.version);
   const studentURL=await teacher.locator('#join-url').inputValue();
   if(new URL(studentURL).hostname!=='script.google.com'||!studentURL.includes('view=student'))throw Error('教師端未提供 GAS 平板模式網址，請先更新程式');
   const screenContext=await browser.newContext({viewport:{width:1920,height:1080}}),screen=await screenContext.newPage();await screen.goto(new URL('screen.html?room='+createdCode,o.site).href,{waitUntil:'domcontentloaded',timeout:60000});
   report.openedPages++;
   const clients=[];
+  report.stage='join';
   await pool(allowedIds.slice(0,o.students),4,async(id,index)=>{
    const row={studentId:id,joined:false,attempts:0,serverSaved:false,uiConfirmed:false,imageVerified:false};report.students.push(row);
    const context=await browser.newContext({viewport:{width:1024,height:768},hasTouch:true}),page=await context.newPage();
@@ -109,32 +146,46 @@ export async function main(args=process.argv.slice(2)){
    await frame.locator('#join-student-id').fill(id);await frame.locator('#join-name').fill('壓測'+(index+1));await frame.locator('#join-submit').click();
    await frame.locator('#writing-panel').waitFor({state:'visible',timeout:120000});row.joined=true;clients.push({page,frame,row,index});console.log('已加入 '+id);
   });
+  report.stage='start';report.startChecks=[];
   await teacher.locator('#auto-enabled').uncheck();await teacher.locator('#seconds').fill(String(o.seconds));await teacher.locator('#start-button').click();
-  await teacher.waitForFunction(()=>document.getElementById('start-button').disabled,{},{timeout:60000});
-  admin=await teacherAction(teacher,'state');createdRound=admin.room?.round?.id;
-  if(!createdRound||admin.room.mode!=='practice')throw Error('測試題目未開始');report.roundId=createdRound;
+  // The UI disables the button before awaiting GAS. A disabled button is not a start receipt.
+  console.log('開始出題，等待 GAS 確認作答階段…');
+  try{admin=await waitForRoundStart({room:createdCode,readState:()=>teacherAction(teacher,'stateOnce'),sample:s=>report.startChecks.push(s)});}
+  catch(error){
+   try{report.startUI=await teacher.evaluate(()=>({toast:document.getElementById('toast')?.textContent||'',toastError:document.getElementById('toast')?.classList.contains('error')||false,startDisabled:document.getElementById('start-button')?.disabled,invalidFields:[...document.querySelectorAll('#question-form input, #question-form textarea')].filter(el=>!el.validity.valid).map(el=>({id:el.id,message:el.validationMessage}))}));}catch{}
+   throw Error(error.message+(report.startUI?.toastError&&report.startUI.toast?'；教師端：'+report.startUI.toast:''));
+  }
+  createdRound=admin.room.round.id;report.roundId=createdRound;report.stage='draw';console.log('GAS 已確認題目開始，準備手寫。');
   await Promise.all(clients.map(c=>writeCharacter(c.page,c.frame,c.index)));
   let target=Date.now()+2000;
   if(o.sendAt!==null){admin=await teacherAction(teacher,'state');const start=admin.room.round.deadline-o.seconds*1000,delay=start+o.sendAt*1000-admin.room.serverTime;if(delay<1000)throw Error('手寫準備完成時已超過指定送出時間，請增加 --seconds 或 --send-at');target=Date.now()+delay;}
   report.uploadBarrierAt=target;
+  report.stage='upload';
   console.log('手寫完成，即將同步送出 '+clients.length+' 張圖片。');
   await Promise.all(clients.map(async c=>{c.row.clickedAt=await c.frame.evaluate(target=>new Promise(resolve=>setTimeout(()=>{const at=Date.now();document.getElementById('submit-button').click();resolve(at);},Math.max(0,target-Date.now()))),target);}));
   const end=Date.now()+o.timeout*1000;let lastCount=-1;
   while(Date.now()<end){
    admin=await teacherAction(teacher,'state');if(admin.room?.code!==createdCode||admin.room?.round?.id!==createdRound)throw Error('測試期間房間或題目被切換');
-   for(const c of clients){const p=admin.room.players.find(p=>p.studentId===c.row.studentId);c.row.serverSaved=Boolean(p?.submitted);c.row.judgeStatus=p?.judgeStatus;if(p?.error)c.row.serverError=p.error;
-    c.row.uiConfirmed=await c.frame.locator('#submit-button').evaluate(el=>el.disabled&&el.textContent.includes('已送出'));if(c.row.serverSaved&&!c.row.savedObservedAt)c.row.savedObservedAt=Date.now();}
+   await observeStudents(clients,admin.room);
    const count=clients.filter(c=>c.row.serverSaved).length;if(count!==lastCount){console.log('雲端已保存 '+count+'/'+o.students);lastCount=count;}
    report.realDrive=count>0;
    if(clients.every(c=>c.row.serverSaved&&c.row.uiConfirmed)){report.completed=true;break;}await sleep(3000);
   }
+  // A final state read may be newer than the last monitoring iteration.
+  admin=await teacherAction(teacher,'stateOnce');if(admin.room?.code!==createdCode||admin.room?.round?.id!==createdRound)throw Error('結算時房間或題目被切換');
+  await observeStudents(clients,admin.room);report.finalStateObservedAt=Date.now();
   if(['closed','revealed','cancelled'].includes(admin.room.round.phase)){
+   report.stage='verify';
    const hashes=await teacherAction(teacher,'imageHashes',{room:createdCode,roundId:createdRound});report.returnedImageCount=Object.keys(hashes).length;
-   for(const c of clients){const p=admin.room.players.find(p=>p.studentId===c.row.studentId);c.row.imageVerified=Boolean(c.row.imageHash&&hashes[p?.id]===c.row.imageHash);}
+   verifySavedImages(clients.map(c=>c.row),admin.room.players,hashes);report.imagesObservedAt=Date.now();
+   await observeStudents(clients,admin.room);
   }
+  report.completed=clients.every(c=>c.row.serverSaved&&c.row.uiConfirmed);
   for(const c of clients)if(!c.row.uiConfirmed)c.row.uiMessage=await c.frame.locator('#play-message').innerText();
   report.serverTiming=admin.room.round.performance;report.phase=admin.room.round.phase;
- }catch(error){report.error=String(error.message).slice(0,1200);console.error(report.error);}
+  report.stage=report.completed?'complete':'upload-timeout';
+  if(!report.completed){report.failedStage='upload';report.error='等待所有圖片保存與學生端確認逾時';console.error(report.error);}
+ }catch(error){report.failedStage=report.stage;report.error=String(error.message).slice(0,1200);console.error(report.error);}
  finally{
   if(createdCode&&!o.keepRoom&&teacher)try{const s=await teacherAction(teacher,'state');if(s.room?.code===createdCode&&s.room?.title===title){await teacherAction(teacher,'end',{room:createdCode});report.testRoomEnded=true;}}catch{report.cleanupError='測試房間未自動結束，請到教師端手動結束';}
   report.finishedAt=new Date().toISOString();report.summary=summarize(report);await writeFile(outFile,JSON.stringify(report,null,2));

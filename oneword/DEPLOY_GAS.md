@@ -2,9 +2,9 @@
 
 不用教師電腦啟動 Node.js，也不用學生連教師電腦 IP。GitHub Pages 提供網頁；GAS 接收交卷、存圖並呼叫 AI；圖片屬於部署 GAS 的教師帳號。
 
-## 更新至 2.10.1
+## 更新至 2.11.0
 
-本次需更新 GitHub 網頁及 GAS Code.gs、Student HTML，並將原部署更新為新版本。教師台應顯示「網頁 v2.10.1 · GAS 2.10.1」。詳見 [UPDATE_2.10.1.md](UPDATE_2.10.1.md)。
+本次需更新 GitHub 網頁及 GAS Code.gs、Student HTML，並將原部署更新為新版本。教師台應顯示「網頁 v2.11.0 · GAS 2.11.0」。詳見 [UPDATE_2.11.0.md](UPDATE_2.11.0.md)。
 
 ## 尚未升級至 GAS 2.9.0
 
@@ -37,7 +37,7 @@
 6. 在編輯器選擇並執行 `setup_`，首次依 Google 畫面授權 Drive 與外部 API 存取。
 7. 執行紀錄會顯示資料夾與教師登入碼；請勿公開到 GitHub。
 
-不需 Google 試算表。每場以私人 JSON 保存狀態與成績，手寫圖片另存 PNG。請勿公開分享 Drive 資料夾。
+不需 Google 試算表。活動房間狀態持久保存在 GAS Script Properties，於開題、收卷、公布、結束及切換時備份至私人 Drive JSON，手寫圖片另存 PNG。請勿公開分享 Drive 資料夾。
 
 ## 三、部署與連線
 

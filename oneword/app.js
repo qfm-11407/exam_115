@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261030-retry-2101';
+import { client, GASClient, saveBackend } from './transport.js?v=20261030-state-2110';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -78,7 +78,7 @@ function createWorkerPump({run,changed,error}){
   function canManageRooms(){return Boolean(admin?.features?.roomManagement);}
   function renderAIStatus() {
     const configured=Boolean(admin?.settings.configured),management=canManageRooms();
-    $('app-version').textContent='網頁 v2.10.1 · GAS '+(admin?.version||'未回報版本');
+    $('app-version').textContent='網頁 v2.11.0 · GAS '+(admin?.version||'未回報版本');
     $('ai-ready-status').textContent=configured?'AI 金鑰：後端已設定':'AI 金鑰：後端尚未設定';
     $('create-ai-room-button').hidden=false;$('create-ai-room-button').disabled=!configured;
     $('backend-update-note').hidden=management;
@@ -138,7 +138,7 @@ function createWorkerPump({run,changed,error}){
     ['question-prompt','answer','seconds','accepted'].forEach(id => { $(id).disabled = !ready; });
     document.querySelectorAll('[data-step]').forEach(el => el.classList.toggle('current', el.dataset.step === (round?.phase==='collecting'?'writing':round?.phase)));
     $('judge-summary').textContent = !round ? '交卷後即在背景判讀，結果暫時隱藏。' : round.pending ? `${round.pending} 份正在排隊或判讀中，${round.judged} 份已完成。` : round.unresolved ? `${round.unresolved} 份未完成判讀，可先重試；揭曉後這些答案標示「無法判定」，不判錯。` : round.phase === 'revealed' ? '結果已揭曉並計分，可準備下一題。' : round.submitted ? '目前交卷均已判讀完成，截止後即可揭曉。' : '等待參賽者交卷。';
-    const status = { uploading:'保存中', 'upload-error':'上傳待重試', queued:'排隊', judging:'判讀中', done:'已判讀', error:'判讀失敗', uncertain:'辨識不明', waiting:'待交卷' };
+    const status = { receiving:'等候存圖', uploading:'保存中', 'upload-error':'上傳待重試', queued:'排隊', judging:'判讀中', done:'已判讀', error:'判讀失敗', uncertain:'辨識不明', waiting:'待交卷' };
     $('teacher-players').innerHTML = room.players.map(p => `<div class="player-chip ${p.submitted ? 'submitted' : ''}" title="${escape(p.error)}"><span class="seat-number">${studentId(p)}</span><span class="player-name">${escape(p.name)}</span><span class="player-status ${p.judgeStatus === 'error' ? 'failed' : ''}">${round?.phase === 'revealed' && p.status === 'done' ? p.correct ? '✓' : '✗' : status[p.judgeStatus] || '待交卷'}</span>${admin?.features?.playerManagement?`<button type="button" class="remove-player-button" data-remove-player="${escape(p.id)}" data-connection-version="${Number(p.connectionVersion)||0}" aria-label="移除學號 ${studentId(p)} 的連線" ${room.ended?'disabled':''}>移除</button>`:''}</div>`).join('') || '<p class="list-empty">分享平板網址，等待第一位參賽者加入。</p>';
     $('leaderboard').innerHTML = rankRows(room.players, 8); const u = room.usage;
     $('usage-info').textContent = room.mode === 'practice' ? '流程演練・API 用量為 0' : `${u.calls} 次有效判讀回應 · 輸入 ${u.input.toLocaleString()} / 輸出 ${u.output.toLocaleString()} tokens`;

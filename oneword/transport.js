@@ -1,4 +1,4 @@
-import { config } from './config.js?v=20261030-retry-2101';
+import { config } from './config.js?v=20261030-state-2110';
 const validBackend = value => { try { const u=new URL(value);return u.origin==='https://script.google.com'&&/^\/(?:macros\/s|a\/macros\/[A-Za-z0-9.-]+\/s)\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname); } catch { return false; } };
 const trustedGoogleOrigin = value => { try { const u=new URL(value);return u.protocol==='https:'&&(u.hostname==='script.google.com'||u.hostname.endsWith('.googleusercontent.com')); }catch{return false;} };
 const wait = ms => new Promise(resolve=>setTimeout(resolve,ms));
