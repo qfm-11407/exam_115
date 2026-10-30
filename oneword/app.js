@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261030-state-2110';
+import { client, GASClient, saveBackend } from './transport.js?v=20261030-batch-2120';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -52,8 +52,8 @@ function createWorkerPump({run,changed,error}){
  return {sync(state){current=state;pump();}};
 }
 
-  const workerPumpRunner=createWorkerPump({run:data=>client.rpc('worker',data),changed:()=>{clearTimeout(refreshTimer);refreshTimer=setTimeout(refresh,180);},error:error=>toast(error.message,true)});
-  function pumpWorkers(){workerPumpRunner.sync({code:room?.code,roundId:room?.round?.id,pending:room?.round?.pending||0,limit:admin?.settings?.concurrency||2,enabled:Boolean(room&&!room.ended&&room.round&&room.round.phase!=='revealed')});}
+  const workerPumpRunner=createWorkerPump({run:data=>client.rpc(admin?.features?.batchJudging?'workerBatch':'worker',data),changed:()=>{clearTimeout(refreshTimer);refreshTimer=setTimeout(refresh,180);},error:error=>toast(error.message,true)});
+  function pumpWorkers(){workerPumpRunner.sync({code:room?.code,roundId:room?.round?.id,pending:room?.round?.pending||0,limit:admin?.features?.batchJudging?1:(admin?.settings?.concurrency||2),enabled:Boolean(room&&!room.ended&&room.round&&room.round.phase!=='revealed')});}
   function scheduleRefresh(){clearTimeout(refreshTimer);const urgent=room?.round&&((room.automation?.enabled&&room.automation.status==='running')||room.round.pending>0||room.round.phase==='collecting'||(room.round.phase==='writing'&&remaining(room.round)<=8));refreshTimer=setTimeout(refresh,urgent?1500:3500);}
   let displayedQuestionId = null,autoSettingsRoom='',screenLayoutRoom='',screenLayoutDirty=false,screenLayoutSaving=false;
   let pendingCreateRoom='',replacementRequired=false,roomsLoaded=false,roomsLoading=false;
@@ -78,7 +78,7 @@ function createWorkerPump({run,changed,error}){
   function canManageRooms(){return Boolean(admin?.features?.roomManagement);}
   function renderAIStatus() {
     const configured=Boolean(admin?.settings.configured),management=canManageRooms();
-    $('app-version').textContent='網頁 v2.11.0 · GAS '+(admin?.version||'未回報版本');
+    $('app-version').textContent='網頁 v2.12.0 · GAS '+(admin?.version||'未回報版本');
     $('ai-ready-status').textContent=configured?'AI 金鑰：後端已設定':'AI 金鑰：後端尚未設定';
     $('create-ai-room-button').hidden=false;$('create-ai-room-button').disabled=!configured;
     $('backend-update-note').hidden=management;
@@ -268,7 +268,7 @@ if (page === 'play') {
       await api('/api/submit',{room:roomCode,roundId,image},token);
       if(!current())return;
       confirmedRound=roundId;uploadError='';cancelUploadRetry();storage.remove(`oneword:${client.backend}:pending:${roomCode}`);
-      submitted = true; client.rpc('studentWorker',{room:state.code,roundId},identity.token).catch(()=>{}); toast('圖片已保存，等待統一揭曉');
+      submitted = true; toast('圖片已保存，等待統一揭曉');
     }catch(error){
       if(!current()||submitted||confirmedRound===roundId)return;
       retryAttempt++;uploadError=error.message;

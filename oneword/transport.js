@@ -1,4 +1,4 @@
-import { config } from './config.js?v=20261030-state-2110';
+import { config } from './config.js?v=20261030-batch-2120';
 const validBackend = value => { try { const u=new URL(value);return u.origin==='https://script.google.com'&&/^\/(?:macros\/s|a\/macros\/[A-Za-z0-9.-]+\/s)\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname); } catch { return false; } };
 const trustedGoogleOrigin = value => { try { const u=new URL(value);return u.protocol==='https:'&&(u.hostname==='script.google.com'||u.hostname.endsWith('.googleusercontent.com')); }catch{return false;} };
 const wait = ms => new Promise(resolve=>setTimeout(resolve,ms));
@@ -26,7 +26,7 @@ export class GASClient {
   }
   async rpc(action,data={},auth=this.token,retries=0) {
     await this.connect();
-    try{return await new Promise((resolve,reject)=>{const id=String(++this.sequence),timer=setTimeout(()=>{this.pending.delete(id);reject(Object.assign(new Error('GAS 回應逾時，原始筆跡仍保留；請稍後確認或重試'),{status:503,retryable:true}));},action==='worker'?170000:60000);this.pending.set(id,{resolve,reject,timer});this.peer.postMessage({type:'oneword:request',channel:this.channel,id,action,data,auth},this.peerOrigin);});}
+    try{return await new Promise((resolve,reject)=>{const id=String(++this.sequence),timer=setTimeout(()=>{this.pending.delete(id);reject(Object.assign(new Error('GAS 回應逾時，原始筆跡仍保留；請稍後確認或重試'),{status:503,retryable:true}));},['worker','workerBatch'].includes(action)?170000:60000);this.pending.set(id,{resolve,reject,timer});this.peer.postMessage({type:'oneword:request',channel:this.channel,id,action,data,auth},this.peerOrigin);});}
     catch(error){if(retries>0&&error.retryable){await wait(800+Math.random()*1000);return this.rpc(action,data,auth,retries-1);}throw error;}
   }
   async request(route,data,playerToken) {

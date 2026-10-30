@@ -1,6 +1,8 @@
 # OneWord 多人送圖測試
 
-測試工具 v1.2.0 保留等待 GAS 確認開始的修正，並修正最後狀態與圖片核對的取樣差異。請搭配 OneWord v2.11.0 的後端上傳修正，依 [UPDATE_2.11.0.md](UPDATE_2.11.0.md) 更新 GitHub 與 GAS。啟動時確認工具版本 1.2.0、GAS 後端版本 2.11.0。`failedStage`、`startChecks` 與教師端提示可協助分辨出題及上傳失敗。
+**需要實際 AI 評分時間，請執行 `TEST_GAS_AI_28.cmd`，並閱讀 [LOAD_TEST_AI.md](LOAD_TEST_AI.md)。** 工具 v1.3.1 增加完整 AI 流程；本頁下方的原本指令仍以只測上傳為主。
+
+工具 v1.3.1 保留出題確認、原圖核對與實際 AI 流程，新增評分引擎回報。請先依 [UPDATE_2.12.0.md](UPDATE_2.12.0.md) 更新 GitHub 與 GAS，確認後端 2.12.0；實際 AI 測試摘要應顯示 `judgingEngine: "gas-batch"`。`failedStage`、`startChecks` 與教師端提示可協助分辨出題及上傳失敗。
 
 ## 已完成的本機模擬
 
@@ -38,7 +40,7 @@ TEST_GAS_30.cmd --site https://你的帳號.github.io/儲存庫/oneword/
 
 這個工具會真的經過 GAS 網頁介面、google.script.run 與 Drive；共同時間只是讓瀏覽器接近同時送出，實際網路抵達、GAS 排程及 Drive 執行仍由 Google 決定，並非保證同一毫秒。單台電腦也無法完全模擬 28 台平板、校內 AP 與個別 Wi-Fi 狀況。
 
-本次工具強制使用流程演練，會實際存圖，但不呼叫 AI。因此它量到上傳及練習模式流程的實際速度，**不能作為正式 AI 評分時間**。執行工具不等於通過測試，必須以報告的 `summary.passed`、每位學生狀態及圖片核對為準。
+本頁的 `TEST_GAS_30.cmd` 預設使用流程演練，會實際存圖，但不呼叫 AI，因此不能作為正式 AI 評分時間。新增的 `TEST_GAS_AI_28.cmd` 則會真正判讀並等待公布及換題。請確認摘要 `scope` 是 `upload-only` 還是 `ai-full-cycle`，兩者的通過範圍不同。
 
 ## 每題時間怎麼算
 
