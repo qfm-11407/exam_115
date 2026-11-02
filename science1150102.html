@@ -2708,6 +2708,139 @@ body{padding-bottom:64px}
       s += line([22, -8], [22, -74], '#f59f00', 3) + line([40, 4], [40, -66], '#f59f00', 3) + line([22, -74], [40, -66], '#f59f00', 3) + line([10, -80], [64, -56], '#f08c00', 3.5) + line([56, -60], [56, -36], '#495057', 1);
       s += `<rect x="51" y="-36" width="10" height="6" fill="#1971c2"/>` + `<path d="M30,30h44l-6,8h-34z" fill="#495057"/><rect x="40" y="22" width="12" height="8" fill="#e03131"/><rect x="54" y="22" width="12" height="8" fill="#fab005"/>`;
       return s + flag(-62, -8, c) + pine(-66, 18, 0.7) + person(-4, 30, 2); },
+    /* ---- 第三次段考：各課地標 ---- */
+    tingwei: c => { let s = `<path d="M-78,-4 C-40,-10 -30,30 10,26 S 60,34 80,18" fill="none" stroke="#74c0fc" stroke-width="18" stroke-linecap="round"/><path d="M-78,-4 C-40,-10 -30,30 10,26 S 60,34 80,18" fill="none" stroke="#a5d8ff" stroke-width="10" stroke-linecap="round"/>`;  // 國文 L7 張釋之執法：中渭橋＋廷尉府
+      s += shadow(-22, 22, 26) + `<path d="M-52,22 Q-22,-8 8,22 h-8 q-14,-16 -28,0z" fill="#c9bfae"/><path d="M-52,22 Q-22,-8 8,22" fill="none" stroke="#8d8576" stroke-width="3.5"/>` + [-44, -36, -28, -16, -8, 0].map((x, i) => `<rect x="${x}" y="${f1(8 - Math.sin((i + 0.5) / 6 * Math.PI) * 14)}" width="2.4" height="7" fill="#8d8576"/>`).join('');
+      s += `<g transform="translate(-24,2)"><path d="M-8,0h14l4,-6l3,1l-2,7h-2v8h-2v-6h-12v6h-2v-8z" fill="#8b5e3c"/><path d="M10,-6l3,-4l1,3z" fill="#5c3d24"/></g>`;
+      const x = 34, y = -22; s += shadow(x + 6, y + 6, 30) + box(x, y, 46, 30, 6, '#d6cfc2') + box(x, y, 40, 26, 22, '#f1e3c8', 6) + onLeft(x, y, 40, 26, 6, `<rect x="15" y="-16" width="10" height="16" fill="#6d4c33"/><rect x="11" y="-24" width="18" height="7" rx="1" fill="#f8e7a8"/><text x="20" y="-18.6" font-size="5.4" font-weight="800" text-anchor="middle" fill="${c}">廷尉</text>`) + roof(x, y, 52, 36, 28, 16, '#3d4558');
+      s += cyl(x - 30, y + 22, 5, 10, '#c92a2a') + `<ellipse cx="${x - 30}" cy="${y + 12}" rx="5" ry="2.5" fill="#f8f1e4"/>`;
+      return s + pine(-66, -24, 0.8) + tree(70, -30, 0.8) + person(14, 36, 4) + person(52, 20, 0); },
+    canal: (c, anim) => { let s = '';  // 國文 L8 找尋失落的水源：圳道＋水車＋稻田
+      for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) { const P = (u, v) => ISO(-34, 4, u, v); const u0 = -30 + i * 20, v0 = -18 + j * 20; s += poly([P(u0, v0), P(u0 + 18, v0), P(u0 + 18, v0 + 18), P(u0, v0 + 18)], (i + j) % 2 ? '#94d82d' : '#a9e34b'); }
+      const a = ISO(0, 0, -70, -6), b = ISO(0, 0, 60, -6), b2 = ISO(0, 0, 60, 4), a2 = ISO(0, 0, -70, 4); s += poly([a, b, b2, a2], '#74c0fc') + line(ISO(0, 0, -70, -6), ISO(0, 0, 60, -6), '#a99f8e', 2) + line(ISO(0, 0, -70, 4), ISO(0, 0, 60, 4), '#a99f8e', 2);
+      const wx = 30, wy = -18, sp = [0, 45, 90, 135].map(t => `<line x1="${wx}" y1="${wy - 22}" x2="${wx}" y2="${wy + 22}" stroke="#8b5e3c" stroke-width="2.4" transform="rotate(${t} ${wx} ${wy})"/>`).join('');
+      s += shadow(wx + 4, wy + 26, 16) + `<rect x="${wx + 18}" y="${wy - 4}" width="4" height="30" fill="#6d4c33"/><g>${sp}<circle cx="${wx}" cy="${wy}" r="22" fill="none" stroke="#a0785a" stroke-width="3"/>${anim ? `<animateTransform attributeName="transform" type="rotate" from="0 ${wx} ${wy}" to="360 ${wx} ${wy}" dur="9s" repeatCount="indefinite"/>` : ''}</g><circle cx="${wx}" cy="${wy}" r="4" fill="#6d4c33"/>`;
+      s += `<path d="M-70,-40q6,-10 12,0q-6,8 -12,0z" fill="#74c0fc"/><path d="M-64,-50v-8" stroke="#74c0fc" stroke-width="2"/>`;
+      return s + tree(66, -28, 0.8) + pine(-64, 22, 0.7) + person(-4, 30, 1) + person(54, 22, 5); },
+    blossom: c => { let s = shadow(-6, 4, 40) + `<path d="M-10,4c2,-16 -2,-30 2,-46M-6,-30c8,-6 14,-10 22,-20M-4,-22c-10,-4 -16,-10 -22,-18" stroke="#8b5e3c" stroke-width="6" fill="none" stroke-linecap="round"/>`;  // 國文 L9 一棵開花的樹：滿樹繁花＋落花小徑
+      const r = rng(9); [[-10, -62, 26], [16, -56, 20], [-30, -50, 18], [4, -78, 18], [-22, -74, 14]].forEach(([x, y, rr]) => { s += `<circle cx="${x}" cy="${y}" r="${rr}" fill="#fcc2d7"/>`; });
+      for (let i = 0; i < 46; i++) { const a = r() * Math.PI * 2, d = r() * 34; s += `<circle cx="${f1(-6 + Math.cos(a) * d * 1.2)}" cy="${f1(-64 + Math.sin(a) * d * 0.8)}" r="${f1(1.6 + r() * 2)}" fill="${['#fff0f6', '#f783ac', '#faa2c1', '#ffffff'][i % 4]}"/>`; }
+      s += `<path d="M-70,30 Q-20,10 20,22 T 74,8" fill="none" stroke="#e9dcc4" stroke-width="10" stroke-linecap="round"/>`;
+      for (let i = 0; i < 16; i++) s += `<ellipse cx="${f1(-60 + r() * 120)}" cy="${f1(4 + r() * 26)}" rx="2.2" ry="1.3" fill="#f783ac" opacity=".85"/>`;
+      return s + tree(64, -14, 0.7, '#6ab04c') + pine(-66, -6, 0.7) + person(40, 16, 4); },
+    easel: c => { let s = shadow(-14, 6, 30) + line([-30, 8], [-14, -62], '#8b5e3c', 3) + line([2, 8], [-14, -62], '#8b5e3c', 3) + line([-14, -40], [-8, 12], '#8b5e3c', 2.5);  // 國文 L10 畫的哀傷：畫架＋調色盤＋小畫室
+      s += `<rect x="-40" y="-64" width="52" height="40" fill="#fff" stroke="#c9b58b" stroke-width="3"/><path d="M-36,-30l12,-14l10,8l12,-16l12,22z" fill="#a5d8ff"/><circle cx="-26" cy="-52" r="5" fill="#ffd43b"/><path d="M-36,-30h44" stroke="${c}" stroke-width="2"/>` + line([-40, -24], [12, -24], '#8b5e3c', 3);
+      s += `<g transform="translate(26,20)"><path d="M-14,0c0,-10 18,-12 24,-4c4,6 -6,6 -4,10c2,6 -20,6 -20,-6z" fill="#e9c46a"/><circle cx="-6" cy="-4" r="2.6" fill="#e03131"/><circle cx="2" cy="-6" r="2.6" fill="#1971c2"/><circle cx="6" cy="0" r="2.6" fill="#2b8a3e"/><circle cx="-2" cy="2" r="2.2" fill="#fff"/></g>`;
+      s += shadow(52, -18, 18) + box(50, -22, 30, 24, 22, '#f8f1e4') + roof(50, -22, 34, 28, 22, 12, shade(c, -0.1)) + onLeft(50, -22, 30, 24, 0, `<rect x="8" y="-16" width="14" height="10" fill="#d0ebff"/>`);
+      return s + tree(-66, 14, 0.8) + pine(70, 18, 0.6) + person(-50, 30, 6) + person(6, 36, 2); },
+    market: c => { let s = '';  // 英文 L5：街上的商店（麵包店、書店、銀行）＋攤販
+      [['#fff4e6', '#e8590c', 'BAKERY'], ['#e7f5ff', c, 'BOOKS'], ['#f8f9fa', '#2b8a3e', 'BANK']].forEach(([wall, aw, t], i) => { const p = ISO(-8, -16, -30 + i * 28, 0); s += box(p[0], p[1], 24, 22, 30 + (i === 2 ? 10 : 0), wall) + onLeft(p[0], p[1], 24, 22, 0, `<rect x="2" y="-26" width="20" height="6" fill="${aw}"/><text x="12" y="-21.6" font-size="4.2" font-weight="900" text-anchor="middle" fill="#fff">${t}</text>${[2, 6, 10, 14, 18].map(v => `<path d="M${v},-20h4l-2,4z" fill="${aw}"/>`).join('')}<rect x="5" y="-13" width="7" height="13" fill="#6d4c33"/><rect x="14" y="-13" width="6" height="7" fill="#d0ebff"/>`); });
+      s += shadow(40, 26, 16) + `<rect x="28" y="12" width="26" height="12" fill="#c08552"/><path d="M24,6h34l-4,-10h-26z" fill="#f03e3e"/><path d="M30,6v-10M38,6v-10M46,6v-10" stroke="#fff" stroke-width="2"/><circle cx="34" cy="10" r="3" fill="#fab005"/><circle cx="42" cy="10" r="3" fill="#69db7c"/><circle cx="49" cy="10" r="3" fill="#ff8787"/>`;
+      s += `<g transform="translate(-58,-56)"><rect x="-10" y="-8" width="20" height="14" rx="2" fill="#fff3bf" stroke="#f59f00"/><text x="0" y="3" font-size="10" font-weight="900" text-anchor="middle" fill="#e67700">$</text></g>`;
+      return s + tree(-68, 12, 0.7) + person(-18, 32, 3) + person(14, 30, 0) + person(64, 30, 5); },
+    signpost: c => { let s = `<path d="M-74,6 L74,-6" stroke="#868e96" stroke-width="16"/><path d="M-74,6 L74,-6" stroke="#fff" stroke-width="1.6" stroke-dasharray="8 7"/>`;  // 英文 L6：交通工具＋問路（方向路標、公車站）
+      s += shadow(-30, -6, 8) + `<rect x="-32" y="-74" width="4" height="70" fill="#868e96"/>` + [['NORTH', -70, '#1971c2', 1], ['EAST', -58, '#2b8a3e', 1], ['WEST', -46, c, -1]].map(([t, y, col, d]) => d > 0 ? `<path d="M-28,${y}h34l6,4l-6,4h-34z" fill="${col}"/><text x="-10" y="${y + 6}" font-size="5.6" font-weight="800" text-anchor="middle" fill="#fff">${t}</text>` : `<path d="M-32,${y}h-30l-6,4l6,4h30z" fill="${col}"/><text x="-49" y="${y + 6}" font-size="5.6" font-weight="800" text-anchor="middle" fill="#fff">${t}</text>`).join('');
+      s += shadow(-6, 26, 30) + box(-6, 18, 46, 16, 16, '#fab005', 4) + onLeft(-6, 18, 46, 16, 4, [4, 13, 22, 31].map(v => `<rect x="${v}" y="-14" width="7" height="6" fill="#d0ebff"/>`).join('') + `<text x="40" y="-4" font-size="5" font-weight="900" fill="#495057">BUS</text>`);
+      [ISO(-6, 18, -16, 8), ISO(-6, 18, 16, 8)].forEach(p => { s += `<circle cx="${f1(p[0])}" cy="${f1(p[1] + 1)}" r="3.4" fill="#222"/>`; });
+      s += `<g transform="translate(46,-18)"><circle cx="-8" cy="6" r="5" fill="none" stroke="#222" stroke-width="2"/><circle cx="10" cy="6" r="5" fill="none" stroke="#222" stroke-width="2"/><path d="M-8,6l8,-10h8l2,10M0,-4l-4,-4" fill="none" stroke="#e03131" stroke-width="2"/></g>`;
+      return s + tree(60, -40, 0.7) + pine(-66, -20, 0.7) + person(28, 34, 1) + person(66, 20, 4); },
+    balance: c => { let s = shadow(-2, 6, 40) + box(-2, 0, 40, 26, 8, '#ced4da');  // 數學 4-1 因式分解法：天平（AB＝0 → A＝0 或 B＝0）
+      s += `<rect x="-5" y="-66" width="6" height="58" fill="#868e96"/><circle cx="-2" cy="-68" r="5" fill="${c}"/>` + line([-52, -64], [48, -64], shade(c, -0.2), 4) + line([-46, -64], [-56, -34], '#adb5bd', 1.4) + line([-46, -64], [-36, -34], '#adb5bd', 1.4) + line([42, -64], [32, -34], '#adb5bd', 1.4) + line([42, -64], [52, -34], '#adb5bd', 1.4);
+      s += `<path d="M-60,-34h28a14 6 0 0 1 -28 0z" fill="${shade(c, 0.3)}"/><path d="M28,-34h28a14 6 0 0 1 -28 0z" fill="${shade(c, 0.3)}"/>`;
+      s += `<rect x="-62" y="-52" width="32" height="15" rx="3" fill="#fff" stroke="${c}"/><text x="-46" y="-41" font-size="9" font-weight="900" text-anchor="middle" fill="${shade(c, -0.3)}">x−2</text><rect x="26" y="-52" width="32" height="15" rx="3" fill="#fff" stroke="${c}"/><text x="42" y="-41" font-size="9" font-weight="900" text-anchor="middle" fill="${shade(c, -0.3)}">x+3</text>`;
+      s += `<text x="-2" y="-78" font-size="11" font-weight="900" text-anchor="middle" fill="${shade(c, -0.3)}">= 0</text>`;
+      return s + tree(-66, 20, 0.8) + pine(66, 14, 0.8) + person(-28, 32, 2) + person(26, 34, 6); },
+    squarefill: c => { let s = shadow(-4, 4, 44); const P = (u, v) => ISO(-6, 0, u, v);  // 數學 4-2 配方法：補上一角拼成正方形
+      s += box(P(-8, -8)[0], P(-8, -8)[1], 34, 34, 12, c) + box(P(17, -8)[0], P(17, -8)[1], 14, 34, 12, shade(c, 0.35)) + box(P(-8, 17)[0], P(-8, 17)[1], 34, 14, 12, shade(c, 0.35));
+      s += `<g transform="translate(26,-26)">${box(P(17, 17)[0], P(17, 17)[1], 14, 14, 12, '#fcc419')}</g>` + `<path d="M${f1(P(17, 17)[0] + 20)},${f1(P(17, 17)[1] - 30)}l-16,16" stroke="#f59f00" stroke-width="2" stroke-dasharray="3 3"/>`;
+      s += `<text x="${f1(P(-8, -8)[0])}" y="${f1(P(-8, -8)[1] - 8)}" font-size="12" font-weight="900" text-anchor="middle" fill="#fff">x²</text><text x="${f1(P(17, 17)[0] + 26)}" y="${f1(P(17, 17)[1] - 44)}" font-size="9" font-weight="900" text-anchor="middle" fill="#e67700">+9</text>`;
+      s += shadow(52, -30, 12) + `<rect x="38" y="-74" width="34" height="24" rx="2" fill="#2f4f4f" stroke="#8b5e3c" stroke-width="2"/><text x="55" y="-58" font-size="8" font-weight="800" text-anchor="middle" fill="#fff">−b±√</text><rect x="53" y="-50" width="3" height="20" fill="#8b5e3c"/>`;
+      return s + tree(-66, 14, 0.8) + pine(66, 18, 0.7) + person(-30, 32, 4) + person(30, 34, 1); },
+    garden: c => { let s = ''; const P = (u, v) => ISO(-4, 2, u, v);  // 數學 4-3 應用問題：花圃與十字走道（面積問題）
+      s += poly([P(-44, -30), P(44, -30), P(44, 30), P(-44, 30)], '#e9dcc4');
+      [[-44, -30, -6, -4], [6, -30, 44, -4], [-44, 4, -6, 30], [6, 4, 44, 30]].forEach(([u0, v0, u1, v1], i) => { s += poly([P(u0, v0), P(u1, v0), P(u1, v1), P(u0, v1)], i % 2 ? '#8ce99a' : '#b2f2bb'); const r = rng(i + 3); for (let k = 0; k < 6; k++) { const q = P(u0 + 4 + r() * (u1 - u0 - 8), v0 + 4 + r() * (v1 - v0 - 8)); s += `<circle cx="${f1(q[0])}" cy="${f1(q[1] - 2)}" r="2.2" fill="${['#f783ac', '#ffd43b', '#ff8787'][k % 3]}"/>`; } });
+      s += line(P(-44, 34), P(44, 34), shade(c, -0.2), 1.4) + `<text x="${f1(P(0, 34)[0] - 8)}" y="${f1(P(0, 34)[1] + 12)}" font-size="9" font-weight="900" fill="${shade(c, -0.3)}">x m</text>`;
+      s += shadow(58, -26, 10) + `<rect x="54" y="-60" width="3" height="34" fill="#8b5e3c"/><rect x="40" y="-74" width="32" height="18" rx="2" fill="#fff" stroke="${c}"/><text x="56" y="-62" font-size="8" font-weight="900" text-anchor="middle" fill="${c}">? m²</text>`;
+      return s + tree(-66, -18, 0.8) + pine(-62, 18, 0.7) + person(-10, -6, 3) + person(10, 6, 0); },
+    barchart: c => { let s = shadow(-10, 4, 44); const H = [22, 40, 30, 56, 46];  // 數學第 5 章 統計資料處理：立體長條圖＋圓餅圖
+      H.forEach((h, i) => { const p = ISO(-12, 0, -32 + i * 15, 0); s += box(p[0], p[1], 11, 11, h, i === 3 ? c : shade(c, 0.2 + (i % 2) * 0.2)); });
+      s += line(ISO(-12, 0, -42, 10), ISO(-12, 0, 42, 10), '#495057', 1.6);
+      s += `<g transform="translate(50,-40)"><ellipse cx="0" cy="6" rx="18" ry="9" fill="${shade(c, -0.3)}"/><ellipse cx="0" cy="0" rx="18" ry="9" fill="#fab005"/><path d="M0,0L18,0A18 9 0 0 1 -9,7.8z" fill="${c}"/><path d="M0,0L-9,7.8A18 9 0 0 1 -14,-5.6z" fill="#ff8787"/></g><rect x="49" y="-28" width="2.4" height="40" fill="#868e96"/>`;
+      return s + tree(-68, -10, 0.8) + pine(66, 24, 0.7) + person(-36, 30, 5) + person(16, 34, 2); },
+    thermo: c => { let s = shadow(-10, 4, 20);  // 理化 5-1 溫度與溫度計：溫度計塔
+      s += `<rect x="-20" y="-96" width="20" height="88" rx="10" fill="#f8f9fa" stroke="#adb5bd" stroke-width="2"/><circle cx="-10" cy="-6" r="14" fill="#e03131" stroke="#adb5bd" stroke-width="2"/><rect x="-14" y="-62" width="8" height="56" fill="#e03131"/>`;
+      s += [-88, -76, -64, -52, -40, -28].map((y, i) => `<line x1="-20" y1="${y}" x2="${i % 2 ? -15 : -12}" y2="${y}" stroke="#495057" stroke-width="1.2"/>`).join('') + `<text x="6" y="-84" font-size="9" font-weight="900" fill="${shade(c, -0.3)}">℃</text><text x="6" y="-56" font-size="8" font-weight="800" fill="#868e96">℉</text>`;
+      s += `<circle cx="44" cy="-62" r="14" fill="#ffd43b"/>` + [0, 45, 90, 135, 180, 225, 270, 315].map(a => `<line x1="44" y1="-82" x2="44" y2="-88" stroke="#fab005" stroke-width="2.4" transform="rotate(${a} 44 -62)"/>`).join('');
+      s += shadow(40, 18, 18) + `<path d="M24,6h32l-4,16h-24z" fill="#a5d8ff"/><rect x="30" y="-4" width="10" height="10" fill="#e7f5ff" stroke="#74c0fc"/><rect x="42" y="0" width="8" height="8" fill="#e7f5ff" stroke="#74c0fc"/>`;
+      return s + tree(-62, 14, 0.8) + pine(-66, -16, 0.7) + person(16, 34, 3); },
+    kettle: (c, anim) => { let s = shadow(-6, 6, 30) + box(-6, 0, 36, 30, 12, '#495057') + `<g fill="#ff922b"><path d="M-14,-12q4,-10 8,0z"/><path d="M-6,-12q4,-12 8,0z"/><path d="M2,-12q3,-8 6,0z"/></g>`;  // 理化 5-2 熱量與比熱：爐火上的水壺＋同熱源的沙與水
+      s += `<path d="M-30,-14c0,-26 48,-26 48,0z" fill="${shade(c, 0.1)}"/><path d="M-30,-14h48" stroke="${shade(c, -0.3)}" stroke-width="2"/><path d="M18,-24l16,-12l2,4l-14,12z" fill="${shade(c, -0.1)}"/><path d="M-16,-38q-2,-12 8,-12q10,0 8,12" fill="none" stroke="#343a40" stroke-width="3"/>`;
+      s += `<g opacity=".75"><path d="M36,-42q6,-8 0,-16q-6,-8 0,-16" fill="none" stroke="#dee2e6" stroke-width="4" stroke-linecap="round">${anim ? `<animate attributeName="opacity" values=".2;1;.2" dur="3s" repeatCount="indefinite"/>` : ''}</path></g>`;
+      s += shadow(50, 26, 16) + `<rect x="36" y="12" width="12" height="14" fill="#74c0fc"/><rect x="52" y="12" width="12" height="14" fill="#e9c46a"/><text x="42" y="10" font-size="7" font-weight="800" text-anchor="middle" fill="#1971c2">水</text><text x="58" y="10" font-size="7" font-weight="800" text-anchor="middle" fill="#a07c30">沙</text>`;
+      return s + tree(-64, 18, 0.8) + pine(-66, -14, 0.7) + person(14, 36, 1); },
+    radiate: c => { let s = `<circle cx="-48" cy="-70" r="14" fill="#ffd43b"/>` + [0, 1, 2].map(i => `<path d="M${-30 + i * 6},${-58 + i * 2}l14,10" stroke="#fab005" stroke-width="2.4" stroke-dasharray="4 3"/>`).join('');  // 理化 5-3 熱的傳播：傳導（鍋柄）、對流（暖氣循環）、輻射（太陽）
+      s += shadow(8, 0, 38) + box(6, -6, 56, 34, 30, '#fff4e6') + roof(6, -6, 62, 40, 30, 20, shade(c, -0.1)) + onLeft(6, -6, 56, 34, 0, `<rect x="6" y="-22" width="14" height="12" fill="#d0ebff"/><rect x="34" y="-22" width="14" height="12" fill="#d0ebff"/><path d="M27,-28c-8,4 -8,14 0,18c8,4 8,14 0,18" fill="none" stroke="#e03131" stroke-width="2" marker-end=""/>`);
+      s += `<path d="M-2,-62c-8,-6 -2,-14 6,-8M10,-66c-6,-8 2,-14 8,-6" fill="none" stroke="#ff8787" stroke-width="2.4" stroke-linecap="round"/>`;
+      s += shadow(52, 26, 14) + `<ellipse cx="50" cy="20" rx="12" ry="5" fill="#495057"/><rect x="38" y="14" width="24" height="6" fill="#868e96"/>` + line([62, 16], [78, 10], '#e8590c', 3) + `<g fill="#ff922b"><path d="M44,28q3,-6 6,0z"/><path d="M50,28q3,-7 6,0z"/></g>`;
+      return s + tree(-64, 14, 0.8) + pine(-60, -20, 0.6) + person(-30, 32, 4); },
+    melt: c => { let s = `<ellipse cx="-14" cy="18" rx="40" ry="12" fill="#a5d8ff"/>`;  // 理化 5-4 熱對物質的影響：冰融化、水沸騰、鐵軌熱脹冷縮的伸縮縫
+      [[-34, 4], [-14, 8], [-24, -12]].forEach(([x, y], i) => { s += box(x, y, 16, 16, 14, '#e7f5ff', 0, '#ffffff') + `<path d="M${x - 4},${y - 14}l4,-2" stroke="#fff" stroke-width="2"/>`; });
+      s += `<path d="M2,10q6,4 14,0" stroke="#74c0fc" stroke-width="3" fill="none"/>`;
+      const r1 = ISO(30, -20, -30, 0), r2 = ISO(30, -20, 30, 0), r3 = ISO(30, -20, -30, 12), r4 = ISO(30, -20, 30, 12); s += line(r1, r2, '#868e96', 3) + line(r3, r4, '#868e96', 3);
+      for (let u = -26; u <= 26; u += 8) s += line(ISO(30, -20, u, -3), ISO(30, -20, u, 15), '#8b5e3c', 2.4);
+      const g = ISO(30, -20, 2, 0), g2 = ISO(30, -20, 2, 12); s += `<circle cx="${f1(g[0])}" cy="${f1(g[1])}" r="3" fill="#fff" stroke="#e03131" stroke-width="1.6"/><circle cx="${f1(g2[0])}" cy="${f1(g2[1])}" r="3" fill="#fff" stroke="#e03131" stroke-width="1.6"/>`;
+      s += `<text x="${f1(g[0] + 8)}" y="${f1(g[1] - 10)}" font-size="7" font-weight="800" fill="${shade(c, -0.3)}">伸縮縫</text>`;
+      return s + tree(-66, -20, 0.8) + pine(66, 18, 0.7) + person(40, 32, 2) + person(-50, 34, 6); },
+    atom: (c, anim) => { let s = shadow(0, 8, 34) + box(0, 4, 40, 40, 6, '#ced4da');  // 理化第 6 章：原子模型雕塑
+      const cx = 0, cy = -50; [0, 60, 120].forEach(a => { s += `<ellipse cx="${cx}" cy="${cy}" rx="38" ry="12" fill="none" stroke="${shade(c, 0.1)}" stroke-width="2.4" transform="rotate(${a} ${cx} ${cy})"/>`; });
+      s += `<circle cx="${cx - 3}" cy="${cy}" r="6" fill="#e03131"/><circle cx="${cx + 4}" cy="${cy - 2}" r="6" fill="#868e96"/><circle cx="${cx}" cy="${cy + 4}" r="6" fill="#e03131"/>`;
+      s += `<g>` + [0, 60, 120].map((a, i) => `<circle cx="${cx + 38}" cy="${cy}" r="4" fill="#1971c2" transform="rotate(${a} ${cx} ${cy})"/>`).join('') + (anim ? `<animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="14s" repeatCount="indefinite"/>` : '') + `</g>`;
+      s += `<rect x="-2" y="-34" width="4" height="34" fill="#868e96"/>`;
+      return s + tree(-62, 14, 0.8) + pine(62, 16, 0.7) + person(-30, 32, 0) + person(28, 32, 3); },
+    periodic: c => { let s = shadow(-6, 4, 46); const E = ['H', '', '', 'He', 'Li', 'C', 'O', 'Ne', 'Na', 'Mg', 'Cl', 'Ar'];  // 理化：元素週期表牆
+      const x0 = -50, y0 = -78; E.forEach((t, i) => { const col = i % 4, row = (i / 4) | 0; if (!t) return; s += `<rect x="${x0 + col * 22}" y="${y0 + row * 22}" width="20" height="20" rx="2" fill="${[shade(c, 0.5), '#ffe8cc', '#d0ebff', '#e5dbff'][col]}" stroke="${shade(c, -0.1)}" stroke-width="1"/><text x="${x0 + col * 22 + 10}" y="${y0 + row * 22 + 14}" font-size="9" font-weight="900" text-anchor="middle" fill="#343a40">${t}</text>`; });
+      s += `<rect x="${x0 - 4}" y="${y0 - 4}" width="96" height="72" rx="4" fill="none" stroke="#868e96" stroke-width="2"/><rect x="-14" y="-10" width="4" height="16" fill="#868e96"/><rect x="18" y="-10" width="4" height="16" fill="#868e96"/>`;
+      s += `<g transform="translate(50,14)"><circle cx="0" cy="0" r="7" fill="#e03131"/><circle cx="-10" cy="6" r="4.5" fill="#f8f9fa" stroke="#adb5bd"/><circle cx="10" cy="6" r="4.5" fill="#f8f9fa" stroke="#adb5bd"/><text x="0" y="22" font-size="7" font-weight="800" text-anchor="middle" fill="#495057">H₂O</text></g>`;
+      return s + tree(-66, 18, 0.7) + person(-30, 32, 4) + person(14, 34, 1); },
+    townhall: c => { let s = tree(-70, 6, 0.8) + tree(68, -10, 0.85) + pine(62, 22, 0.7); const x = -2, y = -10;  // 公民 L5 地方政府：縣市政府大樓＋公所
+      s += shadow(x + 6, y + 8, 40) + box(x, y, 80, 34, 26, '#f1ebde') + onLeft(x, y, 80, 34, 0, [6, 18, 30, 44, 56, 68].map(v => `<rect x="${v}" y="-20" width="7" height="8" fill="${shade(c, 0.6)}"/>`).join('') + `<rect x="36" y="-12" width="10" height="12" fill="${shade(c, -0.1)}"/>`);
+      s += box(x, y, 28, 24, 28, '#e9e2d4', 26) + onLeft(x, y, 28, 24, 26, `<circle cx="14" cy="-16" r="7" fill="#fff" stroke="${c}" stroke-width="1.6"/><line x1="14" y1="-16" x2="14" y2="-20" stroke="#333"/>`) + roof(x, y, 32, 28, 54, 12, c);
+      s += onLeft(x, y, 80, 34, 26, `<rect x="4" y="-8" width="30" height="7" rx="1" fill="#fff8e1"/><text x="19" y="-2.6" font-size="5.2" font-weight="800" text-anchor="middle" fill="${c}">市政府</text>`);
+      return s + flag(-48, -30, c) + flag(46, -42, c) + person(-18, 32, 2) + person(16, 32, 5); },
+    ballot: c => { let s = shadow(-14, 6, 30) + box(-14, 0, 34, 26, 24, '#f8f9fa');  // 公民 L6 政治參與及投票：投票箱＋圈選處＋選舉看板
+      s += onLeft(-14, 0, 34, 26, 0, `<text x="17" y="-8" font-size="8" font-weight="900" text-anchor="middle" fill="${c}">投票箱</text>`) + poly([ISO(-14, 0, -6, -2, 24), ISO(-14, 0, 6, -2, 24), ISO(-14, 0, 6, 2, 24), ISO(-14, 0, -6, 2, 24)], '#343a40');
+      s += `<g transform="translate(-14,-50) rotate(-12)"><rect x="-8" y="-10" width="16" height="12" fill="#fff" stroke="#adb5bd"/><circle cx="0" cy="-4" r="3.5" fill="none" stroke="#e03131" stroke-width="1.6"/></g>`;
+      s += shadow(40, -8, 18) + box(38, -14, 26, 22, 34, shade(c, 0.6)) + onLeft(38, -14, 26, 22, 0, `<rect x="2" y="-30" width="22" height="30" fill="#fff"/><path d="M8,-22l3,4l7,-8" fill="none" stroke="#2b8a3e" stroke-width="2.4"/>`);
+      s += `<rect x="-66" y="-62" width="34" height="22" rx="2" fill="#fff" stroke="${c}"/><circle cx="-56" cy="-53" r="5" fill="#ffd8a8"/><text x="-42" y="-50" font-size="8" font-weight="900" fill="${c}">1</text><rect x="-50" y="-40" width="3" height="40" fill="#868e96"/>`;
+      return s + tree(64, 18, 0.7) + person(10, 34, 4) + person(-40, 30, 1) + person(26, 30, 6); },
+    steamship: (c, anim) => { let s = `<ellipse cx="0" cy="16" rx="76" ry="24" fill="#74c0fc"/><ellipse cx="0" cy="16" rx="66" ry="18" fill="#a5d8ff"/>`;  // 歷史 L5 西力衝擊下的晚清變革：自強運動的輪船＋船廠
+      s += `<path d="M-46,4h82l-10,16h-62z" fill="#343a40"/><rect x="-36" y="-10" width="56" height="14" fill="#f1f3f5"/>` + [-30, -18, -6, 6].map(x => `<circle cx="${x}" cy="-3" r="2.6" fill="#74c0fc"/>`).join('');
+      s += `<rect x="-14" y="-40" width="10" height="30" fill="${c}"/><rect x="-14" y="-40" width="10" height="5" fill="#212529"/><line x1="24" y1="-10" x2="24" y2="-56" stroke="#8b5e3c" stroke-width="2.4"/><path d="M24,-54l18,12l-18,6z" fill="#fff"/>`;
+      s += `<g opacity=".8"><circle cx="-10" cy="-48" r="6" fill="#ced4da"/><circle cx="-16" cy="-58" r="8" fill="#dee2e6"/><circle cx="-26" cy="-68" r="9" fill="#e9ecef"/>${anim ? `<animateTransform attributeName="transform" type="translate" values="0 0;-3 -2;0 0" dur="4s" repeatCount="indefinite"/>` : ''}</g>`;
+      s += shadow(52, -30, 18) + box(52, -36, 30, 22, 22, '#d6cfc2') + roof(52, -36, 34, 26, 22, 12, '#495057') + cyl(64, -40, 3.5, 28, '#868e96');
+      return s + flag(-60, -26, c) + pine(-66, -12, 0.7) + person(46, 8, 2); },
+    railway: c => { let s = '';  // 歷史 L6 晚清社會文化變遷：鐵路、火車、電報桿、報紙
+      const A = ISO(0, 0, -58, 10), B = ISO(0, 0, 56, 10), A2 = ISO(0, 0, -58, 22), B2 = ISO(0, 0, 56, 22); s += line(A, B, '#868e96', 2.4) + line(A2, B2, '#868e96', 2.4);
+      for (let u = -54; u <= 52; u += 9) s += line(ISO(0, 0, u, 7), ISO(0, 0, u, 25), '#8b5e3c', 2.6);
+      const T = (u, w, h, col, z = 0) => { const p = ISO(0, 0, u, 16); return box(p[0], p[1], w, 12, h, col, 2 + z); };
+      s += T(-30, 28, 16, '#343a40') + T(-24, 14, 12, '#343a40', 16) + T(-6, 18, 26, c) + T(22, 24, 18, shade(c, 0.3));
+      const ch = ISO(0, 0, -38, 16); s += cyl(ch[0], ch[1] - 18, 3.5, 14, '#212529') + `<circle cx="${f1(ch[0] - 4)}" cy="${f1(ch[1] - 42)}" r="6" fill="#dee2e6"/><circle cx="${f1(ch[0] - 12)}" cy="${f1(ch[1] - 52)}" r="8" fill="#e9ecef"/>`;
+      s += `<rect x="40" y="-72" width="3" height="58" fill="#8b5e3c"/><rect x="33" y="-68" width="17" height="3" fill="#8b5e3c"/>` + line([-50, -58], [41, -68], '#495057', 1) + line([-50, -52], [41, -62], '#495057', 1) + `<rect x="-52" y="-62" width="3" height="46" fill="#8b5e3c"/>`;
+      s += `<g transform="translate(58,26) rotate(-8)"><rect x="-12" y="-8" width="24" height="16" fill="#fff8e1" stroke="#ced4da"/><text x="0" y="-1" font-size="5" font-weight="900" text-anchor="middle" fill="${c}">申報</text><line x1="-8" y1="3" x2="8" y2="3" stroke="#adb5bd"/></g>`;
+      return s + tree(-58, -26, 0.7) + pine(66, -30, 0.6) + person(-48, 34, 1); },
+    volcano: c => { let s = '';  // 地理 L5 東北亞的自然環境：富士山型火山、溫泉、海岸
+      s += `<ellipse cx="52" cy="22" rx="32" ry="12" fill="#74c0fc"/>` + cone(-8, -2, 62, 82, '#7d8f5a') + poly([[-26, -60], [-8, -84], [10, -60], [2, -64], [-8, -58], [-18, -64]], '#f8f9fa');
+      s += cone(-56, 10, 24, 30, '#8c9a6b');
+      s += shadow(46, -18, 14) + `<ellipse cx="44" cy="-20" rx="16" ry="7" fill="#99e9f2" stroke="#c9b58b" stroke-width="3"/><path d="M38,-30q-4,-6 0,-12M46,-30q-4,-6 0,-12M54,-30q-4,-6 0,-12" fill="none" stroke="#dee2e6" stroke-width="2.4" stroke-linecap="round"/>`;
+      s += `<g transform="translate(64,0)">${pine(0, 0, 0.6, '#2f6b4a')}</g>` + `<path d="M-60,-40q6,-6 12,0" fill="none" stroke="#adb5bd" stroke-width="1.6"/>`;
+      return s + tree(-70, 26, 0.7, '#e8590c') + tree(-30, 30, 0.7, '#fab005') + person(18, 34, 4) + person(34, 26, 0); },
+    skyline: c => { let s = shadow(-6, 4, 50);  // 地理 L6 東北亞的經濟發展：高科技都會天際線＋高速鐵路
+      [[-48, 30, '#dee2e6'], [-28, 52, shade(c, 0.4)], [-8, 40, '#e9ecef'], [12, 66, '#ced4da'], [32, 36, shade(c, 0.6)]].forEach(([u, h, col]) => { const p = ISO(-6, -14, u, 0); s += box(p[0], p[1], 16, 16, h, col) + onLeft(p[0], p[1], 16, 16, 0, Array.from({ length: Math.floor(h / 10) }, (_, k) => `<rect x="3" y="${-8 - k * 10}" width="10" height="4" fill="#d0ebff"/>`).join('')); });
+      const tp = ISO(-6, -14, 12, 0); s += `<line x1="${f1(tp[0])}" y1="${f1(tp[1] - 66)}" x2="${f1(tp[0])}" y2="${f1(tp[1] - 86)}" stroke="#e03131" stroke-width="2"/><circle cx="${f1(tp[0])}" cy="${f1(tp[1] - 86)}" r="2.4" fill="#e03131"/>`;
+      s += line(ISO(-10, 20, -52, 0), ISO(-10, 20, 52, 0), '#868e96', 3) + line(ISO(-10, 20, -52, 6), ISO(-10, 20, 52, 6), '#868e96', 3);
+      [[-26, 30, '#f8f9fa'], [6, 30, '#f8f9fa']].forEach(([u, w, col], i) => { const p = ISO(-10, 20, u, 3); s += box(p[0], p[1], w, 9, 9, col, 1) + onLeft(p[0], p[1], w, 9, 1, `<rect x="0" y="-5" width="${w}" height="2" fill="#1971c2"/>${[5, 12, 19].map(v => `<rect x="${v}" y="-8" width="4" height="2.4" fill="#495057"/>`).join('')}`); });
+      { const p = ISO(-10, 20, 26, 3); s += poly([ISO(p[0], p[1], -5, -4.5, 1), ISO(p[0], p[1], 9, -1, 1), ISO(p[0], p[1], 9, 1, 1), ISO(p[0], p[1], -5, 4.5, 1)], '#e9ecef') + poly([ISO(p[0], p[1], -5, -4.5, 10), ISO(p[0], p[1], 9, -1, 2), ISO(p[0], p[1], 9, 1, 2), ISO(p[0], p[1], -5, 4.5, 10)], '#ffffff', 'stroke="#1971c2" stroke-width="1"'); }
+      return s + tree(-70, 18, 0.7) + pine(66, -20, 0.6) + person(52, 30, 3); },
     /* ---- 街區建築（小單元用） ---- */
     belltower: c => { let s = shadow(-4, 0, 30) + box(-4, -6, 40, 40, 30, '#e9dcc4') + onLeft(-4, -6, 40, 40, 0, `<path d="M15,0v-12a5 5 0 0 1 10 0v12z" fill="#6d4c33"/>`);  // 國字注音：鐘鼓樓＋ㄅㄆㄇ匾
       s += box(-4, -6, 30, 30, 18, c, 30) + onLeft(-4, -6, 30, 30, 30, `<rect x="5" y="-15" width="20" height="10" rx="2" fill="#fff8e1"/><text x="15" y="-7.4" font-size="7.5" font-weight="800" text-anchor="middle" fill="${shade(c, -0.3)}">ㄅㄆㄇ</text>`) + roof(-4, -6, 44, 44, 48, 18, '#3d4558');
@@ -3382,9 +3515,19 @@ body{padding-bottom:64px}
     const r = svg.getBoundingClientRect(), t = (target && target.getBoundingClientRect) ? target.getBoundingClientRect() : r;
     const ox = t.left + t.width / 2 - r.left, oy = t.top + t.height / 2 - r.top;
     svg.style.transformOrigin = `${f1(ox)}px ${f1(oy)}px`;
-    let done = false; const go = () => { if (done) return; done = true; setPending('in'); then(); };
-    try { const a = svg.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(2.6)', opacity: 0 }], { duration: 340, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }); a.onfinish = go; setTimeout(go, 600); } catch (e) { go(); }
+    let done = false, a = null;
+    /* 同一頁切換畫面（例：社會進入作答、被鎖住只跳提示）時，拉近動畫停在「放大＋透明」會讓地圖回來時看不見：
+       切換後地圖已藏起來就立刻復原；還在畫面上（沒有換頁）就在 1.2 秒後復原；真的換頁則不動 */
+    const reset = () => { if (a && !LEAVING) { try { a.cancel(); } catch (e) {} } };
+    const go = () => { if (done) return; done = true; setPending('in'); then();
+      requestAnimationFrame(() => requestAnimationFrame(() => { if (!svg.getClientRects().length) reset(); else setTimeout(reset, 1200); })); };
+    try { a = svg.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(2.6)', opacity: 0 }], { duration: 340, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }); a.onfinish = go; setTimeout(go, 600); } catch (e) { go(); }
   }
+  let LEAVING = false;
+  window.addEventListener('beforeunload', () => { LEAVING = true; });
+  /* 從下一頁按「上一頁」回來（瀏覽器快取）時，把停住的拉近動畫清掉 */
+  window.addEventListener('pageshow', e => { if (!e.persisted) return; LEAVING = false;
+    document.querySelectorAll('.pe-map svg, #pe-scene svg').forEach(v => { try { v.getAnimations().forEach(x => x.cancel()); } catch (er) {} }); });
   /* 位置列 */
   let CRUMBS = null, crumbSig = '';
   const hubHref = () => { const a = document.getElementById('pe115-home'); return (a && a.getAttribute('href')) || 'periodicexam_115.html'; };
@@ -3498,7 +3641,9 @@ body{padding-bottom:64px}
         <div class="pm-head-chips">${lv ? `<span class="pm-chip lv">${esc(lv)}</span>` : ''}${chips.map(t => `<span class="pm-chip">${esc(t)}</span>`).join('')}</div></div>`;
     });
   }
-  window.PE115Map = { head(cfg) { HEADS.push(cfg); schedule(); }, crumbs(fn) { CRUMBS = fn; schedule(); }, rules(sels) { RULES = RULES.concat(sels); schedule(); },
+  /* 第幾次段考：看檔名 xxx115010N.html 的 N（複製改名後各科設定自動跟著變，不用手改） */
+  const EXAM_N = +((decodeURIComponent(location.pathname).match(/115010(\d)/) || [])[1] || 0);
+  window.PE115Map = { exam: EXAM_N, examName: ['', '第一次段考', '第二次段考', '第三次段考'][EXAM_N] || '', head(cfg) { HEADS.push(cfg); schedule(); }, crumbs(fn) { CRUMBS = fn; schedule(); }, rules(sels) { RULES = RULES.concat(sels); schedule(); },
     drillTo(key, pred) { const box_ = document.querySelector(`.pe-map[data-pm="${key}"]`); let idx = null;
       if (pred && box_ && box_._items) { idx = box_._items.findIndex(it => pred(it.name)); if (idx < 0) idx = null; }
       DRILL[key] = idx; SEL[key] = null; if (box_) box_.dataset.sig = ''; schedule(); },
@@ -3509,14 +3654,20 @@ body{padding-bottom:64px}
 })();
 </script>
 <script id="pe115-map-config">
-/* 理化：學習路線首頁（第3章・第4章・段考模擬・習作總挑戰）→ 島嶼 */
+/* 理化：學習路線首頁（各章・段考模擬・習作總挑戰）→ 島嶼
+   各章代表建築與顏色：第二次＝第3章 音叉喇叭、第4章 燈塔；第三次＝第5章 溫度計塔、第6章 原子模型（複製改名不用改這裡） */
+var PE_SCI = { 3: ['sound', '#2b8a3e'], 4: ['lighthouse', '#f08c00'], 5: ['thermo', '#e8590c'], 6: ['atom', '#1098ad'] };
+PE_SCI.of = t => { const m = String(t || '').match(/第\s*(\d)\s*章/); return m ? PE_SCI[m[1]] : null; };
+PE_SCI.def = () => PE115Map.exam === 3 ? PE_SCI[5] : PE_SCI[3];
+/* 小單元建築：第二次用 id 對照（下方 KIND）；第三次依單元名稱判斷 */
+PE_SCI.unit = t => /素養|挑戰/.test(t) ? 'trophy' : /溫度計|溫度與/.test(t) ? 'thermo' : /比熱|熱量/.test(t) ? 'kettle' : /傳播|傳導|對流|輻射/.test(t) ? 'radiate' : /熱脹冷縮|熱對物質|狀態|三態|熔化|沸騰/.test(t) ? 'melt' : /週期|元素/.test(t) ? 'periodic' : /原子|分子|化學式|化合物|物質/.test(t) ? 'atom' : '';
 PE115Map.add({
   world: 'science',   // 在全域世界地圖上放大到本科（其他科目淺白）
   key: 'home', anchor: '.route-grid', items: '.route-grid > .route-card',
   name: el => el.querySelector('.route-title').textContent,
   sub: el => { if (el.classList.contains('locked')) return '🔒 兩章各 3 單元拿 ★ 解鎖'; const s = el.querySelectorAll('.route-meta > span'); const t = s.length ? s[s.length - 1].textContent : ''; return t.length > 18 ? t.slice(0, 17) + '…' : t; },
-  kind: el => { const t = el.querySelector('.route-title').textContent; return /第3章/.test(t) ? 'sound' : /第4章/.test(t) ? 'lighthouse' : /模擬/.test(t) ? 'trophy' : 'books'; },
-  color: el => { const t = el.querySelector('.route-title').textContent; return /第3章/.test(t) ? '#2b8a3e' : /第4章/.test(t) ? '#f08c00' : /模擬/.test(t) ? '#c92a2a' : '#1971c2'; },
+  kind: el => { const t = el.querySelector('.route-title').textContent, c = PE_SCI.of(t); return c ? c[0] : /模擬/.test(t) ? 'trophy' : 'books'; },
+  color: el => { const t = el.querySelector('.route-title').textContent, c = PE_SCI.of(t); return c ? c[1] : /模擬/.test(t) ? '#c92a2a' : '#1971c2'; },
   locked: el => el.classList.contains('locked')
 });
 /* 作答背景：淡淡的所在島嶼＋航向該島的小船（段考模擬預設精簡）；只讀畫面上的文字，不改原本程式 */
@@ -3527,8 +3678,8 @@ PE115Map.add({
   PE115Map.scene({
     active: () => { const w = $('workspace'), qa = $('quizArea'); return !!(w && !w.hidden && qa && getComputedStyle(qa).display !== 'none'); },
     card: () => document.querySelector('#workspace > article.card'),
-    kind: () => { const r = range(); if (/段考模擬|模擬/.test(r)) return 'trophy'; if (/全部|習作總/.test(r)) return 'books'; return /第4章|光/.test(tag() + r) && !/第3章/.test(tag()) ? 'lighthouse' : 'sound'; },
-    color: () => { const r = range(); if (/模擬/.test(r)) return '#c92a2a'; if (/全部/.test(r)) return '#1971c2'; return /第4章/.test(tag()) ? '#f08c00' : '#2b8a3e'; },
+    kind: () => { const r = range(); if (/段考模擬|模擬/.test(r)) return 'trophy'; if (/全部|習作總/.test(r)) return 'books'; const c = PE_SCI.of(tag()) || PE_SCI.of(r); if (c) return c[0]; return /光/.test(tag() + r) ? 'lighthouse' : PE_SCI.def()[0]; },
+    color: () => { const r = range(); if (/模擬/.test(r)) return '#c92a2a'; if (/全部/.test(r)) return '#1971c2'; const c = PE_SCI.of(tag()) || PE_SCI.of(r); return c ? c[1] : PE_SCI.def()[1]; },
     place: () => `理化島 › ${range() || tag()}`,
     progress: () => { const b = $('progressBar'); const p = b ? parseFloat(b.style.width) || 0 : 0; return [p, 100]; },
     correct: () => { const f = $('feedback'); return f && f.classList.contains('good') ? (($('questionText') || {}).textContent || '').slice(0, 30) + ($('questionNo') || {}).textContent : ''; },
@@ -3540,10 +3691,10 @@ PE115Map.add({
   const KIND = { u31a: 'pool', u31b: 'sound', u32: 'belltower', u33: 'mountain', u34: 'music', u3s: 'trophy', u41: 'lighthouse', u42: 'mirror', u43a: 'pool', u43b: 'lens', u44: 'telescope', u45: 'prism', u4s: 'trophy' };
   PE115Map.district({
     key: 'units', anchor: '.unit-list', items: '.unit-list > li > .unit-row',
-    landmark: () => /第4章/.test(((document.querySelector('.route-head h2') || {}).textContent) || '') ? ['lighthouse', '#f08c00'] : ['sound', '#2b8a3e'],
+    landmark: () => PE_SCI.of(((document.querySelector('.route-head h2') || {}).textContent) || '') || PE_SCI.def(),
     title: () => { const h = document.querySelector('.route-head h2'); return h ? `${h.textContent} 街區` : ''; },
     tile: el => { const id = (el.dataset.go || '').replace('unit:', ''), b = el.querySelector('.unit-main b'), side = el.querySelector('.unit-side');
-      return { name: b ? b.textContent : id, sub: side ? [...side.children].map(x => x.textContent).join('・') : '', kind: KIND[id] || (/^u4/.test(id) ? 'lighthouse' : 'sound'), color: /^u4/.test(id) ? '#f08c00' : '#2b8a3e', acts: [{ label: '看重點卡 →', el }] }; }
+      return { name: b ? b.textContent : id, sub: side ? [...side.children].map(x => x.textContent).join('・') : '', kind: KIND[id] || PE_SCI.unit(b ? b.textContent : '') || (PE_SCI[(id.match(/^u(\d)/) || [])[1]] || PE_SCI.def())[0], color: (PE_SCI[(id.match(/^u(\d)/) || [])[1]] || PE_SCI.def())[1], acts: [{ label: '看重點卡 →', el }] }; }
   });
 })();
 /* 位置列：🌏 全景 › 理化島 › 第3章 波動與聲音 街區 › 3-1 波的種類；作答中離開會先確認（和原本「回首頁」相同） */
@@ -3566,7 +3717,7 @@ PE115Map.add({
   });
 })();
 /* 島嶼名牌：取代頁首大標題區與首頁的星星／XP 列（原區塊隱藏但保留） */
-PE115Map.head({ hero: () => [document.querySelector('header.masthead'), document.querySelector('#routeView .route-stats')].filter(Boolean), name: '理化島', sub: '第二次段考', kind: 'lighthouse', color: '#2b8a3e',
+PE115Map.head({ hero: () => [document.querySelector('header.masthead'), document.querySelector('#routeView .route-stats')].filter(Boolean), name: '理化島', sub: PE115Map.examName || '第二次段考', kind: 'lighthouse', color: '#2b8a3e',
   range: () => ((document.querySelector('header.masthead .meta') || {}).textContent || ''),
   level: () => document.querySelector('header.masthead .pe-level'),
   chips: () => [...document.querySelectorAll('#routeView .route-stats > *')].map(x => x.textContent.replace(/\s+/g, ' ').trim()) });

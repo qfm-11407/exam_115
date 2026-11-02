@@ -3268,9 +3268,19 @@ body{padding-bottom:64px}
     const r = svg.getBoundingClientRect(), t = (target && target.getBoundingClientRect) ? target.getBoundingClientRect() : r;
     const ox = t.left + t.width / 2 - r.left, oy = t.top + t.height / 2 - r.top;
     svg.style.transformOrigin = `${f1(ox)}px ${f1(oy)}px`;
-    let done = false; const go = () => { if (done) return; done = true; setPending('in'); then(); };
-    try { const a = svg.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(2.6)', opacity: 0 }], { duration: 340, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }); a.onfinish = go; setTimeout(go, 600); } catch (e) { go(); }
+    let done = false, a = null;
+    /* 同一頁切換畫面（例：社會進入作答、被鎖住只跳提示）時，拉近動畫停在「放大＋透明」會讓地圖回來時看不見：
+       切換後地圖已藏起來就立刻復原；還在畫面上（沒有換頁）就在 1.2 秒後復原；真的換頁則不動 */
+    const reset = () => { if (a && !LEAVING) { try { a.cancel(); } catch (e) {} } };
+    const go = () => { if (done) return; done = true; setPending('in'); then();
+      requestAnimationFrame(() => requestAnimationFrame(() => { if (!svg.getClientRects().length) reset(); else setTimeout(reset, 1200); })); };
+    try { a = svg.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(2.6)', opacity: 0 }], { duration: 340, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }); a.onfinish = go; setTimeout(go, 600); } catch (e) { go(); }
   }
+  let LEAVING = false;
+  window.addEventListener('beforeunload', () => { LEAVING = true; });
+  /* 從下一頁按「上一頁」回來（瀏覽器快取）時，把停住的拉近動畫清掉 */
+  window.addEventListener('pageshow', e => { if (!e.persisted) return; LEAVING = false;
+    document.querySelectorAll('.pe-map svg, #pe-scene svg').forEach(v => { try { v.getAnimations().forEach(x => x.cancel()); } catch (er) {} }); });
   /* 位置列 */
   let CRUMBS = null, crumbSig = '';
   const hubHref = () => { const a = document.getElementById('pe115-home'); return (a && a.getAttribute('href')) || 'periodicexam_115.html'; };
