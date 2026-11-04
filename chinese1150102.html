@@ -180,6 +180,10 @@ button{font:inherit;cursor:pointer}
 .pc{font-family:var(--serif);font-size:22px;line-height:1.4;background:#fff;border:2px solid #cfc7b6;border-bottom-width:4px;border-radius:10px;padding:6px 12px;color:inherit;min-width:44px}
 .pc:hover:not(:disabled){border-color:var(--accent);background:var(--soft)}
 .pc.used{visibility:hidden}
+#pzAns .pc{touch-action:none;cursor:grab}
+#pzAns .pc.drag{cursor:grabbing;opacity:.9;box-shadow:0 8px 18px rgba(0,0,0,.18);position:relative;z-index:5}
+#pzAns .pc.drop-l{box-shadow:-5px 0 0 var(--accent)}
+#pzAns .pc.drop-r{box-shadow:5px 0 0 var(--accent)}
 .pc.right{background:var(--okbg);border-color:var(--ok)}
 .pc.wrong{background:var(--badbg);border-color:var(--bad);color:var(--bad)}
 .pc:disabled{cursor:default}
@@ -794,7 +798,7 @@ function showHome() {
     </div>
     <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先做該課的「國字注音」「注釋」，認識生難字詞。</li><li><b>✍️ 課後複習：</b>上完一課，做「課文選擇題」和該課的特色單元（蓮的密碼、論證偵探、賞鳥觀察站）；第四課再進「課文拼圖」，從等級一（第一段）、等級二（第二段）到等級三（全文），一句一張卡排出課文，把愛蓮說背熟。</li><li><b>🎯 自主練習：</b>答錯的題目在結果頁按「錯題重練」再挑戰，把每個小單元練到 ★★★。</li><li><b>🏆 段考衝刺：</b>到「段考複習」練注音 100 則、注釋 50 則、句型判斷與形近字改錯，最後挑戰模擬段考。</li></ul></details>
     <div class="grid">${cards}</div>
-    <div class="howto"><b>闖關規則</b>　每個小單元依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★。模擬段考的成績就是本頁的「練習等級」。答對 +10 XP，連續答對還有 🔥 連擊加分。答錯的題目會在結果頁整理出來，可以按「錯題重練」再挑戰。第四課的課文拼圖有三個等級，依放對位置的句數得星，前一級拿到 ★ 才會開啟下一級（第一段 → 第二段 → 全文）。L4、L5、L6 各有 2 個小單元拿到 ★，就能在「段考複習」挑戰 🏆 模擬段考！</div>
+    <div class="howto"><b>闖關規則</b>　每個小單元依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★。模擬段考的成績就是本頁的「練習等級」。答對 +10 XP，連續答對還有 🔥 連擊加分。答錯的題目會在結果頁整理出來，可以按「錯題重練」再挑戰。第四課的課文拼圖有三個等級，排錯可以拖曳修正再檢查，依第一次檢查放對的句數得星，前一級拿到 ★ 才會開啟下一級（第一段 → 第二段 → 全文）。L4、L5、L6 各有 2 個小單元拿到 ★，就能在「段考複習」挑戰 🏆 模擬段考！</div>
     <footer>八年級國文 第二次段考 L4–L6・語文常識二 練習</footer>`;
   scrollTo(0, 0);
 }
@@ -984,12 +988,13 @@ function renderQ() {
     });
     card += `</div>`;
   } else if (q.t === "pz") {
-    const picked = a || [];
-    card += `<div class="stem">🧩 ${esc(q.q)}</div><div class="hint2">一句一張卡，依序點選；點上方已放好的卡可以拿回來。</div>
-      <div class="pz-ans ${picked.length ? "" : "empty"}">${picked.map((k, j) => {
-        const cls = lock ? (q.items[k] === q.items[j] ? "right" : "wrong") : "";
-        return `<button class="pc ${cls}" ${lock ? "disabled" : ""} onclick="pzUntap(${j})">${esc(q.items[k])}</button>`; }).join("")}</div>
-      ${lock ? "" : `<div class="pz-bank">${q.order.map(k => `<button class="pc ${picked.includes(k) ? "used" : ""}" onclick="pzTap(${k})">${esc(q.items[k])}</button>`).join("")}</div>`}`;
+    const picked = a || [], mark = (Q.mark || {})[Q.i];
+    card += `<div class="stem">🧩 ${esc(q.q)}</div><div class="hint2">${lock ? "綠色是放對的位置，紅色是放錯的位置。" : "一句一張卡，依序點選；按住上方的卡<b>拖曳</b>可以換位置，點一下可以拿回來。"}</div>
+      <div class="pz-ans ${picked.length ? "" : "empty"}" id="pzAns">${picked.map((k, j) => {
+        const ok = q.items[k] === q.items[j];
+        const cls = lock ? (ok ? "right" : "wrong") : mark ? (mark[j] ? "right" : "wrong") : "";
+        return `<button class="pc ${cls}" data-j="${j}" ${lock ? "disabled" : ""}>${esc(q.items[k])}</button>`; }).join("")}</div>
+      ${lock || picked.length === q.items.length ? "" : `<div class="pz-bank">${q.order.map(k => `<button class="pc ${picked.includes(k) ? "used" : ""}" onclick="pzTap(${k})">${esc(q.items[k])}</button>`).join("")}</div>`}`;
   }
 
   let tools = "";
@@ -999,13 +1004,17 @@ function renderQ() {
       <button class="btn" style="background:#b07800" onclick="submitExam()">📮 交卷</button></div>
       <div class="navx">${Q.items.map((_, k) => `<button class="${k === Q.i ? "cur" : Q.ans[k] != null ? "done" : ""}" onclick="jump(${k})">${k + 1}</button>`).join("")}</div>`;
   } else if (!done && q.t === "pz") {
-    const full = (a || []).length === q.items.length;
-    tools = `<div class="tools"><button class="btn" ${full ? "" : "disabled"} onclick="check()">檢查答案 ✔</button>
+    const full = (a || []).length === q.items.length, mark = (Q.mark || {})[Q.i], tries = (Q.tries || {})[Q.i] || 0;
+    const bad = mark ? mark.filter(x => !x).length : 0;
+    tools = (mark ? `<div class="fb no"><div class="h">還有 ${bad} 句的位置不對（紅色）</div><div>把紅色的卡拖曳到正確位置，或點一下拿回去重放，改好再按「再檢查一次」。</div></div>`
+      : tries ? `<div class="hint2" style="margin-top:12px">第 ${tries + 1} 次檢查・第一次檢查的成績已經記下來了</div>` : "") +
+      `<div class="tools"><button class="btn" ${full ? "" : "disabled"} onclick="check()">${tries ? "再檢查一次 ✔" : "檢查答案 ✔"}</button>
       <button class="btn ghost" onclick="pzReset()">↺ 重排</button>
-      <button class="btn ghost" onclick="pzHint()">💡 提示下一張${Q.hint && Q.hint[Q.i] ? `（已用 ${Q.hint[Q.i]} 次）` : ""}</button></div>`;
+      <button class="btn ghost" onclick="pzHint()">💡 提示下一張${Q.hint && Q.hint[Q.i] ? `（已用 ${Q.hint[Q.i]} 次）` : ""}</button>
+      ${tries ? `<button class="btn ghost" onclick="pzGiveUp()">🏳️ 看正確答案</button>` : ""}</div>`;
   } else if (done) {
     const r = Q.res[Q.i];
-    const pzInfo = q.t === "pz" ? `<div>放對 ${q.items.filter((t, j) => (a || [])[j] != null && q.items[a[j]] === t).length} / ${q.items.length} 句（綠色是放對的位置）</div>` : "";
+    const pzInfo = q.t === "pz" ? `<div>第一次檢查放對 ${r.firstHit} / ${q.items.length} 句${r.tries > 1 ? `，共檢查 ${r.tries} 次` : ""}${r.giveUp ? "（看了正確答案）" : ""}</div>` : "";
     tools = `<div class="fb ${r.ok ? "ok" : "no"}"><div class="h">${r.ok ? "✔ 答對了！" + (r.gain ? ` +${r.gain} XP` : "") : "✘ 再想想！正確答案是："}</div>${pzInfo}
       ${r.ok ? "" : `<div class="ca">${corrText(q)}</div>`}
       <div class="ex">💬 ${q.exp}</div></div>
@@ -1014,6 +1023,7 @@ function renderQ() {
   card += tools + `</div>`;
   $app.innerHTML = head + psg + card;
   const nb = document.getElementById("nextBtn"); if (nb) nb.focus({ preventScroll: true });
+  if (q.t === "pz" && !lock) bindPzDrag();
 }
 
 /* ---------- 互動 ---------- */
@@ -1022,9 +1032,47 @@ function pick(k) {
   if (Q.res[Q.i]) return;
   Q.ans[Q.i] = k; check();
 }
-function pzTap(k) { if (Q.res[Q.i]) return; const a = Q.ans[Q.i] || []; if (!a.includes(k)) a.push(k); Q.ans[Q.i] = a; renderQ(); }
-function pzUntap(j) { if (Q.res[Q.i]) return; const a = Q.ans[Q.i] || []; a.splice(j, 1); Q.ans[Q.i] = a.length ? a : null; renderQ(); }
-function pzReset() { if (Q.res[Q.i]) return; Q.ans[Q.i] = null; renderQ(); }
+function pzClear() { if (Q.mark) delete Q.mark[Q.i]; }
+function pzTap(k) { if (Q.res[Q.i]) return; const a = Q.ans[Q.i] || []; if (!a.includes(k)) a.push(k); Q.ans[Q.i] = a; pzClear(); renderQ(); }
+function pzUntap(j) { if (Q.res[Q.i]) return; const a = Q.ans[Q.i] || []; a.splice(j, 1); Q.ans[Q.i] = a.length ? a : null; pzClear(); renderQ(); }
+function pzReset() { if (Q.res[Q.i]) return; Q.ans[Q.i] = null; pzClear(); renderQ(); }
+function pzMove(from, to) { if (Q.res[Q.i] || from === to) return; const a = Q.ans[Q.i] || []; const [x] = a.splice(from, 1); a.splice(to, 0, x); Q.ans[Q.i] = a; pzClear(); renderQ(); }
+/* 拖曳換位置（滑鼠、觸控都可以）：按住上方的卡移動，放開時插到手指所在的卡前面或後面；沒有移動就當作點一下（拿回去） */
+function bindPzDrag() {
+  const box = document.getElementById("pzAns"); if (!box) return;
+  box.querySelectorAll(".pc").forEach(el => {
+    el.addEventListener("pointerdown", ev => {
+      if (ev.button > 0) return;
+      const from = +el.dataset.j, sx = ev.clientX, sy = ev.clientY; let drag = false, target = null, after = false;
+      el.setPointerCapture(ev.pointerId);
+      const mv = e => {
+        const dx = e.clientX - sx, dy = e.clientY - sy;
+        if (!drag && Math.hypot(dx, dy) < 8) return;
+        drag = true; e.preventDefault();
+        el.classList.add("drag"); el.style.transform = `translate(${dx}px,${dy}px)`;
+        el.style.pointerEvents = "none";
+        const over = document.elementFromPoint(e.clientX, e.clientY), t = over && over.closest && over.closest("#pzAns .pc");
+        box.querySelectorAll(".pc.drop-l,.pc.drop-r").forEach(x => x.classList.remove("drop-l", "drop-r"));
+        target = t && t !== el ? t : null;
+        if (target) { const r = target.getBoundingClientRect(); after = e.clientX > r.left + r.width / 2; target.classList.add(after ? "drop-r" : "drop-l"); }
+      };
+      const up = () => {
+        el.removeEventListener("pointermove", mv); el.removeEventListener("pointerup", up); el.removeEventListener("pointercancel", up);
+        if (!drag) { pzUntap(from); return; }
+        if (target) { let to = +target.dataset.j + (after ? 1 : 0); if (to > from) to--; pzMove(from, to); } else renderQ();
+      };
+      el.addEventListener("pointermove", mv); el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
+    });
+  });
+}
+function pzGiveUp() {
+  const q = Q.items[Q.i]; if (Q.res[Q.i]) return;
+  const a = []; q.items.forEach(t => a.push(q.order.find(v => !a.includes(v) && q.items[v] === t)));
+  Q.ans[Q.i] = a; pzClear(); Q.combo = 0;
+  const f = (Q.first || {})[Q.i] || { ratio: 0, hit: 0 };
+  Q.res[Q.i] = { ok: false, gain: 0, ratio: f.ratio, firstHit: f.hit, tries: (Q.tries || {})[Q.i] || 1, giveUp: true };
+  renderQ();
+}
 function pzHint() {
   const q = Q.items[Q.i]; if (Q.res[Q.i]) return;
   if ((Q.ans[Q.i] || []).length >= q.items.length && isRight(q, Q.ans[Q.i])) return;
@@ -1036,12 +1084,23 @@ function pzHint() {
 }
 function check() {
   const q = Q.items[Q.i], a = Q.ans[Q.i];
+  if (q.t === "pz") {
+    if (!a || a.length < q.items.length) return;
+    const mark = q.items.map((t, j) => q.items[a[j]] === t), hit = mark.filter(Boolean).length;
+    Q.tries = Q.tries || {}; Q.tries[Q.i] = (Q.tries[Q.i] || 0) + 1;
+    Q.first = Q.first || {};
+    if (!Q.first[Q.i]) Q.first[Q.i] = { hit: Math.max(0, hit - ((Q.hint && Q.hint[Q.i]) || 0)), ratio: Math.max(0, hit - ((Q.hint && Q.hint[Q.i]) || 0)) / q.items.length };
+    if (hit < q.items.length) { Q.mark = Q.mark || {}; Q.mark[Q.i] = mark; Q.combo = 0; renderQ(); return; }
+    const first = Q.tries[Q.i] === 1, gain = first ? ((Q.hint && Q.hint[Q.i]) ? 5 : 10) : 3;
+    Q.combo = first ? Q.combo + 1 : 0; Q.xp += gain; Q.best = Math.max(Q.best, Q.combo); flash("+" + gain + " XP", null);
+    Q.res[Q.i] = { ok: true, gain, ratio: Q.first[Q.i].ratio, firstHit: Q.first[Q.i].hit, tries: Q.tries[Q.i] };
+    pzClear(); renderQ(); return;
+  }
   const ok = isRight(q, a);
   let gain = 0;
   if (ok) { Q.combo++; gain = (Q.hint && Q.hint[Q.i] ? 5 : 10) + (Q.combo >= 3 ? Math.min(Q.combo - 2, 5) * 2 : 0); Q.xp += gain; Q.best = Math.max(Q.best, Q.combo); flash("+" + gain + " XP", null); }
   else Q.combo = 0;
   Q.res[Q.i] = { ok, gain };
-  if (q.t === "pz") { const hit = q.items.filter((t, j) => a[j] != null && q.items[a[j]] === t).length; Q.res[Q.i].ratio = Math.max(0, hit - ((Q.hint && Q.hint[Q.i]) || 0)) / q.items.length; }
   renderQ();
 }
 function flash(t, color) { const d = document.createElement("div"); d.className = "xp-pop"; d.textContent = t; if (color) d.style.color = color; document.body.appendChild(d); setTimeout(() => d.remove(), 900); }
@@ -1082,7 +1141,7 @@ function showPuzzle(lid, uid) {
     <div class="pz-head" style="background:linear-gradient(135deg,${L.color},${L.color}cc)"><div class="big">${U.icon}</div>
       <h2>${U.title}</h2><div class="en">${L.title} ${L.en.split("｜")[0]}・一句一張卡，排出正確順序</div></div>
     <div class="pz-levels">${cards}</div>
-    <div class="howto"><b>玩法</b>　每一句是一張卡，依序點選排出課文；點上方已放好的卡可以拿回來，「↺ 重排」可以全部重來，「💡 提示下一張」會放好下一句（用了提示的句子不計分）。交出後依「放對位置的句數」得星：60% ★ … 全對 ★★★★★；拿到 ★ 就能開啟下一級。</div>`;
+    <div class="howto"><b>玩法</b>　每一句是一張卡，依序點選排出課文；按住上方的卡<b>拖曳</b>可以換位置，點一下可以拿回來，「↺ 重排」可以全部重來，「💡 提示下一張」會放好下一句（用了提示的句子不計分）。按「檢查答案」後，放錯的卡會變紅色，可以拖曳修正再檢查，直到全部排對。星等看<b>第一次檢查</b>放對的句數：60% ★ … 全對 ★★★★★；拿到 ★ 就能開啟下一級。</div>`;
   scrollTo(0, 0);
 }
 function startLevel(lid, uid, k) {
@@ -1099,12 +1158,12 @@ function finishLevel() {
   P.units[v.id] = { stars: Math.max(st, prev.stars || 0), best: Math.max(pct, prev.best || 0) };
   syncPuzzleStars(U);
   P.xp += Q.xp; saveP();
-  const a = Q.ans[0] || [], right = q.items.filter((t, j) => a[j] != null && q.items[a[j]] === t).length;
+  const right = r.firstHit != null ? r.firstHit : 0;
   const nk = k + 1, hasNext = nk < U.levels.length, nextOpen = hasNext && !levelLocked(U, nk);
   const msg = st === 5 ? "全部排對了！太厲害了 🎉" : st >= 1 ? "有星星了！看看哪幾句放錯，再挑戰全對。" : "還差一點，先看完整原文，再試一次！";
   $app.innerHTML = `<div class="topbar"><button class="back" onclick="showPuzzle('${Q.L.id}','${U.id}')">← 回課文拼圖</button></div>
     <div class="result"><div class="bigstars">${starHTML(st).replace('class="stars"', "")}</div>
-      <h2>${U.icon} ${v.name}</h2><div class="score">${right} / ${q.items.length} 句</div>
+      <h2>${U.icon} ${v.name}</h2><div class="score">${right} / ${q.items.length} 句</div><div style="color:var(--muted)">第一次檢查就放對的句數${r.tries > 1 ? `・共檢查 ${r.tries} 次` : ""}</div>
       <div>${msg}${newBest ? "　<b>（新紀錄！）</b>" : ""}</div>
       <div style="margin-top:8px;color:var(--muted)">本次獲得 <b>${Q.xp} XP</b>${Q.hint && Q.hint[0] ? `・用了 ${Q.hint[0]} 次提示` : ""}</div>
       <div class="tools" style="justify-content:center">
