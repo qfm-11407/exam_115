@@ -175,7 +175,7 @@ button{font:inherit;cursor:pointer}
 .opt:disabled{cursor:default}
 .sent{font-family:var(--serif);font-size:28px;line-height:2.1;margin-top:28px;text-align:center}
 .pz-ans{min-height:72px;border:2px dashed #c9c1b0;border-radius:14px;padding:10px;margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;background:#fffef9}
-.pz-ans.empty::before{content:"依序點選下方的字卡，拼出課文";color:#a39b8a;font-size:16px;padding:8px}
+.pz-ans.empty::before{content:"依序點選下方的句子卡，排出課文";color:#a39b8a;font-size:16px;padding:8px}
 .pz-bank{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center}
 .pc{font-family:var(--serif);font-size:22px;line-height:1.4;background:#fff;border:2px solid #cfc7b6;border-bottom-width:4px;border-radius:10px;padding:6px 12px;color:inherit;min-width:44px}
 .pc:hover:not(:disabled){border-color:var(--accent);background:var(--soft)}
@@ -184,6 +184,12 @@ button{font:inherit;cursor:pointer}
 .pc.wrong{background:var(--badbg);border-color:var(--bad);color:var(--bad)}
 .pc:disabled{cursor:default}
 .pz-full{font-family:var(--serif);font-size:19px;line-height:1.9;margin-top:6px}
+.pz-head{border-radius:20px;padding:22px 24px;color:#fff;position:relative;overflow:hidden}
+.pz-head h2{margin:0;font-size:26px}
+.pz-head .en{font-size:17px;opacity:.95}
+.pz-head .big{position:absolute;right:16px;top:8px;font-size:64px;opacity:.3}
+.pz-levels{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+@media (max-width:720px){.pz-levels{grid-template-columns:1fr}}
 @media (max-width:720px){.pc{font-size:18px;padding:4px 9px;min-width:36px}.pz-bank{gap:6px}}
 .ch{font:inherit;background:#fffef9;border:2px solid #e2dccd;border-radius:8px;padding:0 3px;margin:2px 1px;color:inherit;min-width:40px;position:relative}
 .ch:hover:not(:disabled){border-color:var(--accent);background:var(--soft)}
@@ -511,28 +517,11 @@ LESSONS.push({
     MC("下列哪一個「語序還原」是正確的？", ["*牡丹之愛 → 愛牡丹", "唯利是圖 → 圖利唯是", "馬首是瞻 → 是瞻馬首", "何難之有 → 何有之難"], "(B) 唯圖利；(C) 瞻馬首；(D) 有何難。", "語序還原"),
     MC("周敦頤用菊來「陪襯」蓮、用牡丹來「反襯」蓮。這種寫法的效果是什麼？", ["*透過比較，更凸顯蓮（君子）的可貴", "讓讀者知道三種花的開花季節", "證明牡丹比蓮更美麗", "說明作者三種花都一樣喜歡"], "以菊陪襯（同樣高潔，但菊消極避世）、以牡丹反襯（追求富貴），更顯得蓮出淤泥而不染的可貴。", "寫作手法")
   ]},
-  { id: "L4-5", icon: "🀄", title: "課文拼圖①：第一段", desc: "字卡 → 句卡 → 整段，拼出第一段", fixed: true, qs: [
-    PZ("把字卡排成課文：「出淤泥而不染」", ["出", "淤", "泥", "而", "不", "染"], "出淤泥而不染：蓮花從水底的爛泥中長出，卻不受汙染。", "第一階段・第一段"),
-    PZ("把字卡排成課文：「濯清漣而不妖」", ["濯", "清", "漣", "而", "不", "妖"], "濯清漣而不妖：生長在清水中，卻不妖媚。", "第一階段・第一段"),
-    PZ("把字卡排成課文：「中通外直，不蔓不枝」", ["中", "通", "外", "直，", "不", "蔓", "不", "枝"], "中通外直，不蔓不枝：花梗中空，外表挺直；不蔓延細莖，不旁生枝條。", "第一階段・第一段"),
-    PZ("把字卡排成課文：「香遠益清，亭亭淨植」", ["香", "遠", "益", "清，", "亭", "亭", "淨", "植"], "香遠益清，亭亭淨植：香氣傳得越遠越清；高挺而潔淨地直立在水中。", "第一階段・第一段"),
-    PZ("把句卡排好：先寫眾花，再寫陶淵明與世人", ["水陸草木之花，", "可愛者甚蕃：", "晉 陶淵明獨愛菊，", "自李唐來，", "世人盛愛牡丹。"], "先泛論眾花可愛者甚多，再寫陶淵明愛菊、世人愛牡丹。", "第一階段・第一段"),
-    PZ("把句卡排好：作者獨愛蓮的理由", ["予獨愛蓮之", "出淤泥而不染，", "濯清漣而不妖；", "中通外直，", "不蔓不枝；", "香遠益清，", "亭亭淨植，", "可遠觀而不可褻玩焉。"], "蓮的特質依序是：出淤泥而不染、濯清漣而不妖、中通外直、不蔓不枝、香遠益清、亭亭淨植、可遠觀而不可褻玩。", "第一階段・第一段"),
-    PZ("挑戰：拼出完整的第一段", ["水陸草木之花，", "可愛者甚蕃：", "晉 陶淵明獨愛菊，", "自李唐來，", "世人盛愛牡丹。", "予獨愛蓮之出淤泥而不染，", "濯清漣而不妖；", "中通外直，", "不蔓不枝；", "香遠益清，", "亭亭淨植，", "可遠觀而不可褻玩焉。"], "第一段：由眾花寫到菊、牡丹，再聚焦於蓮的特質。", "第一階段・第一段")
-  ]},
-  { id: "L4-6", icon: "🀄", title: "課文拼圖②：第二段", desc: "字卡 → 句卡 → 整段，拼出第二段", fixed: true, req: "L4-5", qs: [
-    PZ("把字卡排成課文：「菊，花之隱逸者也」", ["菊，", "花", "之", "隱", "逸", "者", "也；"], "菊是花中的隱士。", "第二階段・第二段"),
-    PZ("把字卡排成課文：「菊之愛，陶後鮮有聞」", ["菊", "之", "愛，", "陶", "後", "鮮", "有", "聞。"], "愛菊的人，陶淵明之後就很少聽說了。鮮，少。", "第二階段・第二段"),
-    PZ("把字卡排成課文：「牡丹之愛，宜乎眾矣」", ["牡", "丹", "之", "愛，", "宜", "乎", "眾", "矣！"], "愛牡丹的人，應當很多了！語帶委婉的貶責。", "第二階段・第二段"),
-    PZ("把句卡排好：三種花的象徵", ["予謂：", "菊，花之隱逸者也；", "牡丹，花之富貴者也；", "蓮，花之君子者也。"], "順序和第一段一樣：菊 → 牡丹 → 蓮。", "第二階段・第二段"),
-    PZ("把句卡排好：作者的感嘆", ["噫！", "菊之愛，陶後鮮有聞。", "蓮之愛，同予者何人？", "牡丹之愛，宜乎眾矣！"], "感嘆的順序換成：菊 → 蓮 → 牡丹，把「眾矣」的牡丹放最後，加深感慨。", "第二階段・第二段"),
-    PZ("挑戰：拼出完整的第二段", ["予謂：", "菊，", "花之隱逸者也；", "牡丹，", "花之富貴者也；", "蓮，", "花之君子者也。", "噫！", "菊之愛，", "陶後鮮有聞。", "蓮之愛，", "同予者何人？", "牡丹之愛，", "宜乎眾矣！"], "第二段：先點明三花的象徵，再以「噫」字感嘆君子難尋、世人多追求富貴。", "第二階段・第二段")
-  ]},
-  { id: "L4-7", icon: "🀄", title: "課文拼圖③：全文", desc: "結構 → 全文句卡 → 全文短句", fixed: true, req: "L4-6", qs: [
-    PZ("把全文的內容順序排好", ["泛論眾花可愛者甚多", "陶淵明獨愛菊", "世人盛愛牡丹", "作者獨愛蓮，並描寫蓮的特質", "點明菊、牡丹、蓮的象徵", "感嘆愛菊、愛蓮、愛牡丹的人"], "第一段：眾花 → 菊 → 牡丹 → 蓮；第二段：三花象徵 → 感嘆。", "第三階段・全文"),
-    PZ("把全文的句卡排好", ["水陸草木之花，可愛者甚蕃：", "晉 陶淵明獨愛菊，自李唐來，世人盛愛牡丹。", "予獨愛蓮之出淤泥而不染，濯清漣而不妖；", "中通外直，不蔓不枝；", "香遠益清，亭亭淨植，可遠觀而不可褻玩焉。", "予謂：菊，花之隱逸者也；牡丹，花之富貴者也；蓮，花之君子者也。", "噫！菊之愛，陶後鮮有聞。", "蓮之愛，同予者何人？牡丹之愛，宜乎眾矣！"], "全文共兩段，第一段寫愛蓮的原因，第二段寫三花的象徵與感嘆。", "第三階段・全文"),
-    PZ("終極挑戰：用短句卡拼出愛蓮說全文", ["水陸草木之花，", "可愛者甚蕃：", "晉 陶淵明獨愛菊，", "自李唐來，", "世人盛愛牡丹。", "予獨愛蓮之出淤泥而不染，", "濯清漣而不妖；", "中通外直，", "不蔓不枝；", "香遠益清，", "亭亭淨植，", "可遠觀而不可褻玩焉。", "予謂：", "菊，", "花之隱逸者也；", "牡丹，", "花之富貴者也；", "蓮，", "花之君子者也。", "噫！", "菊之愛，", "陶後鮮有聞。", "蓮之愛，", "同予者何人？", "牡丹之愛，", "宜乎眾矣！"], "恭喜！你已經能把愛蓮說全文完整拼出來了。", "第三階段・全文")
-  ]}
+  { id: "L4-5", icon: "🀄", title: "課文拼圖", desc: "一句一張卡，排出正確順序・三個等級：第一段 → 第二段 → 全文", levels: [
+    { id: "L4-5a", name: "等級一：第一段", sub: "12 句", q: PZ("等級一：把第一段的句子排成正確順序", ["水陸草木之花，", "可愛者甚蕃：", "晉 陶淵明獨愛菊，", "自李唐來，", "世人盛愛牡丹。", "予獨愛蓮之出淤泥而不染，", "濯清漣而不妖；", "中通外直，", "不蔓不枝；", "香遠益清，", "亭亭淨植，", "可遠觀而不可褻玩焉。"], "第一段：先泛論眾花，再寫陶淵明愛菊、世人愛牡丹，最後聚焦於作者獨愛的蓮與蓮的特質。", "等級一・第一段") },
+    { id: "L4-5b", name: "等級二：第二段", sub: "14 句", q: PZ("等級二：把第二段的句子排成正確順序", ["予謂：", "菊，", "花之隱逸者也；", "牡丹，", "花之富貴者也；", "蓮，", "花之君子者也。", "噫！", "菊之愛，", "陶後鮮有聞。", "蓮之愛，", "同予者何人？", "牡丹之愛，", "宜乎眾矣！"], "第二段：先點明三花的象徵（菊 → 牡丹 → 蓮），再以「噫」感嘆（菊 → 蓮 → 牡丹）。", "等級二・第二段") },
+    { id: "L4-5c", name: "等級三：全文", sub: "26 句", q: PZ("等級三：把愛蓮說全文的句子排成正確順序", ["水陸草木之花，", "可愛者甚蕃：", "晉 陶淵明獨愛菊，", "自李唐來，", "世人盛愛牡丹。", "予獨愛蓮之出淤泥而不染，", "濯清漣而不妖；", "中通外直，", "不蔓不枝；", "香遠益清，", "亭亭淨植，", "可遠觀而不可褻玩焉。", "予謂：", "菊，", "花之隱逸者也；", "牡丹，", "花之富貴者也；", "蓮，", "花之君子者也。", "噫！", "菊之愛，", "陶後鮮有聞。", "蓮之愛，", "同予者何人？", "牡丹之愛，", "宜乎眾矣！"], "全文兩段：第一段寫愛蓮的原因與蓮的特質，第二段寫三花的象徵與作者的感嘆。", "等級三・全文") }
+  ] }
   ]
 });
 </script>
@@ -734,6 +723,7 @@ const MOCK = {
 </script>
 <script>
 /* ================= 練習引擎 ================= */
+LESSONS.forEach(L => L.units.forEach(u => { if (u.levels) u.qs = u.levels.map(v => v.q); }));
 const KEY = "chi1150102_progress";
 const STUDY = LESSONS.flatMap(L => L.units.filter(u => !u.exam));
 const TOTAL_UNITS = STUDY.length;
@@ -794,7 +784,7 @@ function showHome() {
     <div class="hero"><div class="deco">文</div>
       <h1>八年級國文 第二次段考強化練習</h1>
       <div class="sub">範圍：第四課 愛蓮說・第五課 生命中的碎珠・第六課 鳥・語文常識二 句型</div>
-      <div class="sub">特色：課文闖關｜每課 4 個小單元，第四課加開課文拼圖三階段，答對得 ★ 與 XP，三課達標解鎖模擬段考</div>
+      <div class="sub">特色：課文闖關｜每課 4 個小單元，第四課加開課文拼圖（三個等級），答對得 ★ 與 XP，三課達標解鎖模擬段考</div>
       <div class="sub pe-level"></div>
       <div class="stats">
         <div class="stat"><b>★ ${st}</b>/ ${max}</div>
@@ -802,9 +792,9 @@ function showHome() {
         <div class="stat"><span class="rank">${rankOf(st)}</span></div>
       </div>
     </div>
-    <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先做該課的「國字注音」「注釋」，認識生難字詞。</li><li><b>✍️ 課後複習：</b>上完一課，做「課文選擇題」和該課的特色單元（蓮的密碼、論證偵探、賞鳥觀察站）；第四課再用「課文拼圖」第一段 → 第二段 → 全文，把愛蓮說背熟。</li><li><b>🎯 自主練習：</b>答錯的題目在結果頁按「錯題重練」再挑戰，把每個小單元練到 ★★★。</li><li><b>🏆 段考衝刺：</b>到「段考複習」練注音 100 則、注釋 50 則、句型判斷與形近字改錯，最後挑戰模擬段考。</li></ul></details>
+    <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先做該課的「國字注音」「注釋」，認識生難字詞。</li><li><b>✍️ 課後複習：</b>上完一課，做「課文選擇題」和該課的特色單元（蓮的密碼、論證偵探、賞鳥觀察站）；第四課再進「課文拼圖」，從等級一（第一段）、等級二（第二段）到等級三（全文），一句一張卡排出課文，把愛蓮說背熟。</li><li><b>🎯 自主練習：</b>答錯的題目在結果頁按「錯題重練」再挑戰，把每個小單元練到 ★★★。</li><li><b>🏆 段考衝刺：</b>到「段考複習」練注音 100 則、注釋 50 則、句型判斷與形近字改錯，最後挑戰模擬段考。</li></ul></details>
     <div class="grid">${cards}</div>
-    <div class="howto"><b>闖關規則</b>　每個小單元依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★。模擬段考的成績就是本頁的「練習等級」。答對 +10 XP，連續答對還有 🔥 連擊加分。答錯的題目會在結果頁整理出來，可以按「錯題重練」再挑戰。第四課的課文拼圖要依序闖關：前一階段拿到 ★，才會開啟下一階段（第一段 → 第二段 → 全文）。L4、L5、L6 各有 2 個小單元拿到 ★，就能在「段考複習」挑戰 🏆 模擬段考！</div>
+    <div class="howto"><b>闖關規則</b>　每個小單元依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★。模擬段考的成績就是本頁的「練習等級」。答對 +10 XP，連續答對還有 🔥 連擊加分。答錯的題目會在結果頁整理出來，可以按「錯題重練」再挑戰。第四課的課文拼圖有三個等級，依放對位置的句數得星，前一級拿到 ★ 才會開啟下一級（第一段 → 第二段 → 全文）。L4、L5、L6 各有 2 個小單元拿到 ★，就能在「段考複習」挑戰 🏆 模擬段考！</div>
     <footer>八年級國文 第二次段考 L4–L6・語文常識二 練習</footer>`;
   scrollTo(0, 0);
 }
@@ -853,7 +843,7 @@ function showLesson(id) {
     return `<button class="ucard" onclick="startUnit('${L.id}','${u.id}')">
       <div class="no">${u.icon}</div>
       <div><div class="t">${i + 1}. ${u.title}</div><div class="d">${u.desc}</div>
-      <div class="s">${starHTML(r.stars || 0)}　${u.qs.length} 題${r.best != null ? "・最佳 " + Math.round(r.best * 100) + "%" : ""}</div></div>
+      <div class="s">${starHTML(r.stars || 0)}　${u.levels ? u.levels.length + " 個等級" : u.qs.length + " 題"}${r.best != null ? "・最佳 " + Math.round(r.best * 100) + "%" : ""}</div></div>
     </button>`;
   }).join("");
   const s = lessonStars(L), m = studyUnits(L).length * 5;
@@ -890,6 +880,7 @@ function newQ(extra) { return Object.assign({ i: 0, xp: 0, combo: 0, best: 0, ps
 function startUnit(lid, uid) {
   const L = LESSONS.find(x => x.id === lid), U = L.units.find(x => x.id === uid);
   if (unitLocked(U)) { showLesson(lid); stageLockedMsg(lid, uid); return; }
+  if (U.levels) { showPuzzle(lid, uid); return; }
   setTheme(L.color, L.soft);
   Q = newQ({ mode: "practice", L, U, title: `${L.title}｜${U.title}`, items: orderItems(U.qs, U.fixed) });
   renderQ();
@@ -994,7 +985,7 @@ function renderQ() {
     card += `</div>`;
   } else if (q.t === "pz") {
     const picked = a || [];
-    card += `<div class="stem">🧩 ${esc(q.q)}</div><div class="hint2">依序點選字卡；點上方已放好的字卡可以拿回來。</div>
+    card += `<div class="stem">🧩 ${esc(q.q)}</div><div class="hint2">一句一張卡，依序點選；點上方已放好的卡可以拿回來。</div>
       <div class="pz-ans ${picked.length ? "" : "empty"}">${picked.map((k, j) => {
         const cls = lock ? (q.items[k] === q.items[j] ? "right" : "wrong") : "";
         return `<button class="pc ${cls}" ${lock ? "disabled" : ""} onclick="pzUntap(${j})">${esc(q.items[k])}</button>`; }).join("")}</div>
@@ -1011,10 +1002,11 @@ function renderQ() {
     const full = (a || []).length === q.items.length;
     tools = `<div class="tools"><button class="btn" ${full ? "" : "disabled"} onclick="check()">檢查答案 ✔</button>
       <button class="btn ghost" onclick="pzReset()">↺ 重排</button>
-      <button class="btn ghost" onclick="pzHint()">💡 提示下一張${Q.hint && Q.hint[Q.i] ? "（本題 XP 減半）" : ""}</button></div>`;
+      <button class="btn ghost" onclick="pzHint()">💡 提示下一張${Q.hint && Q.hint[Q.i] ? `（已用 ${Q.hint[Q.i]} 次）` : ""}</button></div>`;
   } else if (done) {
     const r = Q.res[Q.i];
-    tools = `<div class="fb ${r.ok ? "ok" : "no"}"><div class="h">${r.ok ? "✔ 答對了！" + (r.gain ? ` +${r.gain} XP` : "") : "✘ 再想想！正確答案是："}</div>
+    const pzInfo = q.t === "pz" ? `<div>放對 ${q.items.filter((t, j) => (a || [])[j] != null && q.items[a[j]] === t).length} / ${q.items.length} 句（綠色是放對的位置）</div>` : "";
+    tools = `<div class="fb ${r.ok ? "ok" : "no"}"><div class="h">${r.ok ? "✔ 答對了！" + (r.gain ? ` +${r.gain} XP` : "") : "✘ 再想想！正確答案是："}</div>${pzInfo}
       ${r.ok ? "" : `<div class="ca">${corrText(q)}</div>`}
       <div class="ex">💬 ${q.exp}</div></div>
       <div class="tools"><button class="btn" id="nextBtn" onclick="nextQ()">${Q.i < n - 1 ? "下一題 →" : "看結果 🏁"}</button></div>`;
@@ -1035,11 +1027,12 @@ function pzUntap(j) { if (Q.res[Q.i]) return; const a = Q.ans[Q.i] || []; a.spli
 function pzReset() { if (Q.res[Q.i]) return; Q.ans[Q.i] = null; renderQ(); }
 function pzHint() {
   const q = Q.items[Q.i]; if (Q.res[Q.i]) return;
+  if ((Q.ans[Q.i] || []).length >= q.items.length && isRight(q, Q.ans[Q.i])) return;
   let a = (Q.ans[Q.i] || []).slice(), n = 0;
   while (n < a.length && q.items[a[n]] === q.items[n]) n++;
   a = a.slice(0, n);
   if (n < q.items.length) { const k = q.order.find(v => !a.includes(v) && q.items[v] === q.items[n]); if (k != null) a.push(k); }
-  Q.ans[Q.i] = a; Q.hint = Q.hint || {}; Q.hint[Q.i] = true; renderQ();
+  Q.ans[Q.i] = a; Q.hint = Q.hint || {}; Q.hint[Q.i] = (Q.hint[Q.i] || 0) + 1; renderQ();
 }
 function check() {
   const q = Q.items[Q.i], a = Q.ans[Q.i];
@@ -1048,6 +1041,7 @@ function check() {
   if (ok) { Q.combo++; gain = (Q.hint && Q.hint[Q.i] ? 5 : 10) + (Q.combo >= 3 ? Math.min(Q.combo - 2, 5) * 2 : 0); Q.xp += gain; Q.best = Math.max(Q.best, Q.combo); flash("+" + gain + " XP", null); }
   else Q.combo = 0;
   Q.res[Q.i] = { ok, gain };
+  if (q.t === "pz") { const hit = q.items.filter((t, j) => a[j] != null && q.items[a[j]] === t).length; Q.res[Q.i].ratio = Math.max(0, hit - ((Q.hint && Q.hint[Q.i]) || 0)) / q.items.length; }
   renderQ();
 }
 function flash(t, color) { const d = document.createElement("div"); d.className = "xp-pop"; d.textContent = t; if (color) d.style.color = color; document.body.appendChild(d); setTimeout(() => d.remove(), 900); }
@@ -1061,9 +1055,69 @@ document.addEventListener("keydown", e => {
   if (e.key === "Enter") { const nb = document.getElementById("nextBtn"); if (nb) { e.preventDefault(); nb.click(); } return; }
   if (q.t === "mc") { const k = "1234abcd".indexOf(e.key.toLowerCase()) % 4; if (k >= 0 && k < q.o.length && !(Q.mode !== "exam" && Q.res[Q.i])) pick(k); }
 });
+/* ================= 課文拼圖：同一個入口，三個等級 ================= */
+function levelLocked(U, k) {
+  if (k === 0 || /unlock/.test(location.search + location.hash)) return false;
+  return !(((P.units[U.levels[k - 1].id] || {}).stars || 0) >= 1);
+}
+function syncPuzzleStars(U) {
+  const st = U.levels.map(v => (P.units[v.id] || {}).stars || 0), bs = U.levels.map(v => (P.units[v.id] || {}).best || 0);
+  P.units[U.id] = { stars: Math.floor(st.reduce((a, b) => a + b, 0) / st.length), best: bs.reduce((a, b) => a + b, 0) / bs.length };
+}
+function showPuzzle(lid, uid) {
+  Q = null;
+  const L = LESSONS.find(x => x.id === lid), U = L.units.find(x => x.id === uid);
+  setTheme(L.color, L.soft);
+  const cards = U.levels.map((v, k) => {
+    const r = P.units[v.id] || {}, lk = levelLocked(U, k);
+    return `<button class="ucard ${lk ? "locked" : ""}" onclick="${lk ? `alertBox('🔒 ${v.name} 尚未解鎖','先在「${U.levels[k - 1] ? U.levels[k - 1].name : ""}」拿到 ★，才能挑戰這一級。')` : `startLevel('${lid}','${uid}',${k})`}">
+      ${lk ? '<span class="lock">🔒 未解鎖</span>' : ""}
+      <div class="no">${["①", "②", "③"][k]}</div>
+      <div><div class="t">${v.name}</div><div class="d">${v.sub}，一句一張卡</div>
+      <div class="s">${starHTML(r.stars || 0)}${r.best != null ? "　最佳 " + Math.round(r.best * 100) + "%" : ""}</div></div>
+    </button>`;
+  }).join("");
+  $app.innerHTML = `
+    <div class="topbar"><button class="back" onclick="showLesson('${lid}')">← 回 ${L.title}</button><span class="pill">★ ${(P.units[U.id] || {}).stars || 0} / 5</span></div>
+    <div class="pz-head" style="background:linear-gradient(135deg,${L.color},${L.color}cc)"><div class="big">${U.icon}</div>
+      <h2>${U.title}</h2><div class="en">${L.title} ${L.en.split("｜")[0]}・一句一張卡，排出正確順序</div></div>
+    <div class="pz-levels">${cards}</div>
+    <div class="howto"><b>玩法</b>　每一句是一張卡，依序點選排出課文；點上方已放好的卡可以拿回來，「↺ 重排」可以全部重來，「💡 提示下一張」會放好下一句（用了提示的句子不計分）。交出後依「放對位置的句數」得星：60% ★ … 全對 ★★★★★；拿到 ★ 就能開啟下一級。</div>`;
+  scrollTo(0, 0);
+}
+function startLevel(lid, uid, k) {
+  const L = LESSONS.find(x => x.id === lid), U = L.units.find(x => x.id === uid);
+  if (levelLocked(U, k)) { showPuzzle(lid, uid); return; }
+  setTheme(L.color, L.soft);
+  Q = newQ({ mode: "practice", L, U, level: k, title: `${L.title}｜${U.title}・${U.levels[k].name}`, items: [prep(U.levels[k].q)] });
+  renderQ();
+}
+function finishLevel() {
+  const U = Q.U, k = Q.level, v = U.levels[k], q = Q.items[0], r = Q.res[0] || { ratio: 0 };
+  const pct = r.ratio || 0, st = starsOf(pct), prev = P.units[v.id] || {};
+  const newBest = st > (prev.stars || 0);
+  P.units[v.id] = { stars: Math.max(st, prev.stars || 0), best: Math.max(pct, prev.best || 0) };
+  syncPuzzleStars(U);
+  P.xp += Q.xp; saveP();
+  const a = Q.ans[0] || [], right = q.items.filter((t, j) => a[j] != null && q.items[a[j]] === t).length;
+  const nk = k + 1, hasNext = nk < U.levels.length, nextOpen = hasNext && !levelLocked(U, nk);
+  const msg = st === 5 ? "全部排對了！太厲害了 🎉" : st >= 1 ? "有星星了！看看哪幾句放錯，再挑戰全對。" : "還差一點，先看完整原文，再試一次！";
+  $app.innerHTML = `<div class="topbar"><button class="back" onclick="showPuzzle('${Q.L.id}','${U.id}')">← 回課文拼圖</button></div>
+    <div class="result"><div class="bigstars">${starHTML(st).replace('class="stars"', "")}</div>
+      <h2>${U.icon} ${v.name}</h2><div class="score">${right} / ${q.items.length} 句</div>
+      <div>${msg}${newBest ? "　<b>（新紀錄！）</b>" : ""}</div>
+      <div style="margin-top:8px;color:var(--muted)">本次獲得 <b>${Q.xp} XP</b>${Q.hint && Q.hint[0] ? `・用了 ${Q.hint[0]} 次提示` : ""}</div>
+      <div class="tools" style="justify-content:center">
+        <button class="btn" onclick="startLevel('${Q.L.id}','${U.id}',${k})">↻ 再挑戰一次</button>
+        ${nextOpen ? `<button class="btn ghost" onclick="startLevel('${Q.L.id}','${U.id}',${nk})">下一級：${U.levels[nk].name} →</button>` : `<button class="btn ghost" onclick="showPuzzle('${Q.L.id}','${U.id}')">回課文拼圖</button>`}
+      </div></div>
+    <div class="review"><h3>📜 完整原文</h3><div class="ritem"><div class="pz-full">${esc(q.items.join(""))}</div><div class="re">💬 ${q.exp}</div></div></div>`;
+  scrollTo(0, 0);
+}
 function quitQ() {
   const started = Q.ans.some(x => x != null);
   if (started && !window.confirm("確定要離開嗎？這次的作答不會記錄。")) return;
+  if (Q.level != null) { showPuzzle(Q.L.id, Q.U.id); return; }
   showLesson(Q.L.id);
 }
 
@@ -1078,6 +1132,7 @@ function reviewHTML(onlyWrong) {
   }).join("");
 }
 function finishPractice() {
+  if (Q.level != null) { finishLevel(); return; }
   const n = Q.items.length, c = Q.res.filter(r => r && r.ok).length, pct = c / n, st = starsOf(pct);
   let newBest = false;
   if (!Q.retry) {
