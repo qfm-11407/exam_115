@@ -1,5 +1,5 @@
 /** OneWord cloud backend. All helpers end in _ so google.script.run exposes only rpc/doGet. */
-var ONEWORD_VERSION_ = '2.12.0';
+var ONEWORD_VERSION_ = '2.12.1';
 var IDIOMS_ = [{"idiom":"金蘭之交","page":178,"levelId":1},{"idiom":"長袖善舞","page":178,"levelId":1},{"idiom":"長驅直入","page":178,"levelId":1},{"idiom":"門庭若市","page":178,"levelId":1},{"idiom":"雨後春筍","page":178,"levelId":1},{"idiom":"青出於藍","page":179,"levelId":1},{"idiom":"青雲直上","page":179,"levelId":1},{"idiom":"亭亭玉立","page":179,"levelId":1},{"idiom":"非池中物","page":179,"levelId":1},{"idiom":"信口雌黃","page":180,"levelId":1},{"idiom":"信手拈來","page":180,"levelId":1},{"idiom":"信而有徵","page":180,"levelId":1},{"idiom":"信誓旦旦","page":180,"levelId":1},{"idiom":"信賞必罰","page":180,"levelId":1},{"idiom":"冠冕堂皇","page":181,"levelId":1},{"idiom":"冠蓋相望","page":181,"levelId":1},{"idiom":"削足適履","page":181,"levelId":1},{"idiom":"前功盡棄","page":181,"levelId":1},{"idiom":"前車之鑑","page":181,"levelId":1},{"idiom":"前呼後擁","page":182,"levelId":1},{"idiom":"前倨後恭","page":182,"levelId":1},{"idiom":"勉為其難","page":182,"levelId":1},{"idiom":"南柯一夢","page":182,"levelId":1},{"idiom":"南腔北調","page":182,"levelId":1},{"idiom":"南極星輝","page":183,"levelId":1},{"idiom":"南橘北枳","page":183,"levelId":1},{"idiom":"南轅北轍","page":183,"levelId":1},{"idiom":"厚此薄彼","page":183,"levelId":1},{"idiom":"咬文嚼字","page":184,"levelId":1},{"idiom":"咬牙切齒","page":184,"levelId":1},{"idiom":"品頭論足","page":184,"levelId":1},{"idiom":"哄堂大笑","page":184,"levelId":1},{"idiom":"咫尺天涯","page":185,"levelId":1},{"idiom":"垂拱而治","page":185,"levelId":1},{"idiom":"垂涎三尺","page":185,"levelId":1},{"idiom":"垂頭喪氣","page":185,"levelId":1},{"idiom":"屋舍儼然","page":185,"levelId":1},{"idiom":"屏氣凝神","page":186,"levelId":1},{"idiom":"待字閨中","page":186,"levelId":1},{"idiom":"待價而沽","page":186,"levelId":1},{"idiom":"徇私舞弊","page":186,"levelId":1},{"idiom":"後生可畏","page":186,"levelId":1},{"idiom":"後來居上","page":187,"levelId":1},{"idiom":"後起之秀","page":187,"levelId":1},{"idiom":"後顧之憂","page":187,"levelId":1},{"idiom":"怒髮衝冠","page":187,"levelId":1},{"idiom":"急公好義","page":187,"levelId":1},{"idiom":"急征暴歛","page":187,"levelId":1},{"idiom":"急流勇退","page":188,"levelId":1},{"idiom":"急轉直下","page":188,"levelId":1},{"idiom":"怨天尤人","page":188,"levelId":1},{"idiom":"怨聲載道","page":188,"levelId":1},{"idiom":"恆河沙數","page":189,"levelId":1},{"idiom":"恃才傲物","page":189,"levelId":1},{"idiom":"恍然大悟","page":189,"levelId":1},{"idiom":"按部就班","page":189,"levelId":1},{"idiom":"按圖索驥","page":189,"levelId":1},{"idiom":"拭目以待","page":190,"levelId":1},{"idiom":"披荊斬棘","page":190,"levelId":1},{"idiom":"指日可待","page":190,"levelId":1},{"idiom":"指桑罵槐","page":190,"levelId":1},{"idiom":"指鹿為馬","page":191,"levelId":1},{"idiom":"拾人牙慧","page":191,"levelId":1},{"idiom":"拾人涕唾","page":191,"levelId":1},{"idiom":"拾遺補闕","page":191,"levelId":1},{"idiom":"挑撥離間","page":192,"levelId":1},{"idiom":"政通人和","page":192,"levelId":1},{"idiom":"故弄玄虛","page":192,"levelId":1},{"idiom":"故步自封","page":192,"levelId":1},{"idiom":"故態復萌","page":192,"levelId":1},{"idiom":"既往不咎","page":193,"levelId":1},{"idiom":"春風化雨","page":193,"levelId":1},{"idiom":"春風滿面","page":193,"levelId":1},{"idiom":"春寒料峭","page":193,"levelId":1},{"idiom":"春樹暮雲","page":193,"levelId":1},{"idiom":"昭然若揭","page":194,"levelId":2},{"idiom":"柔茹剛吐","page":194,"levelId":2},{"idiom":"柔腸寸斷","page":194,"levelId":2},{"idiom":"枯木逢春","page":194,"levelId":2},{"idiom":"枯樹生花","page":195,"levelId":2},{"idiom":"柳暗花明","page":195,"levelId":2},{"idiom":"枵腹從公","page":195,"levelId":2},{"idiom":"殃及池魚","page":195,"levelId":2},{"idiom":"洋洋大觀","page":195,"levelId":2},{"idiom":"洪福齊天","page":196,"levelId":2},{"idiom":"流芳百世","page":196,"levelId":2},{"idiom":"流離失所","page":196,"levelId":2},{"idiom":"流金鑠石","page":196,"levelId":2},{"idiom":"津津樂道","page":196,"levelId":2},{"idiom":"洞天福地","page":197,"levelId":2},{"idiom":"洞燭機先","page":197,"levelId":2},{"idiom":"洗心革面","page":197,"levelId":2},{"idiom":"洗手奉職","page":197,"levelId":2},{"idiom":"洗耳恭聽","page":197,"levelId":2},{"idiom":"活靈活現","page":198,"levelId":2},{"idiom":"洛陽紙貴","page":198,"levelId":2},{"idiom":"為人作嫁","page":198,"levelId":2},{"idiom":"狡兔三窟","page":198,"levelId":2},{"idiom":"玲瓏剔透","page":199,"levelId":2},{"idiom":"甚囂塵上","page":199,"levelId":2},{"idiom":"眉飛色舞","page":199,"levelId":2},{"idiom":"相形見絀","page":199,"levelId":2},{"idiom":"相得益彰","page":200,"levelId":2},{"idiom":"相提並論","page":200,"levelId":2},{"idiom":"相敬如賓","page":200,"levelId":2},{"idiom":"相濡以沫","page":200,"levelId":2},{"idiom":"秋扇見捐","page":200,"levelId":2},{"idiom":"秋毫無犯","page":201,"levelId":2},{"idiom":"穿壁引光","page":201,"levelId":2},{"idiom":"穿鑿附會","page":201,"levelId":2},{"idiom":"紅顏薄命","page":202,"levelId":2},{"idiom":"約定俗成","page":202,"levelId":2},{"idiom":"紈袴子弟","page":202,"levelId":2},{"idiom":"美輪美奐","page":202,"levelId":2},{"idiom":"背道而馳","page":202,"levelId":2},{"idiom":"茅塞頓開","page":203,"levelId":2},{"idiom":"苦口婆心","page":203,"levelId":2},{"idiom":"苦盡甘來","page":203,"levelId":2},{"idiom":"苟延殘喘","page":203,"levelId":2},{"idiom":"負荊請罪","page":203,"levelId":2},{"idiom":"迫不及待","page":204,"levelId":2},{"idiom":"迫在眉睫","page":204,"levelId":2},{"idiom":"重蹈覆轍","page":204,"levelId":2},{"idiom":"面面相覷","page":204,"levelId":2},{"idiom":"音容宛在","page":204,"levelId":2},{"idiom":"風行草偃","page":205,"levelId":2},{"idiom":"風花雪月","page":205,"levelId":2},{"idiom":"風姿綽約","page":205,"levelId":2},{"idiom":"風起雲湧","page":205,"levelId":2},{"idiom":"風雲際會","page":206,"levelId":2},{"idiom":"風馳電掣","page":206,"levelId":2},{"idiom":"風聲鶴唳","page":206,"levelId":2},{"idiom":"飛來橫禍","page":206,"levelId":2},{"idiom":"飛揚跋扈","page":206,"levelId":2},{"idiom":"飛黃騰達","page":207,"levelId":2},{"idiom":"飛蛾投火","page":207,"levelId":2},{"idiom":"食古不化","page":207,"levelId":2},{"idiom":"食不知味","page":207,"levelId":2},{"idiom":"食言而肥","page":208,"levelId":2},{"idiom":"食指大動","page":208,"levelId":2},{"idiom":"食髓知味","page":208,"levelId":2},{"idiom":"首如飛蓬","page":208,"levelId":2},{"idiom":"首屈一指","page":208,"levelId":2},{"idiom":"香消玉殞","page":209,"levelId":2},{"idiom":"乘風破浪","page":209,"levelId":2},{"idiom":"俯仰無愧","page":209,"levelId":2},{"idiom":"俯拾即是","page":209,"levelId":2},{"idiom":"俯首貼耳","page":209,"levelId":2}];
 function drawIdiomQuestion_(random,excluded){
   random=random||Math.random;
@@ -302,6 +302,22 @@ function pngBytes_(image){
   var b=bytes.map(function(n){return (n+256)%256;});assert_(b.slice(0,8).join(',')==='137,80,78,71,13,10,26,10',400,'圖片格式不正確');
   var width=b[16]*16777216+b[17]*65536+b[18]*256+b[19],height=b[20]*16777216+b[21]*65536+b[22]*256+b[23];assert_(width>=64&&height>=64&&width<=1024&&height<=1024,400,'圖片尺寸不正確');return bytes;
 }
+function findSavedPng_(folder,studentId,matches){
+  var candidates=folder.getFilesByName(studentId+'.png');
+  while(candidates.hasNext()){
+    var file=candidates.next();
+    if(matches(Utilities.base64Encode(file.getBlob().getBytes())))return file;
+  }
+  return null;
+}
+function queueSavedUpload_(submission,fileId){
+  submission.fileId=fileId;
+  submission.status='queued';
+  submission.storedAt=Date.now();
+  submission.timing=submission.timing||{};
+  submission.timing.saveMs=Math.max(0,submission.storedAt-submission.uploadAt);
+  submission.error='';
+}
 function submit_(data,auth){
   var receivedAt=Date.now(),bytes=pngBytes_(data.image),digest=hash_(data.image),ticket=admitSubmission_(data,auth,digest,receivedAt),claim=locked_(function(){
     var room=readRoom_(data.room,true);assert_(!room.endedAt,409,'本測驗已結束，無法再交卷');var p=player_(room,auth),r=room.round;assert_(r&&r.id===data.roundId,409,'題目已更換');
@@ -309,7 +325,7 @@ function submit_(data,auth){
     else assert_((['writing','collecting'].indexOf(r.phase)>=0||(r.phase==='closed'&&r.closeReason==='deadline'))&&ticket.receivedAt<(r.submissionDeadline||r.deadline),409,'本題已截止，無法再交卷');
     assert_(['revealed','cancelled'].indexOf(r.phase)<0,409,'本題已公布或取消，無法再存圖');
     var lease=uid_();r.submissions[p.id]={playerId:p.id,digest:digest,status:'uploading',correct:null,fileId:null,lease:lease,uploadAt:Date.now(),receivedAt:ticket.receivedAt,timing:{acceptMs:Math.max(0,Date.now()-ticket.receivedAt)},error:''};saveRoom_(room);
-    return {room:room.code,roundId:r.id,playerId:p.id,studentId:p.studentId,connectionVersion:p.connectionVersion||0,folderId:r.folderId,recover:Boolean(old&&old.lease),lease:lease,uploadAt:r.submissions[p.id].uploadAt};
+    return {room:room.code,roundId:r.id,playerId:p.id,studentId:p.studentId,connectionVersion:p.connectionVersion||0,folderId:r.folderId,recover:Boolean(old&&old.lease),lease:lease};
   });
   if(ticket.key)try{props_().deleteProperty(ticket.key);}catch(ignore){}
   if(claim.duplicate)return {ok:true,duplicate:true};
@@ -318,11 +334,21 @@ function submit_(data,auth){
     // A Drive operation can save the file and still lose its response. Recover the
     // exact PNG on retries; file search and image reads remain outside the lock.
     if(claim.recover){
-      var candidates=folder.getFilesByName(claim.studentId+'.png'),imageDigest=hash_(Utilities.base64Encode(bytes));
-      while(candidates.hasNext()){var candidate=candidates.next();if(hash_(Utilities.base64Encode(candidate.getBlob().getBytes()))===imageDigest){file=candidate;break;}}
+      var imageDigest=hash_(Utilities.base64Encode(bytes));
+      file=findSavedPng_(folder,claim.studentId,function(encoded){return hash_(encoded)===imageDigest;});
     }
     if(!file)file=folder.createFile(Utilities.newBlob(bytes,'image/png',claim.studentId+'.png'));
-    return locked_(function(){var room=readRoom_(claim.room,true),s=room.round&&room.round.submissions[claim.playerId],owner=room.players.find(function(p){return p.id===claim.playerId;});assert_(owner&&!owner.removedAt&&(owner.connectionVersion||0)===claim.connectionVersion,409,'作答裝置已移除，請重新加入');assert_(!room.endedAt&&room.round&&room.round.phase!=='revealed'&&room.round.id===claim.roundId&&s&&s.lease===claim.lease,409,'交卷紀錄已變更');s.fileId=file.getId();s.status='queued';s.storedAt=Date.now();s.timing=s.timing||{};s.timing.saveMs=Math.max(0,s.storedAt-claim.uploadAt);s.error='';saveRoom_(room);return {ok:true};});
+    return locked_(function(){
+      var room=readRoom_(claim.room,true),r=room.round,s=r&&r.submissions[claim.playerId];
+      var owner=room.players.find(function(p){return p.id===claim.playerId;});
+      assert_(owner&&!owner.removedAt&&(owner.connectionVersion||0)===claim.connectionVersion,409,'作答裝置已移除，請重新加入');
+      assert_(!room.endedAt&&r&&['revealed','cancelled'].indexOf(r.phase)<0&&r.id===claim.roundId&&s&&s.digest===digest,409,'交卷紀錄已變更');
+      if(s.fileId)return {ok:true,duplicate:true};
+      assert_(s.lease===claim.lease,429,'原圖正在重新保存，請稍後確認');
+      queueSavedUpload_(s,file.getId());
+      saveRoom_(room);
+      return {ok:true};
+    });
   }catch(error){
     try{locked_(function(){var room=readRoom_(claim.room,true),s=room.round&&room.round.submissions[claim.playerId];if(!room.endedAt&&s&&s.lease===claim.lease&&!s.fileId){s.status='upload-error';s.error='圖片保存失敗，請在原平板重試送出';saveRoom_(room);}});}catch(ignore){}
     if(error.status===409||error.status===404)throw error;
@@ -339,13 +365,38 @@ function images_(data){
     images[id]=cached;
   });return images;
 }
+function interruptedUploads_(snapshot){
+  var round=snapshot.round,found=[];
+  Object.values(round.submissions).forEach(function(s){
+    if(s.status!=='uploading'||s.fileId||!s.lease||Date.now()-s.uploadAt<=150000)return;
+    var owner=snapshot.players.find(function(p){return p.id===s.playerId&&!p.removedAt;});
+    if(!owner)return;
+    try{
+      var folder=DriveApp.getFolderById(round.folderId);
+      var file=findSavedPng_(folder,owner.studentId,function(encoded){return hash_('data:image/png;base64,'+encoded)===s.digest;});
+      if(file)found.push({playerId:s.playerId,lease:s.lease,digest:s.digest,fileId:file.getId()});
+    }catch(ignore){}
+  });
+  return found;
+}
+function restoreInterruptedUploads_(round,expectedRound,found){
+  if(round.id!==expectedRound)return false;
+  var changed=false;
+  found.forEach(function(saved){
+    var s=round.submissions[saved.playerId];
+    if(!s||s.status!=='uploading'||s.fileId||s.lease!==saved.lease||s.digest!==saved.digest)return;
+    queueSavedUpload_(s,saved.fileId);
+    changed=true;
+  });
+  return changed;
+}
 function worker_(code,onlyPlayer,expectedRound){
   var snapshot=mergeIntakes_(readRoom_(code)),snapshotRound=snapshot.round;
   if(snapshot.endedAt||!snapshotRound||snapshotRound.phase==='revealed'||(expectedRound&&snapshotRound.id!==expectedRound))return {idle:true};
   if(Object.values(snapshotRound.submissions).some(function(s){return(s.status==='uploading'&&Date.now()-s.uploadAt<=150000)||(s.status==='receiving'&&Date.now()-s.receivedAt<=120000);} ))return {idle:true,receiving:true};
-  var config=settings_();
+  var config=settings_(),recovered=interruptedUploads_(snapshot);
   var job=locked_(function(){var room=readRoom_(code,true),r=room.round;if(room.endedAt||!r||r.phase==='revealed'||(expectedRound&&r.id!==expectedRound))return null;
-    var changed=false;Object.values(r.submissions).forEach(function(s){if(s.status==='judging'&&Date.now()-s.startedAt>150000){s.status='error';s.correct=null;s.error='判讀逾時，可重新判讀';changed=true;}if(s.status==='receiving'&&Date.now()-s.receivedAt>120000){s.status='upload-error';s.error='已收到交卷，但尚未存圖；請保留原頁面重試';changed=true;}if(s.status==='uploading'&&Date.now()-s.uploadAt>150000){s.status='upload-error';s.error='圖片保存未完成，請原平板重試';changed=true;}});
+    var changed=restoreInterruptedUploads_(r,snapshotRound.id,recovered);Object.values(r.submissions).forEach(function(s){if(s.status==='judging'&&Date.now()-s.startedAt>150000){s.status='error';s.correct=null;s.error='判讀逾時，可重新判讀';changed=true;}if(s.status==='receiving'&&Date.now()-s.receivedAt>120000){s.status='upload-error';s.error='已收到交卷，但尚未存圖；請保留原頁面重試';changed=true;}if(s.status==='uploading'&&Date.now()-s.uploadAt>150000){s.status='upload-error';s.error='圖片保存未完成，請原平板重試';changed=true;}});
     var all=Object.values(r.submissions),active=all.filter(function(s){return s.status==='judging';}).length;
     if(active>=config.concurrency){if(changed)saveRoom_(room);return null;}
     var sub=all.find(function(s){return s.status==='queued'&&(!onlyPlayer||s.playerId===onlyPlayer);});if(!sub){if(changed)saveRoom_(room);return null;}
@@ -386,12 +437,12 @@ function batchClaim_(code,expectedRound){
   var snapshot=readRoom_(code,true),r=snapshot.round;
   if(snapshot.endedAt||!r||r.phase==='revealed'||r.phase==='cancelled'||r.id!==expectedRound)return {stop:true};
   if(uploadsPending_(r))return {receiving:true};
-  var config=settings_();
+  var config=settings_(),recovered=interruptedUploads_(snapshot);
   return locked_(function(){
     var room=readRoom_(code,true),round=room.round;
     if(room.endedAt||!round||round.id!==expectedRound||['revealed','cancelled'].indexOf(round.phase)>=0)return {stop:true};
     if(uploadsPending_(round))return {receiving:true};
-    var changed=false,all=Object.values(round.submissions);
+    var changed=restoreInterruptedUploads_(round,expectedRound,recovered),all=Object.values(round.submissions);
     all.forEach(function(s){
       if(s.status==='judging'&&Date.now()-s.startedAt>150000){s.status='error';s.correct=null;s.error='判讀逾時，可重新判讀';changed=true;}
       if((s.status==='receiving'&&Date.now()-s.receivedAt>120000)||(s.status==='uploading'&&Date.now()-s.uploadAt>150000)){s.status='upload-error';s.error='圖片保存未完成，請原平板重試';changed=true;}
