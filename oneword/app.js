@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261030-batch-2120';
+import { client, GASClient, saveBackend } from './transport.js?v=20261112-diagnostics-2122';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -52,21 +52,214 @@ function createWorkerPump({run,changed,error}){
  return {sync(state){current=state;pump();}};
 }
 
-  const workerPumpRunner=createWorkerPump({run:data=>client.rpc(admin?.features?.batchJudging?'workerBatch':'worker',data),changed:()=>{clearTimeout(refreshTimer);refreshTimer=setTimeout(refresh,180);},error:error=>toast(error.message,true)});
+  async function requestJudging(data) {
+    const roundNumber = room?.code === data.room && room.round?.id === data.roundId ? room.round.number : null;
+    try {
+      const result = await client.rpc(admin?.features?.batchJudging ? 'workerBatch' : 'worker', data);
+      diagnostics.requestResult(data.room, roundNumber, 'grading', null);
+      return result;
+    } catch (error) {
+      diagnostics.requestResult(data.room, roundNumber, 'grading', error);
+      throw error;
+    }
+  }
+  const workerPumpRunner=createWorkerPump({run:requestJudging,changed:()=>{clearTimeout(refreshTimer);refreshTimer=setTimeout(refresh,180);},error:error=>toast(error.message,true)});
   function pumpWorkers(){workerPumpRunner.sync({code:room?.code,roundId:room?.round?.id,pending:room?.round?.pending||0,limit:admin?.features?.batchJudging?1:(admin?.settings?.concurrency||2),enabled:Boolean(room&&!room.ended&&room.round&&room.round.phase!=='revealed')});}
   function scheduleRefresh(){clearTimeout(refreshTimer);const urgent=room?.round&&((room.automation?.enabled&&room.automation.status==='running')||room.round.pending>0||room.round.phase==='collecting'||(room.round.phase==='writing'&&remaining(room.round)<=8));refreshTimer=setTimeout(refresh,urgent?1500:3500);}
   let displayedQuestionId = null,autoSettingsRoom='',screenLayoutRoom='',screenLayoutDirty=false,screenLayoutSaving=false;
   let pendingCreateRoom='',replacementRequired=false,roomsLoaded=false,roomsLoading=false;
+  const webVersion = '2.12.2';
+  const diagnostics = createTeacherDiagnostics();
+  function createTeacherDiagnostics() {
+    const prefix = 'oneword:teacher-diagnostics:1:';
+    const reports = new Map();
+    const read = key => {
+      try { return JSON.parse(sessionStorage.getItem(prefix + key)); }
+      catch { return null; }
+    };
+    const write = (key, value) => {
+      try { sessionStorage.setItem(prefix + key, JSON.stringify(value)); }
+      catch { /* The in-memory report remains available for download. */ }
+    };
+    let activeCode = read('active');
+    const now = () => new Date().toISOString();
+    const number = value => Number.isFinite(value) ? value : null;
+    const timestamp = value => Number.isFinite(value) && value > 0 ? new Date(value).toISOString() : null;
+    function reportFor(code) {
+      if (!code) return null;
+      if (!reports.has(code)) {
+        const saved = read(code);
+        const usable = saved?.seats && saved.rounds && saved.failures && Array.isArray(saved.events);
+        reports.set(code, usable ? saved : {
+          firstObservedAt: now(), seats: {}, rounds: {}, events: [], failures: {}, droppedEvents: 0
+        });
+      }
+      return reports.get(code);
+    }
+    function append(report, entry) {
+      report.events.push({ observedAt: now(), ...entry });
+      if (report.events.length > 600) {
+        report.events.shift();
+        report.droppedEvents++;
+      }
+    }
+    function describeError(error) {
+      const status = Number.isInteger(error?.status) ? error.status : null;
+      const message = typeof error === 'string' ? error : String(error?.message || '');
+      // Use fixed descriptions instead of copying responses that may contain identifiers.
+      const descriptions = [
+        [/圖片保存未完成|存圖.*逾時/, '圖片保存未確認'],
+        [/已收到交卷.*尚未存圖/, '已收件，尚未存圖'],
+        [/圖片.*保存失敗|圖片.*尚未保存/, '圖片保存失敗'],
+        [/AI 用量受限/, 'AI 用量受限'],
+        [/API 金鑰無效|未設定 API 金鑰/, 'AI 金鑰設定錯誤'],
+        [/判讀逾時/, '判讀逾時'],
+        [/AI.*格式不符|AI.*未回傳有效/, 'AI 回應格式不符'],
+        [/AI 服務/, 'AI 服務未完成判讀'],
+        [/房間狀態.*無法讀取/, '房間狀態暫時無法讀取'],
+        [/登入.*失效/, '教師登入失效'],
+        [/逾時|timeout/i, 'GAS 回應逾時'],
+        [/連線|network|failed to fetch/i, '連線異常']
+      ];
+      const match = descriptions.find(([pattern]) => pattern.test(message));
+      return { status, message: match?.[1] || ({ 401: '教師登入失效', 429: '後端忙碌，請稍後重試', 503: '雲端服務暫時無法完成操作' })[status] || '操作未完成' };
+    }
+    function seat(report, playerId) {
+      if (!Object.hasOwn(report.seats, playerId)) {
+        report.seats[playerId] = 'S' + String(Object.keys(report.seats).length + 1).padStart(2, '0');
+      }
+      return report.seats[playerId];
+    }
+    function observe(state, version) {
+      const report = reportFor(state.code);
+      if (activeCode !== state.code) {
+        activeCode = state.code;
+        write('active', activeCode);
+      }
+      const round = state.round;
+      if (Number.isFinite(state.revision) && state.revision < report.revision) return;
+      report.revision = number(state.revision);
+      const gasVersion = /^\d+\.\d+\.\d+$/.test(version || '') ? version : null;
+      const mode = state.mode === 'live' ? 'live' : 'practice';
+      const metadataChanged = gasVersion !== report.gasVersion || mode !== report.mode || Boolean(state.ended) !== report.ended;
+      Object.assign(report, { gasVersion, mode, ended: Boolean(state.ended) });
+      if (!round) {
+        if (metadataChanged) write(state.code, report);
+        return;
+      }
+      const counts = {
+        participants: state.players.length, submitted: number(round.submitted), judged: number(round.judged),
+        pending: number(round.pending), unresolved: number(round.unresolved)
+      };
+      const players = state.players.map(player => ({
+        seat: seat(report, player.id), status: player.judgeStatus || player.status || 'waiting',
+        submitted: Boolean(player.submitted), error: player.error ? describeError(player.error).message : null
+      }));
+      const timing = {};
+      for (const key of ['acceptMs', 'saveMs', 'queueMs', 'aiMs', 'totalMs']) {
+        const item = round.performance?.[key];
+        if (item) timing[key] = { count: number(item.count), average: number(item.average) };
+      }
+      const current = {
+        phase: round.phase, closeReason: round.closeReason || null,
+        automation: state.automation?.status || null, pauseReason: state.automation?.pauseReason || null,
+        deadline: timestamp(round.deadline), submissionDeadline: timestamp(round.submissionDeadline),
+        counts, players, timing
+      };
+      const old = report.rounds[round.number];
+      if (!metadataChanged && JSON.stringify(old?.current) === JSON.stringify(current)) return;
+      const observedAt = now();
+      const phases = old?.phases || {};
+      if (current.phase && !phases[current.phase]) phases[current.phase] = observedAt;
+      report.rounds[round.number] = {
+        number: round.number, firstObservedAt: old?.firstObservedAt || observedAt,
+        lastChangedAt: observedAt, serverTime: timestamp(state.serverTime), phases, current
+      };
+      if (old?.current.phase !== current.phase || old?.current.automation !== current.automation || old?.current.pauseReason !== current.pauseReason) {
+        append(report, { type: 'round-status', round: round.number, phase: current.phase, automation: current.automation, pauseReason: current.pauseReason, counts });
+      }
+      for (const player of players) {
+        if (!player.error && !['upload-error', 'error', 'uncertain'].includes(player.status)) continue;
+        const previous = old?.current.players.find(item => item.seat === player.seat);
+        if (previous?.status !== player.status || previous?.error !== player.error) {
+          append(report, { type: 'answer-issue', round: round.number, ...player });
+        }
+      }
+      write(state.code, report);
+    }
+    function requestResult(code, round, channel, error) {
+      const report = reportFor(code || activeCode);
+      if (!report) return;
+      const previous = report.failures[channel];
+      if (error) {
+        const failure = describeError(error);
+        if (previous?.status === failure.status && previous?.message === failure.message && previous.round === round) return;
+        report.failures[channel] = { round, ...failure };
+        append(report, { type: 'request-error', channel, round, ...failure });
+      } else if (previous) {
+        delete report.failures[channel];
+        append(report, { type: 'request-recovered', channel, round: round ?? previous.round });
+      } else return;
+      write(code || activeCode, report);
+    }
+    return {
+      observe, requestResult,
+      seatFor(code, playerId) { return reportFor(code)?.seats[playerId] || ''; },
+      action(state, action, outcome, error) {
+        const report = reportFor(state.code);
+        append(report, { type: 'teacher-action', round: state.round?.number ?? null, action, outcome, ...(error ? describeError(error) : {}) });
+        write(state.code, report);
+      },
+      download() {
+        const report = reportFor(activeCode);
+        if (!report) return null;
+        return {
+          schemaVersion: 1, source: 'teacher-console', downloadedAt: now(), firstObservedAt: report.firstObservedAt,
+          versions: { web: webVersion, gas: report.gasVersion ?? null }, mode: report.mode, ended: report.ended,
+          rounds: Object.values(report.rounds), events: report.events, droppedEvents: report.droppedEvents
+        };
+      }
+    };
+  }
+  const diagnosticsButton = $('diagnostics-download');
+  if (diagnosticsButton) {
+    diagnosticsButton.hidden = !diagnostics.download();
+    diagnosticsButton.onclick = () => {
+      const report = diagnostics.download();
+      if (!report) return;
+      const file = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(file);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'oneword-diagnostics-' + report.downloadedAt.replace(/[:.]/g, '-') + '.json';
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+  }
+  async function changeRound(action, data = {}, label = action) {
+    const target = room;
+    diagnostics.action(target, label, 'requested');
+    try {
+      const result = await api('/api/admin/rooms/' + target.code + '/' + action, data);
+      diagnostics.action(target, label, 'completed');
+      return result;
+    } catch (error) {
+      diagnostics.action(target, label, 'failed', error);
+      throw error;
+    }
+  }
   $('help-button').onclick = () => $('help-dialog').showModal();
   async function refresh() {
     if (!client.backend || !client.token || refreshing) return; refreshing = true;
+    const target = room;
     try {
       const data = await api('/api/admin/state'); admin = data;
+      diagnostics.requestResult(target?.code, target?.round?.number, 'state', null);
       $('login-panel').hidden = true; $('teacher-app').hidden = false; $('settings-button').hidden = false;
       idiomCount = data.idiomCount || 0;
       $('key-status').textContent = data.settings.configured ? '已設定金鑰（不顯示內容）' : '尚未設定 API 金鑰';
       room = data.room; liveState = room; if (room) offset = room.serverTime - Date.now(); renderTeacher(); pumpWorkers();
-    } catch (error) { if (error.status === 401) { client.token=''; $('login-error').textContent=error.message; $('login-panel').hidden = false; $('teacher-app').hidden = true; $('settings-button').hidden = true; } else toast(error.message, true); }
+    } catch (error) { diagnostics.requestResult(target?.code, target?.round?.number, 'state', error); if (error.status === 401) { client.token=''; $('login-error').textContent=error.message; $('login-panel').hidden = false; $('teacher-app').hidden = true; $('settings-button').hidden = true; } else toast(error.message, true); }
     finally { refreshing = false; scheduleRefresh(); }
   }
   function showQuestion() {
@@ -78,7 +271,7 @@ function createWorkerPump({run,changed,error}){
   function canManageRooms(){return Boolean(admin?.features?.roomManagement);}
   function renderAIStatus() {
     const configured=Boolean(admin?.settings.configured),management=canManageRooms();
-    $('app-version').textContent='網頁 v2.12.0 · GAS '+(admin?.version||'未回報版本');
+    $('app-version').textContent='網頁 v'+webVersion+' · GAS '+(admin?.version||'未回報版本');
     $('ai-ready-status').textContent=configured?'AI 金鑰：後端已設定':'AI 金鑰：後端尚未設定';
     $('create-ai-room-button').hidden=false;$('create-ai-room-button').disabled=!configured;
     $('backend-update-note').hidden=management;
@@ -123,6 +316,8 @@ function createWorkerPump({run,changed,error}){
   function renderTeacher() {
     renderAIStatus();
     $('welcome-panel').hidden = Boolean(room); $('room-dashboard').hidden = !room; if (!room) return;
+    diagnostics.observe(room, admin?.version);
+    if (diagnosticsButton) diagnosticsButton.hidden = false;
     const round = room.round, writing = !room.ended&&round?.phase === 'writing', ready = !room.ended&&(!round || round.phase === 'revealed');
     $('auto-close-note').hidden=!admin?.features?.autoClose;
     $('auto-close-note').textContent=admin?.features?.submissionGrace?'作答時間到後保留 5 秒傳送緩衝，暫不公開筆跡。全員已存圖則提早截止；手動截止會立即結束接收。':'全員交卷後自動截止，直接展示筆跡；對錯仍由教師統一揭曉。';
@@ -139,7 +334,7 @@ function createWorkerPump({run,changed,error}){
     document.querySelectorAll('[data-step]').forEach(el => el.classList.toggle('current', el.dataset.step === (round?.phase==='collecting'?'writing':round?.phase)));
     $('judge-summary').textContent = !round ? '交卷後即在背景判讀，結果暫時隱藏。' : round.pending ? `${round.pending} 份正在排隊或判讀中，${round.judged} 份已完成。` : round.unresolved ? `${round.unresolved} 份未完成判讀，可先重試；揭曉後這些答案標示「無法判定」，不判錯。` : round.phase === 'revealed' ? '結果已揭曉並計分，可準備下一題。' : round.submitted ? '目前交卷均已判讀完成，截止後即可揭曉。' : '等待參賽者交卷。';
     const status = { receiving:'等候存圖', uploading:'保存中', 'upload-error':'上傳待重試', queued:'排隊', judging:'判讀中', done:'已判讀', error:'判讀失敗', uncertain:'辨識不明', waiting:'待交卷' };
-    $('teacher-players').innerHTML = room.players.map(p => `<div class="player-chip ${p.submitted ? 'submitted' : ''}" title="${escape(p.error)}"><span class="seat-number">${studentId(p)}</span><span class="player-name">${escape(p.name)}</span><span class="player-status ${p.judgeStatus === 'error' ? 'failed' : ''}">${round?.phase === 'revealed' && p.status === 'done' ? p.correct ? '✓' : '✗' : status[p.judgeStatus] || '待交卷'}</span>${admin?.features?.playerManagement?`<button type="button" class="remove-player-button" data-remove-player="${escape(p.id)}" data-connection-version="${Number(p.connectionVersion)||0}" aria-label="移除學號 ${studentId(p)} 的連線" ${room.ended?'disabled':''}>移除</button>`:''}</div>`).join('') || '<p class="list-empty">分享平板網址，等待第一位參賽者加入。</p>';
+    $('teacher-players').innerHTML = room.players.map(p => `<div class="player-chip ${p.submitted ? 'submitted' : ''}" title="${escape([p.error, diagnostics.seatFor(room.code, p.id)].filter(Boolean).join(' · '))}"><span class="seat-number">${studentId(p)}</span><span class="player-name">${escape(p.name)}</span><span class="player-status ${p.judgeStatus === 'error' ? 'failed' : ''}">${round?.phase === 'revealed' && p.status === 'done' ? p.correct ? '✓' : '✗' : status[p.judgeStatus] || '待交卷'}</span>${admin?.features?.playerManagement?`<button type="button" class="remove-player-button" data-remove-player="${escape(p.id)}" data-connection-version="${Number(p.connectionVersion)||0}" aria-label="移除學號 ${studentId(p)} 的連線" ${room.ended?'disabled':''}>移除</button>`:''}</div>`).join('') || '<p class="list-empty">分享平板網址，等待第一位參賽者加入。</p>';
     $('leaderboard').innerHTML = rankRows(room.players, 8); const u = room.usage;
     $('usage-info').textContent = room.mode === 'practice' ? '流程演練・API 用量為 0' : `${u.calls} 次有效判讀回應 · 輸入 ${u.input.toLocaleString()} / 輸出 ${u.output.toLocaleString()} tokens`;
 
@@ -193,12 +388,17 @@ function createWorkerPump({run,changed,error}){
     event.preventDefault(); if (!room) return;
     const automatic=Boolean(admin?.features?.autoSequence&&$('auto-enabled').checked&&!room.round);
     $('start-button').disabled=true;
-    try { await api('/api/admin/rooms/'+room.code+'/'+(automatic?'start-series':'start'), { draftId:room.draft?.id,seconds:Number($('seconds').value),accepted:$('accepted').value.split(/[,，、\s]+/).filter(Boolean),...(automatic?{totalQuestions:Number($('auto-total').value),revealSeconds:Number($('auto-reveal-seconds').value)}:{}) }); await refresh(); }
+    try { await changeRound(automatic?'start-series':'start', { draftId:room.draft?.id,seconds:Number($('seconds').value),accepted:$('accepted').value.split(/[,，、\s]+/).filter(Boolean),...(automatic?{totalQuestions:Number($('auto-total').value),revealSeconds:Number($('auto-reveal-seconds').value)}:{}) }); await refresh(); }
     catch (error) { toast(error.message, true); renderTeacher(); }
   };
   $('auto-enabled').onchange=()=>{if(room)renderTeacher();};
-  for(const action of ['pause-series','resume-series'])$(action).onclick=async()=>{if(!room)return;try{await api('/api/admin/rooms/'+room.code+'/'+action,{});await refresh();}catch(error){toast(error.message,true);}};
-  for (const action of ['close','reveal','retry']) $(action + '-button').onclick = async () => { if (!room) return; try { $(action + '-button').disabled = true; await api(`/api/admin/rooms/${room.code}/${action}`, {}); await refresh(); } catch (error) { toast(error.message, true); renderTeacher(); } };
+  for(const action of ['pause-series','resume-series'])$(action).onclick=async()=>{if(!room)return;try{await changeRound(action);await refresh();}catch(error){toast(error.message,true);}};
+  for (const action of ['close','reveal','retry']) $(action + '-button').onclick = async () => {
+    if (!room) return;
+    const skip = action === 'reveal' && room.automation?.status === 'paused' && room.automation.pauseReason === 'judging';
+    try { $(action + '-button').disabled = true; await changeRound(action, {}, skip ? 'skip-unjudged' : action); await refresh(); }
+    catch (error) { toast(error.message, true); renderTeacher(); }
+  };
   function setJoinLink(url){if($('join-url').value!==url)$('join-copy-status').textContent='';$('join-url').value=url;$('open-join-url').href=url;$('open-join-url').hidden=!url;}
   async function copyJoinURL(){
     const input=$('join-url'),url=input.value;if(!url){toast('請先建立測驗，再複製作答網址',true);return;}
@@ -231,7 +431,7 @@ function createWorkerPump({run,changed,error}){
     try{await api('/api/admin/rooms/'+code+'/delete',{});if(room?.code===code){room=null;admin.room=null;liveState=null;renderTeacher();}await refresh();await loadRooms();toast('測驗已刪除；Drive 備份保留');}catch(error){toast(error.message,true);}
   }
   $('refresh-rooms-button').onclick=loadRooms;
-  $('end-room-button').onclick=async()=>{if(!room||room.ended||!canManageRooms())return;const code=room.code;if(!confirm('確定結束房號 '+code+' 的測驗？尚未揭曉的當題取消、不計分。已揭曉成績保留。'))return;try{const result=await api('/api/admin/rooms/'+code+'/end',{});room=result.room;admin.room=room;liveState=room;renderTeacher();await loadRooms();toast('測驗已結束，可以建立新的 AI 挑戰');}catch(error){toast(error.message,true);}};
+  $('end-room-button').onclick=async()=>{if(!room||room.ended||!canManageRooms())return;const code=room.code;if(!confirm('確定結束房號 '+code+' 的測驗？尚未揭曉的當題取消、不計分。已揭曉成績保留。'))return;try{const result=await changeRound('end');room=result.room;admin.room=room;liveState=room;renderTeacher();await loadRooms();toast('測驗已結束，可以建立新的 AI 挑戰');}catch(error){toast(error.message,true);}};
   $('delete-room-button').onclick=()=>deleteRoom(room?.code);
   $('delete-saved-room-button').onclick=()=>deleteRoom($('saved-room-select').value);
   $('load-room-button').onclick=async()=>{const code=$('saved-room-select').value;if(!code||!canManageRooms())return;try{const result=await api('/api/admin/rooms/'+code+'/select',{});room=result.room;admin.room=room;liveState=room;renderTeacher();await refresh();}catch(error){toast(error.message,true);}};
