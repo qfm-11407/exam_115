@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261112-diagnostics-2122';
+import { client, GASClient, saveBackend } from './transport.js?v=20261112-review-2123';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -68,7 +68,7 @@ function createWorkerPump({run,changed,error}){
   function scheduleRefresh(){clearTimeout(refreshTimer);const urgent=room?.round&&((room.automation?.enabled&&room.automation.status==='running')||room.round.pending>0||room.round.phase==='collecting'||(room.round.phase==='writing'&&remaining(room.round)<=8));refreshTimer=setTimeout(refresh,urgent?1500:3500);}
   let displayedQuestionId = null,autoSettingsRoom='',screenLayoutRoom='',screenLayoutDirty=false,screenLayoutSaving=false;
   let pendingCreateRoom='',replacementRequired=false,roomsLoaded=false,roomsLoading=false;
-  const webVersion = '2.12.2';
+  const webVersion = '2.12.3';
   const diagnostics = createTeacherDiagnostics();
   function createTeacherDiagnostics() {
     const prefix = 'oneword:teacher-diagnostics:1:';
@@ -236,6 +236,52 @@ function createWorkerPump({run,changed,error}){
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     };
   }
+  const reviewButton = $('round-review-button');
+  const reviewDialog = $('round-review-dialog');
+  let reviewRoomCode = '', reviewRequest = 0;
+  async function loadRoundReview(offset) {
+    const request = ++reviewRequest;
+    const status = $('round-review-status');
+    const list = $('round-review-list');
+    const previous = $('round-review-prev');
+    const next = $('round-review-next');
+    const retry = $('round-review-retry');
+    previous.hidden = next.hidden = retry.hidden = true;
+    list.innerHTML = '';
+    status.textContent = '讀取題目與解答中…';
+    try {
+      const result = await api('/api/admin/rooms/' + reviewRoomCode + '/review', {offset});
+      if (request !== reviewRequest || !reviewDialog.open) return;
+      status.textContent = result.total ? `共 ${result.total} 題 · 顯示第 ${result.offset + 1}–${result.offset + result.questions.length} 題` : '目前還沒有可回顧的題目。';
+      list.innerHTML = result.questions.map(question => {
+        const title = `<span class="muted">第 ${escape(question.number)} 題${question.cancelled ? ' · 未計分' : ''}</span>`;
+        if (question.unavailable) return `<li>${title}<p>這題的備份暫時無法讀取。</p></li>`;
+        const idiom = question.idiom ? `<span class="muted">完整成語 ${escape(question.idiom)}</span>` : '';
+        const accepted = question.accepted.length ? `<p class="muted">其他允許字形 ${question.accepted.map(escape).join('、')}</p>` : '';
+        return `<li>${title}<p>${escape(question.prompt)}</p><div class="round-review-answer"><strong>正解 ${escape(question.answer)}</strong>${idiom}</div>${accepted}</li>`;
+      }).join('');
+      previous.hidden = result.offset === 0;
+      previous.onclick = () => loadRoundReview(Math.max(0, result.offset - 10));
+      next.hidden = result.nextOffset === null;
+      next.onclick = () => loadRoundReview(result.nextOffset);
+    } catch (error) {
+      if (request !== reviewRequest || !reviewDialog.open) return;
+      status.textContent = error.message;
+      retry.hidden = false;
+      retry.onclick = () => loadRoundReview(offset);
+    }
+  }
+  if (reviewButton && reviewDialog) reviewButton.onclick = () => {
+    if (!room) return;
+    if (!admin?.features?.roundReview) {
+      toast('請先更新 GAS 至 2.12.3，即可回顧已保存的題目與解答。', true);
+      return;
+    }
+    reviewRoomCode = room.code;
+    $('round-review-room').textContent = room.title;
+    reviewDialog.showModal();
+    return loadRoundReview(0);
+  };
   async function changeRound(action, data = {}, label = action) {
     const target = room;
     diagnostics.action(target, label, 'requested');
@@ -315,6 +361,7 @@ function createWorkerPump({run,changed,error}){
   };
   function renderTeacher() {
     renderAIStatus();
+    if (reviewButton) reviewButton.hidden = !(room?.ended || room?.round?.phase === 'revealed' || room?.roundCount > 1);
     $('welcome-panel').hidden = Boolean(room); $('room-dashboard').hidden = !room; if (!room) return;
     diagnostics.observe(room, admin?.version);
     if (diagnosticsButton) diagnosticsButton.hidden = false;
