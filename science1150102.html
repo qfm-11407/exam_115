@@ -425,7 +425,7 @@ html.pe-mapview #routeView .route-grid, html.pe-mapview #routeView .unit-list{di
     </header>
 
     <section class="course-menu" id="courseMenu" aria-label="課程選單">
-      <details class="pe-howto" id="peHowto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新的一節前，到該章點小單元，先讀「📖 重點卡」認識觀念。</li><li><b>✍️ 課後複習：</b>上完一節，按「開始闖關」做該單元的習作＋精選練習，拿到 ★★★ 以上再前進下一單元。</li><li><b>🎯 自主練習：</b>答錯的題目會自動進入「錯題重練」，直到全部答對；結果頁的「錯題詳解」可以逐題看解析。</li><li><b>🏆 段考衝刺：</b>兩章各有 3 個小單元拿到 ★，就能挑戰「🏆 段考模擬」；「📘 習作總挑戰」一次全對可領通關證書。</li></ul></details>
+      <details class="pe-howto" id="peHowto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新的一節前，到該章點小單元，先讀「📖 重點卡」認識觀念。</li><li><b>✍️ 課後複習：</b>上完一節，按「開始闖關」做該單元的習作＋精選練習，拿到 ★★★ 以上再前進下一單元。</li><li><b>🎯 自主練習：</b>答錯的題目會自動進入「錯題重練」，直到全部答對；結果頁的「錯題詳解」可以逐題看解析。</li><li><b>🏆 段考衝刺：</b>兩章各有 3 個小單元拿到 ★，就能挑戰「🏆 段考模擬」；「📘 習作練習」先做第3章、第4章習作，再挑戰「習作總複習」，一次全對可領通關證書。</li></ul></details>
       <div id="routeView"></div>
     </section>
 
@@ -439,7 +439,7 @@ html.pe-mapview #routeView .route-grid, html.pe-mapview #routeView .unit-list{di
       <strong id="modeLabel">正式測驗</strong><span id="streakStatus"></span>
       <p id="learningHint"></p>
       <p class="best-line" id="bestLine"></p>
-      <p>小單元依答對率得 ★；習作總挑戰與段考模擬一次全對可領證。錯題重練不計入星星與練習等級。</p>
+      <p>小單元依答對率得 ★；習作總複習與段考模擬一次全對可領證。錯題重練不計入星星與練習等級。</p>
     </section>
 
     <section class="workspace" id="workspace" hidden>
@@ -2355,11 +2355,21 @@ html.pe-mapview #routeView .route-grid, html.pe-mapview #routeView .unit-list{di
       if (/unlock/.test(String(location.search) + String(location.hash))) return true;
       return ROUTE.every(c => c.units.filter(u => unitStars(u.id) >= 1).length >= 3);
     }
+    const WB_LIST = [
+      { f: 'ch3', icon: '📒', title: '第3章 習作', desc: '波動與聲音・實驗紀錄、學力養成、素養活用' },
+      { f: 'ch4', icon: '📒', title: '第4章 習作', desc: '光・實驗紀錄、學力養成、素養活用' },
+      { f: 'all', icon: '📘', title: '習作總複習', desc: '第3、4章習作全部・一次全對可領通關證書' }
+    ];
+    const wbCount = f => questions.filter(q => f === 'all' ? (q.chapter === 'ch3' || q.chapter === 'ch4') : q.chapter === f).length;
+    const wbStars = f => { const r = loadProgress()[f]; return r ? starsFor(r.best) : 0; };
+    const isWb = f => ['ch3', 'ch4', 'all'].includes(f);
     let routeState = { view: 'home' };
     function goRoute(spec) {
       const [view, arg] = String(spec).split(':');
       if (view === 'chapter') renderRoute({ view, ch: Number(arg) });
       else if (view === 'unit') renderRoute({ view, id: arg });
+      else if (view === 'wbq') { routeState = { view: 'wb' }; startRange(arg); return; }
+      else if (view === 'wb') renderRoute({ view: 'wb' });
       else renderRoute({ view: 'home' });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -2376,9 +2386,16 @@ html.pe-mapview #routeView .route-grid, html.pe-mapview #routeView .unit-list{di
           html += `<button class="route-card" data-go="chapter:${c.ch}"><span class="route-icon">${c.icon}</span><span class="route-title">${c.title}</span><span class="route-sub">${c.units.length} 個小單元・先看重點卡再闖關</span><span class="route-tags">${c.tags.map(t => `<span>${t}</span>`).join('')}</span><span class="route-bar"><i style="width:${s / m * 100}%"></i></span><span class="route-meta"><span>${c.units.filter(u => unitStars(u.id) >= 1).length} / ${c.units.length} 單元拿到 ★</span><span>★ ${s} / ${m}</span></span></button>`;
         }
         html += `<button class="route-card${unlocked ? '' : ' locked'}" ${unlocked ? 'data-filter="rev"' : 'data-go="locked"'}>${unlocked ? '' : '<span class="route-lock">🔒 未解鎖</span>'}<span class="route-icon">🏆</span><span class="route-title">段考模擬</span><span class="route-sub">第 3～4 章綜合・${questions.filter(q => q.chapter === 'rev').length} 題・成績就是練習等級</span><span class="route-tags"><span>波動與聲音</span><span>光</span><span>光與聲音比較</span></span><span class="route-meta"><span>${unlocked ? progressText('rev') : '第3、4章各有 3 個小單元拿到 ★ 即可解鎖'}</span></span></button>`;
-        html += `<button class="route-card" data-filter="all"><span class="route-icon">📘</span><span class="route-title">習作總挑戰</span><span class="route-sub">第 3、4 章習作 ${questions.filter(q => q.chapter === 'ch3' || q.chapter === 'ch4').length} 題・一次全對可領通關證書</span><span class="route-tags"><span>實驗紀錄</span><span>學力養成</span><span>素養活用</span></span><span class="route-meta"><span>${progressText('all')}</span></span></button>`;
+        html += `<button class="route-card" data-go="wb"><span class="route-icon">📘</span><span class="route-title">習作練習</span><span class="route-sub">第3章、第4章習作各一關，再挑戰習作總複習（一次全對可領通關證書）</span><span class="route-tags"><span>實驗紀錄</span><span>學力養成</span><span>素養活用</span></span><span class="route-bar"><i style="width:${WB_LIST.filter(w => wbStars(w.f) >= 1).length / WB_LIST.length * 100}%"></i></span><span class="route-meta"><span>${WB_LIST.filter(w => wbStars(w.f) >= 1).length} / ${WB_LIST.length} 關拿到 ★</span><span>總複習：${progressText('all')}</span></span></button>`;
         html += `</div><p class="route-note" id="routeNote" hidden></p>`;
         html += `<div class="route-rules"><b>闖關規則</b>　每個小單元先看「重點卡」，再闖關（習作＋精選練習）。依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★；每答對 1 題 +10 XP。答錯的題目會進入「錯題重練」，重練不計入星星與練習等級。第3、4章各有 3 個小單元拿到 ★，就能挑戰 🏆 段考模擬，段考模擬的成績就是本頁的「練習等級」。</div>`;
+      } else if (routeState.view === 'wb') {
+        html += `<div class="route-top"><button class="ghost" data-go="home">← 回首頁</button><span class="route-pill">${WB_LIST.filter(w => wbStars(w.f) >= 1).length} / ${WB_LIST.length} 關拿到 ★</span></div>`;
+        html += `<div class="route-head"><span class="route-icon">📘</span><div><h2>習作練習</h2><div class="route-tags"><span>先各章</span><span>再總複習</span><span>總複習全對領證書</span></div></div></div><ol class="unit-list">`;
+        WB_LIST.forEach((w, i) => {
+          html += `<li><button class="unit-row" data-go="wbq:${w.f}"><span class="unit-no">${i + 1}</span><span class="unit-main"><b>${w.icon} ${w.title}</b><small>${w.desc}</small></span><span class="unit-side"><span class="unit-stars">${starStr(wbStars(w.f))}</span><small>${wbCount(w.f)} 題</small></span></button></li>`;
+        });
+        html += `</ol><p class="route-note">習作各章依答對率得 ★（不計入首頁的總星數）；習作總複習一次全對可領通關證書。</p>`;
       } else if (routeState.view === 'chapter') {
         const c = ROUTE.find(x => x.ch === routeState.ch) || ROUTE[0];
         const s = chapterStars(c), m = c.units.length * 5;
@@ -2398,6 +2415,8 @@ html.pe-mapview #routeView .route-grid, html.pe-mapview #routeView .unit-list{di
     }
     function setRouteNext(gain) {
       const u = UNIT_MAP[state.filter];
+      if (!u && isWb(state.filter)) { const k = WB_LIST.findIndex(w => w.f === state.filter), nw = WB_LIST[k + 1];
+        $('routeNext').innerHTML = `<p class="route-stars">本關最佳：<b>${starStr(wbStars(state.filter))}</b>${gain ? `　本次 +${gain} XP` : ''}</p><div class="route-next-actions"><button class="ghost" data-go-quiz="wb">← 回習作</button>${nw ? `<button class="primary" data-go-quiz="wb">下一關：${nw.title} →</button>` : `<button class="primary" data-go-quiz="home">回首頁 →</button>`}</div>`; return; }
       if (!u) { $('routeNext').innerHTML = `<div class="route-next-actions"><button class="ghost" data-go-quiz="home">← 回首頁</button></div>`; return; }
       const nu = UNIT_LIST[UNIT_LIST.indexOf(u) + 1];
       $('routeNext').innerHTML = `<p class="route-stars">本單元最佳：<b>${starStr(unitStars(u.id))}</b>${gain ? `　本次 +${gain} XP` : ''}</p><div class="route-next-actions"><button class="ghost" data-go-quiz="chapter:${u.ch}">← 回 第${u.ch}章</button>${nu ? `<button class="primary" data-go-quiz="unit:${nu.id}">下一單元：${nu.title} →</button>` : `<button class="primary" data-go-quiz="home">回首頁挑戰段考模擬 →</button>`}</div>`;
@@ -2414,7 +2433,7 @@ html.pe-mapview #routeView .route-grid, html.pe-mapview #routeView .unit-list{di
     }
     function startRange(filter) {
       state.filter = filter;
-      $('backToMenu').textContent = UNIT_MAP[filter] ? `← 回 第${UNIT_MAP[filter].ch}章` : '← 回首頁';
+      $('backToMenu').textContent = UNIT_MAP[filter] ? `← 回 第${UNIT_MAP[filter].ch}章` : isWb(filter) ? '← 回習作' : '← 回首頁';
       $('routeNext').innerHTML = '';
       resetQuiz();
       showQuizView(true);
@@ -2435,7 +2454,7 @@ html.pe-mapview #routeView .route-grid, html.pe-mapview #routeView .unit-list{di
       if (!b) return;
       if ($('nameDialog').open) $('nameDialog').close();
       const [view, arg] = b.dataset.goQuiz.split(':');
-      routeState = view === 'chapter' ? { view, ch: Number(arg) } : view === 'unit' ? { view, id: arg } : { view: 'home' };
+      routeState = view === 'chapter' ? { view, ch: Number(arg) } : view === 'unit' ? { view, id: arg } : view === 'wb' ? { view: 'wb' } : { view: 'home' };
       showQuizView(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
@@ -2443,7 +2462,7 @@ html.pe-mapview #routeView .route-grid, html.pe-mapview #routeView .unit-list{di
       const hasProgress = state.mode === 'review' || state.index > 0 || state.locked || state.selected !== null;
       if (!state.completed && hasProgress && !window.confirm('回首頁會清除本輪答案與進度，確定要離開嗎？')) return;
       if ($('nameDialog').open) $('nameDialog').close();
-      routeState = UNIT_MAP[state.filter] ? { view: 'chapter', ch: UNIT_MAP[state.filter].ch } : { view: 'home' };
+      routeState = UNIT_MAP[state.filter] ? { view: 'chapter', ch: UNIT_MAP[state.filter].ch } : isWb(state.filter) ? { view: 'wb' } : { view: 'home' };
       showQuizView(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
@@ -3654,7 +3673,7 @@ body{padding-bottom:64px}
 })();
 </script>
 <script id="pe115-map-config">
-/* 理化：學習路線首頁（各章・段考模擬・習作總挑戰）→ 島嶼
+/* 理化：學習路線首頁（各章・段考模擬・習作練習）→ 島嶼
    各章代表建築與顏色：第二次＝第3章 音叉喇叭、第4章 燈塔；第三次＝第5章 溫度計塔、第6章 原子模型（複製改名不用改這裡） */
 var PE_SCI = { 3: ['sound', '#2b8a3e'], 4: ['lighthouse', '#f08c00'], 5: ['thermo', '#e8590c'], 6: ['atom', '#1098ad'] };
 PE_SCI.of = t => { const m = String(t || '').match(/第\s*(\d)\s*章/); return m ? PE_SCI[m[1]] : null; };
@@ -3691,10 +3710,11 @@ PE115Map.add({
   const KIND = { u31a: 'pool', u31b: 'sound', u32: 'belltower', u33: 'mountain', u34: 'music', u3s: 'trophy', u41: 'lighthouse', u42: 'mirror', u43a: 'pool', u43b: 'lens', u44: 'telescope', u45: 'prism', u4s: 'trophy' };
   PE115Map.district({
     key: 'units', anchor: '.unit-list', items: '.unit-list > li > .unit-row',
-    landmark: () => PE_SCI.of(((document.querySelector('.route-head h2') || {}).textContent) || '') || PE_SCI.def(),
+    landmark: () => { const t = ((document.querySelector('.route-head h2') || {}).textContent) || ''; return /習作/.test(t) ? ['books', '#1971c2'] : PE_SCI.of(t) || PE_SCI.def(); },
     title: () => { const h = document.querySelector('.route-head h2'); return h ? `${h.textContent} 街區` : ''; },
-    tile: el => { const id = (el.dataset.go || '').replace('unit:', ''), b = el.querySelector('.unit-main b'), side = el.querySelector('.unit-side');
-      return { name: b ? b.textContent : id, sub: side ? [...side.children].map(x => x.textContent).join('・') : '', kind: KIND[id] || PE_SCI.unit(b ? b.textContent : '') || (PE_SCI[(id.match(/^u(\d)/) || [])[1]] || PE_SCI.def())[0], color: (PE_SCI[(id.match(/^u(\d)/) || [])[1]] || PE_SCI.def())[1], acts: [{ label: '看重點卡 →', el }] }; }
+    tile: el => { const go = el.dataset.go || '', wb = go.startsWith('wbq:'), id = go.replace('unit:', '').replace('wbq:', ''), b = el.querySelector('.unit-main b'), side = el.querySelector('.unit-side');
+      const ch = PE_SCI[(id.match(/^(?:u|ch)(\d)/) || [])[1]] || PE_SCI.def();   /* 習作街區：第X章習作＝該章建築、習作總複習＝書庫 */
+      return { name: b ? b.textContent : id, sub: side ? [...side.children].map(x => x.textContent).join('・') : '', kind: KIND[id] || (wb ? (id === 'all' ? 'books' : ch[0]) : PE_SCI.unit(b ? b.textContent : '') || ch[0]), color: wb && id === 'all' ? '#1971c2' : ch[1], acts: [{ label: wb ? '開始練習 →' : '看重點卡 →', el }] }; }
   });
 })();
 /* 位置列：🌏 全景 › 理化島 › 第3章 波動與聲音 街區 › 3-1 波的種類；作答中離開會先確認（和原本「回首頁」相同） */
@@ -3707,10 +3727,13 @@ PE115Map.add({
   PE115Map.rules(['.route-rules']);
   PE115Map.crumbs(() => {
     const isle = { label: '理化島', go: () => { if (leave()) { routeState = { view: 'home' }; if (inQuiz()) showQuizView(false); else goRoute('home'); } } };
+    const wbStreet = { label: '習作練習 街區', go: () => { if (leave()) { routeState = { view: 'wb' }; if (inQuiz()) showQuizView(false); else goRoute('wb'); } } };
     const street = ch => ({ label: `${chTitle(ch)} 街區`, go: () => { if (leave()) { routeState = { view: 'chapter', ch }; if (inQuiz()) showQuizView(false); else goRoute('chapter:' + ch); } } });
     if (inQuiz()) { const f = state.filter, u = UNIT_MAP[f];
       if (u) return [isle, street(u.ch), { label: u.title + (state.completed ? '・結果' : '') }];
-      return [isle, { label: (f === 'rev' ? '段考模擬' : f === 'all' ? '習作總挑戰' : (RANGE_NAMES[f] || f)) + (state.completed ? '・結果' : '') }]; }
+      if (typeof isWb === 'function' && isWb(f)) return [isle, wbStreet, { label: ((WB_LIST.find(w => w.f === f) || {}).title || f) + (state.completed ? '・結果' : '') }];
+      return [isle, { label: (f === 'rev' ? '段考模擬' : (RANGE_NAMES[f] || f)) + (state.completed ? '・結果' : '') }]; }
+    if (routeState.view === 'wb') return [isle, { label: '習作練習 街區' }];
     if (routeState.view === 'chapter') return [isle, { label: `${chTitle(routeState.ch)} 街區` }];
     if (routeState.view === 'unit') { const u = UNIT_MAP[routeState.id]; return u ? [isle, street(u.ch), { label: `${u.title}・重點卡` }] : [isle]; }
     return [isle];
