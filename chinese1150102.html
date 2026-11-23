@@ -763,6 +763,8 @@ function rankOf(st) {
   return "🌱 見習書生";
 }
 function mockUnlocked() {
+  /* 2026-11-23 老師決定：第二次段考的段考複習卷不設門檻，直接開放 */
+  return true;
   if (/unlock/.test(location.search + location.hash)) return true;
   return LESSONS.filter(L => L.id !== "REV").every(L => studyUnits(L).filter(u => ((P.units[u.id] || {}).stars || 0) >= 1).length >= 2);
 }
@@ -775,7 +777,7 @@ function showHome() {
   const st = totalStars(), max = TOTAL_UNITS * 5;
   const cards = LESSONS.map(L => {
     const s = lessonStars(L), m = studyUnits(L).length * 5;
-    const extra = L.id === "REV" ? `<span>🏆 ${P.mock != null ? "模擬段考最佳 " + P.mock + " 分" : mockUnlocked() ? "模擬段考已解鎖" : "模擬段考未解鎖"}</span>` : `<span>${L.units.length} 個小單元</span>`;
+    const extra = L.id === "REV" ? `<span>🏆 ${P.mock != null ? "模擬段考最佳 " + P.mock + " 分" : mockUnlocked() ? "模擬段考已開放" : "模擬段考未解鎖"}</span>` : `<span>${L.units.length} 個小單元</span>`;
     return `<button class="lcard" onclick="showLesson('${L.id}')">
       <div class="top"><div class="ico" style="background:${L.soft}">${L.icon}</div>
       <div><div class="ttl" style="color:${L.color}">${L.title}</div><div class="en">${L.en}</div></div></div>
@@ -788,7 +790,7 @@ function showHome() {
     <div class="hero"><div class="deco">文</div>
       <h1>八年級國文 第二次段考強化練習</h1>
       <div class="sub">範圍：第四課 愛蓮說・第五課 生命中的碎珠・第六課 鳥・語文常識二 句型</div>
-      <div class="sub">特色：課文闖關｜每課 4 個小單元，第四課加開課文拼圖（三個等級），答對得 ★ 與 XP，三課達標解鎖模擬段考</div>
+      <div class="sub">特色：課文闖關｜每課 4 個小單元，第四課加開課文拼圖（三個等級），答對得 ★ 與 XP，模擬段考直接開放挑戰</div>
       <div class="sub pe-level"></div>
       <div class="stats">
         <div class="stat"><b>★ ${st}</b>/ ${max}</div>
@@ -798,7 +800,7 @@ function showHome() {
     </div>
     <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先做該課的「國字注音」「注釋」，認識生難字詞。</li><li><b>✍️ 課後複習：</b>上完一課，做「課文選擇題」和該課的特色單元（蓮的密碼、論證偵探、賞鳥觀察站）；第四課再進「課文拼圖」，從等級一（第一段）、等級二（第二段）到等級三（全文），一句一張卡排出課文，把愛蓮說背熟。</li><li><b>🎯 自主練習：</b>答錯的題目在結果頁按「錯題重練」再挑戰，把每個小單元練到 ★★★。</li><li><b>🏆 段考衝刺：</b>到「段考複習」練注音 100 則、注釋 50 則、句型判斷與形近字改錯，最後挑戰模擬段考。</li></ul></details>
     <div class="grid">${cards}</div>
-    <div class="howto"><b>闖關規則</b>　每個小單元依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★。模擬段考的成績就是本頁的「練習等級」。答對 +10 XP，連續答對還有 🔥 連擊加分。答錯的題目會在結果頁整理出來，可以按「錯題重練」再挑戰。第四課的課文拼圖有三個等級，排錯可以拖曳修正再檢查，依第一次檢查放對的句數得星，前一級拿到 ★ 才會開啟下一級（第一段 → 第二段 → 全文）。L4、L5、L6 各有 2 個小單元拿到 ★，就能在「段考複習」挑戰 🏆 模擬段考！</div>
+    <div class="howto"><b>闖關規則</b>　每個小單元依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★。模擬段考的成績就是本頁的「練習等級」。答對 +10 XP，連續答對還有 🔥 連擊加分。答錯的題目會在結果頁整理出來，可以按「錯題重練」再挑戰。第四課的課文拼圖有三個等級，排錯可以拖曳修正再檢查，依第一次檢查放對的句數得星，前一級拿到 ★ 才會開啟下一級（第一段 → 第二段 → 全文）。「段考複習」的 🏆 模擬段考隨時可以挑戰！</div>
     <footer>八年級國文 第二次段考 L4–L6・語文常識二 練習</footer>`;
   scrollTo(0, 0);
 }

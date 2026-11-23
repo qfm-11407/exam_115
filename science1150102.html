@@ -418,14 +418,14 @@ html.pe-mapview #routeView .route-grid, html.pe-mapview #routeView .unit-list{di
         <div>
           <h1>八年級理化 第二次段考強化練習</h1>
           <p class="meta">範圍：第3章 波動與聲音・第4章 光</p>
-          <p class="meta">特色：習作練習｜每章分成小單元：先看重點卡，再闖關（習作＋精選練習），答對得 ★ 與 XP；兩章達標解鎖段考模擬</p>
+          <p class="meta">特色：習作練習｜每章分成小單元：先看重點卡，再闖關（習作＋精選練習），答對得 ★ 與 XP；段考模擬直接開放挑戰</p>
           <p class="meta pe-level"></p>
         </div>
       </div>
     </header>
 
     <section class="course-menu" id="courseMenu" aria-label="課程選單">
-      <details class="pe-howto" id="peHowto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新的一節前，到該章點小單元，先讀「📖 重點卡」認識觀念。</li><li><b>✍️ 課後複習：</b>上完一節，按「開始闖關」做該單元的習作＋精選練習，拿到 ★★★ 以上再前進下一單元。</li><li><b>🎯 自主練習：</b>答錯的題目會自動進入「錯題重練」，直到全部答對；結果頁的「錯題詳解」可以逐題看解析。</li><li><b>🏆 段考衝刺：</b>兩章各有 3 個小單元拿到 ★，就能挑戰「🏆 段考模擬」；「📘 習作練習」先做第3章、第4章習作，再挑戰「習作總複習」，一次全對可領通關證書。</li></ul></details>
+      <details class="pe-howto" id="peHowto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新的一節前，到該章點小單元，先讀「📖 重點卡」認識觀念。</li><li><b>✍️ 課後複習：</b>上完一節，按「開始闖關」做該單元的習作＋精選練習，拿到 ★★★ 以上再前進下一單元。</li><li><b>🎯 自主練習：</b>答錯的題目會自動進入「錯題重練」，直到全部答對；結果頁的「錯題詳解」可以逐題看解析。</li><li><b>🏆 段考衝刺：</b>隨時可以挑戰「🏆 段考模擬」；「📘 習作練習」先做第3章、第4章習作，再挑戰「習作總複習」，一次全對可領通關證書。</li></ul></details>
       <div id="routeView"></div>
     </section>
 
@@ -2352,6 +2352,8 @@ html.pe-mapview #routeView .route-grid, html.pe-mapview #routeView .unit-list{di
       return '🌱 見習研究員';
     }
     function mockUnlocked() {
+      /* 2026-11-23 老師決定：第二次段考的段考複習卷不設門檻，直接開放 */
+      return true;
       if (/unlock/.test(String(location.search) + String(location.hash))) return true;
       return ROUTE.every(c => c.units.filter(u => unitStars(u.id) >= 1).length >= 3);
     }
@@ -2388,7 +2390,7 @@ html.pe-mapview #routeView .route-grid, html.pe-mapview #routeView .unit-list{di
         html += `<button class="route-card${unlocked ? '' : ' locked'}" ${unlocked ? 'data-filter="rev"' : 'data-go="locked"'}>${unlocked ? '' : '<span class="route-lock">🔒 未解鎖</span>'}<span class="route-icon">🏆</span><span class="route-title">段考模擬</span><span class="route-sub">第 3～4 章綜合・${questions.filter(q => q.chapter === 'rev').length} 題・成績就是練習等級</span><span class="route-tags"><span>波動與聲音</span><span>光</span><span>光與聲音比較</span></span><span class="route-meta"><span>${unlocked ? progressText('rev') : '第3、4章各有 3 個小單元拿到 ★ 即可解鎖'}</span></span></button>`;
         html += `<button class="route-card" data-go="wb"><span class="route-icon">📘</span><span class="route-title">習作練習</span><span class="route-sub">第3章、第4章習作各一關，再挑戰習作總複習（一次全對可領通關證書）</span><span class="route-tags"><span>實驗紀錄</span><span>學力養成</span><span>素養活用</span></span><span class="route-bar"><i style="width:${WB_LIST.filter(w => wbStars(w.f) >= 1).length / WB_LIST.length * 100}%"></i></span><span class="route-meta"><span>${WB_LIST.filter(w => wbStars(w.f) >= 1).length} / ${WB_LIST.length} 關拿到 ★</span><span>總複習：${progressText('all')}</span></span></button>`;
         html += `</div><p class="route-note" id="routeNote" hidden></p>`;
-        html += `<div class="route-rules"><b>闖關規則</b>　每個小單元先看「重點卡」，再闖關（習作＋精選練習）。依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★；每答對 1 題 +10 XP。答錯的題目會進入「錯題重練」，重練不計入星星與練習等級。第3、4章各有 3 個小單元拿到 ★，就能挑戰 🏆 段考模擬，段考模擬的成績就是本頁的「練習等級」。</div>`;
+        html += `<div class="route-rules"><b>闖關規則</b>　每個小單元先看「重點卡」，再闖關（習作＋精選練習）。依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★；每答對 1 題 +10 XP。答錯的題目會進入「錯題重練」，重練不計入星星與練習等級。🏆 段考模擬隨時可以挑戰，段考模擬的成績就是本頁的「練習等級」。</div>`;
       } else if (routeState.view === 'wb') {
         html += `<div class="route-top"><button class="ghost" data-go="home">← 回首頁</button><span class="route-pill">${WB_LIST.filter(w => wbStars(w.f) >= 1).length} / ${WB_LIST.length} 關拿到 ★</span></div>`;
         html += `<div class="route-head"><span class="route-icon">📘</span><div><h2>習作練習</h2><div class="route-tags"><span>先各章</span><span>再總複習</span><span>總複習全對領證書</span></div></div></div><ol class="unit-list">`;

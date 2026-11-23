@@ -166,9 +166,9 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
                 <h1 class="text-3xl md:text-4xl font-black text-gray-800 mb-2">八年級社會 第二次段考強化練習</h1>
                 <p class="text-lg md:text-xl font-bold text-orange-700 tracking-wide mb-2">範圍：公民・地理 第 3～4 課、歷史 第 3 課～4-2</p>
                 <span class="inline-block px-4 py-1 rounded-full bg-orange-100 text-orange-700 font-bold text-sm">本次開放：公民、歷史、地理練習</span>
-                <p class="text-gray-500 mb-4 mt-4 max-w-lg mx-auto leading-relaxed">特色：互動式測驗系統｜每課有 📖 重點卡、⚡ 名詞速答、🎯 特色關卡、📒 習作複習、✍️ 課後練習五個小單元，三科各課達 ★★★ 解鎖模擬卷。</p>
+                <p class="text-gray-500 mb-4 mt-4 max-w-lg mx-auto leading-relaxed">特色：互動式測驗系統｜每課有 📖 重點卡、⚡ 名詞速答、🎯 特色關卡、📒 習作複習、✍️ 課後練習五個小單元，三科模擬卷直接開放作答。</p>
                 <p class="text-gray-700 mb-4 pe-level"></p>
-                <div class="max-w-3xl mx-auto mb-8"><details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先翻該課的「📖 重點卡」，再用「⚡ 名詞速答」檢查記住了沒。</li><li><b>✍️ 課後複習：</b>上完一課，做該科的特色關卡（地理「🗺️ 地圖偵探」、歷史「⏳ 時光任務」、公民「🗂️ 情境分類」）、「📒 習作複習」和「✍️ 課後練習」。</li><li><b>🎯 自主練習：</b>答錯的題目按「錯題重練」，把速答、特色關卡、習作複習、課後練習都練到 ★★★（80 分）以上。</li><li><b>🏆 段考衝刺：</b>同一科兩課的小單元都達 ★★★，就解鎖「📝 第二次段考模擬卷」，三科各做一份。</li></ul></details></div>
+                <div class="max-w-3xl mx-auto mb-8"><details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先翻該課的「📖 重點卡」，再用「⚡ 名詞速答」檢查記住了沒。</li><li><b>✍️ 課後複習：</b>上完一課，做該科的特色關卡（地理「🗺️ 地圖偵探」、歷史「⏳ 時光任務」、公民「🗂️ 情境分類」）、「📒 習作複習」和「✍️ 課後練習」。</li><li><b>🎯 自主練習：</b>答錯的題目按「錯題重練」，把速答、特色關卡、習作複習、課後練習都練到 ★★★（80 分）以上。</li><li><b>🏆 段考衝刺：</b>「📝 第二次段考模擬卷」直接開放，三科各做一份。</li></ul></details></div>
             </div>
 
             <div id="home-screen" class="text-center fade-in">
@@ -1797,6 +1797,8 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
             return ch.kind === 'cards' ? `${n} 張翻卡` : ch.kind === 'quick' ? `${n} 題・每題 ${QUICK_SEC} 秒` : ch.kind === 'special' ? `${n} 關` : `${n} 題`;
         }
         function examLock(sid) {
+            /* 2026-11-23 老師決定：第二次段考的段考複習卷不設門檻，直接開放 */
+            return [];
             if (/[?&]teacher\b/.test(location.search)) return [];
             return quizData[sid].chapters.filter(c => !c.exam && c.kind !== 'cards' && (((progOf(sid, c) || {}).best) || 0) < 80);
         }
@@ -1906,7 +1908,7 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
                 if (ch.exam) {
                     btn.className = `group text-left p-6 border-2 border-dashed rounded-2xl transition-all shadow-sm bg-gradient-to-br from-white to-rose-50 md:col-span-2 border-rose-300 hover:border-rose-500`;
                     btn.innerHTML = `
-                    <div class="text-sm font-black text-rose-600 mb-1">📝 段考模擬卷${/[?&]teacher\b/.test(location.search) ? '（教師預覽）' : '・已解鎖'}</div>
+                    <div class="text-sm font-black text-rose-600 mb-1">📝 段考模擬卷${/[?&]teacher\b/.test(location.search) ? '（教師預覽）' : '・已開放'}</div>
                     <div class="text-xl font-bold text-gray-800 mb-1">${rest.join(' ')}</div>
                     <div class="text-sm text-gray-500 mb-3">${ch.desc || ''}</div>
                     <div class="flex flex-wrap gap-2 text-xs font-bold">
@@ -2211,7 +2213,7 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
             const chNow = subject.chapters[currentChapterIndex];
             if (!isRetryMode && !chNow.exam && chNow.kind) {
                 const exam = subject.chapters.find(c => c.exam);
-                if (exam) { const left = examLock(currentSubjectId).length; $('result-message').textContent += left ? `　（再完成 ${left} 個小單元達 ★★★，就能解鎖${subject.name}模擬卷）` : `　🔓 ${subject.name}模擬卷已解鎖！`; }
+                if (exam) { const left = examLock(currentSubjectId).length; $('result-message').textContent += left ? `　（再完成 ${left} 個小單元達 ★★★，就能解鎖${subject.name}模擬卷）` : ''; }
             }
             const retryBtn = $('retry-incorrect-btn');
             if (incorrectQuestions.length > 0) { retryBtn.classList.remove('hidden'); $('incorrect-badge').textContent = incorrectQuestions.length; }
@@ -3424,7 +3426,7 @@ body{padding-bottom:64px}
     key: 'chapters', anchor: '#chapter-list', items: '#chapter-list > *',
     world: () => sid(),   // 在全域世界地圖上放大到公民島／歷史島／地理島
     name: el => { if (el.tagName === 'BUTTON') return '段考模擬卷'; const d = el.children; return d.length > 1 ? `${d[0].textContent} ${d[1].textContent}` : el.textContent.trim().slice(0, 12); },
-    sub: el => { if (el.tagName === 'BUTTON') return /尚未解鎖/.test(el.textContent) ? '🔒 各單元達 ★★★ 解鎖' : '📝 已解鎖・開始作答';
+    sub: el => { if (el.tagName === 'BUTTON') return /尚未解鎖/.test(el.textContent) ? '🔒 各單元達 ★★★ 解鎖' : '📝 開放作答';
       const u = el.querySelectorAll('.unit-btn'); const done = [...u].filter(b => /最佳|已翻/.test(b.textContent)).length; return `${u.length} 個小單元・已練 ${done}`; },
     kind: (el, i) => { if (el.tagName === 'BUTTON') return 'trophy'; const t = el.textContent;
       if (/地方政府/.test(t)) return 'townhall'; if (/政治參與|投票/.test(t)) return 'ballot'; if (/西力|變革/.test(t)) return 'steamship'; if (/晚清的社會|社會文化/.test(t)) return 'railway'; if (/東北亞的自然|自然環境/.test(t)) return 'volcano'; if (/東北亞的經濟/.test(t)) return 'skyline';
@@ -3437,7 +3439,7 @@ body{padding-bottom:64px}
     /* 點島嶼後的面板：每課五棟建築（重點卡＝公告欄、名詞速答＝碼錶塔、特色關卡＝該科地標、習作複習＝書庫、課後練習＝學校） */
     tiles: el => { const s = sid(), col = COLOR[s] || '#c2410c';
       if (el.tagName === 'BUTTON') { const lock = /尚未解鎖/.test(el.textContent), m = el.textContent.match(/下面\s*(\d+)\s*個/);
-        return [{ name: '📝 段考模擬卷', sub: lock ? `還有 ${m ? m[1] : ''} 個小單元要練到 ★★★` : '已解鎖・依考卷題序作答', kind: 'trophy', color: col, locked: lock, acts: lock ? [] : [{ label: '開始作答 →', el }] }]; }
+        return [{ name: '📝 段考模擬卷', sub: lock ? `還有 ${m ? m[1] : ''} 個小單元要練到 ★★★` : '開放作答・依考卷題序', kind: 'trophy', color: col, locked: lock, acts: lock ? [] : [{ label: '開始作答 →', el }] }]; }
       return [...el.querySelectorAll('.unit-btn')].map(b => { const d = b.children, name = (d[0] || b).textContent.trim();
         const kind = /重點卡/.test(name) ? 'kiosk' : /速答/.test(name) ? 'timer' : /課後練習/.test(name) ? 'school' : /習作/.test(name) ? 'books' : { civics: 'courthouse', history: 'hourglass', geography: 'mountain' }[s];
         const st = ((d[2] || {}).textContent || '').match(/最佳\s*(\d+)/), lv = v => v >= 99.95 ? 5 : v >= 90 ? 4 : v >= 80 ? 3 : v >= 70 ? 2 : v >= 60 ? 1 : 0;
