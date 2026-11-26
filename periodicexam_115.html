@@ -281,8 +281,8 @@ footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:cent
 /* ===== 段考 ===== */
 const EXAMS = [
   { n: 1, name: '第一次段考', stage: 'STAGE 1' },
-  { n: 2, name: '第二次段考', stage: 'STAGE 2', current: true },   // current: true＝目前開放的段考（一次只開一次），入口直接顯示它的島嶼地圖
-  { n: 3, name: '第三次段考', stage: 'STAGE 3' }
+  { n: 2, name: '第二次段考', stage: 'STAGE 2' },   // current: true＝目前開放的段考（一次只開一次），入口直接顯示它的島嶼地圖
+  { n: 3, name: '第三次段考', stage: 'STAGE 3', current: true }   // 2026-11-26 正式開放第三次段考
 ];
 
 /* ===== 科目（顏色對應 CSS 變數） =====
@@ -341,26 +341,26 @@ const PAGES = [
   { exam: 2, subject: 'geography', file: 'social1150102.html', status: 'ready',
     title: '互動式測驗系統', range: '第 3～4 課＋模擬卷', tags: ['中國的產業發展與地區差異', '中國的經濟發展與全球關連', '重點卡＋速答', '地圖偵探', '習作複習', '模擬卷'] },
 
-  // ---------- 第三次段考（教師預覽中：status 'draft' 只有網址加 ?preview=3 才看得到、點得進去；正式開放時改成 'ready' 並把 current 移到第三次） ----------
-  { exam: 3, subject: 'chinese', file: 'chinese1150103.html', status: 'draft',
+  // ---------- 第三次段考（2026-11-26 正式開放） ----------
+  { exam: 3, subject: 'chinese', file: 'chinese1150103.html', status: 'ready',
     title: '課文闖關', range: '第七～十課',
     tags: ['注音', '注釋', '字音字義', '改錯', '閱讀'] },
-  { exam: 3, subject: 'idioms', file: 'idioms1150103.html', status: 'draft',
+  { exam: 3, subject: 'idioms', file: 'idioms1150103.html', status: 'ready',
     title: '成語闖關之旅', range: '成語典 P.238–259', tags: ['成語', '闖關'] },
-  { exam: 3, subject: 'english', file: 'english1150103.html', status: 'draft',
+  { exam: 3, subject: 'english', file: 'english1150103.html', status: 'ready',
     title: '課文闖關', range: 'Lesson 5・Lesson 6・Review 3',
     tags: ['字彙', '文法', '看地圖問路', '翻譯', '改寫', '閱讀'] },
-  { exam: 3, subject: 'math', file: 'math1150103.html', status: 'draft',
+  { exam: 3, subject: 'math', file: 'math1150103.html', status: 'ready',
     title: '數學闖關基地', range: '4-1 因式分解法解一元二次方程式 ～ 第 5 章 統計資料處理',
     tags: ['課本例題', '習作', '速測', '章末總習題', '魔王關'] },
-  { exam: 3, subject: 'science', file: 'science1150103.html', status: 'draft',
+  { exam: 3, subject: 'science', file: 'science1150103.html', status: 'ready',
     title: '習作練習', range: '第5章 溫度與熱・第6章 探索物質組成',
     tags: ['學習路線', '重點卡', '11 個小單元', '段考模擬', '習作分章＋總複習'] },
-  { exam: 3, subject: 'civics', file: 'social1150103.html', status: 'draft',
+  { exam: 3, subject: 'civics', file: 'social1150103.html', status: 'ready',
     title: '互動式測驗系統', range: '第 5～6 課＋模擬卷', tags: ['我國的地方政府', '民主社會的政治參與及投票', '重點卡＋速答', '情境分類', '習作複習', '模擬卷'] },
-  { exam: 3, subject: 'history', file: 'social1150103.html', status: 'draft',
+  { exam: 3, subject: 'history', file: 'social1150103.html', status: 'ready',
     title: '互動式測驗系統', range: '4-3～第 6 課＋模擬卷', tags: ['東西文化的交流與影響', '西力衝擊下的晚清變革', '晚清的社會文化變遷', '重點卡＋速答', '時光任務', '習作複習', '模擬卷'] },
-  { exam: 3, subject: 'geography', file: 'social1150103.html', status: 'draft',
+  { exam: 3, subject: 'geography', file: 'social1150103.html', status: 'ready',
     title: '互動式測驗系統', range: '第 5～6 課＋模擬卷', tags: ['東北亞的自然環境', '東北亞的經濟發展', '重點卡＋速答', '地圖偵探', '習作複習', '模擬卷'] }
 ];
 
