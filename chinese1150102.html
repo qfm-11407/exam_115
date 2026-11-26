@@ -800,7 +800,7 @@ function showHome() {
     </div>
     <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新課前，先做該課的「國字注音」「注釋」，認識生難字詞。</li><li><b>✍️ 課後複習：</b>上完一課，做「課文選擇題」和該課的特色單元（蓮的密碼、論證偵探、賞鳥觀察站）；第四課再進「課文拼圖」，從等級一（第一段）、等級二（第二段）到等級三（全文），一句一張卡排出課文，把愛蓮說背熟。</li><li><b>🎯 自主練習：</b>答錯的題目在結果頁按「錯題重練」再挑戰，把每個小單元練到 ★★★。</li><li><b>🏆 段考衝刺：</b>到「段考複習」練注音 100 則、注釋 50 則、句型判斷與形近字改錯，最後挑戰模擬段考。</li></ul></details>
     <div class="grid">${cards}</div>
-    <div class="howto"><b>闖關規則</b>　每個小單元依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★。模擬段考的成績就是本頁的「練習等級」。答對 +10 XP，連續答對還有 🔥 連擊加分。答錯的題目會在結果頁整理出來，可以按「錯題重練」再挑戰。第四課的課文拼圖有三個等級，排錯可以拖曳修正再檢查，依第一次檢查放對的句數得星，前一級拿到 ★ 才會開啟下一級（第一段 → 第二段 → 全文）。「段考複習」的 🏆 模擬段考隨時可以挑戰！</div>
+    <div class="howto"><b>闖關規則</b>　每個小單元依答對率得星：60% ★、70% ★★、80% ★★★、90% ★★★★、全對 ★★★★★。模擬段考的成績就是本頁的「練習等級」。答對 +10 XP，連續答對還有 🔥 連擊加分。答錯的題目會在結果頁整理出來，可以按「錯題重練」再挑戰。第四課的課文拼圖有三個等級，排錯可以拖曳修正再檢查，依第一次檢查放對的句數得星，三個等級都可以直接挑戰（建議依第一段 → 第二段 → 全文的順序）。「段考複習」的 🏆 模擬段考隨時可以挑戰！</div>
     <footer>八年級國文 第二次段考 L4–L6・語文常識二 練習</footer>`;
   scrollTo(0, 0);
 }
@@ -812,6 +812,8 @@ function alertBox(t, m) {
   document.body.appendChild(d);
 }
 function unitLocked(u) {
+  /* 2026-11-26 老師決定：取消原本的闖關順序限制，全部直接開放 */
+  return false;
   if (!u || !u.req || /unlock/.test(location.search + location.hash)) return false;
   return !(((P.units[u.req] || {}).stars || 0) >= 1);
 }
@@ -1118,6 +1120,7 @@ document.addEventListener("keydown", e => {
 });
 /* ================= 課文拼圖：同一個入口，三個等級 ================= */
 function levelLocked(U, k) {
+  return false; // 2026-11-26 全部開放
   if (k === 0 || /unlock/.test(location.search + location.hash)) return false;
   return !(((P.units[U.levels[k - 1].id] || {}).stars || 0) >= 1);
 }
@@ -1143,7 +1146,7 @@ function showPuzzle(lid, uid) {
     <div class="pz-head" style="background:linear-gradient(135deg,${L.color},${L.color}cc)"><div class="big">${U.icon}</div>
       <h2>${U.title}</h2><div class="en">${L.title} ${L.en.split("｜")[0]}・一句一張卡，排出正確順序</div></div>
     <div class="pz-levels">${cards}</div>
-    <div class="howto"><b>玩法</b>　每一句是一張卡，依序點選排出課文；按住上方的卡<b>拖曳</b>可以換位置，點一下可以拿回來，「↺ 重排」可以全部重來，「💡 提示下一張」會放好下一句（用了提示的句子不計分）。按「檢查答案」後，放錯的卡會變紅色，可以拖曳修正再檢查，直到全部排對。星等看<b>第一次檢查</b>放對的句數：60% ★ … 全對 ★★★★★；拿到 ★ 就能開啟下一級。</div>`;
+    <div class="howto"><b>玩法</b>　每一句是一張卡，依序點選排出課文；按住上方的卡<b>拖曳</b>可以換位置，點一下可以拿回來，「↺ 重排」可以全部重來，「💡 提示下一張」會放好下一句（用了提示的句子不計分）。按「檢查答案」後，放錯的卡會變紅色，可以拖曳修正再檢查，直到全部排對。星等看<b>第一次檢查</b>放對的句數：60% ★ … 全對 ★★★★★；三個等級都可以直接挑戰。</div>`;
   scrollTo(0, 0);
 }
 function startLevel(lid, uid, k) {

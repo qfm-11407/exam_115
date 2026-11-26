@@ -651,7 +651,7 @@ html.pe-mapview #levelMap{display:none}
   function run() { return state.runs[state.activeLevelId]; }
   function runKey() { const r = run(); return `${state.activeLevelId}-${r.attempt}-${r.phase}-${r.index}-${r.reviewTurn}`; }
   function levelOf(id) { return LEVELS.find((l) => l.id === id) || LEVELS[0]; }
-  function isLocked(levelId) { return LEVELS.some((p) => p.id < levelId && !state.runs[p.id]?.passedAt); }
+  function isLocked(levelId) { return false; /* 2026-11-26 老師決定：第二關不必等第一關通過，直接開放 */ return LEVELS.some((p) => p.id < levelId && !state.runs[p.id]?.passedAt); }
 
   // ---------- 畫面 ----------
   function renderMap() {
