@@ -526,7 +526,19 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
             mg_belt: () => neaMap({ names: false, markers: [{ lon: 139.7, lat: 35.6, label: '東京' }, { lon: 136.9, lat: 35.2, label: '名古屋', dx: -4, dy: 22, anchor: 'middle' }, { lon: 135.4, lat: 34.7, label: '大阪', dx: -10, dy: -6, anchor: 'end' }, { lon: 130.9, lat: 33.9, label: '北九州', dx: -10, anchor: 'end' }, { lon: 139.0, lat: 37.9, label: '新潟' }], extra: `<polyline points="{P:130.9,33.9} {P:132.5,34.3} {P:135.4,34.7} {P:136.9,35.2} {P:139.7,35.6}" fill="none" stroke="#f97316" stroke-width="8" stroke-opacity=".45" stroke-linecap="round"/>`, note: '日本主要工業區分布示意圖（橘色帶為主要工業地帶）' }),
             k4_dejima: () => cards([['史料', '西元1636年，這個國家在長崎港外興建一座扇形的人工島「出島」，作為荷蘭人的商館。荷蘭人只能在商館內活動；除了荷蘭商船，只允許中國商船到長崎貿易。']], '改寫自課本圖2-4-14說明'),
             mg_osaka: () => neaMap({ markers: [{ lon: 141.35, lat: 43.06, label: '甲' }, { lon: 139.69, lat: 35.69, label: '乙' }, { lon: 135.5, lat: 34.69, label: '丙', dy: 18 }, { lon: 130.4, lat: 33.59, label: '丁', dx: -10, anchor: 'end' }], note: '日本主要都市示意圖' }),
-            mg_busan: () => neaMap({ korea: true, markers: [{ lon: 125.75, lat: 39.03, label: '甲', dx: -10, anchor: 'end' }, { lon: 126.98, lat: 37.57, label: '乙' }, { lon: 129.07, lat: 35.18, label: '丙' }, { lon: 126.53, lat: 33.38, label: '丁' }], note: '朝鮮半島主要都市示意圖' })
+            mg_busan: () => neaMap({ korea: true, markers: [{ lon: 125.75, lat: 39.03, label: '甲', dx: -10, anchor: 'end' }, { lon: 126.98, lat: 37.57, label: '乙' }, { lon: 129.07, lat: 35.18, label: '丙' }, { lon: 126.53, lat: 33.38, label: '丁' }], note: '朝鮮半島主要都市示意圖' }),
+            mh_ports3: () => {
+                const k = 10, lonMin = 108, latMax = 42, w = Math.round(18 * k * 0.86), h = 24 * k, gap = 12, P = makeProj(lonMin, latMax, k);
+                const A = [[113.3, 23.1], [118.1, 24.5], [119.3, 26.1], [121.55, 29.87], [121.47, 31.23]];
+                const B = A.concat([[122.23, 40.67], [117.2, 39.13], [121.4, 37.5], [118.8, 32.06], [119.45, 32.2], [116.0, 29.7], [114.3, 30.6], [116.68, 23.35], [110.33, 20.03], [121.44, 25.17], [121.74, 25.13], [120.16, 23.0], [120.27, 22.62]]);
+                const panel = (pts, lab, i) => {
+                    let g = `<g transform="translate(${i * (w + gap)},0)"><clipPath id="mhp3c${i}"><rect width="${w}" height="${h}"/></clipPath><g clip-path="url(#mhp3c${i})"><rect width="${w}" height="${h}" fill="var(--sea)"/>`;
+                    g += `<polygon points="${poly(CN_OUTLINE, P)}" fill="var(--land)" stroke="var(--border)" stroke-width="1.2" stroke-linejoin="round"/><polygon points="${poly(TAIWAN, P)}" fill="var(--land)" stroke="var(--border)" stroke-width="1"/><polygon points="${poly(HAINAN, P)}" fill="var(--land)" stroke="var(--border)" stroke-width="1"/>`;
+                    pts.forEach(p => { const [x, y] = P(p[0], p[1]); g += `<circle cx="${x}" cy="${y}" r="4.5" fill="var(--accent)" stroke="#fff" stroke-width="1.2"/>`; });
+                    return g + `</g><rect width="${w}" height="${h}" fill="none" stroke="var(--border)" stroke-width="1.5"/><rect width="30" height="26" fill="#475569"/><text x="15" y="19" text-anchor="middle" fill="#fff" font-size="16" font-weight="700">${lab}</text></g>`;
+                };
+                return `<svg viewBox="0 0 ${3 * w + 2 * gap} ${h + 24}" class="fig-svg" style="max-width:620px" role="img" aria-label="清代三個時期通商口岸分布示意圖">${panel(B, '甲', 0)}${panel(A, '乙', 1)}${panel([[113.3, 23.1]], '丙', 2)}<text x="${3 * w + 2 * gap}" y="${h + 18}" class="map-note" text-anchor="end">● 通商口岸（示意圖，今日海岸線）</text></svg>`;
+            }
         };
 
 
@@ -597,6 +609,10 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
  "MCD": {
   "text": "【題組】中央選舉委員會公告，115年（西元2026年）11月28日舉行地方公職人員選舉，也就是俗稱的「九合一」選舉，全國共選出1萬1051名地方公職人員。",
   "img": null
+ },
+ "MHB": {
+  "text": "【題組】附圖甲、乙、丙是清代三個時期，中國對外開放通商口岸（●）的分布示意圖。請回答下列問題。",
+  "img": "mh_ports3"
  }
 };
         // 科目順序固定為 公民 → 歷史 → 地理（畫面、範圍、說明文字都照這個順序）
@@ -1407,6 +1423,308 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
     "source": "6-1 二｜課本第187頁",
     "pattern": "分析詮釋｜承上題",
     "group": "C6A"
+   }
+  ]
+ },
+ {
+  "name": "講義補充｜第5單元",
+  "lesson": "講義補充 地方政府・政治參與和投票（課堂講義配合題）",
+  "kind": "practice",
+  "unit": "🧩 第5單元 地方政府",
+  "data": [
+   {
+    "type": "cloze",
+    "question": "【配合題】地方自治與分權：將下列 5 個詞語填入正確的空格。",
+    "text": "地方自治是地方人民{1}出民意代表與行政首長，{2}，自行管理地方公共事務。中央政府與地方政府之間的分權稱為{3}，依《憲法》採取{4}；同一層級政府之間的分權稱為{5}，例如中央政府採五權分立，地方政府只有行政權與立法權。",
+    "blanks": [
+     "依法選舉",
+     "組成地方政府",
+     "垂直分權",
+     "均權制度",
+     "水平分權"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①依法選舉　②組成地方政府　③垂直分權　④均權制度　⑤水平分權。記憶口訣：中央有五權；地方有兩權。",
+    "source": "講義補充 第5單元 p.56 主題一（一）（二）",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】均權制度的劃分：將下列 5 個詞語填入正確的空格。",
+    "text": "均權制度依{1}劃分職權：具有{2}性質的事務，例如國防、外交、司法制度，由{3}統籌辦理；具有{4}性質的事務，例如公共衛生、都市計畫，由地方政府負責辦理。中央與地方的權限爭議，依《憲法》規定由{5}解決。",
+    "blanks": [
+     "事務性質",
+     "全國一致",
+     "中央政府",
+     "因地制宜",
+     "立法院"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①事務性質　②全國一致　③中央政府　④因地制宜　⑤立法院。例如颱風停班停課：中央訂定全國一致的《天然災害停止上班及上課作業辦法》，地方首長再依轄區雨量、風力因地制宜決定。",
+    "source": "講義補充 第5單元 p.56 主題一（三）",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】地方政府的自治事項：將下列 5 個詞語填入正確的空格。",
+    "text": "《地方制度法》明確規定地方的自治事項：辦理國民教育、舉辦藝文活動屬於{1}；辦理社會救助、老人安養服務屬於{2}；推動觀光事業、建設道路屬於{3}；設立警察機關維持治安、設置衛生機關施打公費疫苗屬於{4}。捷運設施、河川整治等{5}的問題，需要地方政府打破行政區的界線共同合作。",
+    "blanks": [
+     "教育文化",
+     "社會服務",
+     "經濟發展",
+     "安全衛生",
+     "跨區域"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①教育文化　②社會服務　③經濟發展　④安全衛生　⑤跨區域。社會服務的重點是社會福利工作；安全衛生還包括設置環保機關清運垃圾。",
+    "source": "講義補充 第5單元 p.57 主題一（四）",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】省虛級化與山地原住民區：將下列 5 個詞語填入正確的空格。",
+    "text": "民國86年政府{1}，推動省「{2}」政策，臺灣省失去地方自治團體的地位，成為{3}的派出機關。直轄市山地原住民區依《地方制度法》設置，屬於{4}，設置區公所與區民代表會，區長由{5}產生。",
+    "blanks": [
+     "修憲",
+     "虛級化",
+     "行政院",
+     "地方自治團體",
+     "民選"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①修憲　②虛級化　③行政院　④地方自治團體　⑤民選。直轄市與市底下一般的「區」只是派出單位，區長由市長派任；山地原住民區不同，區長與區民代表都由人民選出。",
+    "source": "講義補充 第5單元 p.58 主題二（一）",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】地方政府的組織：將下列 5 個詞語填入正確的空格。",
+    "text": "地方政府設置地方行政機關與地方立法機關。地方行政機關由人民選出的{1}組成，處理地方自治事務，並執行上級政府{2}事項；地方立法機關由人民選出的{3}組成，議決地方的自治條例等{4}，審議政府的年度{5}，並監督地方行政機關的施政。",
+    "blanks": [
+     "行政首長",
+     "委辦",
+     "民意代表",
+     "法規",
+     "預算"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①行政首長　②委辦　③民意代表　④法規　⑤預算。行政機關：直轄市政府、縣（市）政府、鄉（鎮、市）公所、山地原住民區公所；立法機關：直轄市議會、縣（市）議會、鄉（鎮、市）民代表會、山地原住民區民代表會。",
+    "source": "講義補充 第5單元 p.58 主題二（二）",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】縣市合併與升格：將下列 5 個詞語填入正確的空格。",
+    "text": "縣市合併與升格的目的，是整合行政資源、均衡{1}，並改善地方行政效率及{2}收入。升格為直轄市後，原來縣內的鄉、鎮及縣轄市改制為{3}，成為直轄市政府的{4}，僅設立{5}，區長由市長依法派任。",
+    "blanks": [
+     "區域發展",
+     "財政",
+     "區",
+     "派出單位",
+     "區公所"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①區域發展　②財政　③區　④派出單位　⑤區公所。例如臺中縣豐原市改制為臺中市豐原區：從地方自治團體變成市政府的派出機關，原本的市民代表會也取消。",
+    "source": "講義補充 第5單元 p.59 主題二（三）",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】「市」的層級判別：將下列 5 個詞語填入正確的空格。",
+    "text": "我國現有6個直轄市、3個市與13個縣。基隆市、新竹市、嘉義市與縣同級，行政機關與立法機關分別稱為{1}及{2}；苗栗市、屏東市等縣轄市與鄉、鎮同級，行政機關與立法機關分別稱為{3}及{4}。在{5}政府底下沒有區公所，只有鄉（鎮、市）公所。",
+    "blanks": [
+     "市政府",
+     "市議會",
+     "市公所",
+     "市民代表會",
+     "縣"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①市政府　②市議會　③市公所　④市民代表會　⑤縣。記憶口訣：吃滷味，加雞心（嘉基新）。直轄市山地原住民區公所只出現在直轄市底下（新北、桃園、臺中、高雄）。",
+    "source": "講義補充 第5單元 p.59～60 課堂小幫手",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】地方財政收入來源：將下列 4 個詞語填入正確的空格。",
+    "text": "地方政府的財政收入：行政院依《財政收支劃分法》發放統籌分配稅款，屬於{1}；稅務機關徵收地價稅、使用牌照稅，屬於{2}；經營公有停車場、公有風景區，屬於自行籌措中的{3}；舉辦澎湖花火節、臺東熱氣球活動，屬於自行籌措中的{4}。",
+    "blanks": [
+     "中央補助",
+     "地方稅收",
+     "公共造產",
+     "辦理活動"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①中央補助　②地方稅收　③公共造產　④辦理活動。公共造產是由地方政府機關經營籌畫的公共產業；辦理活動可以促進觀光事業與經濟發展。",
+    "source": "講義補充 第5單元 p.60 課堂小幫手 4",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   }
+  ]
+ },
+ {
+  "name": "講義補充｜第6單元",
+  "lesson": "講義補充 地方政府・政治參與和投票（課堂講義配合題）",
+  "kind": "practice",
+  "unit": "🧩 第6單元 政治參與和投票",
+  "data": [
+   {
+    "type": "cloze",
+    "question": "【配合題】政治參與的內涵：將下列 5 個詞語填入正確的空格。",
+    "text": "關心政治、討論時事、投書媒體，屬於{1}方面的政治參與；參加遊行、參與公聽會、投入政黨活動，屬於{2}方面的政治參與；參與選舉及{3}，則是最普遍且最重要的參與方式。政治參與能落實{4}，也讓政府在制訂政策時清楚知道{5}。",
+    "blanks": [
+     "言論",
+     "行動",
+     "公民投票",
+     "主權在民",
+     "人民的需求"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①言論　②行動　③公民投票　④主權在民　⑤人民的需求。政治參與也能讓人民監督政府施政，避免少數人操控政府。",
+    "source": "講義補充 第6單元 p.66 主題一（一）",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】對人的投票與對事的投票：將下列 5 個詞語填入正確的空格。",
+    "text": "對人的投票依據《總統副總統選舉罷免法》與《公職人員選舉罷免法》，功能是選出公職人員、合法組成政府，並落實{1}；對事的投票依據{2}，讓人民對{3}或法令表達支持與否的看法，實現{4}、複決權，展現{5}。",
+    "blanks": [
+     "責任政治",
+     "《公民投票法》",
+     "政策",
+     "創制",
+     "直接民主"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①責任政治　②《公民投票法》　③政策　④創制　⑤直接民主。對事的投票也能避免行政與立法怠惰或錯誤，增進公民的政治參與。",
+    "source": "講義補充 第6單元 p.66、68",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】創制權與複決權：將下列 4 個詞語填入正確的空格。",
+    "text": "人民主動提出立法原則或制訂政策的權利，稱為{1}權；人民針對已通過的法律或政策，表達同意或反對的權利，稱為{2}權。民國110年新竹市舉行{3}公投，由市民決定是否訂定廢汙水回收相關法規；同年舉行的{4}公投，則讓人民對已通過的法案表達同意與否。",
+    "blanks": [
+     "創制",
+     "複決",
+     "地方性",
+     "全國性"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①創制　②複決　③地方性　④全國性。新竹市公投是人民要求政府制定政策（創制）；全國性公投是對已通過的法案表達意見（複決）。",
+    "source": "講義補充 第6單元 p.68",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】立法委員的選舉制度：將下列 5 個詞語填入正確的空格。",
+    "text": "立法委員選舉採{1}：每位選民領取兩張選票，一票選區域立委，一票選{2}。區域立委每一選區選出一名，由{3}者當選，共73席；另有山地及平地原住民立委6席；得票{4}以上的政黨，依得票比例分配全國不分區席次{5}席，立委總共113席。",
+    "blanks": [
+     "單一選區兩票制",
+     "政黨",
+     "最高票",
+     "5%",
+     "34"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①單一選區兩票制　②政黨　③最高票　④5%　⑤34。依《憲法增修條文》規定：73＋6＋34＝113席。",
+    "source": "講義補充 第6單元 p.67 1.(2)",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】投票的公平原則：將下列 5 個詞語填入正確的空格。",
+    "text": "依《憲法》第129條，投票應落實公平原則：符合法定資格者，不論性別、種族、宗教，人人都享有投票權，是{1}原則；一人一票、票票等值，是{2}原則；選民須自行領票、投票，不得由他人代領代投，是{3}原則；選民只能使用投票所提供的{4}圈選，且不能公開選票內容，是{5}原則，又稱祕密投票原則。",
+    "blanks": [
+     "普通",
+     "平等",
+     "直接",
+     "戳章",
+     "無記名"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①普通　②平等　③直接　④戳章　⑤無記名。無記名原則禁止要求他人公開圈選內容、在選票上簽名或做記號，也不能攜帶錄影器材進入投票所。",
+    "source": "講義補充 第6單元 p.69 主題二",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】投票人與被選舉人的法定資格：將下列 5 個詞語填入正確的空格。",
+    "text": "公民投票的投票人須年滿{1}歲，並在選舉區設籍{2}以上；公職人員選舉的投票人須年滿{3}歲，一般設籍{4}以上（總統副總統選舉為6個月）；被選舉人至少須年滿{5}歲。",
+    "blanks": [
+     "18",
+     "6個月",
+     "20",
+     "4個月",
+     "23"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①18　②6個月　③20　④4個月　⑤23。總統選舉的選區是全國，在國內任一地區設籍6個月以上就符合投票資格。",
+    "source": "講義補充 第6單元 p.70（三）",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】監護宣告與褫奪公權：將下列 5 個詞語填入正確的空格。",
+    "text": "{1}的人，是由{2}依本人、配偶、檢察官等人的聲請所宣告，仍可參與對人的投票，但不能參加公民投票，也不能成為候選人；{3}是觸犯《刑法》被判處的{4}，尚未復權前仍可{5}，但不能擔任公務人員及公職候選人。",
+    "blanks": [
+     "受監護宣告",
+     "法院",
+     "褫奪公權",
+     "附加刑罰",
+     "投票"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①受監護宣告　②法院　③褫奪公權　④附加刑罰　⑤投票。褫奪公權者對人、對事的投票都可以參加，只是喪失被選舉權。",
+    "source": "講義補充 第6單元 p.70～71 課堂小幫手",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】選舉與公投的過程：將下列 5 個詞語填入正確的空格。",
+    "text": "公職人員選舉的過程：選舉委員會{1}→參選人經{2}或自行參選，登記成為候選人→競選與宣傳活動→投票人攜帶投票通知單、{3}（領取選票的唯一合法證件）、印章，到投票所投票→開票→{4}。公民投票的過程則是：提案→{5}→公告→投票→通過或不通過。",
+    "blanks": [
+     "發布選舉公告",
+     "政黨提名",
+     "身分證",
+     "當選公告",
+     "連署"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①發布選舉公告　②政黨提名　③身分證　④當選公告　⑤連署。印章可以用簽名或蓋指印代替；身分證才是領取選票的唯一合法證件。",
+    "source": "講義補充 第6單元 p.70～71（四）",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
+   },
+   {
+    "type": "cloze",
+    "question": "【配合題】公職人員的參選年齡：將下列 4 個詞語填入正確的空格。",
+    "text": "總統、副總統的參選人須年滿{1}歲；直轄市長、縣（市）長須年滿{2}歲；鄉（鎮、市）長及直轄市山地原住民區長須年滿{3}歲；村（里）長及各級民意代表須年滿{4}歲。",
+    "blanks": [
+     "40",
+     "30",
+     "26",
+     "23"
+    ],
+    "options": [],
+    "answer": 0,
+    "explanation": "正解：①40　②30　③26　④23。口訣：40總統、30市縣長、26鄉鎮市區長、23村里長與民代。",
+    "source": "講義補充 第6單元 p.68 課堂小幫手",
+    "pattern": "覺察說明｜多空格配合題（講義補充）"
    }
   ]
  },
@@ -2980,7 +3298,7 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
  {
   "name": "模擬卷 第三次段考模擬卷",
   "exam": true,
-  "desc": "4-3 與第5、6課交錯；角色扮演、時期判斷、示意圖與史料",
+  "desc": "4-3 與第5、6課交錯；第1～33題單選、第34～40題題組（仿第二次段考正式卷：地圖排序、生活與影視情境）",
   "data": [
    {
     "question": "柏勳讀到一本傳記：「這位清末重要人物參與自強運動，在甲午戰爭後代表中國到日本議和。」他讀的是誰的傳記？",
@@ -3020,21 +3338,6 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
     "explanation": "南京條約割讓香港、開放五口；馬關條約承認朝鮮自主、割讓臺澎、允許日人設廠；辛丑和約是八國聯軍後的賠款條約。",
     "source": "5-1 二；5-2 一｜課本第115頁",
     "pattern": "覺察說明｜配對"
-   },
-   {
-    "question": "附圖甲～丁中，哪一處是鴉片戰爭後割讓給英國的地方？",
-    "options": [
-     "甲",
-     "乙",
-     "丙",
-     "丁"
-    ],
-    "answer": 0,
-    "explanation": "甲是香港；乙上海是五口通商之一；丙天津在英法聯軍後開放；丁是膠州灣（青島），甲午戰後被德國租借。",
-    "source": "5-1 二｜課本第115頁 圖2-5-4",
-    "pattern": "資料蒐整與應用｜地圖",
-    "image": "mh_ports5",
-    "fixed": true
    },
    {
     "question": "清末，列強在租界內享有自主的司法、行政等權利，清廷無法管轄。這最能說明什麼？",
@@ -3143,19 +3446,6 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
     "pattern": "分析詮釋｜人物動機"
    },
    {
-    "question": "臺灣在□□以後開放了四個通商口岸，洋商、洋行在港口林立。□□應填入什麼？",
-    "options": [
-     "鴉片戰爭",
-     "甲午戰爭",
-     "八國聯軍",
-     "英法聯軍"
-    ],
-    "answer": 3,
-    "explanation": "英法聯軍後，臺灣開放淡水、雞籠、安平、打狗為通商口岸。",
-    "source": "5-1 三 超連結｜課本第115頁",
-    "pattern": "覺察說明｜臺灣連結"
-   },
-   {
     "question": "「這場改革研擬撤除政府中的冗官、冗員，卻受到守舊人士反對，最後沒有達成理想。」這是哪一項改革？",
     "options": [
      "自強運動",
@@ -3197,7 +3487,7 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
     "pattern": "覺察說明｜改革判斷"
    },
    {
-    "question": "十七世紀，日本為了限制西方傳教士與商人的活動，只允許哪兩國的商船到長崎貿易？",
+    "question": "電影《沉默》改編自日本小說，描述十七世紀天主教傳教士到日本傳教，卻遭到嚴厲查禁的故事。當時日本為了限制西方傳教士與商人的活動，只允許哪兩國的商船到長崎貿易？",
     "options": [
      "葡萄牙、西班牙",
      "英國、法國",
@@ -3251,28 +3541,15 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
    {
     "question": "如果你是十八世紀初在中國傳教的天主教傳教士，最可能遭遇下列哪一件事？",
     "options": [
-     "被明成祖派去跟著鄭和出海",
      "雍正皇帝下令禁教，傳教活動遭到查禁",
+     "被明成祖派去跟著鄭和出海",
      "被元朝列為色目人",
      "受邀到北宋汴京的書院講學"
     ],
-    "answer": 1,
+    "answer": 0,
     "explanation": "清初因禮儀之爭與傳教士介入宮廷政爭，雍正皇帝展開嚴厲的禁教行動（1723年），中西文化交流趨於沉寂。",
     "source": "4-3｜課本第109頁；單元時間軸",
     "pattern": "分析詮釋｜角色扮演"
-   },
-   {
-    "question": "在清乾隆年間，外商的通商口岸只限一地。這個口岸在哪裡？",
-    "options": [
-     "廣州",
-     "泉州",
-     "上海",
-     "廈門"
-    ],
-    "answer": 0,
-    "explanation": "乾隆年間清廷將通商口岸限於廣州一地。",
-    "source": "5-1 一｜課本第114頁",
-    "pattern": "覺察說明｜史事"
    },
    {
     "question": "晚清上海的市民生活因西方文化出現很大的轉變。下列何者「不是」受西方文化影響而出現的活動？",
@@ -3299,62 +3576,6 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
     "explanation": "十六世紀西班牙人在馬尼拉建城，隨著殖民統治，當地出現許多西班牙式建築，居民至今多信奉天主教。",
     "source": "4-3｜課本第109頁 圖2-4-15",
     "pattern": "分析詮釋｜現代連結"
-   },
-   {
-    "question": "依題組，兩項改革與刺激事件的配對何者正確？",
-    "options": [
-     "鴉片戰爭→自強運動；甲午戰爭→戊戌變法",
-     "甲午戰爭→自強運動；清法戰爭→戊戌變法",
-     "英法聯軍→自強運動；甲午戰爭→戊戌變法",
-     "英法聯軍→自強運動；鴉片戰爭→戊戌變法"
-    ],
-    "answer": 2,
-    "explanation": "英法聯軍後推動自強運動；甲午戰敗後推動戊戌變法。",
-    "source": "5-1 四；5-2 二｜課本第116頁",
-    "pattern": "分析詮釋｜題組",
-    "group": "MHA"
-   },
-   {
-    "question": "承上題，自強運動設立了哪一個機構，負責推動與執行外交事務？",
-    "options": [
-     "總理各國事務衙門",
-     "海關",
-     "市舶司",
-     "京師大學堂"
-    ],
-    "answer": 0,
-    "explanation": "1861年設立總理各國事務衙門，統籌外交。",
-    "source": "5-1 四｜課本第116頁 圖2-5-6",
-    "pattern": "覺察說明｜題組",
-    "group": "MHA"
-   },
-   {
-    "question": "承上題，關於這兩項改革的比較，下列何者正確？",
-    "options": [
-     "前者由知識分子主導，後者由地方大臣主導",
-     "兩者都受到守舊派的反對",
-     "兩者都著重在軍事國防",
-     "兩者都著重在政治制度"
-    ],
-    "answer": 1,
-    "explanation": "自強運動由大臣推動、著重器物；戊戌變法由康梁等知識分子推動、著重制度；兩者都遭守舊派反對。",
-    "source": "5-1 四；5-2 二｜課本第118頁",
-    "pattern": "分析詮釋｜比較",
-    "group": "MHA"
-   },
-   {
-    "question": "承上題，戊戌變法只維持一百天左右，除了下列何者以外，其餘新政都被廢除？",
-    "options": [
-     "科舉制度",
-     "皇族內閣",
-     "京師大學堂",
-     "北洋艦隊"
-    ],
-    "answer": 2,
-    "explanation": "戊戌政變後，除京師大學堂外，其餘新政皆遭廢除。",
-    "source": "5-2 二｜課本第118頁",
-    "pattern": "覺察說明｜題組",
-    "group": "MHA"
    },
    {
     "question": "開港通商後，有一批人在中國設立女子學校，提倡婦女自主。這批人屬於哪一個群體？",
@@ -3513,6 +3734,106 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
     "explanation": "課本想一想：知識分子從國家富強出發；傳教士認為女子受教育才能發揮能力，地位可與男子相提並論。",
     "source": "6-2 想一想｜課本第126頁",
     "pattern": "分析詮釋｜比較"
+   },
+   {
+    "question": "依題組，兩項改革與刺激事件的配對何者正確？",
+    "options": [
+     "鴉片戰爭→自強運動；甲午戰爭→戊戌變法",
+     "甲午戰爭→自強運動；清法戰爭→戊戌變法",
+     "英法聯軍→自強運動；甲午戰爭→戊戌變法",
+     "英法聯軍→自強運動；鴉片戰爭→戊戌變法"
+    ],
+    "answer": 2,
+    "explanation": "英法聯軍後推動自強運動；甲午戰敗後推動戊戌變法。",
+    "source": "5-1 四；5-2 二｜課本第116頁",
+    "pattern": "分析詮釋｜題組",
+    "group": "MHA"
+   },
+   {
+    "question": "承上題，自強運動設立了哪一個機構，負責推動與執行外交事務？",
+    "options": [
+     "總理各國事務衙門",
+     "海關",
+     "市舶司",
+     "京師大學堂"
+    ],
+    "answer": 0,
+    "explanation": "1861年設立總理各國事務衙門，統籌外交。",
+    "source": "5-1 四｜課本第116頁 圖2-5-6",
+    "pattern": "覺察說明｜題組",
+    "group": "MHA"
+   },
+   {
+    "question": "承上題，關於這兩項改革的比較，下列何者正確？",
+    "options": [
+     "前者由知識分子主導，後者由地方大臣主導",
+     "兩者都受到守舊派的反對",
+     "兩者都著重在軍事國防",
+     "兩者都著重在政治制度"
+    ],
+    "answer": 1,
+    "explanation": "自強運動由大臣推動、著重器物；戊戌變法由康梁等知識分子推動、著重制度；兩者都遭守舊派反對。",
+    "source": "5-1 四；5-2 二｜課本第118頁",
+    "pattern": "分析詮釋｜比較",
+    "group": "MHA"
+   },
+   {
+    "question": "承上題，戊戌變法只維持一百天左右，除了下列何者以外，其餘新政都被廢除？",
+    "options": [
+     "科舉制度",
+     "皇族內閣",
+     "京師大學堂",
+     "北洋艦隊"
+    ],
+    "answer": 2,
+    "explanation": "戊戌政變後，除京師大學堂外，其餘新政皆遭廢除。",
+    "source": "5-2 二｜課本第118頁",
+    "pattern": "覺察說明｜題組",
+    "group": "MHA"
+   },
+   {
+    "question": "附圖甲、乙、丙三個時期，依時間先後排列，正確順序為何？",
+    "options": [
+     "甲乙丙",
+     "乙丙甲",
+     "丙甲乙",
+     "丙乙甲"
+    ],
+    "answer": 3,
+    "explanation": "丙：乾隆年間通商口岸限於廣州一地 → 乙：鴉片戰爭後《南京條約》開放廣州、廈門、福州、寧波、上海五口 → 甲：英法聯軍後《天津條約》《北京條約》再開放天津、漢口、江寧等口岸，口岸由沿海深入內地，臺灣也開港。",
+    "source": "5-1 一、二、三｜課本第114～116頁 地圖",
+    "pattern": "資料蒐整與應用｜地圖排序（仿正式卷第26、37題）",
+    "group": "MHB",
+    "fixed": true
+   },
+   {
+    "question": "承上題，哪一幅圖呈現的是鴉片戰爭後，清廷簽訂條約所造成的情形？",
+    "options": [
+     "甲",
+     "乙",
+     "丙"
+    ],
+    "answer": 1,
+    "explanation": "鴉片戰爭後簽訂《南京條約》，開放五口通商、割讓香港，就是乙圖的五個口岸。三選一比照正式卷：圖只有三幅。",
+    "source": "5-1 二｜課本第115頁",
+    "pattern": "資料蒐整與應用｜地圖判讀",
+    "group": "MHB",
+    "fixed": true
+   },
+   {
+    "question": "承上題，老師帶全班到高雄哈瑪星的「打狗英國領事館文化園區」參觀，說明英國能在打狗設立領事館，是因為臺灣開港通商。臺灣開港的情形出現在哪一幅圖？與哪一事件有關？",
+    "options": [
+     "甲圖；英法聯軍",
+     "甲圖；鴉片戰爭",
+     "乙圖；英法聯軍",
+     "丙圖；甲午戰爭"
+    ],
+    "answer": 0,
+    "explanation": "英法聯軍後，臺灣開放淡水、雞籠、安平、打狗為通商口岸（甲圖臺灣島上的口岸），洋商、洋行與各國領事館陸續設立。",
+    "source": "5-1 三 超連結｜課本第116頁",
+    "pattern": "分析詮釋｜在地情境→史事",
+    "group": "MHB",
+    "fixed": true
    }
   ]
  }
@@ -4873,6 +5194,7 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
             }
         };
 
+        // M4-HISREAL2：2026-11-27 參考歷史第二次段考正式考卷調整歷史模擬卷（題組移到卷末、加通商口岸三圖題組 MHB、電影情境）
         // M3-REAL2：2026-11-26 參考公民、地理第二次段考正式考卷調整模擬卷（公民加配合題與九合一時事題組；地理改單題、加地圖認城市與時事題）
         // H4-SPLIT：2026-11-14 歷史加入第二次段考移來的 4-3 東西文化的交流與影響（課後練習、學習單元、模擬卷 4 題）
         // ===== 每課學習單元：📖 重點卡、⚡ 名詞速答、🎯 特色關卡、📒 習作複習（✍️ 課後練習＝原本各課題目）=====
@@ -5139,6 +5461,7 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
             $('quick-bar').classList.toggle('hidden', !isQuick);
             if (isQuick) { $('quick-combo').textContent = combo >= 2 ? `🔥 連擊 ${combo}` : ''; startTimer(); }
             if (q.type === 'order') { box.className = 'space-y-4'; renderOrder(q); return; }
+            if (q.type === 'cloze') { box.className = 'space-y-4'; renderCloze(q); return; }
             box.className = `grid grid-cols-1 ${q.options.length > 4 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'} gap-3`;
             let opts = q.options.map((text, index) => ({ text, originalIndex: index }));
             if (!q.fixed && !isExam) shuffleArray(opts);
@@ -5236,6 +5559,68 @@ html.pe-mapview #subject-list, html.pe-mapview #chapter-list{display:none}
             const ok = $('ord-ok'), full = q._pick.length === q.items.length && !hasAnsweredCurrent;
             ok.disabled = !full; ok.classList.toggle('opacity-40', !full);
         }
+        // CLOZE-HANDOUT：多空格配合題（2026-11-27 公民講義補充島）——一段文字有多個空格，下方給同樣數量的詞語，依序填入
+        const CIRC = '①②③④⑤⑥⑦⑧⑨';
+        function renderCloze(q) {
+            const n = q.blanks.length;
+            let bank = q.blanks.map((t, k) => k);
+            do { shuffleArray(bank); } while (n > 1 && bank.every((v, k) => v === k));
+            q._bank = bank; q._fill = Array(n).fill(null); q._act = 0;
+            const box = $('options-container');
+            box.innerHTML = `
+                <div class="text-sm font-bold text-gray-500">點下面的詞語，會依序填進框起來的空格；也可以先點某個空格再選詞語。點已填的空格可以退回。</div>
+                <div id="cz-text" class="p-4 sm:p-5 rounded-xl border-2 border-gray-100 bg-white text-gray-800 text-lg" style="line-height:2.4"></div>
+                <div id="cz-bank" class="flex flex-wrap gap-2"></div>
+                <div class="flex gap-3"><button id="cz-reset" class="px-5 py-2.5 rounded-xl border-2 border-gray-200 bg-white text-gray-600 font-bold">重填</button>
+                <button id="cz-ok" class="px-5 py-2.5 rounded-xl bg-gray-800 text-white font-bold opacity-40" disabled>確認答案</button></div>`;
+            $('cz-reset').onclick = () => { if (hasAnsweredCurrent) return; q._fill = Array(n).fill(null); q._act = 0; drawCloze(q); };
+            $('cz-ok').onclick = () => checkCloze(q);
+            drawCloze(q);
+        }
+        function drawCloze(q, result) {
+            const tx = $('cz-text'), bank = $('cz-bank'), n = q.blanks.length;
+            tx.innerHTML = '';
+            q.text.split(/\{(\d+)\}/).forEach((part, idx) => {
+                if (idx % 2 === 0) { tx.appendChild(document.createTextNode(part)); return; }
+                const k = +part - 1, w = q._fill[k], ok = result ? w === k : null, act = !result && q._act === k;
+                const b = document.createElement('button');
+                b.className = `inline-flex items-center gap-1 mx-1 px-2 rounded-lg border-2 align-middle font-bold leading-normal ${ok === true ? 'border-emerald-500 bg-emerald-50 text-emerald-800' : ok === false ? 'border-rose-400 bg-rose-50 text-rose-700' : act ? 'border-orange-500 bg-orange-50 text-gray-800 ring-2 ring-orange-200' : w !== null ? 'border-gray-400 bg-gray-50 text-gray-800' : 'border-dashed border-gray-400 bg-white text-gray-400'}`;
+                b.style.minWidth = '4.5em';
+                b.innerHTML = `<span class="text-sm">${CIRC[k] || k + 1}</span><span>${w !== null ? q.blanks[w] : '　　'}</span>${ok === false ? `<span class="text-xs text-emerald-700">→ ${q.blanks[k]}</span>` : ''}`;
+                b.onclick = () => { if (hasAnsweredCurrent) return; if (q._fill[k] !== null) q._fill[k] = null; q._act = k; drawCloze(q); };
+                tx.appendChild(b);
+            });
+            bank.innerHTML = '';
+            q._bank.forEach(w => {
+                const used = q._fill.includes(w);
+                const b = document.createElement('button');
+                b.className = `option-btn px-4 py-3 rounded-xl border-2 font-medium ${used ? 'border-gray-100 bg-gray-50 text-gray-300' : 'border-gray-200 bg-white hover:border-orange-400 text-gray-700'}`;
+                b.textContent = q.blanks[w]; b.disabled = used || !!result;
+                b.onclick = () => {
+                    if (hasAnsweredCurrent || used) return;
+                    let k = q._fill[q._act] === null ? q._act : q._fill.indexOf(null);
+                    if (k < 0) return;
+                    q._fill[k] = w;
+                    const next = q._fill.findIndex((v, j) => v === null && j > k);
+                    q._act = next >= 0 ? next : q._fill.indexOf(null);
+                    drawCloze(q);
+                };
+                bank.appendChild(b);
+            });
+            const ok = $('cz-ok'), full = !q._fill.includes(null) && !hasAnsweredCurrent;
+            ok.disabled = !full; ok.classList.toggle('opacity-40', !full);
+        }
+        function checkCloze(q) {
+            if (hasAnsweredCurrent || q._fill.includes(null)) return;
+            const n = q.blanks.length, right = q._fill.filter((w, k) => w === k).length;
+            hasAnsweredCurrent = true;
+            drawCloze(q, true);
+            $('cz-reset').disabled = true; $('cz-reset').classList.add('opacity-40');
+            judge(q, right === n, false);
+            if (right > 0 && right < n) { score += 100 / currentQuestions.length * right / n; updateScoreDisplay(); }   // 部分答對給部分分數
+            $('explanation-text').textContent = `本題 ${n} 格答對 ${right} 格。` + q.explanation;
+        }
+
         function checkOrder(q) {
             if (hasAnsweredCurrent || q._pick.length !== q.items.length) return;
             const isCorrect = q._pick.every((k, pos) => k === pos);
@@ -6571,6 +6956,7 @@ body{padding-bottom:64px}
     sub: el => { if (el.tagName === 'BUTTON') return /尚未解鎖/.test(el.textContent) ? '🔒 各單元達 ★★★ 解鎖' : '📝 開放作答';
       const u = el.querySelectorAll('.unit-btn'); const done = [...u].filter(b => /最佳|已翻/.test(b.textContent)).length; return `${u.length} 個小單元・已練 ${done}`; },
     kind: (el, i) => { if (el.tagName === 'BUTTON') return 'trophy'; const t = el.textContent;
+      if (/講義/.test(t)) return 'books';
       if (/地方政府/.test(t)) return 'townhall'; if (/政治參與|投票/.test(t)) return 'ballot'; if (/西力|變革/.test(t)) return 'steamship'; if (/晚清的社會|社會文化/.test(t)) return 'railway'; if (/東北亞的自然|自然環境/.test(t)) return 'volcano'; if (/東北亞的經濟/.test(t)) return 'skyline';
       if (/權力分立/.test(t)) return 'triad'; if (/中央政府/.test(t)) return 'dome'; if (/宋|元/.test(t)) return 'yurt'; if (/明|清/.test(t)) return 'palace';
       if (/產業/.test(t)) return 'factory'; if (/經濟|全球/.test(t)) return 'port';
