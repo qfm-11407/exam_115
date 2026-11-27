@@ -296,6 +296,32 @@ window.PE115 = (function () {
   .pbtn .pst{font-size:.7rem;letter-spacing:1px;min-height:.9em;opacity:.9}
   .pbtn .pst .on{color:#ffd56b}
   .ovbtn{border:none;background:#fff;border-radius:10px;padding:6px 10px;font-size:1rem}
+  /* 單元動畫 */
+  .vid-row{background:linear-gradient(90deg,#fff7e0,var(--bg))}
+  .vbtn{border:2px solid var(--u,var(--primary));background:#fff;color:var(--u,var(--primary));border-radius:10px;padding:3px 10px;display:flex;flex-direction:column;align-items:center;line-height:1.2;min-width:52px}
+  .vbtn b{font-size:.92rem}
+  .vbtn .vst{font-size:.7rem;opacity:.85}
+  .vbtn.seen{background:var(--u,var(--primary));color:#fff}
+  .vid-link{background:#fff4dc;color:#8a5a00;border:2px solid #f2c96b;margin-right:auto}
+  .vm-back{position:fixed;inset:0;z-index:200;background:rgba(15,23,42,.72);display:flex;align-items:center;justify-content:center;padding:16px}
+  .vm-back.hidden{display:none}
+  .vm-box{background:var(--card);border-radius:18px;width:min(920px,100%);max-height:100%;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+  .vm-head{display:flex;align-items:center;gap:10px;padding:12px 16px}
+  .vm-head .vm-unit{background:var(--u,var(--primary));color:#fff;border-radius:8px;padding:2px 10px;font-weight:800;font-size:.85rem}
+  .vm-head b{flex:1;font-size:1.05rem}
+  .vm-x{border:none;background:var(--bg);border-radius:10px;width:40px;height:40px;font-size:1.1rem}
+  .vm-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 10px}
+  .vm-tabs button{border:2px solid var(--u,var(--primary));background:#fff;color:var(--u,var(--primary));border-radius:999px;padding:3px 12px;font-size:.85rem;font-weight:700}
+  .vm-tabs button.on{background:var(--u,var(--primary));color:#fff}
+  .vm-box video{display:block;width:100%;aspect-ratio:16/9;background:#0f172a}
+  .vm-take{padding:10px 16px 0;color:var(--muted);font-size:.92rem}
+  .vm-next{padding:10px 16px 16px}
+  .vm-next p{margin:4px 0 8px;font-weight:800}
+  .vm-next.done p{color:var(--ok)}
+  .vm-acts{display:flex;gap:8px;flex-wrap:wrap}
+  .vm-acts .btn{padding:9px 16px;font-size:.95rem}
+  .vm-acts .btn-primary{background:var(--u,var(--primary))}
+  @media (max-width:600px){ .vm-back{padding:0;align-items:flex-end} .vm-box{border-radius:18px 18px 0 0} .vm-acts .btn{flex:1 1 45%} }
   .unit.review .ovbtn{background:var(--bg)}
   #chapterUnits{grid-template-columns:repeat(2,1fr)}
   .q-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:12px}
@@ -372,7 +398,7 @@ html.pe-mapview #home .sec-title:has(+ #reviewUnits), html.pe-mapview #home .sec
     <div class="card hero">
       <h1>八年級數學 第三次段考強化練習</h1>
       <span class="range">範圍：4-1 因式分解法解一元二次方程式 ～ 第 5 章 統計資料處理</span><span class="total-chip" id="totalTxt"></span>
-      <p class="sub" style="margin-top:8px">特色：數學闖關基地｜每個單元有 📘 課本例題、📒 習作、⚡ 速測、📝 平時測驗四種關卡，答對拿積分、連續答對有連擊加成</p>
+      <p class="sub" style="margin-top:8px">特色：數學闖關基地｜每個單元先看 🎬 單元動畫，再闖 📘 課本例題、📒 習作、⚡ 速測、📝 平時測驗四種關卡，答對拿積分、連續答對有連擊加成；答錯可以回看動畫</p>
       <p class="sub pe-level" style="margin-top:4px"></p>
       <div class="progress">
         <div class="progress-top"><span>段考範圍通關進度（答對六成以上得 ★ 算通關）</span><span id="progTxt"></span></div>
@@ -380,13 +406,13 @@ html.pe-mapview #home .sec-title:has(+ #reviewUnits), html.pe-mapview #home .sec
       </div>
     </div>
 
-    <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新單元前，先做該單元的「📘 課本例題」，跟著步驟看懂解法。</li><li><b>✍️ 課後複習：</b>上完課做「📒 習作」；切到「原題型」先自己動筆算，再逐步對答案。</li><li><b>🎯 自主練習：</b>用「⚡ 速測」和「📝 平時測驗」檢查熟練度，闖完把錯題重練到全對。</li><li><b>🏆 段考衝刺：</b>做「🏆 章末總習題」，再挑戰「👾 魔王關：段考模擬」。</li></ul></details>
+    <details class="pe-howto" open><summary>📌 怎麼用：課前預習・課後複習・自主練習・段考衝刺</summary><ul><li><b>📖 課前預習：</b>上新單元前，先看「🎬 單元動畫」（每集 1～2 分鐘），看完直接接「📘 課本例題」，跟著步驟看懂解法。</li><li><b>✍️ 課後複習：</b>上完課做「📒 習作」；切到「原題型」先自己動筆算，再逐步對答案。</li><li><b>🎯 自主練習：</b>用「⚡ 速測」和「📝 平時測驗」檢查熟練度，闖完把錯題重練到全對。</li><li><b>🏆 段考衝刺：</b>做「🏆 章末總習題」，再挑戰「👾 魔王關：段考模擬」。</li></ul></details>
 
     <!-- 第三次段考不設暖身複習；保留空的 reviewUnits 供 pe115-map-config 定位 -->
     <div class="sec-title pe-off" aria-hidden="true"></div>
     <div class="units pe-off" id="reviewUnits"></div>
 
-    <div class="sec-title">🗺️ 段考範圍 <small>每個單元都有課本例題、習作、速測、平時測驗</small></div>
+    <div class="sec-title">🗺️ 段考範圍 <small>每個單元先看單元動畫，再做課本例題、習作、速測、平時測驗</small></div>
     <div class="units" id="examUnits"></div>
 
     <div class="sec-title">🏆 章末總習題 <small>習作總習題、平時測驗卷與課本自我挑戰</small></div>
@@ -421,7 +447,7 @@ html.pe-mapview #home .sec-title:has(+ #reviewUnits), html.pe-mapview #home .sec
   <section id="overview" class="card hidden"></section>
 </main>
 
-<footer>題目改寫自翰林版八年級數學課本例題、習作、雲端速測與平時測驗卷（4-1 ～ 第 5 章），統計圖皆以程式重新繪製，僅供課堂練習使用。選擇題可用鍵盤 1–4（或 A–D）作答；Enter 看下一步解答或進入下一關。</footer>
+<footer>題目改寫自翰林版八年級數學課本例題、習作、雲端速測與平時測驗卷（4-1 ～ 第 5 章），統計圖皆以程式重新繪製；🎬 單元動畫為「一分鐘認識數學」系列（9 集）。僅供課堂練習使用。選擇題可用鍵盤 1–4（或 A–D）作答；Enter 看下一步解答或進入下一關。</footer>
 
 <script>
 const R = String.raw;
@@ -2449,6 +2475,117 @@ function show(id){
 }
 function setHash(h){ try{ history.replaceState(null,'',h?('#'+h):location.pathname+location.search); }catch(e){} }
 
+
+/* ============ 🎬 單元動畫（一分鐘認識數學，檔案在 videos/） ============ */
+const VIDEOS=[
+  {id:'01',sec:'4-1',name:'同一個方程式，兩個解？',topic:'認識一元二次方程式',take:'代入後等式成立，這個值就是解。',dur:76},
+  {id:'02',sec:'4-1',name:'乘積是零，找出兩個解',topic:'因式分解法',take:'乘積為 0，至少有一個因式是 0。',dur:92},
+  {id:'03',sec:'4-2',name:'平方根解法，記得正負',topic:'平方根解法',take:'平方等於正數，求解時有正負兩種。',dur:78},
+  {id:'04',sec:'4-2',name:'配方法，補出正方形',topic:'配方法',take:'一次項係數取一半再平方，等式兩邊同加。',dur:110},
+  {id:'05',sec:'4-2',name:'公式解，帶著符號代入',topic:'一元二次方程式的公式解',take:'先把等式右邊整理成 0，係數連符號一起代入。',dur:118},
+  {id:'06',sec:'4-3',name:'應用題，哪個解符合題意？',topic:'一元二次方程式的應用問題',take:'求出解以後，逐一檢查是否符合原題條件。',dur:96},
+  {id:'07',sec:'5-1',name:'相對次數，這組占多少？',topic:'相對次數分配表與折線圖',take:'各組人數除以總人數，折點用組中點。',dur:104},
+  {id:'08',sec:'5-2',name:'累積次數，門檻前有幾人？',topic:'累積次數分配表與折線圖',take:'逐組累加人數，折點用各組的上端。',dur:108},
+  {id:'09',sec:'5-3',name:'累積相對次數，跨班比較',topic:'累積相對次數分配表與折線圖',take:'累積人數除以總人數，最後累積到 100%。',dur:112}
+];
+const VID_SRC=id=>`videos/math1150103-${id}.mp4`, VID_POSTER=id=>`videos/math1150103-${id}.jpg`;
+const vidSeen=id=>{try{return localStorage.getItem(KEY+'vid-'+id)==='1';}catch(e){return false;}};
+const markSeen=id=>{try{localStorage.setItem(KEY+'vid-'+id,'1');}catch(e){}};
+const fmtDur=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+function vidRow(sec){
+  const vs=VIDEOS.filter(v=>v.sec===sec.id); if(!vs.length) return '';
+  const seen=vs.filter(v=>vidSeen(v.id)).length;
+  return `<div class="set-row vid-row"><div class="set-name">🎬 單元動畫<small>已看 ${seen} / ${vs.length} 集</small></div>
+    <div class="set-btns">${vs.map(v=>`<button class="vbtn${vidSeen(v.id)?' seen':''}" data-vid="${v.id}" title="${v.id} ${v.name}（${fmtDur(v.dur)}）"><b>${v.id}</b><span class="vst">${vidSeen(v.id)?'✓ 看過':fmtDur(v.dur)}</span></button>`).join('')}</div></div>`;
+}
+/* 題目對應的動畫：依節次與考的觀念 */
+function vidFor(q){
+  const sec=q.set&&q.set.sec, sk=(q.skill||'')+' '+(q.set&&q.set.kind==='quiz'?q.stem:'');
+  const v4=()=>/平方根/.test(sk)?'03':/配方|完全平方/.test(sk)?'04':/公式|判別|重根|無解/.test(sk)?'05':
+    /意義|方程式的解|列一元|列式/.test(sk)?'01':/問題|應用|年齡|面積|收費|支付|路寬|整數|裝箱|容積|體積|黃金|比例|數字|產量|分組|畢氏/.test(sk)?'06':'02';
+  let id=null;
+  if(sec==='4-1') id=/意義|方程式的解|列一元/.test(sk)?'01':'02';
+  else if(sec==='4-2'){ id=v4(); if(!['03','04','05'].includes(id)) id='04'; }
+  else if(sec==='4-3') id='06';
+  else if(sec==='ch4') id=v4();
+  else if(/^5-/.test(sec)||sec==='ch5') id=/累積相對/.test(sk)?'09':/累積/.test(sk)?'08':(sec==='5-2'?'08':sec==='5-3'?'09':'07');
+  return VIDEOS.find(v=>v.id===id)||null;
+}
+/* 看完後接著練習：本節第一個還沒拿到 ★ 的關卡 */
+function nextPartOf(sec,kind){
+  const st=SETS.find(s=>s.sec===sec&&s.kind===kind); if(!st) return null;
+  return (st.parts.find(p=>!(readRec(p.id)||{}).stars)||st.parts[0]).id;
+}
+const VM={open:false,id:null,inGame:false};
+function vmEl(){
+  let m=document.getElementById('vidModal'); if(m) return m;
+  m=document.createElement('div'); m.id='vidModal'; m.className='vm-back hidden';
+  m.innerHTML=`<div class="vm-box" role="dialog" aria-modal="true" aria-labelledby="vmTitle">
+    <div class="vm-head"><span class="vm-unit" id="vmUnit"></span><b id="vmTitle"></b><button class="vm-x" id="vmX" aria-label="關閉">✕</button></div>
+    <div class="vm-tabs" id="vmTabs"></div>
+    <video id="vmVideo" controls playsinline preload="metadata"></video>
+    <div class="vm-take" id="vmTake"></div>
+    <div class="vm-next" id="vmNext"></div></div>`;
+  document.body.appendChild(m);
+  m.addEventListener('click',e=>{ if(e.target===m) closeVideo(); });
+  m.querySelector('#vmX').onclick=closeVideo;
+  const v=m.querySelector('video');
+  v.addEventListener('timeupdate',()=>{ if(VM.id&&v.duration&&v.currentTime/v.duration>=0.9&&!vidSeen(VM.id)){ markSeen(VM.id); vmNext(false); } });
+  v.addEventListener('ended',()=>{ markSeen(VM.id); vmNext(true); });
+  v.addEventListener('error',()=>{ $('vmTake').innerHTML='⚠️ 找不到影片檔，請確認網頁旁邊有 <b>videos</b> 資料夾。'; });
+  return m;
+}
+function openVideo(id,o={}){
+  const ep=VIDEOS.find(v=>v.id===id); if(!ep) return;
+  const m=vmEl(), sec=SECTIONS.find(s=>s.id===ep.sec)||{}, v=m.querySelector('video');
+  VM.open=true; VM.id=id; VM.inGame=!!o.inGame;
+  m.style.setProperty('--u',sec.color||'#1971c2');
+  $('vmUnit').textContent=ep.sec; $('vmTitle').textContent=`${ep.id} ${ep.name}`;
+  const sibs=VIDEOS.filter(x=>x.sec===ep.sec);
+  $('vmTabs').innerHTML=sibs.length>1?sibs.map(x=>`<button data-vt="${x.id}" class="${x.id===id?'on':''}">${x.id} ${x.topic}${vidSeen(x.id)?' ✓':''}</button>`).join(''):'';
+  $('vmTabs').querySelectorAll('[data-vt]').forEach(b=>b.onclick=()=>openVideo(b.dataset.vt,{inGame:VM.inGame}));
+  $('vmTake').innerHTML=`💡 這集重點：${ep.take}（${fmtDur(ep.dur)}）`;
+  v.poster=VID_POSTER(id); v.src=VID_SRC(id);
+  m.classList.remove('hidden'); document.body.style.overflow='hidden';
+  vmNext(false);
+  try{ v.play().catch(()=>{}); }catch(e){}
+  $('vmX').focus({preventScroll:true});
+}
+function vmNext(done){
+  const ep=VIDEOS.find(v=>v.id===VM.id); if(!ep) return;
+  const sec=SECTIONS.find(s=>s.id===ep.sec)||{}, box=$('vmNext');
+  const sibs=VIDEOS.filter(x=>x.sec===ep.sec), nx=sibs[sibs.indexOf(ep)+1];
+  box.classList.toggle('done',!!done);
+  if(VM.inGame){
+    box.innerHTML=`<p>${done?'🎉 看完了！回去再試一次吧':'看懂了就回到題目繼續闖關'}</p><div class="vm-acts"><button class="btn btn-primary" data-vgo="back">↩ 回到題目</button></div>`;
+  } else {
+    const acts=[];
+    if(nx) acts.push(`<button class="btn ${done?'btn-primary':'btn-ghost'}" data-vgo="vid:${nx.id}">▶ 下一集：${nx.id} ${nx.name}</button>`);
+    [['book','📘 課本例題'],['work','📒 習作'],['quiz','⚡ 速測']].forEach(([k,lbl],i)=>{ const pid=nextPartOf(ep.sec,k);
+      if(pid) acts.push(`<button class="btn ${(!nx||!done)&&i===0?'btn-primary':'btn-ghost'}" data-vgo="play:${pid}">${lbl}</button>`); });
+    box.innerHTML=`<p>${done?`🎉 看完了！接著練習 ${ep.sec} ${sec.title||''}`:`看完後接著練習 ${ep.sec} ${sec.title||''}：`}</p><div class="vm-acts">${acts.join('')}</div>`;
+  }
+  box.querySelectorAll('[data-vgo]').forEach(b=>b.onclick=()=>{ const g=b.dataset.vgo;
+    if(g==='back') return closeVideo();
+    if(g.startsWith('vid:')) return openVideo(g.slice(4));
+    if(g.startsWith('play:')){ closeVideo(true); startPart(g.slice(5)); } });
+  refreshVidRows();
+}
+function closeVideo(silent){
+  const m=document.getElementById('vidModal'); if(!m) return;
+  const v=m.querySelector('video'); try{ v.pause(); }catch(e){}
+  m.classList.add('hidden'); document.body.style.overflow=''; VM.open=false;
+  if(!silent) refreshVidRows();
+}
+/* 只更新動畫列的「看過」標記，不重畫整個首頁 */
+function refreshVidRows(){
+  document.querySelectorAll('#home .vid-row').forEach(row=>{
+    const bs=[...row.querySelectorAll('.vbtn')]; let n=0;
+    bs.forEach(b=>{ const s=vidSeen(b.dataset.vid); if(s) n++; if(b.classList.contains('seen')!==s){ b.classList.toggle('seen',s); const ep=VIDEOS.find(v=>v.id===b.dataset.vid); b.querySelector('.vst').textContent=s?'✓ 看過':fmtDur(ep.dur); } });
+    const sm=row.querySelector('.set-name small'), t=`已看 ${n} / ${bs.length} 集`; if(sm.textContent!==t) sm.textContent=t;
+  });
+}
+
 /* ============ 入口頁 ============ */
 function setRow(st){
   const k=KINDS[st.kind];
@@ -2464,7 +2601,7 @@ function secCard(sec){
   return `<div class="unit ${sec.review?'review':''}" style="--u:${sec.color}">
     <div class="unit-head"><span class="unit-no">${sec.short||sec.id}</span><h3>${sec.chapter?sec.sub:sec.title}</h3></div>
     ${sec.review?'<div class="unit-meta"><span class="mini rv">複習・非段考範圍</span></div>':''}
-    <div class="set-list">${sets.map(setRow).join('')}</div></div>`;
+    <div class="set-list">${vidRow(sec)}${sets.map(setRow).join('')}</div></div>`;
 }
 function renderHome(){
   $('reviewUnits').innerHTML = SECTIONS.filter(s=>s.review).map(secCard).join('');
@@ -2480,6 +2617,7 @@ function renderHome(){
   $('bossBest').innerHTML = b ? `最佳紀錄：${starStr(b)}　${b.score} 分` : '';
   document.querySelectorAll('[data-play]').forEach(btn=>btn.onclick=()=>startPart(btn.dataset.play));
   document.querySelectorAll('[data-ov]').forEach(btn=>btn.onclick=()=>openOverview(btn.dataset.ov,'home'));
+  document.querySelectorAll('#home [data-vid]').forEach(btn=>btn.onclick=()=>openVideo(btn.dataset.vid));
   show('home'); setHash('');
 }
 
@@ -2610,9 +2748,10 @@ function finish(correct,chosen){
       <div class="fb-head">${head}</div>
       ${mcMode?`<ol class="steps">${q.steps.map((s,k)=>stepHTML(s,k,true)).join('')}</ol>`:''}
       ${q.tip?`<div class="tip"><b>觀念小叮嚀：</b>${rich(q.tip)}</div>`:''}
-      <div class="next-row"><button class="btn btn-primary" id="nextBtn">${last?'查看結算 🏁':'下一關 ➜'}</button></div>
+      <div class="next-row">${(!correct&&vidFor(q))?`<button class="btn vid-link" id="vidLink">🎬 回看動畫：${vidFor(q).id} ${vidFor(q).name}</button>`:''}<button class="btn btn-primary" id="nextBtn">${last?'查看結算 🏁':'下一關 ➜'}</button></div>
     </div>`;
   $('nextBtn').addEventListener('click',next);
+  if($('vidLink')) $('vidLink').onclick=()=>openVideo(vidFor(q).id,{inGame:true});
   $('nextBtn').focus({preventScroll:true});
   $('fb').scrollIntoView({behavior:'smooth',block:'nearest'});
   renderMap(); updateChips();
@@ -2700,6 +2839,7 @@ function openOverview(key,from){
 
 /* ============ 啟動 ============ */
 document.addEventListener('keydown',e=>{
+  if(VM.open){ if(e.key==='Escape') closeVideo(); return; }
   if(!S || $('game').classList.contains('hidden')) return;
   const q=S.items[S.queue[S.pos]];
   if(!S.locked){
@@ -2715,7 +2855,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   const h=decodeURIComponent(location.hash.slice(1));
   if(h==='boss') startBoss();
   else if(PLAY[h]) startPart(h);
-  else renderHome();
+  else { renderHome(); const m=h.match(/^video-(\d\d)$/); if(m&&VIDEOS.some(v=>v.id===m[1])) openVideo(m[1]); }
 });
 
 </script>
@@ -3917,12 +4057,17 @@ PE115Map.add({
     return { '2-1': 'squares', '2-2': 'sqrt', '2-3': 'pyth', '3-1': 'tiles', '3-2': 'cross', '4-1': 'balance', '4-2': 'squarefill', '4-3': 'garden' }[no] || (/^5/.test(no) ? 'barchart' : 'books'); },
   color: el => el.classList.contains('boss-card') ? '#7048e8' : (getComputedStyle(el).getPropertyValue('--u').trim() || '#1971c2'),
   island: '數學島',
-  /* 點島嶼後的面板：每種關卡一棟建築（課本例題＝學校、習作＝工坊、速測＝碼錶塔、總習題＝書庫），按鈕在建築下方 */
+  /* 點島嶼後的面板：每種關卡一棟建築（🎬 單元動畫＝攝影棚（最前面）、課本例題＝學校、習作＝工坊、速測＝碼錶塔、總習題＝書庫），按鈕在建築下方 */
   tiles: el => {
     if (el.classList.contains('boss-card')) { const best = (document.getElementById('bossBest') || {}).textContent || '';
       return [{ name: '👾 魔王關', sub: best ? best.replace('最佳紀錄：', '最佳 ') : '段考範圍隨機 10 題', kind: 'castle', color: '#7048e8', acts: [{ label: '挑戰魔王 ⚔️', el: document.getElementById('bossBtn') }] }]; }
     const c = getComputedStyle(el).getPropertyValue('--u').trim() || '#1971c2';
     return [...el.querySelectorAll('.set-row')].map(row => {
+      if (row.classList.contains('vid-row')) {   // 🎬 單元動畫＝攝影棚；點建築播放第一集還沒看過的，不計入星等
+        const bs = [...row.querySelectorAll('.vbtn')], sm = row.querySelector('.set-name small'), nx = bs.find(b => !b.classList.contains('seen'));
+        return { name: '🎬 單元動畫', sub: sm ? sm.textContent : '', kind: 'studio', color: c, go: nx || bs[0], stars: [nx ? 0 : 1, 1],
+          acts: bs.map(b => ({ label: `${b.querySelector('b').textContent} ${b.classList.contains('seen') ? '✓ 看過' : '▶ 播放'}`, el: b })) };
+      }
       const nm = row.querySelector('.set-name'), small = nm.querySelector('small'), name = nm.childNodes[0].textContent.trim();
       const kind = /課本/.test(name) ? 'school' : /習作/.test(name) ? 'workshop' : /速測/.test(name) ? 'timer' : 'books';
       const acts = [...row.querySelectorAll('.pbtn')].map(b => ({ label: `${b.querySelector('b').textContent} ${(b.querySelector('.pst') || {}).textContent || ''}`.trim(), el: b }));
