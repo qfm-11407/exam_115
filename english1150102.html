@@ -1189,7 +1189,8 @@ body{padding-bottom:64px}
 
 <script id="pe115-map">
 /* ===== PE115 島嶼地圖元件（各練習頁共用，內容一字不差；各頁設定寫在 pe115-map-config） =====
-   用法：PE115Map.add({ key, anchor, items, hide, name, sub, kind, color, locked, apart })
+   用法：PE115Map.add({ key, anchor, items, hide, name, sub, kind, color, locked, apart, branch })
+   - branch(items) → { name, code, icon, color, note, stations: [{ name, sub, lit, parent, el }] }：捷運版的支線（例：數學動畫支線）
    - 把頁面原本的課次／單元卡片畫成 2.5D 島嶼地圖：每張卡片一座島，依序用橋相連
    - 點島嶼 → 跳出原本那張卡片（點卡片上的按鈕才真正進入，避免誤按）
    - 右上可切換「📋 清單」回到原本的卡片排列；選擇記在 localStorage「pe115:view」（與入口網站共用）
@@ -1978,6 +1979,13 @@ body{padding-bottom:64px}
     const main = items.map((it, i) => i).filter(i => !items[i].apart);
     const allLit = !M.multi && main.length >= 2 && main.every(i => lit[i]);
     const last = main[main.length - 1], term = items[last];
+    /* 支線（設定 branch）：例：數學的「🎬 動畫支線」，每集一站，看過就亮燈；接在主線下方 */
+    let BR = null; try { BR = cfg && cfg.branch ? cfg.branch(items) : null; } catch (e) { BR = null; }
+    if (BR && !(BR.stations || []).length) BR = null;
+    const H0 = Lo.H; let bpos = [];
+    if (BR) { const m = BR.stations.length;
+      if (narrow) { const y0 = H0 + 40; bpos = BR.stations.map((b, k) => [92, y0 + k * 112]); Lo.H = y0 + (m - 1) * 112 + 150; }
+      else { const by = H0 + 120; bpos = BR.stations.map((b, k) => [m > 1 ? 150 + 900 * k / (m - 1) : 600, by]); Lo.H = by + 140; } }
     let s = `<svg viewBox="0 0 ${Lo.W} ${Lo.H}" role="img" aria-label="捷運路線圖：點站名直接進入" ${FONT}>
       <defs><pattern id="pmGrid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40,0H0V40" fill="none" stroke="#edf0f3" stroke-width="1"/></pattern></defs>
       <rect width="${Lo.W}" height="${Lo.H}" fill="#fbfcfd"/><rect width="${Lo.W}" height="${Lo.H}" fill="url(#pmGrid)"/>`;
@@ -2005,10 +2013,33 @@ body{padding-bottom:64px}
         : `<circle r="16" fill="#fff" stroke="${c}" stroke-width="6"/>`;
       s += `<g class="pm-isl pm-st${sel === i ? ' sel' : ''}${L_ ? ' lit' : ''}" data-i="${i}" transform="translate(${f1(x)},${f1(y)})" tabindex="0" role="button" aria-label="${esc((code ? code + ' ' : '') + it.name + '：' + it.sub)}${L_ ? '（已亮燈）' : ''}">
         <circle class="pm-hit" r="40" fill="transparent"/><g class="pm-lift">${mark}${mLabel(code || (it.apart ? '支線' : ''), it.name, it.sub || (L_ ? '已亮燈' : '尚未到站'), c, side, L_)}</g></g>`; });
+    if (BR) { const bc = toHex(BR.color || '#f08c00'), bl = BR.stations.map(b => !!b.lit), nl = bl.filter(Boolean).length, code = BR.code || 'B';
+      const p0 = BR.stations[0].parent, pp = Lo.pos[p0 >= 0 && p0 < n ? p0 : 0], b0 = bpos[0];
+      /* 轉乘通道：由第一集所屬的主線站接到支線起點 */
+      const jy = narrow ? b0[1] - 60 : b0[1] - 70;
+      s += narrow ? `<path d="M${f1(pp[0] - 30)},${f1(pp[1])} H40 V${f1(b0[1])} H${f1(b0[0])}" fill="none" stroke="${bc}" stroke-width="4" stroke-dasharray="3 8" stroke-linecap="round" opacity=".7"/>`
+        : `<path d="M${f1(pp[0])},${f1(pp[1] + 20)} V${f1(jy)} H${f1(b0[0])} V${f1(b0[1])}" fill="none" stroke="${bc}" stroke-width="4" stroke-dasharray="3 8" stroke-linecap="round" opacity=".7"/>`;
+      s += `<g transform="translate(${narrow ? 18 : 40},${f1(narrow ? b0[1] - 92 : b0[1] - 132)})"><rect x="0" y="-18" width="36" height="36" rx="9" fill="${bc}"/><text x="18" y="7" font-size="18" text-anchor="middle">${esc(BR.icon || '🎬')}</text>
+        <text x="48" y="-1" font-size="19" font-weight="900" fill="#1f2433">${esc(BR.name || '支線')}</text><text x="48" y="17" font-size="12.5" font-weight="700" fill="#868e96">${esc(BR.note || '')}${BR.note ? '・' : ''}亮燈 ${nl} / ${bl.length} 站</text>
+        ${nl === bl.length ? `<g transform="translate(${f1(60 + tw(BR.name || '支線', 19))},-4)"><rect x="0" y="-14" width="100" height="26" rx="13" fill="#fff3bf" stroke="#f59f00" stroke-width="2"/><text x="50" y="4" font-size="13" font-weight="900" text-anchor="middle" fill="#b35c00">🎫 全線通車</text></g>` : ''}</g>`;
+      for (let k = 0; k < bpos.length - 1; k++) { const a = bpos[k], b = bpos[k + 1], on = bl[k] && bl[k + 1];
+        s += `<path d="M${f1(a[0])},${f1(a[1])} L${f1(b[0])},${f1(b[1])}" stroke="#fff" stroke-width="18" stroke-linecap="round"/><path d="M${f1(a[0])},${f1(a[1])} L${f1(b[0])},${f1(b[1])}" stroke="${on ? bc : shade(bc, 0.7)}" stroke-width="10" stroke-linecap="round"/>`; }
+      BR.stations.forEach((b, k) => { const [x, y] = bpos[k], L_ = bl[k], side = narrow ? 'r' : (k % 2 ? 'up' : 'down'), bcode = `${code}${String(k + 1).padStart(2, '0')}`;
+        s += `<g class="pm-isl pm-br${L_ ? ' lit' : ''}" data-b="${k}" transform="translate(${f1(x)},${f1(y)})" tabindex="0" role="button" aria-label="${esc(bcode + ' ' + b.name + '：' + (b.sub || ''))}${L_ ? '（已看過）' : ''}">
+          <circle class="pm-hit" r="36" fill="transparent"/><g class="pm-lift">${L_ ? `<circle class="pm-glow" r="22" fill="${bc}" opacity=".25"/>` : ''}<rect x="-15" y="-15" width="30" height="30" rx="8" fill="${L_ ? bc : '#fff'}" stroke="${bc}" stroke-width="5"/>
+          ${L_ ? `<path d="M-6,0l4,4l8,-8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>` : `<path d="M-4,-6l9,6l-9,6z" fill="${bc}"/>`}
+          ${mLabel(bcode, b.name, b.sub || '', bc, side, L_)}</g></g>`; }); }
     /* 列車：停在上次搭到的站（或第一個還沒亮燈的站） */
     if (!M.multi) { const k = trainAt(cfg, M, items, lit), [tx, ty] = Lo.pos[k], up = Lo.rows === 2 ? !Math.floor(k / Lo.per) : k % 2 === 1;   // 列車停在站名牌的另一側
       s += `<g class="pm-train" data-at="${k}" transform="translate(${f1(tx)},${f1(ty)})" aria-hidden="true"><g transform="${narrow ? 'translate(-58,0) rotate(90)' : up ? 'translate(0,54)' : 'translate(0,-50)'}">${trainSVG(M.color, M.code)}</g></g>`; }
     return s + '</svg>';
+  }
+  /* 點支線的站：直接執行該站動作（例：播放那一集動畫），不換頁 */
+  function openBranch(box_, k, g) {
+    const cfg = box_._cfg; let BR = null; try { BR = cfg.branch(box_._items); } catch (e) {}
+    const b = BR && BR.stations[k]; if (!b || !b.el) return;
+    if (g) { g.classList.remove('pm-arrive'); void g.getBoundingClientRect(); g.classList.add('pm-arrive'); }
+    setTimeout(() => b.el.click(), 120);
   }
   /* 點站：列車沿軌道開到那一站，再進入 */
   function rideTo(box_, i, then) {
@@ -2032,6 +2063,11 @@ body{padding-bottom:64px}
     const lit = items.map(it => !it.locked && litOf(it.sub)), key = EXAM_N + '|' + M.id;
     const rec = { name: M.name, st: items.map((it, i) => [cut(it.name, 14), lit[i] ? 1 : 0, it.apart ? 2 : isTerm(it) ? 1 : 0]) };
     const all = jget(LN_KEY); if (JSON.stringify(all[key]) !== JSON.stringify(rec)) { all[key] = rec; jset(LN_KEY, all); }
+    if (isMetro() && cfg.branch) { try { const BR = cfg.branch(items), bs = BR.stations || [];
+      if (bs.length >= 2 && bs.every(b => b.lit)) { const bk = key + '-' + (BR.code || 'B'), tk0 = jget(TK_KEY);
+        if (!tk0[bk]) { const d = new Date(); tk0[bk] = { line: BR.name || '支線', code: BR.code || 'B', color: toHex(BR.color || '#f08c00'), exam: EXAM_N, examName: ['', '第一次段考', '第二次段考', '第三次段考'][EXAM_N] || '', n: bs.length,
+          date: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, no: Object.keys(tk0).length + 1, branch: M.id };
+          jset(TK_KEY, tk0); setTimeout(() => showTicket(tk0[bk]), 600); } } } catch (e) {} }
     const main = items.filter(it => !it.apart), ok = main.length >= 2 && items.every((it, i) => it.apart || lit[i]);
     if (!ok || !isMetro()) return;
     const tk = jget(TK_KEY); if (tk[key]) return;
@@ -2220,7 +2256,8 @@ body{padding-bottom:64px}
   function mapSig(cfg, items) {
     const view = getView(), mode = window.innerWidth < 700 ? 't' : 'w', dr0 = DRILL[cfg.key];
     const drT = (dr0 != null && items[dr0] && cfg.tiles) ? cfg.tiles(items[dr0].el, dr0).map(t => t.name + t.sub + t.locked).join(',') : '';
-    return view + mode + (dr0 != null ? 'D' + dr0 + drT : '') + items.map(it => it.name + it.sub + it.locked + it.kind).join('|');
+    let brT = ''; if (view === 'metro' && cfg.branch) { try { brT = 'B' + cfg.branch(items).stations.map(b => b.name + (b.lit ? 1 : 0)).join(','); } catch (e) {} }
+    return view + mode + (dr0 != null ? 'D' + dr0 + drT : '') + brT + items.map(it => it.name + it.sub + it.locked + it.kind).join('|');
   }
   function build(cfg) {
     const anchor = resolve(cfg.anchor)[0];
@@ -2335,12 +2372,13 @@ body{padding-bottom:64px}
       if (e.target.closest('.pm-plaza')) { openBoard(sea); return; } }
     const bld = e.target.closest('.pm-bld'); if (bld && sea) { enterTile(sea, +bld.dataset.t); return; }
     const isl = e.target.closest('.pm-isl'); if (!isl) return;
+    if (isl.classList.contains('pm-br')) { openBranch(box_, +isl.dataset.b, isl); return; }
     if (isl.classList.contains('pm-st')) { if (box_._riding) return; box_._riding = true; rideTo(box_, +isl.dataset.i, () => { box_._riding = false; openPanel(box_, +isl.dataset.i); }); return; }
     openPanel(box_, +isl.dataset.i);
   });
   document.addEventListener('keydown', e => {
     const isl = e.target.closest && e.target.closest('.pm-isl');
-    if (isl && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (isl.classList.contains('pm-plaza')) openBoard(isl.closest('.pm-street')); else if (isl.classList.contains('pm-bld')) enterTile(isl.closest('.pm-street'), +isl.dataset.t); else if (isl.classList.contains('pm-st')) { const b = isl.closest('.pe-map'); if (!b._riding) { b._riding = true; rideTo(b, +isl.dataset.i, () => { b._riding = false; openPanel(b, +isl.dataset.i); }); } } else openPanel(isl.closest('.pe-map'), +isl.dataset.i); }
+    if (isl && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (isl.classList.contains('pm-plaza')) openBoard(isl.closest('.pm-street')); else if (isl.classList.contains('pm-bld')) enterTile(isl.closest('.pm-street'), +isl.dataset.t); else if (isl.classList.contains('pm-br')) openBranch(isl.closest('.pe-map'), +isl.dataset.b, isl); else if (isl.classList.contains('pm-st')) { const b = isl.closest('.pe-map'); if (!b._riding) { b._riding = true; rideTo(b, +isl.dataset.i, () => { b._riding = false; openPanel(b, +isl.dataset.i); }); } } else openPanel(isl.closest('.pe-map'), +isl.dataset.i); }
     if (e.key === 'Escape') document.querySelectorAll('.pe-map').forEach(closePanel);
   });
   let queued = false;

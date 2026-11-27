@@ -278,6 +278,7 @@ footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:cent
         <li>點站名時，列車會先開到那一站再進站；進站後是<b>車站平面圖</b>，小單元是「出口 1、2、3…」，服務台就是本課看板。</li>
         <li>拿到 ★ 的站會<b>亮燈</b>，相鄰兩站都亮燈，那一段軌道才會通車變成實線。</li>
         <li>一條線每一站都亮燈，就獲得<b>🎫 全線通車紀念票</b>，在入口地圖右上角的「🎫 票夾」可以看收集了幾張。</li>
+        <li>數學線下方有一條<b>🎬 動畫支線</b>：單元動畫每集一站，點站就播放，看過的站會亮燈，九集都看完可以得到支線紀念票。</li>
       </ul>
       <h3>📍 迷路了怎麼辦？</h3>
       <p>每一頁左下角都有<b>位置列</b>，例如「🌏 全景 › 國文島 › 第四課 愛蓮說 街區 › 注釋」。點其中任何一段，就回到那一層。</p>
@@ -301,7 +302,7 @@ footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:cent
   <div class="guide-card">
     <button type="button" class="guide-x" data-wallet-close aria-label="關閉">✕</button>
     <h2 id="walletTitle">🎫 票夾：全線通車紀念票</h2>
-    <p class="guide-lead">在捷運路線圖裡，一條線的每一站都拿到 ★（亮燈），就會獲得那條線的紀念票。</p>
+    <p class="guide-lead">在捷運路線圖裡，一條線的每一站都拿到 ★（亮燈），就會獲得那條線的紀念票；數學的「🎬 動畫支線」九集全部看完，另外得到支線紀念票。</p>
     <p class="wallet-sum"></p><div class="wallet-grid"></div>
   </div>
 </div>
@@ -927,6 +928,9 @@ function openWallet(on) {
     const st = lineStations(CUR, p).filter(x => !x.apart), lit = st.filter(x => x.lit).length;
     return `<div class="tk empty" style="--tc:${ISLE_COLOR[p.subject]}"><div class="tk-stub"><b>${LINE_CODE[p.subject]}</b><span>${esc(s.name)}線</span></div>
       <div class="tk-main"><div class="tk-t">尚未全線通車</div><div class="tk-m">${st.length ? `已亮燈 ${lit} / ${st.length} 站` : '還沒搭過這條線'}</div><div class="tk-m">每一站都拿到 ★ 就能獲得</div></div></div>`; }).join('');
+  /* 支線紀念票（例：數學動畫支線，鍵為「段考|科目-代號」） */
+  const bonus = Object.keys(tk).filter(k => k.indexOf(CUR + '|') === 0 && k.includes('-')).map(k => tk[k]);
+  if (bonus.length) w.querySelector('.wallet-grid').innerHTML += `<p class="wallet-sum" style="grid-column:1/-1;margin-top:6px">🎬 支線紀念票：${bonus.length} 張</p>` + bonus.map(ticketHTML).join('');
   w.hidden = false; w.querySelector('.guide-x').focus();
 }
 
