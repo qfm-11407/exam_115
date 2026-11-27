@@ -23,7 +23,8 @@
   7-1. 先做、不上線：下一次段考的練習登記成 status: 'draft'，老師用 periodicexam_115.html?preview=3 預覽（只在這個分頁有效，
      上方有黃色「教師預覽」橫幅，按「結束預覽」恢復）。正式開放：draft 改 ready，current 移到該次段考。
   9. 「❓ 怎麼玩」是整個系列唯一的完整說明（id="guide"），各科頁的「📌 怎麼用」預設收合；改玩法時記得一起改這裡。
-  8. 段考頁有兩種顯示：🗺️ 島嶼地圖（預設）與 📋 清單，學生的選擇記在 localStorage「pe115:view」。
+  8. 段考頁有三種顯示：🚇 捷運路線圖（2026-11-28 起為預設）、🗺️ 島嶼地圖與 📋 清單，學生的選擇記在 localStorage「pe115:view」（map／metro／list，各科頁共用）。
+     捷運版：metroMap()；站名來自各科頁存的 pe115:lines，沒去過時用 PAGES 的 stations；全線通車紀念票存在 pe115:tickets，「🎫 票夾」可看。
      島嶼地圖全部用 SVG 程式繪製：島的位置改 MAP_LAYOUT（wide＝電腦／投影，tall＝手機直式），
      群島與橋改 MAP_GROUPS、MAP_BRIDGES，島上建築在 LANDMARK。點已開放的島嶼直接進入該科（鏡頭拉近後換頁），未開放的才跳出卡片。
 -->
@@ -169,6 +170,17 @@ html.pv body{padding-top:34px}
 .view-tg button[aria-pressed="true"]{background:var(--accent); color:#fff}
 .map-wrap{position:relative; border-radius:22px; overflow:hidden; box-shadow:0 6px 24px rgba(20,60,90,.18); background:var(--sea2)}
 .map-wrap{background:linear-gradient(var(--sea1),var(--sea2))}
+.map-wrap.metro{background:#fbfcfd; box-shadow:0 6px 24px rgba(30,40,60,.12)}
+@media (max-width:700px){ .map-tools .tl{display:none} }
+.mline{cursor:pointer; outline:none} .mline:hover > path:nth-child(3), .mline:focus-visible > path:nth-child(3), .mline.sel > path:nth-child(3){stroke-width:16}
+.mline:focus-visible > path:nth-child(2){stroke:#1f2433}
+.wallet-grid{display:grid; gap:10px; margin-top:10px; grid-template-columns:repeat(auto-fill,minmax(270px,1fr))} .wallet-sum{font-weight:800; color:var(--muted); margin:0}
+.tk{display:flex; text-align:left; border-radius:14px; overflow:hidden; box-shadow:0 4px 14px rgba(0,0,0,.12); background:#fffdf5; border:2px solid var(--tc); color:#1f2433}
+.tk.empty{background:#f8f9fa; border-style:dashed; box-shadow:none; opacity:.85} .tk.empty .tk-stub{background:#ced4da}
+.tk-stub{flex:none; width:80px; background:var(--tc); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; border-right:3px dashed #fff; padding:8px 0}
+.tk-stub b{font-size:30px; line-height:1} .tk-stub span{font-size:12px; font-weight:800}
+.tk-main{padding:10px 12px} .tk-t{font-size:17px; font-weight:900; letter-spacing:.05em} .tk-l{font-size:13px; font-weight:800; color:var(--tc)}
+.tk-m{font-size:12.5px; color:#495057; margin-top:3px} .tk-no{font-size:11px; font-weight:700; font-family:ui-monospace,Menlo,Consolas,monospace; line-height:1.2; color:#868e96; margin-top:5px; letter-spacing:.1em}
 /* 地圖高度不超過一個畫面（扣掉頁首），兩側不足處以海面底色補滿 */
 .map-wrap svg{display:block; width:100%; height:auto; max-height:calc(100vh - 78px); max-height:calc(100svh - 78px); user-select:none; -webkit-user-select:none}
 
@@ -250,7 +262,8 @@ footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:cent
     <div class="guide-card">
       <button type="button" class="guide-x" data-guide-close aria-label="關閉">✕</button>
       <h2 id="guideTitle">❓ 怎麼玩：一一五上學期段考強化練習</h2>
-      <p class="guide-lead">適用：課前預習・課後複習・自主練習・段考衝刺。每一科都是一座島，由大到小一路走進去練習。</p>
+      <p class="guide-lead">適用：課前預習・課後複習・自主練習・段考衝刺。每一科都是一條捷運路線（也可以切換成島嶼地圖），由大到小一路走進去練習。</p>
+      <p class="guide-lead">下面是「🗺️ 島嶼」畫面的說明，捷運畫面請看下一段「🚇 捷運路線圖」，兩種畫面的操作方式相同。</p>
       <ol class="guide-steps">
         <li><b>🌏 全景</b>：就是這張群島地圖。點一座島，鏡頭拉近就直接進入該科（還沒開放的島會顯示「即將推出」）。</li>
         <li><b>🏝️ 科目島</b>：各科首頁，每課（數學是每節）一座島，依序用木橋相連。</li>
@@ -259,6 +272,13 @@ footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:cent
         <li><b>✏️ 建築（作答）</b>：題目卡浮在海面上，下方小船依進度航向這座島；右下「🌫️ 專注模式」可以關掉背景。</li>
       </ol>
       <p class="guide-lead"><b>操作只有一個規則：點了就進入。</b>還沒解鎖的島或建築，點了會跳出一句解鎖條件。</p>
+      <h3>🚇 捷運路線圖（預設畫面）</h3>
+      <ul>
+        <li>每一科是一條路線（國文線 C、成語線 I、英文線 E、數學線 M、理化線 S、公民線 P、歷史線 H、地理線 G），每課是一站，終點站是段考衝刺。</li>
+        <li>點站名時，列車會先開到那一站再進站；進站後是<b>車站平面圖</b>，小單元是「出口 1、2、3…」，服務台就是本課看板。</li>
+        <li>拿到 ★ 的站會<b>亮燈</b>，相鄰兩站都亮燈，那一段軌道才會通車變成實線。</li>
+        <li>一條線每一站都亮燈，就獲得<b>🎫 全線通車紀念票</b>，在入口地圖右上角的「🎫 票夾」可以看收集了幾張。</li>
+      </ul>
       <h3>📍 迷路了怎麼辦？</h3>
       <p>每一頁左下角都有<b>位置列</b>，例如「🌏 全景 › 國文島 › 第四課 愛蓮說 街區 › 注釋」。點其中任何一段，就回到那一層。</p>
       <h3>⭐ 星星與練習等級</h3>
@@ -270,10 +290,19 @@ footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:cent
       </ul>
       <h3>🛠️ 小工具</h3>
       <ul>
-        <li>地圖右上角可以切換「🗺️ 地圖／📋 清單」，清單就是一般的卡片排列。</li>
+        <li>地圖右上角可以切換「🗺️ 島嶼／🚇 捷運／📋 清單」，清單就是一般的卡片排列。</li>
         <li>紀錄只存在這台裝置的瀏覽器；換電腦或清除瀏覽紀錄，星星會重新計算。</li>
       </ul>
     </div>
+  </div>
+</div>
+
+<div class="guide" id="wallet" hidden role="dialog" aria-modal="true" aria-labelledby="walletTitle">
+  <div class="guide-card">
+    <button type="button" class="guide-x" data-wallet-close aria-label="關閉">✕</button>
+    <h2 id="walletTitle">🎫 票夾：全線通車紀念票</h2>
+    <p class="guide-lead">在捷運路線圖裡，一條線的每一站都拿到 ★（亮燈），就會獲得那條線的紀念票。</p>
+    <p class="wallet-sum"></p><div class="wallet-grid"></div>
   </div>
 </div>
 
@@ -299,7 +328,8 @@ const SUBJECTS = [
 ];
 
 /* ===== 練習網站清單：新增練習就在這裡加一筆 =====
-   status：'ready' 開放｜'building' 建置中｜'soon' 即將推出｜'draft' 教師預覽（?preview=N 才看得到） */
+   status：'ready' 開放｜'building' 建置中｜'soon' 即將推出｜'draft' 教師預覽（?preview=N 才看得到）
+   stations：捷運路線圖的預設站名（學生去過該科後改用實際站名；* 開頭＝終點站、~ 開頭＝支線） */
 const PAGES = [
   // ---------- 第一次段考 ----------
   { exam: 1, subject: 'chinese', file: 'chinese1150101.html', status: 'soon',
@@ -342,25 +372,25 @@ const PAGES = [
     title: '互動式測驗系統', range: '第 3～4 課＋模擬卷', tags: ['中國的產業發展與地區差異', '中國的經濟發展與全球關連', '重點卡＋速答', '地圖偵探', '習作複習', '模擬卷'] },
 
   // ---------- 第三次段考（2026-11-26 正式開放） ----------
-  { exam: 3, subject: 'chinese', file: 'chinese1150103.html', status: 'ready',
+  { exam: 3, subject: 'chinese', stations: ['第七課 張釋之執法', '第八課 找尋失落的水源', '第九課 一棵開花的樹', '第十課 畫的哀傷', '*段考複習'], file: 'chinese1150103.html', status: 'ready',
     title: '課文闖關', range: '第七～十課',
     tags: ['注音', '注釋', '字音字義', '改錯', '閱讀'] },
-  { exam: 3, subject: 'idioms', file: 'idioms1150103.html', status: 'ready',
+  { exam: 3, subject: 'idioms', stations: ['第一關', '第二關', '~成語圖鑑'], file: 'idioms1150103.html', status: 'ready',
     title: '成語闖關之旅', range: '成語典 P.238–259', tags: ['成語', '闖關'] },
-  { exam: 3, subject: 'english', file: 'english1150103.html', status: 'ready',
+  { exam: 3, subject: 'english', stations: ['Lesson 5', 'Lesson 6', 'Review 3', '*模擬段考'], file: 'english1150103.html', status: 'ready',
     title: '課文闖關', range: 'Lesson 5・Lesson 6・Review 3',
     tags: ['字彙', '文法', '看地圖問路', '翻譯', '改寫', '閱讀'] },
-  { exam: 3, subject: 'math', file: 'math1150103.html', status: 'ready',
+  { exam: 3, subject: 'math', stations: ['4-1 因式分解法', '4-2 配方法與公式解', '4-3 應用問題', '5-1 相對次數', '5-2 累積次數', '5-3 累積相對次數', '第4章 總習題', '第5章 總習題', '*魔王關'], file: 'math1150103.html', status: 'ready',
     title: '數學闖關基地', range: '4-1 因式分解法解一元二次方程式 ～ 第 5 章 統計資料處理',
     tags: ['課本例題', '習作', '速測', '章末總習題', '魔王關'] },
-  { exam: 3, subject: 'science', file: 'science1150103.html', status: 'ready',
+  { exam: 3, subject: 'science', stations: ['第5章 溫度與熱', '第6章 探索物質組成', '*段考模擬', '習作練習'], file: 'science1150103.html', status: 'ready',
     title: '習作練習', range: '第5章 溫度與熱・第6章 探索物質組成',
     tags: ['學習路線', '重點卡', '11 個小單元', '段考模擬', '習作分章＋總複習'] },
-  { exam: 3, subject: 'civics', file: 'social1150103.html', status: 'ready',
+  { exam: 3, subject: 'civics', stations: ['第5課 我國的地方政府', '第6課 政治參與及投票', '*段考模擬卷'], file: 'social1150103.html', status: 'ready',
     title: '互動式測驗系統', range: '第 5～6 課＋模擬卷', tags: ['我國的地方政府', '民主社會的政治參與及投票', '重點卡＋速答', '情境分類', '習作複習', '模擬卷'] },
-  { exam: 3, subject: 'history', file: 'social1150103.html', status: 'ready',
+  { exam: 3, subject: 'history', stations: ['第5課 西力衝擊下的晚清變革', '第6課 晚清的社會文化變遷', '*段考模擬卷'], file: 'social1150103.html', status: 'ready',
     title: '互動式測驗系統', range: '4-3～第 6 課＋模擬卷', tags: ['東西文化的交流與影響', '西力衝擊下的晚清變革', '晚清的社會文化變遷', '重點卡＋速答', '時光任務', '習作複習', '模擬卷'] },
-  { exam: 3, subject: 'geography', file: 'social1150103.html', status: 'ready',
+  { exam: 3, subject: 'geography', stations: ['第5課 東北亞的自然環境', '第6課 東北亞的經濟發展', '*段考模擬卷'], file: 'social1150103.html', status: 'ready',
     title: '互動式測驗系統', range: '第 5～6 課＋模擬卷', tags: ['東北亞的自然環境', '東北亞的經濟發展', '重點卡＋速答', '地圖偵探', '習作複習', '模擬卷'] }
 ];
 
@@ -445,9 +475,10 @@ function card(p) {
   </article>`;
 }
 
-/* 顯示方式：'map' 島嶼地圖（預設）｜'list' 清單；記在這台裝置 */
+/* 顯示方式：'metro' 捷運路線圖（預設，2026-11-28 起）｜'map' 島嶼地圖｜'list' 清單；記在這台裝置 */
 const VIEW_KEY = 'pe115:view';
-let VIEW = (() => { try { return localStorage.getItem(VIEW_KEY) || 'map'; } catch (e) { return 'map'; } })();
+let VIEW = (() => { try { if (localStorage.getItem('pe115:view-v') !== '2') { if (localStorage.getItem(VIEW_KEY) === 'map') localStorage.setItem(VIEW_KEY, 'metro'); localStorage.setItem('pe115:view-v', '2'); }
+  return localStorage.getItem(VIEW_KEY) || 'metro'; } catch (e) { return 'metro'; } })();   // 2026-11-28 起預設捷運路線圖
 let CUR = 0, SEL = '';
 
 function renderExam(n) {
@@ -458,13 +489,14 @@ function renderExam(n) {
   document.getElementById('kicker').textContent = `八年級・${e.name}`;
   /* 地圖導覽模式：切換鈕與「❓ 怎麼玩」放在地圖右上角（按鈕都在地圖上）；清單模式才放在頁首 */
   const tools = `<div class="view-tg" role="group" aria-label="顯示方式">
-        <button type="button" data-view="map" aria-pressed="${VIEW === 'map'}">🗺️ 地圖</button>
-        <button type="button" data-view="list" aria-pressed="${VIEW === 'list'}">📋 清單</button>
+        <button type="button" data-view="map" aria-pressed="${VIEW === 'map'}" aria-label="島嶼">🗺️<span class="tl"> 島嶼</span></button>
+        <button type="button" data-view="metro" aria-pressed="${VIEW === 'metro'}" aria-label="捷運">🚇<span class="tl"> 捷運</span></button>
+        <button type="button" data-view="list" aria-pressed="${VIEW === 'list'}" aria-label="清單">📋<span class="tl"> 清單</span></button>
       </div>
-      <button type="button" class="guide-btn" data-guide>❓ 怎麼玩</button>`;
+      ${VIEW === 'metro' ? '<button type="button" class="guide-btn" data-wallet aria-label="票夾">🎫<span class="tl"> 票夾</span></button>' : ''}<button type="button" class="guide-btn" data-guide>❓ 怎麼玩</button>`;
   document.getElementById('tools').innerHTML = VIEW === 'list' ? tools + `<div class="exam-prog">${progress(list)}</div>` : '';
-  const body = VIEW === 'map'
-    ? `<div class="map-wrap" id="mapwrap">${islandMap(e, list)}<div class="map-tools">${tools}</div>
+  const body = VIEW !== 'list'
+    ? `<div class="map-wrap${VIEW === 'metro' ? ' metro' : ''}" id="mapwrap">${VIEW === 'metro' ? metroMap(e, list) : islandMap(e, list)}<div class="map-tools">${tools}</div>
          <div class="isl-panel" id="islpanel" ${SEL ? '' : 'hidden'}>${SEL ? panelHTML(list) : ''}</div></div>`
     : `<div class="grid">${list.map(card).join('')}</div>`;
   document.getElementById('main').innerHTML = body;
@@ -783,6 +815,121 @@ function islandMap(e, list) {
   return s + '</svg>';
 }
 
+
+/* =====================================================================
+   🚇 捷運路線圖（第三種顯示，2026-11-28；島嶼版不變）
+   - 每科一條路線，由中央「段考中心站」出發；國文線與成語線在國文線第 2 站轉乘，公民、歷史、地理三線共用「社會轉乘站」
+   - 站名與亮燈情況讀各科頁存下的 pe115:lines（學生去過該科才有）；沒有紀錄時用 PAGES 的 stations 顯示站名
+   - 整條線每站都亮燈 → 各科頁頒發「全線通車紀念票」（pe115:tickets），這裡的「🎫 票夾」可以看收集了幾張
+   ===================================================================== */
+const LINE_CODE = { chinese: 'C', idioms: 'I', english: 'E', math: 'M', science: 'S', civics: 'P', history: 'H', geography: 'G' };
+const jget = k => { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch (e) { return {}; } };
+const cutS = (t, n) => { const a = [...String(t || '')]; return a.length > n ? a.slice(0, n - 1).join('') + '…' : a.join(''); };
+const twS = (str, size) => [...String(str)].reduce((a, ch) => a + (/[\x00-\xff]/.test(ch) ? 0.58 : 1) * size, 0);
+function lineStations(n, p) {
+  const rec = jget('pe115:lines')[n + '|' + p.subject];
+  if (rec && rec.st && rec.st.length) return rec.st.map(([nm, lit, ty]) => ({ nm, lit: !!lit, term: ty === 1, apart: ty === 2 }));
+  return (p.stations || []).map(t => ({ nm: t.replace(/^[*~]/, ''), lit: false, term: t[0] === '*', apart: t[0] === '~' }));
+}
+/* 沿著折線 pts，從起點距離 d0 起平均放 m 站 */
+function along(pts, m, d0) {
+  const seg = []; let tot = 0; for (let k = 1; k < pts.length; k++) { const l = Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]); seg.push(l); tot += l; }
+  const at = d => { let k = 0; while (k < seg.length - 1 && d > seg[k]) { d -= seg[k]; k++; } const u = Math.min(1, d / (seg[k] || 1)), a = pts[k], b = pts[k + 1];
+    return { x: a[0] + (b[0] - a[0]) * u, y: a[1] + (b[1] - a[1]) * u, hz: Math.abs(b[1] - a[1]) < 1 }; };
+  return Array.from({ length: m }, (_, i) => at(m > 1 ? d0 + (tot - d0) * i / (m - 1) : tot));
+}
+function metroMap(e, list) {
+  const byId = Object.fromEntries(list.map(p => [p.subject, p])), tk = jget('pe115:tickets'), tall = mapMode() === 'tall';
+  const lines = {}; SUBJECTS.forEach(sj => { const p = byId[sj.id]; if (!p) return; lines[sj.id] = { sj, p, st: lineStations(e.n, p), c: ISLE_COLOR[sj.id], ready: p.status === 'ready', tk: tk[e.n + '|' + sj.id] }; });
+  const W = tall ? 640 : 1200, H = tall ? 200 + Object.keys(lines).length * 128 + 110 : 790;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${e.name}捷運路線圖：點路線進入各科練習">
+    <defs><pattern id="mgrid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40,0H0V40" fill="none" stroke="#edf0f3" stroke-width="1"/></pattern></defs>
+    <rect width="${W}" height="${H}" fill="#fbfcfd"/><rect width="${W}" height="${H}" fill="url(#mgrid)"/>`;
+  const geo = {};   // 每條線的折線與各站座標
+  if (!tall) {
+    const C = [600, 395], T = [600, 478];
+    const P = { chinese: [C, [140, 395]], english: [C, [600, 70]], math: [C, [1130, 395]], science: [C, [660, 335], [860, 175], [1110, 175]],
+      civics: [T, [520, 558], [370, 708]], history: [T, [600, 765]], geography: [T, [680, 558], [830, 708]] };
+    Object.entries(P).forEach(([id, pts]) => { const L_ = lines[id]; if (!L_) return; geo[id] = { pts, st: along(pts, L_.st.length, id === 'chinese' || id === 'math' ? 150 : id === 'english' ? 95 : id === 'history' ? 150 : 70) }; });
+    if (lines.idioms) { const a = geo.chinese && geo.chinese.st[1] ? geo.chinese.st[1] : { x: 420, y: 395 };
+      const pts = [[a.x, a.y], [a.x, 325], [a.x - 105, 220], [120, 220]]; geo.idioms = { pts, st: along(pts, lines.idioms.st.length, 75), from: a }; }
+    /* 社會轉乘通道 */
+    s += `<path d="M${C[0]},${C[1]} L${T[0]},${T[1]}" stroke="#fff" stroke-width="22"/><path d="M${C[0]},${C[1]} L${T[0]},${T[1]}" stroke="#868e96" stroke-width="10"/>`;
+  } else {
+    let y = 200; SUBJECTS.forEach(sj => { const L_ = lines[sj.id]; if (!L_) return; const pts = [[150, y], [604, y]]; geo[sj.id] = { pts, st: along(pts, L_.st.length, 70), row: y }; y += 128; });
+    const ys = Object.values(geo).map(g => g.row); s += `<path d="M92,96 L92,${Math.max(...ys)}" stroke="#fff" stroke-width="20"/><path d="M92,96 L92,${Math.max(...ys)}" stroke="#868e96" stroke-width="8"/>`;
+    Object.values(geo).forEach(g => { s += `<path d="M92,${g.row} L150,${g.row}" stroke="#868e96" stroke-width="8"/>`; });
+  }
+  const path = pts => 'M' + pts.map(p => p.map(f1).join(',')).join(' L');
+  /* 路線 */
+  Object.entries(geo).forEach(([id, g]) => { const L_ = lines[id], c = L_.ready ? L_.c : '#ced4da', main = L_.st.filter(x => !x.apart);
+    const allLit = !!L_.tk, sts = g.st;
+    s += `<g class="isl mline${SEL === id ? ' sel' : ''}" data-isl="${id}" tabindex="0" role="button" aria-label="${esc(L_.sj.name)}線：${L_.ready ? (allLit ? '全線通車' : main.filter(x => x.lit).length + ' / ' + main.length + ' 站亮燈') : STATUS_TEXT[L_.p.status]}">`;
+    s += `<path d="${path(g.pts)}" fill="none" stroke="transparent" stroke-width="44" stroke-linecap="round"/><path d="${path(g.pts)}" fill="none" stroke="#fff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>`;
+    s += `<path d="${path(g.pts)}" fill="none" stroke="${L_.ready ? shade(c, 0.72) : '#e9ecef'}" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" ${L_.ready ? '' : 'stroke-dasharray="4 10"'}/>`;
+    for (let k = 0; k < sts.length - 1; k++) if (L_.st[k].lit && L_.st[k + 1].lit && !L_.st[k + 1].apart)
+      s += `<path d="M${f1(sts[k].x)},${f1(sts[k].y)} L${f1(sts[k + 1].x)},${f1(sts[k + 1].y)}" stroke="${c}" stroke-width="12" stroke-linecap="round"/>`;
+    if (L_.st[0] && L_.st[0].lit) s += `<path d="M${f1(g.pts[0][0])},${f1(g.pts[0][1])} L${f1(sts[0].x)},${f1(sts[0].y)}" stroke="${c}" stroke-width="12" stroke-linecap="round"/>`;
+    if (allLit) s += `<path d="${path(g.pts)}" fill="none" stroke="#ffd43b" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>`;
+    sts.forEach((q, k) => { const st = L_.st[k], big = st.term; let side;
+      if (tall) side = k % 2 ? 'up' : 'down'; else if (q.hz) side = (id === 'chinese' ? k % 2 === 0 : k % 2 === 1) ? 'up' : 'down'; else side = { idioms: 'l', civics: 'l' }[id] || 'r';
+      s += `<g transform="translate(${f1(q.x)},${f1(q.y)})">`;
+      s += !L_.ready ? `<circle r="9" fill="#fff" stroke="#ced4da" stroke-width="4"/>`
+        : big ? `<circle r="15" fill="${st.lit ? c : '#fff'}" stroke="${c}" stroke-width="5"/><text y="6" font-size="15" text-anchor="middle">${id === 'math' ? '👾' : '🏆'}</text>`
+        : st.apart ? `<rect x="-11" y="-11" width="22" height="22" rx="6" fill="${st.lit ? c : '#fff'}" stroke="${c}" stroke-width="4"/>`
+        : st.lit ? `<circle r="12" fill="${c}" stroke="#fff" stroke-width="3"/>` : `<circle r="9" fill="#fff" stroke="${c}" stroke-width="5"/>`;
+      if (!tall && geo.idioms && id === 'chinese' && k === 1) s += `<rect x="-17" y="-12" width="34" height="24" rx="12" fill="#fff" stroke="#1f2433" stroke-width="3"/>`;
+      const t0 = String(st.nm).split(/\s+/), nm = tall ? (t0.length > 1 && !/^[A-Za-z]+$/.test(t0[0]) ? t0[0] : cutS(st.nm, /^[\x00-\xff]+$/.test(st.nm) ? 9 : 5)) : cutS(st.nm, 9), fs = tall ? 15 : 13.5;
+      const tx = side === 'r' ? 20 : side === 'l' ? -20 : 0, ty = side === 'up' ? -(big ? 24 : 18) : side === 'down' ? (big ? 34 : 28) : 5;
+      s += `<text x="${tx}" y="${ty}" font-size="${fs}" font-weight="700" text-anchor="${side === 'r' ? 'start' : side === 'l' ? 'end' : 'middle'}" fill="${L_.ready ? '#212529' : '#adb5bd'}">${esc(nm)}</text></g>`; });
+    /* 路線牌 */
+    const [bx, by] = tall ? [20, g.row] : { chinese: [70, 322], idioms: [70, 178], english: [520, 70], math: [990, 494], science: [700, 172], civics: [300, 735], history: [520, 765], geography: [880, 735] }[id] || g.pts[g.pts.length - 1];
+    const lv = levelOf(L_.p.file, L_.sj.part);
+    if (tall) s += `<rect x="${bx}" y="${by - 20}" width="40" height="40" rx="10" fill="${c}"/><text x="${bx + 20}" y="${by + 8}" font-size="22" font-weight="900" text-anchor="middle" fill="#fff">${LINE_CODE[id]}</text>
+      <text x="${bx}" y="${by + 40}" font-size="13" font-weight="800" fill="${L_.ready ? '#495057' : '#adb5bd'}">${esc(L_.sj.name)}線</text>`;
+    else s += `<g transform="translate(${bx},${by})"><rect x="-16" y="-14" width="28" height="28" rx="7" fill="${c}"/><text x="-2" y="6" font-size="16" font-weight="900" text-anchor="middle" fill="#fff">${LINE_CODE[id]}</text>
+      <text x="18" y="6" font-size="15" font-weight="800" fill="${L_.ready ? '#343a40' : '#adb5bd'}">${esc(L_.sj.name)}線</text>${allLit ? `<text x="${f1(24 + twS(L_.sj.name + '線', 15))}" y="6" font-size="15">🎫</text>` : lv && lv.stars ? `<text x="${f1(24 + twS(L_.sj.name + '線', 15))}" y="5" font-size="12" fill="#f59f00" letter-spacing="1">${starStr(lv.stars)}</text>` : ''}</g>`;
+    s += `</g>`; });
+  /* 中央車站與轉乘站 */
+  const [cx, cy] = tall ? [92, 96] : [600, 395], open = list.filter(p => p.status === 'ready'), nt = Object.keys(lines).filter(id => lines[id].tk).length;
+  if (!tall) s += `<rect x="584" y="466" width="32" height="24" rx="12" fill="#fff" stroke="#1f2433" stroke-width="3"/><text x="626" y="484" font-size="13" font-weight="800" fill="#495057">社會轉乘</text>`;
+  s += `<g transform="translate(${cx},${cy})"><rect x="${tall ? -60 : -78}" y="-36" width="${tall ? 290 : 156}" height="72" rx="36" fill="#fff" stroke="#1f2433" stroke-width="4"/>
+    <text x="${tall ? 75 : 0}" y="-10" font-size="12" font-weight="900" text-anchor="middle" fill="#e03131" letter-spacing="3">${e.stage}</text>
+    <text x="${tall ? 75 : 0}" y="14" font-size="20" font-weight="900" text-anchor="middle" fill="#1f2433">段考中心站</text>
+    <text x="${tall ? 75 : 0}" y="${tall ? 30 : 30}" font-size="11.5" font-weight="700" text-anchor="middle" fill="#1971c2">🎫 ${nt} / ${open.length} 線全線通車</text></g>`;
+  s += `<g class="mtrain" transform="translate(${cx},${tall ? cy + 56 : cy + 55})" aria-hidden="true"><rect x="-34" y="-12" width="62" height="24" rx="11" fill="#1f2433"/><path d="M28,-12 q13,2 13,12 q0,10 -13,12z" fill="#343a40"/>
+    <rect x="-27" y="-6" width="12" height="8" rx="2" fill="#fff"/><rect x="-12" y="-6" width="12" height="8" rx="2" fill="#fff"/><rect x="3" y="-6" width="12" height="8" rx="2" fill="#fff"/><circle cx="37" cy="5" r="2.4" fill="#ffe066"/></g>`;
+  return s + '</svg>';
+}
+/* 進入路線：中央的列車先開到該線第一站，再拉近換頁 */
+function rideHub(id, done) {
+  const tr = document.querySelector('#mapwrap .mline[data-isl="' + id + '"]'), train = document.querySelector('#mapwrap .mtrain');
+  if (!tr || !train || !motionOK()) { done(); return; }
+  const svg = train.ownerSVGElement, pt = (() => { const g = tr.querySelector('g[transform]'); const m = g && g.getAttribute('transform').match(/translate\(([-\d.]+),([-\d.]+)\)/); return m ? [+m[1], +m[2]] : null; })();
+  const m0 = train.getAttribute('transform').match(/translate\(([-\d.]+),([-\d.]+)\)/); if (!pt || !m0) { done(); return; }
+  const a = [+m0[1], +m0[2]], t0 = performance.now(), ms = 520;
+  const step = now => { const t = Math.min(1, (now - t0) / ms), k = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    train.setAttribute('transform', `translate(${f1(a[0] + (pt[0] - a[0]) * k)},${f1(a[1] + (pt[1] - 20 - a[1]) * k)})`); if (t < 1) requestAnimationFrame(step); else done(); };
+  requestAnimationFrame(step);
+}
+/* 🎫 票夾 */
+function ticketHTML(t) {
+  return `<div class="tk" style="--tc:${t.color}"><div class="tk-stub"><b>${esc(t.code)}</b><span>${esc(t.line)}</span></div>
+    <div class="tk-main"><div class="tk-t">全線通車紀念票</div><div class="tk-l">${esc(t.line)}・${esc(t.examName)}</div><div class="tk-m">${t.n} 站全部亮燈　${esc(t.date)}</div><div class="tk-no">No. ${String(t.no || 1).padStart(4, '0')}</div></div></div>`;
+}
+function openWallet(on) {
+  const w = document.getElementById('wallet'); if (!on) { w.hidden = true; return; }
+  const tk = jget('pe115:tickets'), list = pagesOf(CUR).filter(p => p.status === 'ready');
+  const got = list.filter(p => tk[CUR + '|' + p.subject]).length;
+  w.querySelector('.wallet-sum').textContent = `${(EXAMS.find(x => x.n === CUR) || {}).name}：已收集 ${got} / ${list.length} 張`;
+  w.querySelector('.wallet-grid').innerHTML = list.map(p => { const s = subj(p.subject), t = tk[CUR + '|' + p.subject];
+    if (t) return ticketHTML(t);
+    const st = lineStations(CUR, p).filter(x => !x.apart), lit = st.filter(x => x.lit).length;
+    return `<div class="tk empty" style="--tc:${ISLE_COLOR[p.subject]}"><div class="tk-stub"><b>${LINE_CODE[p.subject]}</b><span>${esc(s.name)}線</span></div>
+      <div class="tk-main"><div class="tk-t">尚未全線通車</div><div class="tk-m">${st.length ? `已亮燈 ${lit} / ${st.length} 站` : '還沒搭過這條線'}</div><div class="tk-m">每一站都拿到 ★ 就能獲得</div></div></div>`; }).join('');
+  w.hidden = false; w.querySelector('.guide-x').focus();
+}
+
 /* ---------- 顯示目前開放的段考（renderHome 保留備用：若要恢復「選段考」首頁再改回） ---------- */
 function route() {
   /* 一次只開放一次段考：不論網址是 #exam1、#exam2…，一律顯示 current 那一次 */
@@ -823,9 +970,11 @@ function arriveHub() {
   if (z === 'out' && svg && svg.animate && motionOK()) svg.animate([{ transform: 'scale(1.5)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], { duration: 420, easing: 'cubic-bezier(.2,.7,.3,1)' });
 }
 window.addEventListener('pageshow', e => { if (e.persisted) { const svg = document.querySelector('#mapwrap svg'); if (svg) { svg.getAnimations && svg.getAnimations().forEach(a => a.cancel()); } } });
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && !document.getElementById('guide').hidden) openGuide(false); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !document.getElementById('guide').hidden) openGuide(false); if (e.key === 'Escape' && !document.getElementById('wallet').hidden) openWallet(false); });
 document.addEventListener('click', e => {
   if (e.target.closest('[data-guide]')) { openGuide(true); return; }
+  if (e.target.closest('[data-wallet]')) { openWallet(true); return; }
+  if (e.target.closest('[data-wallet-close]') || e.target.id === 'wallet') { openWallet(false); return; }
   if (e.target.closest('[data-guide-close]') || e.target.id === 'guide') { openGuide(false); return; }
   const go = e.target.closest('#islpanel a.go');
   if (go && Date.now() - selAt < 220) { e.preventDefault(); return; }   // 連點兩下時，第二下不要落在剛跳出的「開始練習」
@@ -845,7 +994,9 @@ function enterIsland(id) {
   const p = pagesOf(CUR).find(x => x.subject === id), s = subj(id);
   if (!p || p.status !== 'ready') { selectIsland(id); return; }
   SEL = id; document.querySelectorAll('.isl').forEach(g => g.classList.toggle('sel', g.dataset.isl === id));
-  zoomGo(encodeURI((s.dir || '') + p.file) + (s.part ? '#' + s.part : ''));
+  const href = encodeURI((s.dir || '') + p.file) + (s.part ? '#' + s.part : '');
+  if (VIEW === 'metro') { if (enterIsland.busy) return; enterIsland.busy = true; rideHub(id, () => { enterIsland.busy = false; zoomGo(href); }); return; }
+  zoomGo(href);
 }
 let selAt = 0;
 function selectIsland(id) {
@@ -864,11 +1015,11 @@ document.addEventListener('keydown', e => {
 });
 /* 視窗寬窄改變（手機轉向）時換成對應的地圖排列 */
 let lastMode = mapMode();
-window.addEventListener('resize', () => { const m = mapMode(); if (m !== lastMode) { lastMode = m; if (CUR && VIEW === 'map') route(); } });
+window.addEventListener('resize', () => { const m = mapMode(); if (m !== lastMode) { lastMode = m; if (CUR && VIEW !== 'list') route(); } });
 window.addEventListener('hashchange', route);
 /* 從練習頁返回（或其他分頁更新成績）時重新讀取練習等級 */
 window.addEventListener('pageshow', route);
-window.addEventListener('storage', e => { if (e.key === LV_KEY) route(); });
+window.addEventListener('storage', e => { if (e.key === LV_KEY || e.key === 'pe115:tickets' || e.key === 'pe115:lines') route(); });
 route();
 arriveHub();
 </script>

@@ -1264,11 +1264,14 @@ body{padding-bottom:64px}
    - 把頁面原本的課次／單元卡片畫成 2.5D 島嶼地圖：每張卡片一座島，依序用橋相連
    - 點島嶼 → 跳出原本那張卡片（點卡片上的按鈕才真正進入，避免誤按）
    - 右上可切換「📋 清單」回到原本的卡片排列；選擇記在 localStorage「pe115:view」（與入口網站共用）
-   - 頁面重新畫面時會自動重建，不需要改各頁原本的程式 */
+   - 頁面重新畫面時會自動重建，不需要改各頁原本的程式
+   - 2026-11-28 加入第三種顯示「🚇 捷運路線圖」（pe115:view = 'metro'），島嶼版不變，見下方「捷運路線圖」段落 */
 (function () {
   if (window.PE115Map) return;
   const VIEW_KEY = 'pe115:view';
-  const getView = () => { try { return localStorage.getItem(VIEW_KEY) || 'map'; } catch (e) { return 'map'; } };
+  /* 2026-11-28 起預設「🚇 捷運路線圖」；之前存成島嶼（map）的一律換成捷運一次（pe115:view-v = 2），選過「清單」的維持清單 */
+  const getView = () => { try { if (localStorage.getItem('pe115:view-v') !== '2') { if (localStorage.getItem(VIEW_KEY) === 'map') localStorage.setItem(VIEW_KEY, 'metro'); localStorage.setItem('pe115:view-v', '2'); }
+    return localStorage.getItem(VIEW_KEY) || 'metro'; } catch (e) { return 'metro'; } };
   const setView = v => { try { localStorage.setItem(VIEW_KEY, v); } catch (e) {} };
   const CONFIGS = [];
   const SEL = {};
@@ -1965,18 +1968,249 @@ body{padding-bottom:64px}
     const view = getView(), tiles = els.map((el, i) => cfg.tile(el, i));
     const title = cfg.title ? cfg.title() : '';
     const sig = view + (window.innerWidth < 700 ? 't' : 'w') + title + tiles.map(t => t.name + t.sub + t.kind + t.locked + (t.acts || []).map(a => a.label).join(',')).join('|');
-    resolve(cfg.hide || cfg.anchor).forEach(h => { if (!h.closest('.pe-map')) h.style.display = view === 'map' ? 'none' : ''; });
+    resolve(cfg.hide || cfg.anchor).forEach(h => { if (!h.closest('.pe-map')) h.style.display = isMapV(view) ? 'none' : ''; });
     if (host && host.dataset.sig === sig && host.nextElementSibling === anchor) { host._tiles = tiles; const sea0 = host.querySelector('.pm-sea'); if (sea0) sea0._tiles = tiles; const p0 = host.querySelector('.pm-panel'); if (p0 && p0._tiles) p0._tiles = tiles; return; }
     if (host) host.remove();
     host = document.createElement('div'); host.className = 'pe-map'; host.dataset.pd = cfg.key; host.dataset.sig = sig;
     const lm = cfg.landmark ? cfg.landmark() : ['pavilion', '#3b5bdb'];
     /* 地圖導覽模式：位置列在地圖左上、切換鈕在地圖右上，按鈕都在地圖上；清單模式才在上方顯示切換鈕 */
-    host.innerHTML = view === 'map'
-      ? `<div class="pm-sea pm-street">${streetSVG(tiles, lm[0], lm[1] || (tiles[0] || {}).color, host._sel)}<div class="pm-ov-tl" data-crumb-slot></div><div class="pm-ov-tr"><span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🏙️ 街區</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div><div class="pm-panel" hidden></div></div>`
-      : `<div class="pe-map-bar"><span class="pm-tip"></span><span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🏙️ 街區</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div>`;
+    host.innerHTML = isMapV(view)
+      ? `<div class="pm-sea pm-street${view === 'metro' ? ' pm-metro' : ''}">${view === 'metro' ? stationSVG(tiles, lm[0], lm[1] || (tiles[0] || {}).color, host._sel, (title || '').replace(/\s*街區$/, '')) : streetSVG(tiles, lm[0], lm[1] || (tiles[0] || {}).color, host._sel)}<div class="pm-ov-tl" data-crumb-slot></div><div class="pm-ov-tr">${tgHTML(view)}</div><div class="pm-panel" hidden></div></div>`
+      : `<div class="pe-map-bar"><span class="pm-tip"></span>${tgHTML(view)}</div>`;
     const sea = host.querySelector('.pm-sea'); if (sea) { setTimeout(() => arrive(sea.querySelector('svg')), 0); sea._tiles = tiles; sea._title = (title || '').replace(/\s*街區$/, ''); sea._lc = lm[1] || (tiles[0] || {}).color; sea._boardEx = cfg.board; }
     anchor.parentNode.insertBefore(host, anchor);
   }
+
+  /* ===================================================================
+     🚇 捷運路線圖（第三種顯示：🗺️ 島嶼／🚇 捷運／📋 清單，記在 pe115:view = 'metro'；島嶼版完全不變）
+     - 科目層：一科一條路線、每課一站，終點站是段考衝刺；拿到 ★ 的站「亮燈」，相鄰兩站都亮的區間才「通車」變成實線
+     - 街區層：車站平面圖，小單元＝出口 1、2、3…，本課看板＝服務台，本課地標＝站內公共藝術
+     - 作答層：畫面下方的列車進度（取代小船）
+     - 遊戲感：點站時列車先開到那一站再進入；整條線每一站都亮燈 → 「全線通車紀念票」（pe115:tickets，入口網站「🎫 票夾」收藏）
+     - 各站亮燈情況另存 pe115:lines，讓入口網站的路線圖也能亮燈
+     =================================================================== */
+  const isMapV = v => v !== 'list';
+  const isMetro = () => getView() === 'metro';
+  const LINE_CODE = { chinese: 'C', idioms: 'I', english: 'E', math: 'M', science: 'S', civics: 'P', history: 'H', geography: 'G' };
+  const TK_KEY = 'pe115:tickets', LN_KEY = 'pe115:lines';
+  const jget = k => { try { return JSON.parse(localStorage.getItem(k)) || {}; } catch (e) { return {}; } };
+  const jset = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+  const FONT = `font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif"`;
+  const cut = (t, n) => { const a = [...String(t || '')]; return a.length > n ? a.slice(0, n - 1).join('') + '…' : a.join(''); };
+  /* 亮燈：最佳 ≥ 60 分、★ n / m 的 n > 0、星星字串有 ★、重點卡全部翻完 */
+  function litOf(sub) {
+    const t = String(sub || '');
+    const b = t.match(/最佳\s*(\d+(?:\.\d+)?)\s*(分|%)/); if (b) return +b[1] >= 60;
+    const r = t.match(/★\s*(\d+)\s*\/\s*\d+/); if (r) return +r[1] > 0;
+    const c = t.match(/已翻\s*(\d+)\s*\/\s*(\d+)/); if (c) return +c[2] > 0 && +c[1] >= +c[2];
+    return (t.match(/★/g) || []).length > 0;
+  }
+  const isTerm = it => /^(trophy|castle)$/.test(it.kind || '') || /模擬|魔王|段考複習/.test(it.name || '');
+  function lineMeta(cfg) {
+    const me = cfg && cfg.world ? (typeof cfg.world === 'function' ? cfg.world() : cfg.world) : null;
+    if (me && WORLD.color[me]) return { id: me, code: LINE_CODE[me] || '•', name: WORLD.name[me].replace('島', '線'), color: WORLD.color[me] };
+    return { id: '', code: '⇄', name: '轉乘站', color: '#495057', multi: true };
+  }
+  /* 本頁的路線（第一個有 world 設定的地圖；社會頁依目前科目） */
+  const pageLine = () => { const cfg = CONFIGS.find(c => { try { const w = typeof c.world === 'function' ? c.world() : c.world; return w && WORLD.color[w]; } catch (e) { return false; } }); return lineMeta(cfg); };
+  /* 版面：電腦橫向（7 站以上折成兩排）、手機直向 */
+  function metroLayout(n, narrow) {
+    if (narrow) { const pos = []; for (let i = 0; i < n; i++) pos.push([92, 236 + i * 132]); return { W: 440, H: 236 + (n - 1) * 132 + 150, pos, narrow, rows: 1 }; }
+    const rows = n <= 7 ? 1 : 2, per = rows === 1 ? n : Math.ceil(n / 2), x0 = 150, x1 = 1050, pos = [];
+    const xs = k => per > 1 ? x0 + (x1 - x0) * k / (per - 1) : 600;
+    for (let i = 0; i < n; i++) { const r = Math.floor(i / per), k = i % per; pos.push([r ? xs(per - 1 - k) : xs(k), rows === 1 ? 315 : 270 + r * 240]); }
+    return { W: 1200, H: rows === 1 ? 500 : 660, pos, narrow, rows, per };
+  }
+  function trainKey(cfg, M) { return 'pe115:train|' + location.pathname.split('/').pop() + '|' + (cfg ? cfg.key : '') + '|' + M.id; }
+  function trainAt(cfg, M, items, lit) {
+    let k = null; try { k = sessionStorage.getItem(trainKey(cfg, M)); } catch (e) {}
+    if (k != null && items[+k]) return +k;
+    const nx = items.findIndex((it, i) => !it.apart && !it.locked && !lit[i]); return nx >= 0 ? nx : 0;
+  }
+  const trainSVG = (c, code) => `<g class="pm-trainbob"><rect x="-38" y="-13" width="70" height="26" rx="12" fill="${c}"/><path d="M32,-13 q14,2 14,13 q0,11 -14,13z" fill="${shade(c, -0.18)}"/>
+    <rect x="-30" y="-7" width="13" height="9" rx="2" fill="#fff"/><rect x="-13" y="-7" width="13" height="9" rx="2" fill="#fff"/><rect x="4" y="-7" width="13" height="9" rx="2" fill="#fff"/><path d="M33,-7 q8,1 9,7 h-9z" fill="#d0ebff"/>
+    <circle cx="41" cy="6" r="2.6" fill="#ffe066"/><rect x="-38" y="6" width="70" height="3" fill="${shade(c, 0.4)}"/><circle cx="-24" cy="14" r="4" fill="#343a40"/><circle cx="20" cy="14" r="4" fill="#343a40"/>
+    <text x="-3" y="-17" font-size="11" font-weight="900" text-anchor="middle" fill="${shade(c, -0.25)}">${esc(code)}</text></g>`;
+  function mLabel(code, name, sub, c, side, litOn) {
+    const nm = cut(name, 12), sb = cut(sub, 18), W = Math.max(tw(nm, 17), tw(sb, 12.5), tw(code, 12)) + 26;
+    const x0 = side === 'r' ? 0 : -W / 2, y0 = side === 'up' ? -96 : side === 'r' ? -34 : 34;
+    return `<g transform="translate(${side === 'r' ? 40 : 0},${y0})"><rect x="${f1(x0)}" y="0" width="${f1(W)}" height="64" rx="14" fill="#fff" stroke="${litOn ? shade(c, 0.45) : '#e9ecef'}" stroke-width="1.5"/>
+      <text x="${f1(x0 + 13)}" y="18" font-size="12" font-weight="900" fill="${c}" letter-spacing="1">${esc(code)}</text>
+      <text x="${f1(x0 + 13)}" y="38" font-size="17" font-weight="800" fill="#1f2433">${esc(nm)}</text>
+      <text x="${f1(x0 + 13)}" y="55" font-size="12.5" font-weight="700" fill="${litOn ? '#e8590c' : '#868e96'}">${esc(sb)}</text></g>`;
+  }
+  function segPath(a, b, Lo) {
+    if (!Lo.narrow && Lo.rows === 2 && a[1] !== b[1]) { const ex = a[0] + 110; return `M${f1(a[0])},${f1(a[1])} C${f1(ex)},${f1(a[1])} ${f1(ex)},${f1(b[1])} ${f1(b[0])},${f1(b[1])}`; }
+    return `M${f1(a[0])},${f1(a[1])} L${f1(b[0])},${f1(b[1])}`;
+  }
+  function metroSVG(cfg, items, sel) {
+    const narrow = window.innerWidth < 700, n = items.length, Lo = metroLayout(n, narrow), M = lineMeta(cfg);
+    const lit = items.map(it => !it.locked && litOf(it.sub));
+    const main = items.map((it, i) => i).filter(i => !items[i].apart);
+    const allLit = !M.multi && main.length >= 2 && main.every(i => lit[i]);
+    const last = main[main.length - 1], term = items[last];
+    let s = `<svg viewBox="0 0 ${Lo.W} ${Lo.H}" role="img" aria-label="捷運路線圖：點站名直接進入" ${FONT}>
+      <defs><pattern id="pmGrid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40,0H0V40" fill="none" stroke="#edf0f3" stroke-width="1"/></pattern></defs>
+      <rect width="${Lo.W}" height="${Lo.H}" fill="#fbfcfd"/><rect width="${Lo.W}" height="${Lo.H}" fill="url(#pmGrid)"/>`;
+    /* 路線牌 */
+    const sy = narrow ? 128 : 108;
+    s += `<g transform="translate(${narrow ? 18 : 40},${sy})"><rect x="0" y="-22" width="44" height="44" rx="11" fill="${M.color}"/><text x="22" y="9" font-size="24" font-weight="900" text-anchor="middle" fill="#fff">${esc(M.code)}</text>
+      <text x="58" y="-2" font-size="24" font-weight="900" fill="#1f2433">${esc(M.name)}</text>
+      <text x="58" y="18" font-size="13.5" font-weight="700" fill="#868e96">${M.multi ? '選一條路線出發' : '往 ' + esc(cut(term ? term.name : '', 14)) + '・' + main.filter(i => lit[i]).length + ' / ' + main.length + ' 站亮燈'}</text>
+      ${allLit ? `<g transform="translate(${f1(70 + tw(M.name, 24))},-6)"><rect x="0" y="-16" width="108" height="30" rx="15" fill="#fff3bf" stroke="#f59f00" stroke-width="2"/><text x="54" y="5" font-size="14" font-weight="900" text-anchor="middle" fill="#b35c00">🎫 全線通車</text></g>` : ''}</g>`;
+    /* 軌道：先白色外框，再依「通車」狀態畫實線或淡線 */
+    const segs = []; for (let i = 0; i < n - 1; i++) segs.push([i, i + 1]);
+    segs.forEach(([i, j]) => { s += `<path d="${segPath(Lo.pos[i], Lo.pos[j], Lo)}" fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round"/>`; });
+    segs.forEach(([i, j]) => { const d = segPath(Lo.pos[i], Lo.pos[j], Lo), spur = items[j].apart || items[i].apart;
+      const col = M.multi ? '#adb5bd' : M.color, on = !spur && lit[i] && lit[j];
+      s += spur ? `<path d="${d}" fill="none" stroke="#ced4da" stroke-width="6" stroke-dasharray="2 10" stroke-linecap="round"/>`
+        : `<path d="${d}" fill="none" stroke="${on ? col : shade(col, 0.72)}" stroke-width="14" stroke-linecap="round"/>` + (on ? `<path class="pm-flow" d="${d}" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="6 18" stroke-linecap="round" opacity=".55"/>` : ''); });
+    /* 站 */
+    items.forEach((it, i) => { const [x, y] = Lo.pos[i], c = M.multi ? it.color : M.color, tm = !it.apart && isTerm(it), L_ = lit[i];
+      const wk = M.multi ? Object.keys(WORLD.color).find(k => WORLD.color[k] === toHex(it.color)) : null;
+      const code = M.multi ? (wk ? `${LINE_CODE[wk]}　${WORLD.name[wk].replace('島', '線')}` : '') : `${M.code}${String(i + 1).padStart(2, '0')}`, side = narrow ? 'r' : (Lo.rows === 2 ? (Math.floor(i / Lo.per) ? 'down' : 'up') : (i % 2 ? 'up' : 'down'));
+      const mark = it.locked ? `<circle r="18" fill="#f1f3f5" stroke="#adb5bd" stroke-width="5"/><text y="6" font-size="16" text-anchor="middle">🔒</text>`
+        : tm ? `${L_ ? `<circle class="pm-glow" r="30" fill="${c}" opacity=".25"/>` : ''}<circle r="25" fill="${L_ ? c : '#fff'}" stroke="${c}" stroke-width="6"/><text y="8" font-size="22" text-anchor="middle">${it.kind === 'castle' ? '👾' : '🏆'}</text>`
+        : it.apart ? `<rect x="-17" y="-17" width="34" height="34" rx="9" fill="${L_ ? c : '#fff'}" stroke="${c}" stroke-width="5"/><text y="6" font-size="16" text-anchor="middle">📖</text>`
+        : L_ ? `<circle class="pm-glow" r="26" fill="${c}" opacity=".25"/><circle r="19" fill="${c}" stroke="#fff" stroke-width="4"/><path d="M0,-9l2.6,5.4l5.9,.8l-4.3,4.1l1,5.8l-5.2,-2.8l-5.2,2.8l1,-5.8l-4.3,-4.1l5.9,-.8z" fill="#fff"/>`
+        : `<circle r="16" fill="#fff" stroke="${c}" stroke-width="6"/>`;
+      s += `<g class="pm-isl pm-st${sel === i ? ' sel' : ''}${L_ ? ' lit' : ''}" data-i="${i}" transform="translate(${f1(x)},${f1(y)})" tabindex="0" role="button" aria-label="${esc((code ? code + ' ' : '') + it.name + '：' + it.sub)}${L_ ? '（已亮燈）' : ''}">
+        <circle class="pm-hit" r="40" fill="transparent"/><g class="pm-lift">${mark}${mLabel(code || (it.apart ? '支線' : ''), it.name, it.sub || (L_ ? '已亮燈' : '尚未到站'), c, side, L_)}</g></g>`; });
+    /* 列車：停在上次搭到的站（或第一個還沒亮燈的站） */
+    if (!M.multi) { const k = trainAt(cfg, M, items, lit), [tx, ty] = Lo.pos[k], up = Lo.rows === 2 ? !Math.floor(k / Lo.per) : k % 2 === 1;   // 列車停在站名牌的另一側
+      s += `<g class="pm-train" data-at="${k}" transform="translate(${f1(tx)},${f1(ty)})" aria-hidden="true"><g transform="${narrow ? 'translate(-58,0) rotate(90)' : up ? 'translate(0,54)' : 'translate(0,-50)'}">${trainSVG(M.color, M.code)}</g></g>`; }
+    return s + '</svg>';
+  }
+  /* 點站：列車沿軌道開到那一站，再進入 */
+  function rideTo(box_, i, then) {
+    const svg = box_.querySelector('.pm-sea svg'), tr = svg && svg.querySelector('.pm-train'), cfg = box_._cfg, M = lineMeta(cfg);
+    try { sessionStorage.setItem(trainKey(cfg, M), String(i)); } catch (e) {}
+    if (!tr || !motionOK()) { then(); return; }
+    const from = +tr.dataset.at, items = box_._items, Lo = metroLayout(items.length, window.innerWidth < 700);
+    if (from === i || !Lo.pos[i]) { then(); return; }
+    const idx = []; for (let k = from; k !== i; k += i > from ? 1 : -1) idx.push(k); idx.push(i);
+    const pts = idx.map(k => Lo.pos[k]); let tot = 0; const lens = [0]; for (let k = 1; k < pts.length; k++) { tot += Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]); lens.push(tot); }
+    const ms = Math.max(280, Math.min(1100, tot * 1.1)), t0 = performance.now(), ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    const step = now => { const t = Math.min(1, (now - t0) / ms), d = ease(t) * tot; let k = 1; while (k < lens.length - 1 && lens[k] < d) k++;
+      const a = pts[k - 1], b = pts[k], u = (d - lens[k - 1]) / ((lens[k] - lens[k - 1]) || 1);
+      tr.setAttribute('transform', `translate(${f1(a[0] + (b[0] - a[0]) * u)},${f1(a[1] + (b[1] - a[1]) * u)})`);
+      if (t < 1) requestAnimationFrame(step); else { tr.dataset.at = i; const st = svg.querySelector(`.pm-st[data-i="${i}"]`); if (st) st.classList.add('pm-arrive'); setTimeout(then, 140); } };
+    requestAnimationFrame(step);
+  }
+  /* 線路亮燈紀錄（給入口網站）＋全線通車紀念票 */
+  function recordLine(cfg, items) {
+    const M = lineMeta(cfg); if (M.multi || !EXAM_N) return;
+    const lit = items.map(it => !it.locked && litOf(it.sub)), key = EXAM_N + '|' + M.id;
+    const rec = { name: M.name, st: items.map((it, i) => [cut(it.name, 14), lit[i] ? 1 : 0, it.apart ? 2 : isTerm(it) ? 1 : 0]) };
+    const all = jget(LN_KEY); if (JSON.stringify(all[key]) !== JSON.stringify(rec)) { all[key] = rec; jset(LN_KEY, all); }
+    const main = items.filter(it => !it.apart), ok = main.length >= 2 && items.every((it, i) => it.apart || lit[i]);
+    if (!ok || !isMetro()) return;
+    const tk = jget(TK_KEY); if (tk[key]) return;
+    const d = new Date(), t = { line: M.name, code: M.code, color: M.color, exam: EXAM_N, examName: ['', '第一次段考', '第二次段考', '第三次段考'][EXAM_N] || '', n: main.length,
+      date: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, no: Object.keys(tk).length + 1 };
+    tk[key] = t; jset(TK_KEY, tk); setTimeout(() => showTicket(t), 500);
+  }
+  const ticketHTML = t => `<div class="pm-tk" style="--tc:${t.color}"><div class="pm-tk-stub"><b>${esc(t.code)}</b><span>${esc(t.line)}</span></div>
+    <div class="pm-tk-main"><div class="pm-tk-t">全線通車紀念票</div><div class="pm-tk-l">${esc(t.line)}・${esc(t.examName)}</div><div class="pm-tk-m">${t.n} 站全部亮燈　${esc(t.date)}</div><div class="pm-tk-no">No. ${String(t.no || 1).padStart(4, '0')}</div></div></div>`;
+  function showTicket(t) {
+    let ov = document.getElementById('pe-ticket'); if (ov) ov.remove();
+    ov = document.createElement('div'); ov.id = 'pe-ticket'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', '全線通車紀念票');
+    const conf = Array.from({ length: 18 }, (_, k) => `<i style="left:${(k * 37) % 100}%;background:${['#f59f00', t.color, '#51cf66', '#4dabf7', '#ff6b6b'][k % 5]};animation-delay:${(k % 6) * 0.12}s"></i>`).join('');
+    ov.innerHTML = `<div class="pm-tk-box">${conf}<div class="pm-tk-fx">🎉 全線通車！</div>${ticketHTML(t)}<p class="pm-tk-msg">${esc(t.line)}每一站都亮燈了！紀念票已收進入口網站的「🎫 票夾」。</p><button type="button" class="pm-tk-ok">收進票夾</button></div>`;
+    document.body.appendChild(ov); const b = ov.querySelector('.pm-tk-ok'); if (b) b.focus();
+  }
+  document.addEventListener('click', e => { const ov = document.getElementById('pe-ticket'); if (ov && (e.target === ov || e.target.closest('.pm-tk-ok'))) ov.remove(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { const ov = document.getElementById('pe-ticket'); if (ov) ov.remove(); } });
+
+  /* 車站平面圖（街區層）：小單元＝出口，本課看板＝服務台，本課地標＝公共藝術 */
+  function stationSVG(tiles, landmark, lc, sel, title, M) {
+    M = M || pageLine();
+    const info = boardInfo(tiles), narrow = window.innerWidth < 700, c = M.multi ? toHex(lc || '#3b5bdb') : M.color, n = tiles.length, code = M.multi ? '' : M.code;
+    const W = narrow ? 440 : 1200, cols = narrow ? 2 : Math.max(2, Math.ceil(n / 2)), cw = narrow ? 192 : Math.min(cols <= 3 ? 262 : 220, 880 / cols - 16);
+    const rowsN = narrow ? Math.ceil(n / 2) : 2, H = narrow ? 290 + rowsN * 108 + 200 : 620;
+    const platY = narrow ? 212 : 330;
+    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="車站平面圖：點出口直接開始練習" ${FONT}>
+      <defs><pattern id="pmTile" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="32" height="32" fill="#f4f5f7"/><path d="M32,0H0V32" fill="none" stroke="#e7e9ee" stroke-width="1.2"/></pattern>
+      <filter id="pmGray"><feColorMatrix type="saturate" values="0.15"/></filter></defs>
+      <rect width="${W}" height="${H}" fill="url(#pmTile)"/>`;
+    /* 站名牌 */
+    s += `<g transform="translate(${narrow ? 18 : 40},${narrow ? 124 : 104})"><rect x="0" y="-26" width="${f1(Math.min(W - (narrow ? 36 : 80), tw(cut(title || '本站', 12), 24) + 90))}" height="52" rx="12" fill="#1f2433"/>
+      <rect x="10" y="-16" width="32" height="32" rx="8" fill="${c}"/><text x="26" y="7" font-size="18" font-weight="900" text-anchor="middle" fill="#fff">${esc(code || '⇄')}</text>
+      <text x="52" y="8" font-size="24" font-weight="900" fill="#fff">${esc(cut(title || '本站', 12))}站</text></g>`;
+    /* 月台與停靠的列車 */
+    const px0 = narrow ? 18 : 40, px1 = narrow ? W - 18 : 960;
+    s += `<rect x="${px0}" y="${platY - 34}" width="${px1 - px0}" height="68" rx="10" fill="#dfe3e8"/><rect x="${px0}" y="${platY - 34}" width="${px1 - px0}" height="7" fill="#fcc419"/><rect x="${px0}" y="${platY + 27}" width="${px1 - px0}" height="7" fill="#fcc419"/>
+      <line x1="${px0 + 10}" y1="${platY}" x2="${px1 - 10}" y2="${platY}" stroke="${c}" stroke-width="6" stroke-dasharray="22 12" opacity=".5"/>
+      <g transform="translate(${f1(px0 + (narrow ? 90 : 150))},${platY}) scale(${narrow ? 1 : 1.5})">${trainSVG(c, code)}</g><g transform="translate(${f1(px0 + (narrow ? 168 : 268))},${platY}) scale(${narrow ? 1 : 1.5})" opacity=".9"><rect x="-38" y="-13" width="70" height="26" rx="8" fill="${c}"/><rect x="-30" y="-7" width="13" height="9" rx="2" fill="#fff"/><rect x="-13" y="-7" width="13" height="9" rx="2" fill="#fff"/><rect x="4" y="-7" width="13" height="9" rx="2" fill="#fff"/></g>
+      <text x="${px1 - 16}" y="${platY + 5}" font-size="13" font-weight="800" text-anchor="end" fill="#495057">月台 ⇄</text>`;
+    /* 出口 */
+    const pos = tiles.map((t, i) => narrow ? [18 + (i % 2) * 212, platY + 64 + Math.floor(i / 2) * 108]
+      : [px0 + 20 + Math.floor(i / 2) * ((px1 - px0 - 40) / cols), i % 2 ? platY + 72 : platY - 72 - 92]);
+    tiles.forEach((t, i) => { const [x, y] = pos[i], st = info.st[i], on = st.ok, tc = toHex(t.color || c), w = cw;
+      const stars = st.b ? `${'★'.repeat(st.a)}<tspan fill="#ced4da">${'★'.repeat(Math.max(0, Math.min(10, st.b) - st.a))}</tspan>` : (on ? '✔ 已完成' : '');
+      const stairY = i % 2 || narrow ? [y, platY + 34] : [y + 92, platY - 34];
+      if (!narrow) s += `<path d="M${f1(x + w / 2)},${f1(stairY[0])} L${f1(x + w / 2)},${f1(stairY[1])}" stroke="#ced4da" stroke-width="10"/><path d="M${f1(x + w / 2 - 5)},${f1(stairY[0])} L${f1(x + w / 2 - 5)},${f1(stairY[1])} M${f1(x + w / 2 + 5)},${f1(stairY[0])} L${f1(x + w / 2 + 5)},${f1(stairY[1])}" stroke="#f1f3f5" stroke-width="1.5"/>`;
+      s += `<g class="pm-isl pm-bld pm-exit${sel === i ? ' sel' : ''}${on ? ' lit' : ''}" data-t="${i}" transform="translate(${f1(x)},${f1(y)})" tabindex="0" role="button" aria-label="出口 ${i + 1}：${esc(t.name + '：' + (t.sub || ''))}${t.locked ? '（尚未解鎖）' : ''}"><g class="pm-lift">
+        <rect x="0" y="0" width="${f1(w)}" height="92" rx="14" fill="#fff" stroke="${on ? tc : '#ced4da'}" stroke-width="${on ? 3 : 1.5}"/>
+        <rect x="0" y="0" width="52" height="92" rx="14" fill="${t.locked ? '#dee2e6' : '#fcc419'}"/><rect x="38" y="0" width="14" height="92" fill="${t.locked ? '#dee2e6' : '#fcc419'}"/>
+        <text x="26" y="42" font-size="30" font-weight="900" text-anchor="middle" fill="#1f2433">${i + 1}</text><text x="26" y="64" font-size="11" font-weight="800" text-anchor="middle" fill="#5c4400">出口</text>
+        <text x="64" y="30" font-size="16" font-weight="800" fill="#1f2433">${t.locked ? '🔒 ' : ''}${esc(cut(t.name, Math.max(6, Math.floor((w - 70) / 16))))}</text>
+        <text x="64" y="52" font-size="12" fill="#868e96">${esc(cut(t.sub || '', Math.max(8, Math.floor((w - 70) / 11.5))))}</text>
+        <text x="64" y="76" font-size="13" fill="#f59f00" letter-spacing="1">${stars}</text>
+        ${on ? `<g transform="translate(${f1(w - 18)},18)"><circle r="12" fill="${tc}"/><path d="M-5,0l3.5,3.5l6.5,-7" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></g>` : ''}</g></g>`; });
+    /* 服務台（本課看板）＋公共藝術 */
+    const [bx, by] = narrow ? [18, platY + 64 + rowsN * 108 + 6] : [990, 150];
+    const bw = narrow ? W - 36 : 170, bh = narrow ? 120 : 360;
+    s += `<g class="pm-isl pm-bld pm-plaza${sel === 'board' ? ' sel' : ''}" transform="translate(${bx},${by})" tabindex="0" role="button" aria-label="服務台（本課看板）：已完成 ${info.done} / ${info.total} 站"><g class="pm-lift">
+      <rect x="0" y="0" width="${bw}" height="${bh}" rx="16" fill="#1f2433"/>
+      <g transform="translate(${narrow ? 62 : bw / 2},${narrow ? 72 : 128}) scale(${narrow ? 0.46 : 0.62})">${(L[landmark] || L.pavilion)(c, false)}</g>
+      <text x="${narrow ? 128 : bw / 2}" y="${narrow ? 40 : 194}" font-size="12" font-weight="800" text-anchor="${narrow ? 'start' : 'middle'}" fill="#adb5bd">站內公共藝術</text>
+      <text x="${narrow ? 128 : bw / 2}" y="${narrow ? 68 : 236}" font-size="20" font-weight="900" text-anchor="${narrow ? 'start' : 'middle'}" fill="#fff">ℹ️ 服務台</text>
+      <text x="${narrow ? 128 : bw / 2}" y="${narrow ? 92 : 262}" font-size="13" font-weight="700" text-anchor="${narrow ? 'start' : 'middle'}" fill="#ced4da">本課看板・下一站</text>
+      <text x="${narrow ? 128 : bw / 2}" y="${narrow ? 112 : 300}" font-size="16" font-weight="900" text-anchor="${narrow ? 'start' : 'middle'}" fill="#ffd43b">${info.m ? `★ ${info.s} / ${info.m}` : ''}${narrow && info.m ? '　' : ''}${narrow || !info.m ? `出口 ${info.done} / ${info.total}` : ''}</text>
+      ${!narrow && info.m ? `<text x="${bw / 2}" y="326" font-size="13" font-weight="700" text-anchor="middle" fill="#ced4da">已完成 ${info.done} / ${info.total} 個出口</text>` : ''}</g></g>`;
+    return s + '</svg>';
+  }
+  /* 作答層：畫面下方的列車進度 */
+  function sceneMetro(cfg, w) {
+    const M = pageLine(), narrow = w < 700, W = narrow ? 640 : 1600, H = 260, c = M.multi ? toHex(cfg.color()) : M.color, x0 = narrow ? 60 : 140, x1 = narrow ? 540 : 1380, ty = 168;
+    let s = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs>
+      <linearGradient id="pmSkyM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1f3f5" stop-opacity="0"/><stop offset=".5" stop-color="#e9ecef" stop-opacity=".7"/><stop offset="1" stop-color="#dee2e6"/></linearGradient></defs>
+      <rect width="${W}" height="${H}" fill="url(#pmSkyM)"/><g class="pm-art">`;
+    const r = rng(23); for (let x = 0; x < W; x += 34 + r() * 30) { const h = 40 + r() * 90, bw = 26 + r() * 30; s += `<rect x="${f1(x)}" y="${f1(ty - 14 - h)}" width="${f1(bw)}" height="${f1(h)}" fill="#ced4da" opacity=".55"/>`; }
+    s += `<rect x="0" y="${ty + 14}" width="${W}" height="${H - ty}" fill="#e9ecef" opacity=".6"/><rect x="0" y="${ty - 4}" width="${W}" height="20" fill="#adb5bd" opacity=".5"/><line x1="${x0}" y1="${ty}" x2="${x1}" y2="${ty}" stroke="${shade(c, 0.6)}" stroke-width="8" stroke-linecap="round"/>
+      <line class="pm-done" x1="${x0}" y1="${ty}" x2="${x0}" y2="${ty}" stroke="${c}" stroke-width="8" stroke-linecap="round"/>`;
+    for (let k = 0; k <= 10; k++) { const x = x0 + (x1 - x0) * k / 10; s += `<circle cx="${f1(x)}" cy="${ty}" r="${k === 10 ? 10 : 5}" fill="#fff" stroke="${c}" stroke-width="3"/>`; }
+    s += `<g transform="translate(${x1 + 20},${ty - 46})"><rect x="0" y="-16" width="${narrow ? 64 : 84}" height="30" rx="8" fill="#1f2433"/><text x="${narrow ? 32 : 42}" y="4" font-size="${narrow ? 12 : 14}" font-weight="800" text-anchor="middle" fill="#fff">終點站</text><rect x="${narrow ? 30 : 40}" y="14" width="4" height="32" fill="#495057"/></g>`;
+    s += `</g><g class="pm-boatpos"><g transform="translate(0,${ty - 18})">${trainSVG(c, M.multi ? '' : M.code)}</g></g></svg>`;
+    return { svg: s, x0, x1, metro: true };
+  }
+  function metroHead(c, code) {
+    return `<svg viewBox="-118 -150 236 200" aria-hidden="true"><rect x="-70" y="-120" width="140" height="140" rx="30" fill="${c}"/><text x="0" y="-12" font-size="96" font-weight="900" text-anchor="middle" fill="#fff" ${FONT}>${esc(code)}</text>
+      <rect x="-110" y="30" width="220" height="12" rx="6" fill="${shade(c, 0.5)}"/><circle cx="-70" cy="36" r="10" fill="#fff" stroke="${c}" stroke-width="5"/><circle cx="0" cy="36" r="10" fill="#fff" stroke="${c}" stroke-width="5"/><circle cx="70" cy="36" r="10" fill="#fff" stroke="${c}" stroke-width="5"/></svg>`;
+  }
+  const metroCSS = `.pm-sea.pm-metro{background:#fbfcfd; box-shadow:0 6px 24px rgba(30,40,60,.12)}
+  .pm-metro .pm-isl:hover .pm-lift,.pm-metro .pm-isl:focus-visible .pm-lift,.pm-metro .pm-isl.sel .pm-lift{transform:translateY(-4px)}
+  .pm-metro .pm-isl:focus-visible .pm-lift rect:first-child{stroke:#1f2433}
+  .pm-glow{transform-box:fill-box; transform-origin:center; animation:pmGlow 2.4s ease-in-out infinite} @keyframes pmGlow{0%,100%{opacity:.12; transform:scale(1)}50%{opacity:.4; transform:scale(1.3)}}
+  .pm-flow{animation:pmFlow 1.4s linear infinite} @keyframes pmFlow{to{stroke-dashoffset:-48}}
+  .pm-trainbob{animation:pmTB 2.2s ease-in-out infinite} @keyframes pmTB{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+  .pm-st.pm-arrive .pm-lift{animation:pmArr .5s ease} @keyframes pmArr{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+  @media (prefers-reduced-motion: reduce){.pm-glow,.pm-flow,.pm-trainbob,.pm-st.pm-arrive .pm-lift{animation:none}}
+  html.pe-metro .pm-head{background:linear-gradient(100deg,#e9ecef,#f8f9fa 60%,#fff)}
+  #pe-ticket{position:fixed; inset:0; z-index:2147483600; background:rgba(15,20,35,.55); display:flex; align-items:center; justify-content:center; padding:16px; font-family:'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif}
+  .pm-tk-box{position:relative; overflow:hidden; background:#fff; border-radius:22px; padding:22px 22px 18px; width:min(460px,100%); text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.35); animation:pmPop .45s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes pmPop{from{transform:scale(.6); opacity:0}to{transform:scale(1); opacity:1}}
+  .pm-tk-box > i{position:absolute; top:-12px; width:8px; height:14px; border-radius:2px; animation:pmConf 1.8s ease-in forwards; opacity:.9}
+  @keyframes pmConf{to{transform:translateY(420px) rotate(540deg); opacity:0}}
+  .pm-tk-fx{font-size:24px; font-weight:900; color:#1f2433; margin-bottom:12px}
+  .pm-tk{display:flex; text-align:left; border-radius:14px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.15); background:#fffdf5; border:2px solid var(--tc)}
+  .pm-tk-stub{flex:none; width:86px; background:var(--tc); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; border-right:3px dashed #fff}
+  .pm-tk-stub b{font-size:36px; line-height:1} .pm-tk-stub span{font-size:13px; font-weight:800}
+  .pm-tk-main{padding:12px 14px} .pm-tk-t{font-size:20px; font-weight:900; color:#1f2433; letter-spacing:.06em} .pm-tk-l{font-size:14px; font-weight:800; color:var(--tc); margin-top:2px}
+  .pm-tk-m{font-size:13px; color:#495057; margin-top:6px} .pm-tk-no{font-size:12px; font-weight:700; font-family:ui-monospace,Menlo,Consolas,monospace; line-height:1.2; color:#868e96; margin-top:6px; letter-spacing:.1em}
+  .pm-tk-msg{font-size:15px; color:#475467; margin:14px 0 12px; line-height:1.6}
+  .pm-tk-ok{all:unset; cursor:pointer; background:#1f2433; color:#fff; font-weight:800; padding:10px 22px; border-radius:99px; font-size:15px} .pm-tk-ok:focus-visible{outline:3px solid #f59f00; outline-offset:2px}`;
 
   /* ---------- CSS ---------- */
   const css = `.pe-map{margin:16px 0 22px; font-family:'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif}
@@ -2046,7 +2280,9 @@ body{padding-bottom:64px}
   .pm-bd-tools button{all:unset; cursor:pointer; padding:4px 10px; border-radius:99px; box-shadow:inset 0 0 0 1px #d0d5dd; font-size:13px; color:#475467; font-family:inherit}
   .pm-bp .pm-dt-acts{justify-content:flex-start; margin-top:12px} .pm-bp .pm-dt-acts button{padding:9px 18px; font-size:15px}
   @media print{.pe-map{display:none}}`;
-  function addCSS() { if (document.getElementById('pe115-map-css')) return; const st = document.createElement('style'); st.id = 'pe115-map-css'; st.textContent = css; document.head.appendChild(st); }
+  function addCSS() { if (document.getElementById('pe115-map-css')) return; const st = document.createElement('style'); st.id = 'pe115-map-css'; st.textContent = css + metroCSS; document.head.appendChild(st); }
+  /* 顯示切換鈕：🗺️ 島嶼／🚇 捷運／📋 清單 */
+  const tgHTML = view => `<span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🗺️ 島嶼</button><button type="button" data-pmv="metro" aria-pressed="${view === 'metro'}">🚇 捷運</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span>`;
 
   /* ---------- 建立／更新 ---------- */
   const toHex = col => { const m = String(col).match(/\d+(\.\d+)?/g); if (!m || /^#/.test(col)) return /^#[0-9a-f]{6}$/i.test(col) ? col : '#3b5bdb';
@@ -2067,19 +2303,20 @@ body{padding-bottom:64px}
     const items = els.map((el, i) => ({ el, name: (cfg.name(el, i) || '').trim(), sub: (cfg.sub ? cfg.sub(el, i) : '') || '', kind: cfg.kind(el, i), color: toHex(cfg.color ? cfg.color(el, i) : '#3b5bdb'),
       locked: cfg.locked ? !!cfg.locked(el, i) : false, apart: cfg.apart ? !!cfg.apart(el, i) : false, lockMsg: cfg.lockMsg ? cfg.lockMsg(el, i) : '' }));
     const sig = mapSig(cfg, items);
-    resolve(cfg.hide || cfg.anchor).forEach(h => { if (!h.closest('.pe-map')) h.style.display = view === 'map' ? 'none' : ''; });
+    try { recordLine(cfg, items); } catch (e) {}
+    resolve(cfg.hide || cfg.anchor).forEach(h => { if (!h.closest('.pe-map')) h.style.display = isMapV(view) ? 'none' : ''; });
     if (box_ && box_.dataset.sig === sig && box_.nextElementSibling === anchor) { box_._items = items; return; }
     if (box_) box_.remove();
     box_ = document.createElement('div'); box_.className = 'pe-map'; box_.dataset.pm = cfg.key; box_.dataset.sig = sig; box_._items = items; box_._cfg = cfg;
     const sel = SEL[cfg.key];
-    box_.innerHTML = view === 'map'
-      ? `<div class="pm-sea">${mapSVG(cfg, items, sel)}<div class="pm-ov-tl" data-crumb-slot></div><div class="pm-ov-tr"><span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🗺️ 地圖</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div><div class="pm-panel" hidden></div></div>`
-      : `<div class="pe-map-bar"><span class="pm-tip"></span><span class="pm-tg" role="group" aria-label="顯示方式"><button type="button" data-pmv="map" aria-pressed="${view === 'map'}">🗺️ 地圖</button><button type="button" data-pmv="list" aria-pressed="${view === 'list'}">📋 清單</button></span></div>`;
+    box_.innerHTML = isMapV(view)
+      ? `<div class="pm-sea${view === 'metro' ? ' pm-metro' : ''}">${view === 'metro' ? metroSVG(cfg, items, sel) : mapSVG(cfg, items, sel)}<div class="pm-ov-tl" data-crumb-slot></div><div class="pm-ov-tr">${tgHTML(view)}</div><div class="pm-panel" hidden></div></div>`
+      : `<div class="pe-map-bar"><span class="pm-tip"></span>${tgHTML(view)}</div>`;
     anchor.parentNode.insertBefore(box_, anchor);
     const dr = DRILL[cfg.key];
-    if (!(view === 'map' && dr != null && items[dr] && cfg.tiles)) arrive(box_.querySelector('.pm-sea svg'));
-    if (view === 'map' && dr != null && items[dr] && cfg.tiles) openPanel(box_, dr, true);
-    else if (view === 'map' && sel != null && items[sel]) openPanel(box_, sel, true);
+    if (!(isMapV(view) && dr != null && items[dr] && cfg.tiles)) arrive(box_.querySelector('.pm-sea svg'));
+    if (isMapV(view) && dr != null && items[dr] && cfg.tiles) openPanel(box_, dr, true);
+    else if (isMapV(view) && sel != null && items[sel]) openPanel(box_, sel, true);
   }
   let panelOpenedAt = 0;
   /* 統一操作規則：點了就進入。未解鎖的只跳出一句解鎖條件 */
@@ -2124,7 +2361,8 @@ body{padding-bottom:64px}
       if (!keep && !sea._zooming) { const svg0 = sea.querySelector('svg'), g0 = box_.querySelector(`.pm-isl[data-i="${i}"]`);
         if (svg0 && g0 && motionOK()) { sea._zooming = true; zoomInto(svg0, g0, () => { sea._zooming = false; openPanel(box_, i, 'z'); }); return; } }
       const tgS = sea.querySelector('.pm-ov-tr'), tgH = tgS ? tgS.innerHTML : '';
-      sea.innerHTML = streetSVG(tiles, it.kind, it.color, null) + `<div class="pm-ov-tl" data-crumb-slot></div><div class="pm-ov-tr">${tgH}</div><div class="pm-panel" hidden></div>`; crumbSig = '';
+      sea.classList.toggle('pm-metro', isMetro());
+      sea.innerHTML = (isMetro() ? stationSVG(tiles, it.kind, it.color, null, it.name, lineMeta(cfg)) : streetSVG(tiles, it.kind, it.color, null)) + `<div class="pm-ov-tl" data-crumb-slot></div><div class="pm-ov-tr">${tgH}</div><div class="pm-panel" hidden></div>`; crumbSig = '';
       if (keep === 'z' || (keep && PENDING)) arrive(sea.querySelector('svg'));
       requestAnimationFrame(() => { try { crumbTick(); } catch (e) {} });
       if (!keep) { try { sea.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {} const g = sea.querySelector('.pm-bld'); if (g) g.focus({ preventScroll: true }); }
@@ -2167,15 +2405,17 @@ body{padding-bottom:64px}
       const tl0 = bd && e.target.closest('[data-tool]'); if (tl0) { const [ti, ai] = tl0.dataset.tool.split(':').map(Number), a = (sea._tiles[ti].acts || [])[ai]; if (a && a.el) { pb.hidden = true; a.el.click(); } return; }
       if (e.target.closest('.pm-plaza')) { openBoard(sea); return; } }
     const bld = e.target.closest('.pm-bld'); if (bld && sea) { enterTile(sea, +bld.dataset.t); return; }
-    const isl = e.target.closest('.pm-isl'); if (isl) openPanel(box_, +isl.dataset.i);
+    const isl = e.target.closest('.pm-isl'); if (!isl) return;
+    if (isl.classList.contains('pm-st')) { if (box_._riding) return; box_._riding = true; rideTo(box_, +isl.dataset.i, () => { box_._riding = false; openPanel(box_, +isl.dataset.i); }); return; }
+    openPanel(box_, +isl.dataset.i);
   });
   document.addEventListener('keydown', e => {
     const isl = e.target.closest && e.target.closest('.pm-isl');
-    if (isl && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (isl.classList.contains('pm-plaza')) openBoard(isl.closest('.pm-street')); else if (isl.classList.contains('pm-bld')) enterTile(isl.closest('.pm-street'), +isl.dataset.t); else openPanel(isl.closest('.pe-map'), +isl.dataset.i); }
+    if (isl && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); if (isl.classList.contains('pm-plaza')) openBoard(isl.closest('.pm-street')); else if (isl.classList.contains('pm-bld')) enterTile(isl.closest('.pm-street'), +isl.dataset.t); else if (isl.classList.contains('pm-st')) { const b = isl.closest('.pe-map'); if (!b._riding) { b._riding = true; rideTo(b, +isl.dataset.i, () => { b._riding = false; openPanel(b, +isl.dataset.i); }); } } else openPanel(isl.closest('.pe-map'), +isl.dataset.i); }
     if (e.key === 'Escape') document.querySelectorAll('.pe-map').forEach(closePanel);
   });
   let queued = false;
-  function refresh() { queued = false; document.documentElement.classList.toggle('pe-mapview', getView() === 'map'); CONFIGS.forEach(c => { try { build(c); } catch (err) { console.warn('PE115Map', c.key, err); } }); DCONFIGS.forEach(c => { try { buildDistrict(c); } catch (err) { console.warn('PE115Map.district', c.key, err); } });
+  function refresh() { queued = false; document.documentElement.classList.toggle('pe-mapview', isMapV(getView())); document.documentElement.classList.toggle('pe-metro', isMetro()); CONFIGS.forEach(c => { try { build(c); } catch (err) { console.warn('PE115Map', c.key, err); } }); DCONFIGS.forEach(c => { try { buildDistrict(c); } catch (err) { console.warn('PE115Map.district', c.key, err); } });
     try { tidyTick(); } catch (err) {} try { crumbTick(); } catch (err) {} try { headTick(); } catch (err) { console.warn('PE115Map.head', err); } }
   const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(refresh); } };
   let lastMode = window.innerWidth < 700;
@@ -2216,6 +2456,7 @@ body{padding-bottom:64px}
   @media (max-width:700px){ #pe-scene-btn{padding:8px 10px; font-size:16px} #pe-scene{height:72px} #pe-scene .pm-place{font-size:11.5px; top:5px} body.pe-scene-on{padding-bottom:150px !important} #pe-scene.compact{height:54px} }
   @media print{ #pe-scene,#pe-scene-btn{display:none} body.pe-scene-on{padding-bottom:0 !important} }`;
   function sceneArt(cfg, w) {
+    if (isMetro()) return sceneMetro(cfg, w);
     const narrow = w < 700, W = narrow ? 640 : 1600, H = 260, ix = narrow ? 500 : 1330, iy = 150;
     const c = toHex(cfg.color()), kind = cfg.kind();
     let s = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs>
@@ -2241,19 +2482,19 @@ body{padding-bottom:64px}
     const on = sceneOn(), compact = !!(cfg.compact && cfg.compact()), w = window.innerWidth;
     const kb = window.visualViewport && window.visualViewport.height < window.innerHeight * 0.72;   // 手機鍵盤跳出時收起
     if (!el) { el = document.createElement('div'); el.id = 'pe-scene'; document.body.appendChild(el); }
-    const sig = [cfg.kind(), cfg.color(), w < 700, on].join('|');
+    const sig = [cfg.kind(), cfg.color(), w < 700, on, getView()].join('|');
     if (sig !== sceneSig) { sceneSig = sig; const art = on ? sceneArt(cfg, w) : null;
       el.innerHTML = (art ? art.svg : '') + `<span class="pm-place"></span>`;
       el._x = art ? [art.x0, art.x1] : null; }
     let btn = document.getElementById('pe-scene-btn');
     if (!btn) { btn = document.createElement('button'); btn.type = 'button'; btn.id = 'pe-scene-btn'; document.body.appendChild(btn); }
-    const bt = w < 700 ? (on ? '🌫️' : '🏝️') : (on ? '🌫️ 專注模式' : '🏝️ 顯示背景'); if (btn.textContent !== bt) { btn.textContent = bt; btn.title = on ? '關閉作答背景' : '開啟作答背景'; }
+    const bt = w < 700 ? (on ? '🌫️' : isMetro() ? '🚇' : '🏝️') : (on ? '🌫️ 專注模式' : isMetro() ? '🚇 顯示背景' : '🏝️ 顯示背景'); if (btn.textContent !== bt) { btn.textContent = bt; btn.title = on ? '關閉作答背景' : '開啟作答背景'; }
     el.classList.toggle('off', !on); el.classList.toggle('compact', on && (compact || kb));
     el.style.display = kb && w < 700 ? 'none' : '';
     document.body.classList.toggle('pe-scene-on', on); document.body.classList.toggle('pe-scene-compact', on && compact);
     const pl = el.querySelector('.pm-place'); if (pl) { const t = '📍 ' + (cfg.place ? cfg.place() : ''); if (pl.textContent !== t) pl.textContent = t; }
     const b = el.querySelector('.pm-boatpos'); if (b && el._x) { const [d, n] = cfg.progress ? cfg.progress() : [0, 1]; const x = el._x[0] + (el._x[1] - el._x[0]) * Math.min(1, n ? d / n : 0);
-      b.style.transition = 'transform .8s ease'; b.style.transform = `translateX(${f1(x)}px)`; }
+      b.style.transition = 'transform .8s ease'; b.style.transform = `translateX(${f1(x)}px)`; const dn = el.querySelector('.pm-done'); if (dn) dn.setAttribute('x2', f1(x)); }
     const card = cfg.card && cfg.card(); if (card && !card.classList.contains('pm-float')) { card.classList.add('pm-float'); if (PENDING && PENDING.dir === 'in') arrive(card); }
     const ok = cfg.correct && cfg.correct(); if (ok && ok !== lastOk) { el.classList.add('glow'); setTimeout(() => el.classList.remove('glow'), 1100); } lastOk = ok || '';
   }
@@ -2324,7 +2565,7 @@ body{padding-bottom:64px}
   function crumbTick() {
     if (!CRUMBS) return;
     let list = []; try { list = CRUMBS() || []; } catch (e) { list = []; }
-    const all = [{ label: '🌏 全景', href: hubHref() }].concat(list);
+    const all = [{ label: '🌏 全景', href: hubHref() }].concat(list).map(c => isMetro() ? Object.assign({}, c, { label: String(c.label).replace(/島全圖$/, '線').replace(/島$/, '線').replace(/\s*街區$/, '站') }) : c);
     /* 有地圖在畫面上時，位置列放在地圖左上角；作答等沒有地圖的畫面，放在左下角（作答背景的海面上） */
     const slot = [...document.querySelectorAll('.pe-map [data-crumb-slot]')].find(e => e.parentElement && e.parentElement.offsetParent !== null);
     let nav = document.getElementById('pe-crumb');
@@ -2402,12 +2643,13 @@ body{padding-bottom:64px}
       const range = (cfg.range ? cfg.range() : '') || '', chips = (cfg.chips ? cfg.chips() : []).filter(Boolean).map(t => t.replace(/\s*\/\s*/g, ' / ').replace(/(\d)([A-Za-z])/g, '$1 $2').replace(/([\u4e00-\u9fff])(\d)/g, '$1 $2'));
       const c = toHex(typeof cfg.color === 'function' ? cfg.color() : cfg.color || '#3b5bdb'), kind = typeof cfg.kind === 'function' ? cfg.kind() : cfg.kind;
       const name = typeof cfg.name === 'function' ? cfg.name() : cfg.name, sub = typeof cfg.sub === 'function' ? cfg.sub() : (cfg.sub || '');
-      const sig = [name, sub, kind, c, range, lv, chips.join('|')].join('¦');
+      const mv = isMetro(), PL = mv ? pageLine() : null;
+      const sig = [name, sub, kind, c, range, lv, chips.join('|'), mv].join('¦');
       if (!el) { el = document.createElement('div'); el.className = 'pm-head'; el.dataset.ph = cfg.key || 'head'; }
       if (el.nextElementSibling !== heroes[0] || !el.isConnected) heroes[0].parentNode.insertBefore(el, heroes[0]);
       if (el.dataset.sig === sig) return; el.dataset.sig = sig; el.style.setProperty('--pmc', c);
-      el.innerHTML = `<svg viewBox="-118 -150 236 200" aria-hidden="true">${islandSVG(kind, c, 82, false).replace(/<ellipse class="pm-ring"[^>]*\/>/, '')}</svg>
-        <div class="pm-head-txt"><h1 class="pm-head-name">${esc(name)}${sub ? `<small>${esc(sub)}</small>` : ''}</h1>
+      el.innerHTML = `${mv ? metroHead(PL.multi ? c : PL.color, PL.multi ? '⇄' : PL.code) : `<svg viewBox="-118 -150 236 200" aria-hidden="true">${islandSVG(kind, c, 82, false).replace(/<ellipse class="pm-ring"[^>]*\/>/, '')}</svg>`}
+        <div class="pm-head-txt"><h1 class="pm-head-name">${esc(mv ? String(name).replace(/島$/, '線') : name)}${sub ? `<small>${esc(sub)}</small>` : ''}</h1>
         ${range ? `<div class="pm-head-range">${esc(range)}</div>` : ''}
         <div class="pm-head-chips">${lv ? `<span class="pm-chip lv">${esc(lv)}</span>` : ''}${chips.map(t => `<span class="pm-chip">${esc(t)}</span>`).join('')}</div></div>`;
     });
