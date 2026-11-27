@@ -1205,6 +1205,9 @@ body{padding-bottom:64px}
   const setView = v => { try { localStorage.setItem(VIEW_KEY, v); } catch (e) {} };
   const CONFIGS = [];
   const SEL = {};
+  /* ❄️ 冬季雪國：第三次段考（檔名 xxx1150103）的島嶼模式改成雪景，第二次段考維持原樣；捷運版不受影響 */
+  const WINTER = +((decodeURIComponent(location.pathname).match(/115010(\d)/) || [])[1] || 0) === 3;
+  const GRASS = WINTER ? ['#eef5fb', '#fbfdff'] : ['#b7dc9e', '#c4e5aa'], SEA = WINTER ? ['#cfe6f2', '#9ccbe0'] : ['#8fd6df', '#5cb8c9'], SHALLOW = WINTER ? '#eaf5fb' : '#b9ece9', SAND = WINTER ? ['#c3d3de', '#b2c4d1', '#d3e0e8', '#e6eef4'] : ['#d8c69f', '#c9b58b', '#e2d3b0', '#efe3c4'];
 
   /* ---------- 繪圖小工具 ---------- */
   function shade(hex, t) {
@@ -1244,12 +1247,17 @@ body{padding-bottom:64px}
   }
   const shadow = (x, y, rx) => `<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="${f1(rx)}" ry="${f1(rx * 0.45)}" fill="rgba(30,60,40,.18)"/>`;
   function tree(x, y, s = 1, col = '#5fa35a') {
+    if (WINTER) { if (col === '#5fa35a') col = '#4f8467'; else if (col === '#6ab04c') col = '#5b8f6e'; }
+    return treeBase(x, y, s, col) + (WINTER ? `<ellipse cx="${f1(x - 1 * s)}" cy="${f1(y - 21.5 * s)}" rx="${f1(7.2 * s)}" ry="${f1(3.6 * s)}" fill="#fff"/><ellipse cx="${f1(x + 4.5 * s)}" cy="${f1(y - 17.5 * s)}" rx="${f1(4 * s)}" ry="${f1(2 * s)}" fill="#fff" opacity=".9"/>` : '');
+  }
+  function treeBase(x, y, s, col) {
     return shadow(x + 3, y, 9 * s) + `<rect x="${f1(x - 1.6 * s)}" y="${f1(y - 9 * s)}" width="${f1(3.2 * s)}" height="${f1(9 * s)}" fill="#8b5e3c"/>` +
       `<circle cx="${f1(x)}" cy="${f1(y - 15 * s)}" r="${f1(9 * s)}" fill="${col}"/>` +
       `<circle cx="${f1(x + 2.5 * s)}" cy="${f1(y - 13 * s)}" r="${f1(6.5 * s)}" fill="${shade(col, -0.15)}"/>` +
       `<circle cx="${f1(x - 3 * s)}" cy="${f1(y - 18 * s)}" r="${f1(4.5 * s)}" fill="${shade(col, 0.2)}"/>`;
   }
-  const pine = (x, y, s = 1, col = '#3f8f5a') => shadow(x + 2, y, 7 * s) + `<rect x="${f1(x - 1.3 * s)}" y="${f1(y - 6 * s)}" width="${f1(2.6 * s)}" height="${f1(6 * s)}" fill="#7a4f2e"/>` + cone(x, y - 5 * s, 8 * s, 24 * s, col);
+  const pine = (x, y, s = 1, col = '#3f8f5a') => shadow(x + 2, y, 7 * s) + `<rect x="${f1(x - 1.3 * s)}" y="${f1(y - 6 * s)}" width="${f1(2.6 * s)}" height="${f1(6 * s)}" fill="#7a4f2e"/>` + cone(x, y - 5 * s, 8 * s, 24 * s, WINTER && col === '#3f8f5a' ? '#3d6f5a' : col)
+    + (WINTER ? poly([[x - 3.8 * s, y - 18 * s], [x, y - 29 * s], [x + 3.8 * s, y - 18 * s], [x + 1.5 * s, y - 19.5 * s], [x - 1 * s, y - 17.5 * s]], '#fff') + poly([[x - 6 * s, y - 9 * s], [x - 3 * s, y - 12 * s], [x - 1 * s, y - 9.5 * s]], '#fff', 'opacity=".85"') : '');
   const SHIRTS = ['#f08c00', '#1c7ed6', '#e64980', '#37b24d', '#7950f2', '#fab005', '#f8f9fa'];
   function person(x, y, i) {
     const c = SHIRTS[i % SHIRTS.length];
@@ -1614,9 +1622,9 @@ body{padding-bottom:64px}
     const sides = (r, y0, y1, cols) => { const h = hex(r); let s = '';
       [[0, 1], [1, 2], [2, 3]].forEach(([i, j], k) => { s += poly([[h[i][0], h[i][1] + y0], [h[j][0], h[j][1] + y0], [h[j][0], h[j][1] + y1], [h[i][0], h[i][1] + y1]], cols[k]); }); return s; };
     let s = `<ellipse cx="6" cy="${T + 14}" rx="${f1(R * 1.18)}" ry="${f1(R * 0.62)}" fill="rgba(10,50,70,.18)"/>` + poly(hex(R + 20, T + 2), 'rgba(255,255,255,.35)');
-    s += sides(R + 11, T - 8, T + 2, ['#d8c69f', '#c9b58b', '#e2d3b0']) + poly(hex(R + 11, T - 8), '#efe3c4');
+    s += sides(R + 11, T - 8, T + 2, SAND.slice(0, 3)) + poly(hex(R + 11, T - 8), SAND[3]);
     s += sides(R, 0, 9, [shade(c, -0.25), shade(c, -0.05), shade(c, 0.12)]) + sides(R, 9, T - 7, ['#a99f8e', '#bdb4a3', '#d0c8b8']);
-    s += poly(hex(R), '#b7dc9e') + poly(hex(R * 0.93), '#c4e5aa') + poly(hex(R * 0.6, 6), shade(c, 0.82), `stroke="${shade(c, 0.55)}" stroke-width="1.5"`);
+    s += poly(hex(R), GRASS[0]) + poly(hex(R * 0.93), GRASS[1]) + poly(hex(R * 0.6, 6), shade(c, 0.82), `stroke="${shade(c, 0.55)}" stroke-width="1.5"`);
     s += `<ellipse class="pm-ring" cx="0" cy="${T / 2}" rx="${f1(R * 1.22)}" ry="${f1(R * 0.66)}" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="10 8"/>`;
     const k = R / 92;
     return s + `<g transform="scale(${f1(k * 100) / 100})">${(L[kind] || L.books)(c, anim)}</g>`;
@@ -1631,12 +1639,15 @@ body{padding-bottom:64px}
       <text x="${f1(x0 + 14 + wNo)}" y="18" font-size="13" font-weight="700" fill="${starry ? '#e8590c' : '#868e96'}">${esc(sub)}</text></g>`;
   }
   const cloud = (x, y, s = 1) => `<g transform="translate(${x},${y}) scale(${s})" fill="#fff" opacity=".9"><ellipse cx="0" cy="0" rx="34" ry="16"/><ellipse cx="-26" cy="6" rx="22" ry="12"/><ellipse cx="28" cy="6" rx="24" ry="12"/><ellipse cx="6" cy="-10" rx="20" ry="13"/></g>`;
-  const boat = (x, y, col, i) => `<g transform="translate(${x},${y})"><g class="pm-boat" style="animation-delay:-${i * 5}s"><ellipse cx="0" cy="6" rx="16" ry="4" fill="rgba(10,50,70,.2)"/><path d="M-14,0h28l-5,7h-18z" fill="#fff"/><path d="M-14,0h28l-1.5,2h-25z" fill="${col}"/><line x1="0" y1="0" x2="0" y2="-24" stroke="#555" stroke-width="1.4"/><path d="M1,-23l12,19h-12z" fill="#fff"/><path d="M-1,-18l-9,15h9z" fill="#f1f3f5"/></g></g>`;
+  const floe = (x, y, i) => `<g transform="translate(${x},${y})"><g class="pm-boat" style="animation-delay:-${i * 5}s;animation-duration:30s"><path d="M-22,2 l8,-6 h22 l10,5 l-6,6 h-28z" fill="#fff" stroke="#b9d9ea" stroke-width="1.5"/><path d="M-22,2 l6,6 h28 l6,-6" fill="#d7ebf5"/>
+    <g transform="translate(-2,-2)"><ellipse cx="0" cy="-8" rx="5" ry="8" fill="#22313f"/><ellipse cx="0.8" cy="-6.5" rx="3" ry="5.6" fill="#fff"/><circle cx="1.6" cy="-13" r="0.9" fill="#22313f"/><path d="M3.5,-12 l3,1 l-3,1z" fill="#f59f00"/><path d="M-2,0 h3 M1,0 h3" stroke="#f59f00" stroke-width="1.6"/></g></g></g>`;
+  const boat = (x, y, col, i) => WINTER ? floe(x, y, i) : `<g transform="translate(${x},${y})"><g class="pm-boat" style="animation-delay:-${i * 5}s"><ellipse cx="0" cy="6" rx="16" ry="4" fill="rgba(10,50,70,.2)"/><path d="M-14,0h28l-5,7h-18z" fill="#fff"/><path d="M-14,0h28l-1.5,2h-25z" fill="${col}"/><line x1="0" y1="0" x2="0" y2="-24" stroke="#555" stroke-width="1.4"/><path d="M1,-23l12,19h-12z" fill="#fff"/><path d="M-1,-18l-9,15h9z" fill="#f1f3f5"/></g></g>`;
   function bridge(p, q) {
     const [x1, y1] = p, [x2, y2] = q, dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy), nx = -dy / len * 13, ny = dx / len * 13, Y = 6;
     const A = [x1, y1 + Y], B = [x2, y2 + Y]; let s = poly([[A[0] + nx, A[1] + ny + 10], [B[0] + nx, B[1] + ny + 10], [B[0] - nx, B[1] - ny + 10], [A[0] - nx, A[1] - ny + 10]], 'rgba(10,50,70,.2)');
     for (let t = 0.3; t <= 0.71; t += 0.2) s += `<rect x="${f1(x1 + dx * t - 3)}" y="${f1(y1 + Y + dy * t)}" width="6" height="22" fill="#8b6a4a"/>`;
     s += poly([[A[0] + nx, A[1] + ny + 6], [B[0] + nx, B[1] + ny + 6], [B[0] + nx, B[1] + ny], [A[0] + nx, A[1] + ny]], '#9c7652') + poly([[A[0] + nx, A[1] + ny], [B[0] + nx, B[1] + ny], [B[0] - nx, B[1] - ny], [A[0] - nx, A[1] - ny]], '#d7b07f');
+    if (WINTER) s += poly([[A[0] + nx * 0.6, A[1] + ny * 0.6], [B[0] + nx * 0.6, B[1] + ny * 0.6], [B[0] - nx * 0.2, B[1] - ny * 0.2], [A[0] - nx * 0.2, A[1] - ny * 0.2]], '#fff', 'opacity=".85"');
     for (let t = 0; t <= 1; t += 12 / len) { const px = x1 + dx * t, py = y1 + Y + dy * t; s += line([px + nx, py + ny], [px - nx, py - ny], '#b68c5d', 1.2); }
     [1, -1].forEach(k => { s += line([A[0] - nx * k, A[1] - ny * k - 9], [B[0] - nx * k, B[1] - ny * k - 9], '#7a5534', 2);
       for (let t = 0; t <= 1.001; t += 0.125) { const px = x1 + dx * t - nx * k, py = y1 + Y + dy * t - ny * k; s += line([px, py], [px, py - 9], '#7a5534', 2); } });
@@ -1670,7 +1681,7 @@ body{padding-bottom:64px}
   function regionSVG(items, sel, Lo, ox, oy) {
     const n = items.length, R = Lo.R, anim = motionOK();
     let s = `<g transform="translate(${f1(ox)},${f1(oy)})">`;
-    items.forEach((it, i) => { const [x, y] = Lo.pos[i]; s += `<ellipse cx="${x}" cy="${y + 30}" rx="${f1(R * 1.7)}" ry="${f1(R * 0.92)}" fill="#b9ece9" opacity=".45"/>`; });
+    items.forEach((it, i) => { const [x, y] = Lo.pos[i]; s += `<ellipse cx="${x}" cy="${y + 30}" rx="${f1(R * 1.7)}" ry="${f1(R * 0.92)}" fill="${SHALLOW}" opacity="${WINTER ? '.7' : '.45'}"/>`; });
     for (let i = 0; i < n - 1; i++) if (!items[i].apart && !items[i + 1].apart) s += bridge(Lo.pos[i], Lo.pos[i + 1]);
     [[0.06, 0.2, '#e03131'], [0.93, 0.12, '#1971c2'], [0.9, 0.9, '#f08c00'], [0.05, 0.86, '#2b8a3e']].forEach(([fx, fy, col], i) => { s += boat(f1(Lo.W * fx), f1(Lo.H * fy), col, i); });
     items.map((it, i) => i).sort((a, b) => Lo.pos[a][1] - Lo.pos[b][1]).forEach(i => { const it = items[i], [x, y] = Lo.pos[i];
@@ -1683,21 +1694,30 @@ body{padding-bottom:64px}
     return s + '</g>';
   }
   const svgHead = (vb, extra = '') => `<svg viewBox="${vb.map(f1).join(' ')}" role="img" aria-label="島嶼地圖：點島嶼直接進入" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif" ${extra}>
-      <defs><linearGradient id="pmSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd6df"/><stop offset="1" stop-color="#5cb8c9"/></linearGradient>
+      <defs><linearGradient id="pmSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${SEA[0]}"/><stop offset="1" stop-color="${SEA[1]}"/></linearGradient>
       <linearGradient id="pmBeam" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#fff3bf"/><stop offset="1" stop-color="#fff3bf" stop-opacity="0"/></linearGradient>
       <filter id="pmGray"><feColorMatrix type="saturate" values="0.15"/></filter><filter id="pmBlurHole" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="40"/></filter></defs>`;
   function waves(x0, y0, w, h, seed, dens = 9000) {
     const rand = rng(seed); let s = '';
+    if (WINTER) { for (let i = 0; i < (w * h) / (dens * 1.6); i++) { const x = x0 + rand() * w, y = y0 + rand() * h, ww = 8 + rand() * 14;
+      s += `<path class="pm-wave" style="animation-delay:-${(rand() * 4).toFixed(1)}s" d="M${f1(x)},${f1(y)}l${f1(ww * 0.4)},-3l${f1(ww * 0.6)},2l-${f1(ww * 0.3)},3z" fill="#fff" opacity=".9"/>`; } return s; }
     for (let i = 0; i < (w * h) / dens; i++) { const x = x0 + rand() * w, y = y0 + rand() * h, ww = 10 + rand() * 12;
       s += `<path class="pm-wave" style="animation-delay:-${(rand() * 4).toFixed(1)}s" d="M${f1(x)},${f1(y)}q${f1(ww / 2)},-5 ${f1(ww)},0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`; }
     return s;
+  }
+  /* 飄雪（只有冬季雪國）：每片雪花由上往下飄，裝置設定「減少動態效果」時靜止 */
+  function snowSVG(x0, y0, w, h, seed, n) {
+    if (!WINTER) return ''; const r = rng(seed), mv = motionOK(); let s = '<g class="pm-snow" pointer-events="none">';
+    for (let i = 0; i < n; i++) { const x = x0 + r() * w, y = y0 + r() * h, rr = (1.3 + r() * 2.6) * w / 1200, d = 7 + r() * 9, dx = (r() - 0.5) * 60 * w / 1200;
+      s += `<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(rr)}" fill="#fff" opacity="${(0.65 + r() * 0.35).toFixed(2)}">${mv ? `<animateTransform attributeName="transform" type="translate" values="0 ${f1(-h * 0.35)};${f1(dx)} ${f1(h * 0.65)}" dur="${d.toFixed(1)}s" begin="-${(r() * d).toFixed(1)}s" repeatCount="indefinite"/>` : ''}</circle>`; }
+    return s + '</g>';
   }
   function mapSVG(cfg, items, sel) {
     const n = items.length, Lo = layout(n);
     const me = cfg.world ? (typeof cfg.world === 'function' ? cfg.world() : cfg.world) : null;
     const wl = me && WORLD[window.innerWidth < 700 ? 'tall' : 'wide'];
     if (!wl || !wl.pos[me]) {   // 沒有世界設定：單獨一張地圖
-      return svgHead([0, 0, Lo.W, Lo.H]) + `<rect width="${Lo.W}" height="${Lo.H}" fill="url(#pmSea)"/>` + waves(0, 0, Lo.W, Lo.H, n * 31 + 7) + regionSVG(items, sel, Lo, 0, 0) + '</svg>';
+      return svgHead([0, 0, Lo.W, Lo.H]) + `<rect width="${Lo.W}" height="${Lo.H}" fill="url(#pmSea)"/>` + waves(0, 0, Lo.W, Lo.H, n * 31 + 7) + regionSVG(items, sel, Lo, 0, 0) + snowSVG(0, 0, Lo.W, Lo.H, 77, 55) + '</svg>';
     }
     /* 放大倍率 F：讓相鄰科目的島剛好在本區邊緣「露出來」，不壓到本科的島 */
     const [mx0, my0] = wl.pos[me], others = Object.keys(wl.pos).filter(k => k !== me), RW = wl.R * 1.25;
@@ -1722,10 +1742,10 @@ body{padding-bottom:64px}
       s += `<g transform="translate(${x},${y})">${islandSVG(WORLD.kind[k], WORLD.color[k], wl.R, false).replace(/<ellipse class="pm-ring"[^>]*\/>/, '')}
         <text y="${f1(wl.R * 0.5 + 52)}" text-anchor="middle" font-size="22" font-weight="900" fill="#1f2433" opacity=".8">${WORLD.name[k]}</text></g>`; });
     s += `</g></g>`;
-    s += `<ellipse cx="${f1(cx)}" cy="${f1(cy + 20)}" rx="${f1(Lo.W * 0.56)}" ry="${f1(Lo.H * 0.58)}" fill="#b9ece9" opacity=".35"/>`;
+    s += `<ellipse cx="${f1(cx)}" cy="${f1(cy + 20)}" rx="${f1(Lo.W * 0.56)}" ry="${f1(Lo.H * 0.58)}" fill="${SHALLOW}" opacity=".35"/>`;
     s += `<rect x="${f1(bx)}" y="${f1(by)}" width="${f1(bw)}" height="${f1(bh)}" fill="#f4fbfc" opacity=".66" mask="url(#pmHole)"/>`;
     s += regionSVG(items, sel, Lo, rx, ry);
-    return s + '</svg>';
+    return s + snowSVG(vb[0], vb[1], vb[2], vb[3], 77, 60) + '</svg>';
   }
   /* 鏡頭移動：在同一張世界地圖上平移＋縮放（改 viewBox），由全景飛到本科，或由本科飛回全景 */
   function flyView(svg, from, to, ms, done) {
@@ -1786,7 +1806,7 @@ body{padding-bottom:64px}
     const info = boardInfo(tiles);
     const narrow = window.innerWidth < 700, Lo = streetLayout(tiles.length, narrow), T = 34, c = toHex(lc || '#3b5bdb'), rand = rng(tiles.length * 17 + 3);
     let s = `<svg viewBox="0 0 ${Lo.W} ${Lo.H}" role="img" aria-label="街區平面圖：點選建築查看練習" font-family="'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif">
-      <defs><linearGradient id="pmSea2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd6df"/><stop offset="1" stop-color="#5cb8c9"/></linearGradient>
+      <defs><linearGradient id="pmSea2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${SEA[0]}"/><stop offset="1" stop-color="${SEA[1]}"/></linearGradient>
       <linearGradient id="pmBeam" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#fff3bf"/><stop offset="1" stop-color="#fff3bf" stop-opacity="0"/></linearGradient>
       <filter id="pmGray"><feColorMatrix type="saturate" values="0.15"/></filter></defs><rect width="${Lo.W}" height="${Lo.H}" fill="url(#pmSea2)"/>`;
     for (let i = 0; i < (Lo.W * Lo.H) / 9000; i++) { const x = rand() * Lo.W, y = rand() * Lo.H, w = 10 + rand() * 12;
@@ -1797,8 +1817,8 @@ body{padding-bottom:64px}
       return poly([[a[0], a[1] + y0], [b[0], b[1] + y0], [b[0], b[1] + y1], [a[0], a[1] + y1]], cols[k % cols.length]); }).join('');
     const ring = grow(P, 1.04, T - 8);
     s += poly(grow(P, 1.1, T + 6), 'rgba(255,255,255,.35)') + `<ellipse cx="${Lo.W / 2}" cy="${Lo.H / 2 + T}" rx="${Lo.W * 0.47}" ry="${Lo.H * 0.4}" fill="rgba(10,50,70,.10)"/>`;
-    s += sides(ring, 0, 10, ['#c9b58b', '#d8c69f', '#e2d3b0']) + poly(ring, '#efe3c4');
-    s += sides(P, 0, 10, [shade(c, -0.25), shade(c, -0.05), shade(c, 0.12)]) + sides(P, 10, T - 8, ['#a99f8e', '#bdb4a3', '#d0c8b8']) + poly(P, '#b7dc9e') + poly(grow(P, 0.95, 0), '#c4e5aa');
+    s += sides(ring, 0, 10, [SAND[1], SAND[0], SAND[2]]) + poly(ring, SAND[3]);
+    s += sides(P, 0, 10, [shade(c, -0.25), shade(c, -0.05), shade(c, 0.12)]) + sides(P, 10, T - 8, ['#a99f8e', '#bdb4a3', '#d0c8b8']) + poly(P, GRASS[0]) + poly(grow(P, 0.95, 0), GRASS[1]);
     /* 街道：主街＋通往每棟建築的小巷 */
     const [A, B] = Lo.road, rw = 34, road = (a, b, w, col) => { const dx = b[0] - a[0], dy = b[1] - a[1], L_ = Math.hypot(dx, dy) || 1, nx = -dy / L_ * w / 2, ny = dx / L_ * w / 2;
       return poly([[a[0] + nx, a[1] + ny], [b[0] + nx, b[1] + ny], [b[0] - nx, b[1] - ny], [a[0] - nx, a[1] - ny]], col); };
@@ -1816,7 +1836,8 @@ body{padding-bottom:64px}
     const fill = rng(tiles.length * 7 + 1), deco = [];
     for (let k = 0; k < 400 && deco.length < (Lo.narrow ? 16 : 22); k++) { const x = 60 + fill() * (Lo.W - 120), y = 120 + fill() * (Lo.H - 200);
       if (!inPlate(x, y - 6) || !inPlate(x, y + 20) || near(x, y) || deco.some(([a, b]) => Math.hypot(a - x, b - y) < 46)) continue; deco.push([x, y]); }
-    deco.sort((a, b) => a[1] - b[1]).forEach(([x, y], k) => { s += k % 5 === 4 ? `<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="16" ry="7" fill="#f3d9e4"/><circle cx="${f1(x - 5)}" cy="${f1(y - 1)}" r="2.5" fill="#f783ac"/><circle cx="${f1(x + 5)}" cy="${f1(y + 1)}" r="2.5" fill="#fcc419"/>` : k % 3 ? tree(x, y, 0.85, k % 2 ? '#5fa35a' : '#6ab04c') : pine(x, y, 0.85); });
+    const snowman = (x, y) => `${shadow(x + 2, y + 2, 10)}<circle cx="${f1(x)}" cy="${f1(y - 6)}" r="8" fill="#fff" stroke="#d3e4ee"/><circle cx="${f1(x)}" cy="${f1(y - 18)}" r="5.5" fill="#fff" stroke="#d3e4ee"/><path d="M${f1(x)},${f1(y - 18)} l5,1 l-5,1z" fill="#f08c00"/><rect x="${f1(x - 4)}" y="${f1(y - 27)}" width="8" height="5" fill="#343a40"/><path d="M${f1(x - 6)},${f1(y - 13)} h12" stroke="#e03131" stroke-width="2.4"/>`;
+    deco.sort((a, b) => a[1] - b[1]).forEach(([x, y], k) => { s += WINTER && k % 5 === 4 ? snowman(x, y) : k % 5 === 4 ? `<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="16" ry="7" fill="#f3d9e4"/><circle cx="${f1(x - 5)}" cy="${f1(y - 1)}" r="2.5" fill="#f783ac"/><circle cx="${f1(x + 5)}" cy="${f1(y + 1)}" r="2.5" fill="#fcc419"/>` : k % 3 ? tree(x, y, 0.85, k % 2 ? '#5fa35a' : '#6ab04c') : pine(x, y, 0.85); });
     /* 地標廣場（本課代表建築，不能點） */
     const [px, py] = Lo.plaza;
     /* 本課看板（可點）：廣場上的地標＋公告看板，顯示本課星星與完成站數 */
@@ -1841,7 +1862,7 @@ body{padding-bottom:64px}
         ${t.locked ? `<g transform="translate(34,-60)"><circle r="15" fill="#fff"/><text y="6" font-size="17" text-anchor="middle">🔒</text></g>` : ''}
         <g transform="translate(0,${f1(48 * lab)}) scale(${lab})">${labelSVG(i + 1, t.name, t.sub || '', tc, 0, /★/.test(t.sub || '') && /★/.test((t.sub || '').replace(/☆/g, '')))}</g>
       </g></g>`; });
-    return s + '</svg>';
+    return s + snowSVG(0, 0, Lo.W, Lo.H, 91, 50) + '</svg>';
   }
   /* 本課看板：整理各站（小單元）的星星與完成情況，找出「下一站」 */
   const lvStars = sc => sc >= 99.95 ? 5 : sc >= 90 ? 4 : sc >= 80 ? 3 : sc >= 70 ? 2 : sc >= 60 ? 1 : 0;
@@ -2062,6 +2083,7 @@ body{padding-bottom:64px}
     const M = lineMeta(cfg); if (M.multi || !EXAM_N) return;
     const lit = items.map(it => !it.locked && litOf(it.sub)), key = EXAM_N + '|' + M.id;
     const rec = { name: M.name, st: items.map((it, i) => [cut(it.name, 14), lit[i] ? 1 : 0, it.apart ? 2 : isTerm(it) ? 1 : 0]) };
+    if (cfg.branch) { try { const BR = cfg.branch(items); if (BR && (BR.stations || []).length) rec.br = { name: BR.name || '支線', code: BR.code || 'B', color: toHex(BR.color || '#f08c00'), icon: BR.icon || '', st: BR.stations.map(b => [cut(b.name, 14), b.lit ? 1 : 0]) }; } catch (e) {} }
     const all = jget(LN_KEY); if (JSON.stringify(all[key]) !== JSON.stringify(rec)) { all[key] = rec; jset(LN_KEY, all); }
     if (isMetro() && cfg.branch) { try { const BR = cfg.branch(items), bs = BR.stations || [];
       if (bs.length >= 2 && bs.every(b => b.lit)) { const bk = key + '-' + (BR.code || 'B'), tk0 = jget(TK_KEY);
@@ -2163,6 +2185,9 @@ body{padding-bottom:64px}
   .pm-st.pm-arrive .pm-lift{animation:pmArr .5s ease} @keyframes pmArr{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
   @media (prefers-reduced-motion: reduce){.pm-glow,.pm-flow,.pm-trainbob,.pm-st.pm-arrive .pm-lift{animation:none}}
   html.pe-metro .pm-head{background:linear-gradient(100deg,#e9ecef,#f8f9fa 60%,#fff)}
+  html.pe-winter .pm-sea:not(.pm-metro){background:linear-gradient(#cfe6f2,#9ccbe0)}
+  html.pe-winter:not(.pe-metro) .pm-head{background:linear-gradient(100deg,#cfe6f2,#e6f2f9 55%,#f6fafd)}
+  html.pe-winter .pm-float::after{background:radial-gradient(closest-side, rgba(90,140,170,.24), rgba(90,140,170,.08) 60%, rgba(90,140,170,0))}
   #pe-ticket{position:fixed; inset:0; z-index:2147483600; background:rgba(15,20,35,.55); display:flex; align-items:center; justify-content:center; padding:16px; font-family:'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif}
   .pm-tk-box{position:relative; overflow:hidden; background:#fff; border-radius:22px; padding:22px 22px 18px; width:min(460px,100%); text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.35); animation:pmPop .45s cubic-bezier(.2,1.4,.4,1)}
   @keyframes pmPop{from{transform:scale(.6); opacity:0}to{transform:scale(1); opacity:1}}
@@ -2382,7 +2407,7 @@ body{padding-bottom:64px}
     if (e.key === 'Escape') document.querySelectorAll('.pe-map').forEach(closePanel);
   });
   let queued = false;
-  function refresh() { queued = false; document.documentElement.classList.toggle('pe-mapview', isMapV(getView())); document.documentElement.classList.toggle('pe-metro', isMetro()); CONFIGS.forEach(c => { try { build(c); } catch (err) { console.warn('PE115Map', c.key, err); } }); DCONFIGS.forEach(c => { try { buildDistrict(c); } catch (err) { console.warn('PE115Map.district', c.key, err); } });
+  function refresh() { queued = false; document.documentElement.classList.toggle('pe-mapview', isMapV(getView())); document.documentElement.classList.toggle('pe-metro', isMetro()); document.documentElement.classList.toggle('pe-winter', WINTER); CONFIGS.forEach(c => { try { build(c); } catch (err) { console.warn('PE115Map', c.key, err); } }); DCONFIGS.forEach(c => { try { buildDistrict(c); } catch (err) { console.warn('PE115Map.district', c.key, err); } });
     try { tidyTick(); } catch (err) {} try { crumbTick(); } catch (err) {} try { headTick(); } catch (err) { console.warn('PE115Map.head', err); } }
   const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(refresh); } };
   let lastMode = window.innerWidth < 700;
@@ -2427,17 +2452,18 @@ body{padding-bottom:64px}
     const narrow = w < 700, W = narrow ? 640 : 1600, H = 260, ix = narrow ? 500 : 1330, iy = 150;
     const c = toHex(cfg.color()), kind = cfg.kind();
     let s = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs>
-      <linearGradient id="pmSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eaf6f8" stop-opacity="0"/><stop offset=".45" stop-color="#d6eff2" stop-opacity=".7"/><stop offset="1" stop-color="#a9dbe3"/></linearGradient>
+      <linearGradient id="pmSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${WINTER ? '#eef5fa' : '#eaf6f8'}" stop-opacity="0"/><stop offset=".45" stop-color="${WINTER ? '#dcebf4' : '#d6eff2'}" stop-opacity=".7"/><stop offset="1" stop-color="${WINTER ? '#b8d7e8' : '#a9dbe3'}"/></linearGradient>
       <filter id="pmSoft"><feColorMatrix type="saturate" values="0.45"/></filter></defs>
       <rect width="${W}" height="${H}" fill="url(#pmSky)"/>
       <g class="pm-art" filter="url(#pmSoft)">`;
     const r = rng(11); for (let i = 0; i < W / 40; i++) { const x = r() * W, y = 150 + r() * 100, ww = 10 + r() * 14; s += `<path d="M${f1(x)},${f1(y)}q${f1(ww / 2)},-4 ${f1(ww)},0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/>`; }
-    const islet = (x, y, k) => `<g transform="translate(${x},${y}) scale(${k})"><ellipse cx="0" cy="18" rx="70" ry="22" fill="#efe3c4"/><ellipse cx="0" cy="12" rx="56" ry="17" fill="#c4e5aa"/>${tree(-18, 12, 1)}${tree(16, 16, 0.8, '#6ab04c')}${pine(2, 6, 0.9)}</g>`;
+    const islet = (x, y, k) => `<g transform="translate(${x},${y}) scale(${k})"><ellipse cx="0" cy="18" rx="70" ry="22" fill="${WINTER ? '#e3edf3' : '#efe3c4'}"/><ellipse cx="0" cy="12" rx="56" ry="17" fill="${GRASS[1]}"/>${tree(-18, 12, 1)}${tree(16, 16, 0.8, '#6ab04c')}${pine(2, 6, 0.9)}</g>`;
     s += narrow ? islet(120, 150, 0.55) : islet(330, 150, 0.6) + islet(760, 140, 0.5);
     s += `<line x1="${narrow ? 40 : 90}" y1="232" x2="${ix - 70}" y2="232" stroke="#fff" stroke-width="3" stroke-dasharray="2 12" stroke-linecap="round" opacity=".9"/>`;
     s += `<g transform="translate(${ix},${iy}) scale(${narrow ? 0.62 : 0.78})">${islandSVG(kind, c, 92, false).replace(/<ellipse class="pm-ring"[^>]*\/>/, '')}</g>`;
     s += `</g><g class="pm-boatpos"><g transform="translate(0,226)"><ellipse cx="0" cy="8" rx="20" ry="4" fill="rgba(10,50,70,.15)"/><path d="M-17,0h34l-6,8h-22z" fill="#fff"/><path d="M-17,0h34l-1.5,2.5h-31z" fill="${c}" opacity=".7"/>
       <line x1="0" y1="0" x2="0" y2="-28" stroke="#6b7c85" stroke-width="1.5"/><path d="M1,-27l14,22h-14z" fill="#fff"/><path d="M-1,-21l-10,16h10z" fill="#f1f3f5"/><path d="M0,-28l9,3l-9,3z" fill="${c}"/></g></g></svg>`;
+    if (WINTER) s = s.replace('</svg>', snowSVG(0, 0, W, H, 31, narrow ? 24 : 60) + '</svg>');
     return { svg: s, x0: narrow ? 40 : 90, x1: ix - 100 };
   }
   function sceneTick() {
@@ -2632,6 +2658,7 @@ body{padding-bottom:64px}
     add(cfg) { CONFIGS.push(cfg); schedule(); }, district(cfg) { DCONFIGS.push(cfg); schedule(); }, scene(cfg) { SCENE = cfg; sceneSchedule(); }, refresh: schedule, kinds: Object.keys(L) };
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
+
 </script>
 <script id="pe115-map-config">
 /* 英文：首頁課次卡片 → 島嶼（第二次 L3 找水的鳥・L4 YouTuber 攝影棚・R2 字母積木；第三次 L5 街上商店・L6 交通與問路・R3 字母積木；模擬段考） */

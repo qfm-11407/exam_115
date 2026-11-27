@@ -165,6 +165,10 @@ html.pv body{padding-top:34px}
 :root{ --sea1:#8fd6df; --sea2:#5cb8c9; --shallow:#b9ece9; --map-ink:#1f2433 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --sea1:#2a6676; --sea2:#173f4d; --shallow:#3d8a93 } }
 :root[data-theme="dark"]{ --sea1:#2a6676; --sea2:#173f4d; --shallow:#3d8a93 }
+/* ❄️ 冬季雪國（第三次段考的島嶼版） */
+:root.hub-winter{ --sea1:#cfe6f2; --sea2:#9ccbe0; --shallow:#eaf5fb }
+@media (prefers-color-scheme: dark){ :root.hub-winter:not([data-theme="light"]){ --sea1:#3e6475; --sea2:#223f4e; --shallow:#6f93a3 } }
+:root.hub-winter[data-theme="dark"]{ --sea1:#3e6475; --sea2:#223f4e; --shallow:#6f93a3 }
 .view-tg{display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--card)}
 .view-tg button{border:0; background:transparent; color:var(--muted); padding:8px 14px; cursor:pointer; font-weight:600}
 .view-tg button[aria-pressed="true"]{background:var(--accent); color:#fff}
@@ -174,6 +178,7 @@ html.pv body{padding-top:34px}
 @media (max-width:700px){ .map-tools .tl{display:none} }
 .mline{cursor:pointer; outline:none} .mline:hover > path:nth-child(3), .mline:focus-visible > path:nth-child(3), .mline.sel > path:nth-child(3){stroke-width:16}
 .mline:focus-visible > path:nth-child(2){stroke:#1f2433}
+.mbranch:hover > path:nth-child(3), .mbranch:focus-visible > path:nth-child(3), .mbranch.sel > path:nth-child(3){stroke-width:10}
 .wallet-grid{display:grid; gap:10px; margin-top:10px; grid-template-columns:repeat(auto-fill,minmax(270px,1fr))} .wallet-sum{font-weight:800; color:var(--muted); margin:0}
 .tk{display:flex; text-align:left; border-radius:14px; overflow:hidden; box-shadow:0 4px 14px rgba(0,0,0,.12); background:#fffdf5; border:2px solid var(--tc); color:#1f2433}
 .tk.empty{background:#f8f9fa; border-style:dashed; box-shadow:none; opacity:.85} .tk.empty .tk-stub{background:#ced4da}
@@ -278,8 +283,9 @@ footer{margin:40px 0 30px; color:var(--muted); font-size:.85rem; text-align:cent
         <li>點站名時，列車會先開到那一站再進站；進站後是<b>車站平面圖</b>，小單元是「出口 1、2、3…」，服務台就是本課看板。</li>
         <li>拿到 ★ 的站會<b>亮燈</b>，相鄰兩站都亮燈，那一段軌道才會通車變成實線。</li>
         <li>一條線每一站都亮燈，就獲得<b>🎫 全線通車紀念票</b>，在入口地圖右上角的「🎫 票夾」可以看收集了幾張。</li>
-        <li>數學線下方有一條<b>🎬 動畫支線</b>：單元動畫每集一站，點站就播放，看過的站會亮燈，九集都看完可以得到支線紀念票。</li>
+        <li>數學線下方有一條<b>🎬 動畫支線</b>：單元動畫每集一站（這張入口地圖上是 1～9 的方塊），進數學頁點站就播放，看過的站會亮燈，九集都看完可以得到支線紀念票。動畫支線只在捷運版出現。</li>
       </ul>
+      <p class="guide-lead">❄️ 第三次段考的島嶼版是<b>冬季雪國</b>：結冰的海、積雪的島、企鵝浮冰和飄雪，玩法跟第二次段考的島嶼一樣。</p>
       <h3>📍 迷路了怎麼辦？</h3>
       <p>每一頁左下角都有<b>位置列</b>，例如「🌏 全景 › 國文島 › 第四課 愛蓮說 街區 › 注釋」。點其中任何一段，就回到那一層。</p>
       <h3>⭐ 星星與練習等級</h3>
@@ -381,7 +387,7 @@ const PAGES = [
   { exam: 3, subject: 'english', stations: ['Lesson 5', 'Lesson 6', 'Review 3', '*模擬段考'], file: 'english1150103.html', status: 'ready',
     title: '課文闖關', range: 'Lesson 5・Lesson 6・Review 3',
     tags: ['字彙', '文法', '看地圖問路', '翻譯', '改寫', '閱讀'] },
-  { exam: 3, subject: 'math', stations: ['4-1 因式分解法', '4-2 配方法與公式解', '4-3 應用問題', '5-1 相對次數', '5-2 累積次數', '5-3 累積相對次數', '第4章 總習題', '第5章 總習題', '*魔王關'], file: 'math1150103.html', status: 'ready',
+  { exam: 3, subject: 'math', stations: ['4-1 因式分解法', '4-2 配方法與公式解', '4-3 應用問題', '5-1 相對次數', '5-2 累積次數', '5-3 累積相對次數', '第4章 總習題', '第5章 總習題', '*魔王關'], branch: { name: '動畫支線', code: 'A', icon: '🎬', color: '#f08c00', n: 9 }, file: 'math1150103.html', status: 'ready',
     title: '數學闖關基地', range: '4-1 因式分解法解一元二次方程式 ～ 第 5 章 統計資料處理',
     tags: ['課本例題', '習作', '速測', '章末總習題', '魔王關'] },
   { exam: 3, subject: 'science', stations: ['第5章 溫度與熱', '第6章 探索物質組成', '*段考模擬', '習作練習'], file: 'science1150103.html', status: 'ready',
@@ -577,13 +583,19 @@ function cone(x, y, r, h, col, z0 = 0) {
   return poly([[x - r, yb], [x, yb - h], [x, yb + r * 0.35]], shade(col, 0.12)) + poly([[x, yb + r * 0.35], [x, yb - h], [x + r, yb]], shade(col, -0.18));
 }
 const shadow = (x, y, rx) => `<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="${f1(rx)}" ry="${f1(rx * 0.45)}" fill="rgba(30,60,40,.18)"/>`;
+let WIN_ = false;   // 冬季雪國：第三次段考的島嶼版（islandMap 設定）
 function tree(x, y, s = 1, col = '#5fa35a') {
+  if (WIN_) { if (col === '#5fa35a') col = '#4f8467'; else if (col === '#6ab04c') col = '#5b8f6e'; }
+  return treeBase(x, y, s, col) + (WIN_ ? `<ellipse cx="${f1(x - 1 * s)}" cy="${f1(y - 21.5 * s)}" rx="${f1(7.2 * s)}" ry="${f1(3.6 * s)}" fill="#fff"/><ellipse cx="${f1(x + 4.5 * s)}" cy="${f1(y - 17.5 * s)}" rx="${f1(4 * s)}" ry="${f1(2 * s)}" fill="#fff" opacity=".9"/>` : '');
+}
+function treeBase(x, y, s, col) {
   return shadow(x + 3, y, 9 * s) + `<rect x="${f1(x - 1.6 * s)}" y="${f1(y - 9 * s)}" width="${f1(3.2 * s)}" height="${f1(9 * s)}" fill="#8b5e3c"/>` +
     `<circle cx="${f1(x)}" cy="${f1(y - 15 * s)}" r="${f1(9 * s)}" fill="${col}"/>` +
     `<circle cx="${f1(x + 2.5 * s)}" cy="${f1(y - 13 * s)}" r="${f1(6.5 * s)}" fill="${shade(col, -0.15)}"/>` +
     `<circle cx="${f1(x - 3 * s)}" cy="${f1(y - 18 * s)}" r="${f1(4.5 * s)}" fill="${shade(col, 0.2)}"/>`;
 }
-const pine = (x, y, s = 1, col = '#3f8f5a') => shadow(x + 2, y, 7 * s) + `<rect x="${f1(x - 1.3 * s)}" y="${f1(y - 6 * s)}" width="${f1(2.6 * s)}" height="${f1(6 * s)}" fill="#7a4f2e"/>` + cone(x, y - 5 * s, 8 * s, 24 * s, col);
+const pine = (x, y, s = 1, col = '#3f8f5a') => shadow(x + 2, y, 7 * s) + `<rect x="${f1(x - 1.3 * s)}" y="${f1(y - 6 * s)}" width="${f1(2.6 * s)}" height="${f1(6 * s)}" fill="#7a4f2e"/>` + cone(x, y - 5 * s, 8 * s, 24 * s, WIN_ && col === '#3f8f5a' ? '#3d6f5a' : col)
+  + (WIN_ ? poly([[x - 3.8 * s, y - 18 * s], [x, y - 29 * s], [x + 3.8 * s, y - 18 * s], [x + 1.5 * s, y - 19.5 * s], [x - 1 * s, y - 17.5 * s]], '#fff') + poly([[x - 6 * s, y - 9 * s], [x - 3 * s, y - 12 * s], [x - 1 * s, y - 9.5 * s]], '#fff', 'opacity=".85"') : '');
 const SHIRTS = ['#f08c00', '#1c7ed6', '#e64980', '#37b24d', '#7950f2', '#fab005', '#f8f9fa'];
 function person(x, y, i) {
   const c = SHIRTS[i % SHIRTS.length];
@@ -710,10 +722,11 @@ function islandSVG(id, R, anim) {
     [[0, 1], [1, 2], [2, 3]].forEach(([i, j], k) => { s += poly([[h[i][0], h[i][1] + y0], [h[j][0], h[j][1] + y0], [h[j][0], h[j][1] + y1], [h[i][0], h[i][1] + y1]], cols[k]); }); return s; };
   let s = `<ellipse cx="6" cy="${T + 14}" rx="${f1(R * 1.18)}" ry="${f1(R * 0.62)}" fill="rgba(10,50,70,.18)"/>`;
   s += poly(hex(R + 20, T + 2), 'rgba(255,255,255,.35)');
-  s += sides(R + 11, T - 8, T + 2, ['#d8c69f', '#c9b58b', '#e2d3b0']) + poly(hex(R + 11, T - 8), '#efe3c4');
+  const SAND = WIN_ ? ['#c3d3de', '#b2c4d1', '#d3e0e8', '#e6eef4'] : ['#d8c69f', '#c9b58b', '#e2d3b0', '#efe3c4'];
+  s += sides(R + 11, T - 8, T + 2, SAND.slice(0, 3)) + poly(hex(R + 11, T - 8), SAND[3]);
   s += sides(R, 0, 9, [shade(c, -0.25), shade(c, -0.05), shade(c, 0.12)]);
   s += sides(R, 9, T - 7, ['#a99f8e', '#bdb4a3', '#d0c8b8']);
-  s += poly(hex(R), '#b7dc9e') + poly(hex(R * 0.93), '#c4e5aa');
+  s += poly(hex(R), WIN_ ? '#eef5fb' : '#b7dc9e') + poly(hex(R * 0.93), WIN_ ? '#fbfdff' : '#c4e5aa');
   s += poly(hex(R * 0.6, 6), shade(c, 0.82), `stroke="${shade(c, 0.55)}" stroke-width="1.5"`);
   s += `<ellipse class="ring" cx="0" cy="${T / 2}" rx="${f1(R * 1.22)}" ry="${f1(R * 0.66)}" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="10 8"/>`;
   return s + LANDMARK[id](c, anim);
@@ -735,7 +748,17 @@ function labelSVG(no, s, p, lv, y) {
 
 const cloud = (x, y, s = 1) => `<g transform="translate(${x},${y}) scale(${s})" fill="#fff" opacity=".92">
   <ellipse cx="0" cy="0" rx="34" ry="16"/><ellipse cx="-26" cy="6" rx="22" ry="12"/><ellipse cx="28" cy="6" rx="24" ry="12"/><ellipse cx="6" cy="-10" rx="20" ry="13"/></g>`;
+const floe = (x, y, i) => `<g transform="translate(${x},${y})"><g class="boat" style="animation-delay:-${i * 5}s;animation-duration:30s"><path d="M-22,2 l8,-6 h22 l10,5 l-6,6 h-28z" fill="#fff" stroke="#b9d9ea" stroke-width="1.5"/><path d="M-22,2 l6,6 h28 l6,-6" fill="#d7ebf5"/>
+  <g transform="translate(-2,-2)"><ellipse cx="0" cy="-8" rx="5" ry="8" fill="#22313f"/><ellipse cx="0.8" cy="-6.5" rx="3" ry="5.6" fill="#fff"/><circle cx="1.6" cy="-13" r="0.9" fill="#22313f"/><path d="M3.5,-12 l3,1 l-3,1z" fill="#f59f00"/><path d="M-2,0 h3 M1,0 h3" stroke="#f59f00" stroke-width="1.6"/></g></g></g>`;
+/* 飄雪：由上往下飄，「減少動態效果」時靜止 */
+function snowSVG(w, h, seed, n) {
+  const r = rng(seed), mv = !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches); let s = '<g pointer-events="none">';
+  for (let i = 0; i < n; i++) { const x = r() * w, y = r() * h, rr = 1.6 + r() * 3, d = 7 + r() * 9, dx = (r() - 0.5) * 60;
+    s += `<circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(rr)}" fill="#fff" opacity="${(0.65 + r() * 0.35).toFixed(2)}">${mv ? `<animateTransform attributeName="transform" type="translate" values="0 ${f1(-h * 0.35)};${f1(dx)} ${f1(h * 0.65)}" dur="${d.toFixed(1)}s" begin="-${(r() * d).toFixed(1)}s" repeatCount="indefinite"/>` : ''}</circle>`; }
+  return s + '</g>';
+}
 function boat(x, y, col, i) {
+  if (WIN_) return floe(x, y, i);
   return `<g transform="translate(${x},${y})"><g class="boat" style="animation-delay:-${i * 5}s">
     <ellipse cx="0" cy="6" rx="16" ry="4" fill="rgba(10,50,70,.2)"/><path d="M-14,0h28l-5,7h-18z" fill="#fff"/><path d="M-14,0h28l-1.5,2h-25z" fill="${col}"/>
     <line x1="0" y1="0" x2="0" y2="-24" stroke="#555" stroke-width="1.4"/><path d="M1,-23l12,19h-12z" fill="#fff"/><path d="M-1,-18l-9,15h9z" fill="#f1f3f5"/></g></g>`;
@@ -747,7 +770,8 @@ function islandMap(e, list) {
   const anim = !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   const byId = Object.fromEntries(list.map(p => [p.subject, p]));
   const rand = rng(115);
-  let s = `<svg viewBox="0 0 ${L.w} ${L.h}" role="img" aria-label="${e.name}島嶼地圖：點選島嶼進入各科練習">
+  WIN_ = e.n === 3; document.documentElement.classList.toggle('hub-winter', WIN_);
+  let s = `<svg viewBox="0 0 ${L.w} ${L.h}" role="img" aria-label="${e.name}${WIN_ ? '冬季雪國' : '島嶼'}地圖：點選島嶼進入各科練習">
   <defs>
     <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sea1)"/><stop offset="1" style="stop-color:var(--sea2)"/></linearGradient>
     <linearGradient id="beam" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#fff3bf" stop-opacity="1"/><stop offset="1" stop-color="#fff3bf" stop-opacity="0"/></linearGradient>
@@ -757,10 +781,11 @@ function islandMap(e, list) {
   /* 海浪 */
   for (let i = 0; i < (L.w * L.h) / 9000; i++) {
     const x = rand() * L.w, y = rand() * L.h, w = 10 + rand() * 12;
-    s += `<path class="wave" style="animation-delay:-${(rand() * 4).toFixed(1)}s" d="M${f1(x)},${f1(y)}q${f1(w / 2)},-5 ${f1(w)},0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`;
+    s += WIN_ ? `<path class="wave" style="animation-delay:-${(rand() * 4).toFixed(1)}s" d="M${f1(x)},${f1(y)}l${f1(w * 0.4)},-3l${f1(w * 0.6)},2l-${f1(w * 0.3)},3z" fill="#fff" opacity=".9"/>`
+      : `<path class="wave" style="animation-delay:-${(rand() * 4).toFixed(1)}s" d="M${f1(x)},${f1(y)}q${f1(w / 2)},-5 ${f1(w)},0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`;
   }
   /* 淺灘：同一群島的島嶼周圍 */
-  MAP_GROUPS.forEach(g => g.ids.forEach(id => { const [x, y] = L.pos[id]; s += `<ellipse cx="${x}" cy="${y + 30}" rx="${f1(R * 1.75)}" ry="${f1(R * 0.95)}" style="fill:var(--shallow)" opacity=".55"/>`; }));
+  MAP_GROUPS.forEach(g => g.ids.forEach(id => { const [x, y] = L.pos[id]; s += `<ellipse cx="${x}" cy="${y + 30}" rx="${f1(R * 1.75)}" ry="${f1(R * 0.95)}" style="fill:var(--shallow)" opacity="${WIN_ ? '.75' : '.55'}"/>`; }));
   Object.entries(L.groupLabel).forEach(([name, [x, y]]) => {
     s += `<text x="${x}" y="${y}" text-anchor="middle" font-size="22" font-weight="800" fill="#fff" opacity=".9" letter-spacing="6" style="paint-order:stroke" stroke="rgba(20,80,100,.35)" stroke-width="4">${name}</text>`;
   });
@@ -774,6 +799,7 @@ function islandMap(e, list) {
     s += poly([[A[0] + nx, A[1] + ny + 6], [B[0] + nx, B[1] + ny + 6], [B[0] + nx, B[1] + ny], [A[0] + nx, A[1] + ny]], '#9c7652');
     s += poly([[A[0] + nx, A[1] + ny], [B[0] + nx, B[1] + ny], [B[0] - nx, B[1] - ny], [A[0] - nx, A[1] - ny]], '#d7b07f');
     for (let t = 0; t <= 1; t += 12 / len) { const px = x1 + dx * t, py = y1 + Y + dy * t; s += `<line x1="${f1(px + nx)}" y1="${f1(py + ny)}" x2="${f1(px - nx)}" y2="${f1(py - ny)}" stroke="#b68c5d" stroke-width="1.2"/>`; }
+    if (WIN_) s += poly([[A[0] + nx * 0.6, A[1] + ny * 0.6], [B[0] + nx * 0.6, B[1] + ny * 0.6], [B[0] - nx * 0.2, B[1] - ny * 0.2], [A[0] - nx * 0.2, A[1] - ny * 0.2]], '#fff', 'opacity=".85"');
     [1, -1].forEach(k => { s += `<line x1="${f1(A[0] - nx * k)}" y1="${f1(A[1] - ny * k - 9)}" x2="${f1(B[0] - nx * k)}" y2="${f1(B[1] - ny * k - 9)}" stroke="#7a5534" stroke-width="2"/>`;
       for (let t = 0; t <= 1.001; t += 0.125) { const px = x1 + dx * t - nx * k, py = y1 + Y + dy * t - ny * k; s += `<line x1="${f1(px)}" y1="${f1(py)}" x2="${f1(px)}" y2="${f1(py - 9)}" stroke="#7a5534" stroke-width="2"/>`; } });
   });
@@ -793,11 +819,11 @@ function islandMap(e, list) {
   const open = list.filter(p => p.status === 'ready');
   const rated = open.filter(p => (levelOf(p.file, subj(p.subject).part) || {}).stars > 0).length;
   s += `<g transform="translate(${hx},${hy})">
-    <ellipse cx="4" cy="16" rx="58" ry="22" fill="rgba(10,50,70,.18)"/><ellipse cx="0" cy="8" rx="54" ry="22" fill="#efe3c4"/><ellipse cx="0" cy="4" rx="40" ry="15" fill="#f6edd4"/>
+    <ellipse cx="4" cy="16" rx="58" ry="22" fill="rgba(10,50,70,.18)"/><ellipse cx="0" cy="8" rx="54" ry="22" fill="${WIN_ ? '#e6eef4' : '#efe3c4'}"/><ellipse cx="0" cy="4" rx="40" ry="15" fill="${WIN_ ? '#fbfdff' : '#f6edd4'}"/>
     ${tree(-26, 4, 0.8)}${tree(28, 8, 0.7, '#6ab04c')}
     <line x1="0" y1="4" x2="0" y2="-34" stroke="#7a5534" stroke-width="4"/>
     <rect x="-110" y="-112" width="220" height="80" rx="14" fill="#fff" stroke="${'#e03131'}" stroke-width="4"/>
-    <text x="0" y="-90" text-anchor="middle" font-size="13" font-weight="800" fill="#e03131" letter-spacing="3">${e.stage}</text>
+    <text x="0" y="-90" text-anchor="middle" font-size="13" font-weight="800" fill="#e03131" letter-spacing="3">${WIN_ ? '❄ ' + e.stage + ' ❄' : e.stage}</text>
     <text x="0" y="-65" text-anchor="middle" font-size="25" font-weight="900" fill="#1f2433">${e.name}</text>
     <text x="0" y="-44" text-anchor="middle" font-size="13" font-weight="700" fill="#1971c2">👆 點島嶼直接出發・已評級 ${rated} / ${open.length} 科</text></g>`;
   /* 島嶼：由後往前畫（y 小的先畫） */
@@ -813,6 +839,7 @@ function islandMap(e, list) {
         ${labelSVG(i + 1, sj, p, lv, R * 0.5 + 26 + 30)}
       </g></g></g>`;
   });
+  if (WIN_) s += snowSVG(L.w, L.h, 31, Math.round(L.w * L.h / 14000));
   return s + '</svg>';
 }
 
@@ -841,8 +868,13 @@ function along(pts, m, d0) {
 }
 function metroMap(e, list) {
   const byId = Object.fromEntries(list.map(p => [p.subject, p])), tk = jget('pe115:tickets'), tall = mapMode() === 'tall';
+  WIN_ = false; document.documentElement.classList.remove('hub-winter');
   const lines = {}; SUBJECTS.forEach(sj => { const p = byId[sj.id]; if (!p) return; lines[sj.id] = { sj, p, st: lineStations(e.n, p), c: ISLE_COLOR[sj.id], ready: p.status === 'ready', tk: tk[e.n + '|' + sj.id] }; });
-  const W = tall ? 640 : 1200, H = tall ? 200 + Object.keys(lines).length * 128 + 110 : 790;
+  /* 🎬 支線（目前只有數學動畫支線）：讀數學頁存的 pe115:lines 的 br；沒去過時用 PAGES 的 branch 顯示集數 */
+  const BRH = (() => { const L_ = lines.math; if (!L_ || !L_.ready) return null; const rec = jget('pe115:lines')[e.n + '|math'];
+    if (rec && rec.br && rec.br.st && rec.br.st.length) return { ...rec.br, st: rec.br.st.map(([nm, lit]) => ({ nm, lit: !!lit })) };
+    const b = L_.p.branch; return b && b.n ? { name: b.name, code: b.code, icon: b.icon, color: b.color, st: Array.from({ length: b.n }, (_, k) => ({ nm: '第 ' + (k + 1) + ' 集', lit: false })) } : null; })();
+  const W = tall ? 640 : 1200, H = tall ? 200 + Object.keys(lines).length * 128 + 110 + (BRH ? 64 : 0) : 790;
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${e.name}捷運路線圖：點路線進入各科練習">
     <defs><pattern id="mgrid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40,0H0V40" fill="none" stroke="#edf0f3" stroke-width="1"/></pattern></defs>
     <rect width="${W}" height="${H}" fill="#fbfcfd"/><rect width="${W}" height="${H}" fill="url(#mgrid)"/>`;
@@ -857,7 +889,7 @@ function metroMap(e, list) {
     /* 社會轉乘通道 */
     s += `<path d="M${C[0]},${C[1]} L${T[0]},${T[1]}" stroke="#fff" stroke-width="22"/><path d="M${C[0]},${C[1]} L${T[0]},${T[1]}" stroke="#868e96" stroke-width="10"/>`;
   } else {
-    let y = 200; SUBJECTS.forEach(sj => { const L_ = lines[sj.id]; if (!L_) return; const pts = [[150, y], [604, y]]; geo[sj.id] = { pts, st: along(pts, L_.st.length, 70), row: y }; y += 128; });
+    let y = 200; SUBJECTS.forEach(sj => { const L_ = lines[sj.id]; if (!L_) return; const pts = [[150, y], [604, y]]; geo[sj.id] = { pts, st: along(pts, L_.st.length, 70), row: y }; y += 128 + (sj.id === 'math' && BRH ? 64 : 0); });
     const ys = Object.values(geo).map(g => g.row); s += `<path d="M92,96 L92,${Math.max(...ys)}" stroke="#fff" stroke-width="20"/><path d="M92,96 L92,${Math.max(...ys)}" stroke="#868e96" stroke-width="8"/>`;
     Object.values(geo).forEach(g => { s += `<path d="M92,${g.row} L150,${g.row}" stroke="#868e96" stroke-width="8"/>`; });
   }
@@ -881,16 +913,32 @@ function metroMap(e, list) {
         : st.lit ? `<circle r="12" fill="${c}" stroke="#fff" stroke-width="3"/>` : `<circle r="9" fill="#fff" stroke="${c}" stroke-width="5"/>`;
       if (!tall && geo.idioms && id === 'chinese' && k === 1) s += `<rect x="-17" y="-12" width="34" height="24" rx="12" fill="#fff" stroke="#1f2433" stroke-width="3"/>`;
       const t0 = String(st.nm).split(/\s+/), nm = tall ? (t0.length > 1 && !/^[A-Za-z]+$/.test(t0[0]) ? t0[0] : cutS(st.nm, /^[\x00-\xff]+$/.test(st.nm) ? 9 : 5)) : cutS(st.nm, 9), fs = tall ? 15 : 13.5;
-      const tx = side === 'r' ? 20 : side === 'l' ? -20 : 0, ty = side === 'up' ? -(big ? 24 : 18) : side === 'down' ? (big ? 34 : 28) : 5;
-      s += `<text x="${tx}" y="${ty}" font-size="${fs}" font-weight="700" text-anchor="${side === 'r' ? 'start' : side === 'l' ? 'end' : 'middle'}" fill="${L_.ready ? '#212529' : '#adb5bd'}">${esc(nm)}</text></g>`; });
+      if (BRH && !tall && id === 'math' && k === 0) side = 'dl';   // 支線從第 1 站往下接出，站名移到左下
+      const tx = side === 'r' ? 20 : side === 'l' ? -20 : side === 'dl' ? -10 : 0, ty = side === 'up' ? -(big ? 24 : 18) : side === 'down' || side === 'dl' ? (big ? 34 : 28) : 5;
+      s += `<text x="${tx}" y="${ty}" font-size="${fs}" font-weight="700" text-anchor="${side === 'r' ? 'start' : side === 'l' || side === 'dl' ? 'end' : 'middle'}" fill="${L_.ready ? '#212529' : '#adb5bd'}">${esc(nm)}</text></g>`; });
     /* 路線牌 */
-    const [bx, by] = tall ? [20, g.row] : { chinese: [70, 322], idioms: [70, 178], english: [520, 70], math: [990, 494], science: [700, 172], civics: [300, 735], history: [520, 765], geography: [880, 735] }[id] || g.pts[g.pts.length - 1];
+    const [bx, by] = tall ? [20, g.row] : { chinese: [70, 322], idioms: [70, 178], english: [520, 70], math: BRH ? [960, 322] : [990, 494], science: [700, 172], civics: [300, 735], history: [520, 765], geography: [880, 735] }[id] || g.pts[g.pts.length - 1];
     const lv = levelOf(L_.p.file, L_.sj.part);
     if (tall) s += `<rect x="${bx}" y="${by - 20}" width="40" height="40" rx="10" fill="${c}"/><text x="${bx + 20}" y="${by + 8}" font-size="22" font-weight="900" text-anchor="middle" fill="#fff">${LINE_CODE[id]}</text>
       <text x="${bx}" y="${by + 40}" font-size="13" font-weight="800" fill="${L_.ready ? '#495057' : '#adb5bd'}">${esc(L_.sj.name)}線</text>`;
     else s += `<g transform="translate(${bx},${by})"><rect x="-16" y="-14" width="28" height="28" rx="7" fill="${c}"/><text x="-2" y="6" font-size="16" font-weight="900" text-anchor="middle" fill="#fff">${LINE_CODE[id]}</text>
       <text x="18" y="6" font-size="15" font-weight="800" fill="${L_.ready ? '#343a40' : '#adb5bd'}">${esc(L_.sj.name)}線</text>${allLit ? `<text x="${f1(24 + twS(L_.sj.name + '線', 15))}" y="6" font-size="15">🎫</text>` : lv && lv.stars ? `<text x="${f1(24 + twS(L_.sj.name + '線', 15))}" y="5" font-size="12" fill="#f59f00" letter-spacing="1">${starStr(lv.stars)}</text>` : ''}</g>`;
     s += `</g>`; });
+  /* 🎬 支線：從數學線第 1 站接出，每集一個方塊站（看過就亮燈），點支線同樣進入數學頁 */
+  if (BRH && geo.math) { const g = geo.math, q0 = g.st[0], bc = BRH.color || '#f08c00', m = BRH.st.length, nl = BRH.st.filter(x => x.lit).length, btk = tk[e.n + '|math-' + (BRH.code || 'A')];
+    const pts = tall ? [[g.pts[0][0], g.row], [g.pts[0][0], g.row + 64], [604, g.row + 64]] : [[q0.x, q0.y], [q0.x, 470], [1150, 470]];
+    const bs = along(pts, m, tall ? 64 + 50 : (470 - q0.y) + 40);
+    s += `<g class="isl mline mbranch${SEL === 'math' ? ' sel' : ''}" data-isl="math" tabindex="0" role="button" aria-label="${esc(BRH.name)}：已看 ${nl} / ${m} 集">`;
+    s += `<path d="${path(pts)}" fill="none" stroke="transparent" stroke-width="36"/><path d="${path(pts)}" fill="none" stroke="#fff" stroke-width="14" stroke-linejoin="round"/>`;
+    s += `<path d="${path(pts)}" fill="none" stroke="${shade(bc, 0.6)}" stroke-width="7" stroke-linejoin="round" stroke-dasharray="${btk ? '0' : '10 6'}"/>`;
+    if (btk) s += `<path d="${path(pts)}" fill="none" stroke="${bc}" stroke-width="7" stroke-linejoin="round"/>`;
+    bs.forEach((q, k) => { const lit = BRH.st[k].lit;
+      s += `<g transform="translate(${f1(q.x)},${f1(q.y)})"><title>${esc(BRH.st[k].nm)}${lit ? '（已看）' : ''}</title><rect x="-11" y="-11" width="22" height="22" rx="6" fill="${lit ? bc : '#fff'}" stroke="${bc}" stroke-width="3.5"/>
+        <text y="4.5" font-size="12" font-weight="900" text-anchor="middle" fill="${lit ? '#fff' : bc}">${k + 1}</text></g>`; });
+    const [lx, ly] = tall ? [20, g.row + 69] : [bs[0].x - 10, 506];
+    s += `<text x="${lx}" y="${ly}" font-size="${tall ? 13 : 14}" font-weight="800" fill="${shade(bc, -0.25)}">${BRH.icon || '🎬'} ${esc(BRH.name)}${tall ? '' : `<tspan font-weight="700" fill="#868e96">・已看 ${nl} / ${m} 集</tspan>`}${btk ? ' 🎫' : ''}</text>`;
+    if (tall) s += `<text x="20" y="${g.row + 86}" font-size="12" font-weight="700" fill="#868e96">${nl} / ${m} 集</text>`;
+    s += `</g>`; }
   /* 中央車站與轉乘站 */
   const [cx, cy] = tall ? [92, 96] : [600, 395], open = list.filter(p => p.status === 'ready'), nt = Object.keys(lines).filter(id => lines[id].tk).length;
   if (!tall) s += `<rect x="584" y="466" width="32" height="24" rx="12" fill="#fff" stroke="#1f2433" stroke-width="3"/><text x="626" y="484" font-size="13" font-weight="800" fill="#495057">社會轉乘</text>`;
