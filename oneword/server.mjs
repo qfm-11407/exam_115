@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import os from 'node:os';
 import { spawn } from 'node:child_process';
-import { idiomBank, drawIdiomQuestion } from './questions.mjs';
+import { idiomBank, drawIdiomQuestion, otherIdiomAnswers } from './questions.mjs';
 import { judgeCharacter } from './ai.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -60,7 +60,7 @@ export async function createArena(options = {}) {
     });
     return { code: room.code, title: room.title, mode: room.mode, points: room.points, serverTime: Date.now(), players: rows,
       round: round ? { id: round.id, number: room.rounds.length, prompt: round.prompt, phase: round.phase, deadline: round.deadline, seconds: round.seconds,
-        answer: revealed ? round.answer : null, idiom: revealed ? round.idiom||null : null, submitted: rows.filter(p => p.submitted).length } : null };
+        answer: revealed ? round.answer : null, accepted: revealed ? round.accepted || [] : undefined, idiom: revealed ? round.idiom||null : null, submitted: rows.filter(p => p.submitted).length } : null };
   }
   function adminState(room) {
     const state = publicState(room), round = current(room);
@@ -193,7 +193,7 @@ export async function createArena(options = {}) {
           }
           if (req.method !== 'POST') throw fail(405, '操作方式不正確');
           const round = current(room);
-          if (action === 'draw') { if (round && round.phase !== 'revealed') throw fail(409,'請先結束並揭曉目前題目'); room.draft={id:id(8),...drawIdiomQuestion()}; broadcast(room); return json(res,{room:adminState(room)}); }
+          if (action === 'draw') { if (round && round.phase !== 'revealed') throw fail(409,'請先結束並揭曉目前題目'); room.draft={id:id(8),...drawIdiomQuestion(Math.random, room.rounds.map(previous => previous.idiom))}; broadcast(room); return json(res,{room:adminState(room)}); }
           if (action === 'start') {
             const data = await body(req);
             if (round && round.phase !== 'revealed') throw fail(409, '請先截止並揭曉目前題目');
@@ -203,7 +203,8 @@ export async function createArena(options = {}) {
             const accepted = data.accepted || [];
             if (!Array.isArray(accepted) || accepted.length > 8 || !accepted.every(han)) throw fail(400, '每個允許字形都必須是一個國字');
             if (!Number.isInteger(data.seconds) || data.seconds < 10 || data.seconds > 180) throw fail(400, '作答時間須為 10～180 秒');
-            const next = { id: id(8), prompt:q.prompt,answer:q.answer,idiom:q.idiom,blankIndex:q.blankIndex,sourcePage:q.sourcePage,accepted, seconds: data.seconds, deadline: Date.now() + data.seconds * 1000, phase: 'writing', submissions: {} };
+            const validAnswers = [...new Set([...otherIdiomAnswers(q.idiom, q.blankIndex, q.answer), ...accepted])].filter(char => char !== q.answer);
+            const next = { id: id(8), prompt:q.prompt,answer:q.answer,idiom:q.idiom,blankIndex:q.blankIndex,sourcePage:q.sourcePage,accepted:validAnswers, seconds: data.seconds, deadline: Date.now() + data.seconds * 1000, phase: 'writing', submissions: {} };
             room.draft=null; room.rounds.push(next); timers.set(room.code, setTimeout(() => closeRound(room), data.seconds * 1000)); broadcast(room);
           } else if (action === 'close') closeRound(room);
           else if (action === 'reveal') {

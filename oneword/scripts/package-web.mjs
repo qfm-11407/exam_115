@@ -3,14 +3,14 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {deflateRawSync} from 'node:zlib';
 const root=fileURLToPath(new URL('../',import.meta.url));
-const files=['index.html','teacher.html','student.html','screen.html','style.css','app.js','canvas.js','transport.js','config.js','.nojekyll','README.md','DEPLOY_GAS.md','gas/Code.gs','gas/Bridge.html','gas/appsscript.json'];
+const files=['index.html','teacher.html','student.html','screen.html','style.css','screen-wall.css','app.js','canvas.js','transport.js','config.js','.nojekyll','README.md','DEPLOY_GAS.md','IDIOM-DICT-LICENSE.pdf','UPDATE_2.2.0.md','UPDATE_2.3.0.md','UPDATE_2.4.0.md','UPDATE_2.5.0.md','UPDATE_2.6.0.md','UPDATE_2.7.0.md','UPDATE_2.8.0.md','UPDATE_2.9.0.md','UPDATE_2.9.1.md','UPDATE_2.9.2.md','UPDATE_2.9.3.md','UPDATE_2.10.0.md','UPDATE_2.10.1.md','UPDATE_2.11.0.md','UPDATE_2.12.0.md','LOAD_TEST.md','LOAD_TEST_AI.md','TEST_GAS_AI_28.cmd','TEST_GAS_30.cmd','scripts/gas-ui-loadtest.mjs','gas/Code.gs','gas/Bridge.html','gas/Student.html','gas/appsscript.json'];
 const target=path.resolve(root,'github-upload');
 if(path.dirname(target)!==path.resolve(root))throw new Error('Unexpected package directory');
 await mkdir(path.join(target,'gas'),{recursive:true});
 async function inventory(dir,prefix=''){const out=[];for(const item of await readdir(dir,{withFileTypes:true})){const name=prefix+item.name;if(item.isDirectory())out.push(...await inventory(path.join(dir,item.name),name+'/'));else out.push(name);}return out;}
 for(const name of await inventory(target))if(!files.includes(name))throw new Error('Unexpected file in package directory: '+name);
 const entries=[];
-for(const name of files){const data=await readFile(path.join(root,name));await copyFile(path.join(root,name),path.join(target,name));entries.push({name,data});}
+for(const name of files){const data=await readFile(path.join(root,name));await mkdir(path.dirname(path.join(target,name)),{recursive:true});await copyFile(path.join(root,name),path.join(target,name));entries.push({name,data});}
 function crc32(bytes){let c=0xffffffff;for(const byte of bytes){c^=byte;for(let i=0;i<8;i++)c=c&1?(c>>>1)^0xedb88320:c>>>1;}return(c^0xffffffff)>>>0;}
 const chunks=[],directory=[];let offset=0;
 for(const {name,data} of entries){const filename=Buffer.from(name,'utf8'),compressed=deflateRawSync(data),crc=crc32(data),header=Buffer.alloc(30);header.writeUInt32LE(0x04034b50);header.writeUInt16LE(20,4);header.writeUInt16LE(0x800,6);header.writeUInt16LE(8,8);header.writeUInt16LE(33,12);header.writeUInt32LE(crc,14);header.writeUInt32LE(compressed.length,18);header.writeUInt32LE(data.length,22);header.writeUInt16LE(filename.length,26);chunks.push(header,filename,compressed);

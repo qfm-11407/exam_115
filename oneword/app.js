@@ -1,5 +1,5 @@
 import { InkPad } from './canvas.js';
-import { client, GASClient, saveBackend } from './transport.js?v=20261112-review-2123';
+import { client, GASClient, saveBackend } from './transport.js?v=20261127-idioms-2130';
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 const allowedStudentId = value => typeof value === 'string' && /^(?:14107(?:0[1-9]|1[0-5])|14207(?:1[6-9]|2[0-8]))$/.test(value);
@@ -68,7 +68,7 @@ function createWorkerPump({run,changed,error}){
   function scheduleRefresh(){clearTimeout(refreshTimer);const urgent=room?.round&&((room.automation?.enabled&&room.automation.status==='running')||room.round.pending>0||room.round.phase==='collecting'||(room.round.phase==='writing'&&remaining(room.round)<=8));refreshTimer=setTimeout(refresh,urgent?1500:3500);}
   let displayedQuestionId = null,autoSettingsRoom='',screenLayoutRoom='',screenLayoutDirty=false,screenLayoutSaving=false;
   let pendingCreateRoom='',replacementRequired=false,roomsLoaded=false,roomsLoading=false;
-  const webVersion = '2.12.3';
+  const webVersion = '2.13.0';
   const diagnostics = createTeacherDiagnostics();
   function createTeacherDiagnostics() {
     const prefix = 'oneword:teacher-diagnostics:1:';
@@ -311,7 +311,7 @@ function createWorkerPump({run,changed,error}){
   function showQuestion() {
     const ready=!room.round||room.round.phase==='revealed',q=ready?room.draft:room.round;
     $('question-prompt').value=q?.prompt||''; $('answer').value=q?.answer||'';
-    $('draw-info').textContent=q ? '已抽中「'+q.idiom+'」，挖空第 '+(q.blankIndex+1)+' 字。題庫 '+idiomCount+' 則，共 '+(idiomCount*4)+' 種題型；本場成語不重複。' : '按「隨機抽題」預覽下一題。';
+    $('draw-info').textContent=q ? '已抽中「'+q.idiom+'」，挖空第 '+(q.blankIndex+1)+' 字。題庫 '+idiomCount+' 則；本場成語不重複。' : '按「隨機抽題」預覽下一題。';
     if(q?.id!==displayedQuestionId){$('accepted').value=(q?.accepted||[]).join('，');displayedQuestionId=q?.id;}
   }
   function canManageRooms(){return Boolean(admin?.features?.roomManagement);}
@@ -334,7 +334,7 @@ function createWorkerPump({run,changed,error}){
     if(autoSettingsRoom!==room?.code){autoSettingsRoom=room?.code;$('auto-enabled').checked=true;$('auto-total').value='10';$('auto-reveal-seconds').value='8';}
     if(a?.enabled){$('auto-enabled').checked=true;$('auto-total').value=a.totalQuestions;$('auto-reveal-seconds').value=a.revealSeconds;$('seconds').value=a.seconds;}
     const selected=available&&$('auto-enabled').checked;
-    $('auto-enabled').disabled=!fresh||Boolean(room?.ended);$('auto-total').max=String(idiomCount||148);
+    $('auto-enabled').disabled=!fresh||Boolean(room?.ended);$('auto-total').max=String(admin?.maxQuestions || idiomCount || 148);
     for(const id of ['auto-total','auto-reveal-seconds'])$(id).disabled=!selected||!fresh||Boolean(room?.ended);
     $('auto-status').textContent=a?.enabled?sequenceText(room):fresh?'設定題數後按「開始整場自動測驗」，學生須先加入。':'本場以手動模式開始；整場自動測驗請另建新測驗。';
     $('pause-series').hidden=!a?.enabled||a.status!=='running'||Boolean(room.ended);
@@ -636,7 +636,7 @@ if (page === 'screen') {
     $('screen-room').textContent = state.code; $('screen-title').textContent = state.title; $('screen-round').textContent = round ? `第 ${String(round.number).padStart(2,'0')} 題` : '等待參賽者加入';
     $('screen-phase').textContent = phaseLabel(round); $('screen-prompt').textContent = round?.prompt || '每一筆，都是你的實力。'; $('screen-countdown').textContent = timerText(round);
     $('screen-timer-label').textContent = !round ? '準備落筆' : round.phase === 'writing' ? '秒後截止' : round.phase === 'collecting' ? '傳送緩衝中' : round.phase === 'closed' ? '作答已截止' : '結果已揭曉';
-    $('screen-subtitle').textContent = revealed ? `本題正解：${round.answer}${round.idiom ? ` · 完整成語：${round.idiom}` : ''}` : shown ? round.closeReason==='all-submitted'?'全員已交卷，等待教師統一揭曉對錯。':'作答已截止，等待教師統一揭曉對錯。' : round?.phase==='collecting' ? '作答時間到，正在接收延遲交卷；筆跡暫不公開。' : round ? '只寫一個字，寫好後請在平板按下送出。' : '請在平板開啟作答頁，輸入房號加入。';
+    $('screen-subtitle').textContent = revealed ? `本題正解：${round.answer}${round.idiom ? ` · 完整成語：${round.idiom}` : ''}${round.accepted?.length ? ` · 亦可填：${round.accepted.join('、')}` : ''}` : shown ? round.closeReason==='all-submitted'?'全員已交卷，等待教師統一揭曉對錯。':'作答已截止，等待教師統一揭曉對錯。' : round?.phase==='collecting' ? '作答時間到，正在接收延遲交卷；筆跡暫不公開。' : round ? '只寫一個字，寫好後請在平板按下送出。' : '請在平板開啟作答頁，輸入房號加入。';
     $('screen-progress').textContent = round ? `${round.submitted} / ${state.players.length} 人已交卷` : `${state.players.length} 人已加入`;
     $('screen-footer-hint').textContent = revealed ? '答對加 10 分 · 原始筆跡保留' : shown ? '點選筆跡圖片，可以放大查看' : '作答期間不公開筆跡與結果';
     $('screen-grid').innerHTML = visible.map(p => {

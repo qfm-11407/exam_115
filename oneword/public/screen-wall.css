@@ -1,0 +1,40 @@
+/* Fit the classroom wall to a landscape projector. Small screens retain scrolling cards. */
+@media (min-width:900px) and (min-height:600px) and (orientation:landscape){
+ .screen-body{--wall-cols:6;--wall-rows:4;min-height:0;height:100vh;height:100svh;display:grid;grid-template-rows:48px minmax(0,1fr) 24px;overflow:hidden}
+ .screen-body[data-wall-columns="3"]{--wall-cols:3}.screen-body[data-wall-columns="4"]{--wall-cols:4}.screen-body[data-wall-columns="5"]{--wall-cols:5}.screen-body[data-wall-columns="6"]{--wall-cols:6}.screen-body[data-wall-columns="7"]{--wall-cols:7}.screen-body[data-wall-columns="8"]{--wall-cols:8}
+ .screen-body[data-wall-rows="3"]{--wall-rows:3}.screen-body[data-wall-rows="4"]{--wall-rows:4}.screen-body[data-wall-rows="5"]{--wall-rows:5}.screen-body[data-wall-rows="6"]{--wall-rows:6}.screen-body[data-wall-rows="8"]{--wall-rows:8}
+ .screen-body .screen-header{height:auto;min-width:0;padding:0 16px}
+ .screen-body .brand{font-size:17px;gap:8px}.screen-body .brand-mark{width:29px;height:31px;font-size:22px}.screen-body .brand small{font-size:7px}
+ .screen-body .screen-header-right{gap:15px}
+ .screen-body .screen-main{min-width:0;min-height:0;padding:8px 16px;display:grid;grid-template-areas:"notice" "question" "room" "content";grid-template-rows:auto auto auto minmax(0,1fr);gap:6px;overflow:hidden}
+ .screen-body #screen-practice{grid-area:notice;margin:0;padding:3px 10px;font-size:10px;line-height:1.3}
+ .screen-body .screen-question{grid-area:question;min-height:0;margin:0;padding:7px 14px;gap:14px}
+ .screen-body .screen-question-copy{min-width:0}
+ .screen-body .screen-eyebrow{font-size:10px;line-height:1.3;margin-bottom:2px}
+ .screen-body .screen-question h1{font-size:clamp(22px,2vw,34px);line-height:1.25}
+ .screen-body .screen-question p{font-size:11px;line-height:1.35;margin-top:2px}
+ .screen-body .screen-question .screen-auto-status{font-size:12px}.screen-body .screen-auto-status:empty{display:none}
+ .screen-body .screen-timer{min-width:90px;padding-left:14px}.screen-body .screen-timer strong{font-size:40px;line-height:1.05}.screen-body .screen-timer span{font-size:10px}
+ .screen-body .screen-room-line{grid-area:room;min-height:26px;margin:0;font-size:11px}.screen-body .screen-room-line b{font-size:16px}.screen-body .screen-room-line .text-button{font-size:11px;padding:2px 4px;min-height:24px}
+ .screen-body .answer-grid{grid-area:content;min-width:0;min-height:0;height:100%;grid-template-columns:repeat(var(--wall-cols),minmax(0,1fr));grid-template-rows:repeat(var(--wall-rows),minmax(0,1fr));gap:6px;align-content:stretch}
+ .screen-body .answer-card{min-height:0;padding:5px 8px;display:grid;grid-template-rows:18px minmax(0,1fr) 20px;gap:3px;overflow:hidden}
+ .screen-body .answer-card-head{min-width:0;min-height:0;margin:0;flex-wrap:nowrap;line-height:1.2;overflow:hidden;font-size:11px}
+ .screen-body .answer-seat{font-size:12px;white-space:nowrap;overflow-wrap:normal}.screen-body .answer-score{font-size:11px;white-space:nowrap}
+ .screen-body .answer-paper{aspect-ratio:auto;min-height:0;min-width:0;height:100%;width:100%}
+ .screen-body .answer-paper img{min-height:0;max-height:100%;object-fit:contain}
+ .screen-body .answer-paper .paper-state{font-size:10px;line-height:1.2;gap:2px}.screen-body .paper-state b{font-size:18px;line-height:1}
+ .screen-body .answer-card .answer-foot{min-height:0;margin:0;padding:0;font-size:10px;line-height:1.2;gap:4px;overflow:hidden}
+ .screen-body .answer-card .answer-verdict{min-width:20px;height:20px;font-size:18px;flex-shrink:0}
+ .screen-body .answer-card .pending-verdict{font-size:10px}
+ .screen-body .screen-empty{grid-row:1/-1;min-height:0;height:100%}
+ .screen-body .screen-ranking{grid-area:content;min-height:0;width:100%;height:100%;max-width:none;margin:0;display:grid;grid-template-columns:repeat(var(--wall-cols),minmax(0,1fr));grid-template-rows:repeat(var(--wall-rows),minmax(0,1fr));gap:6px;overflow:hidden}
+ .screen-body .screen-ranking .rank-row{min-height:0;padding:5px 8px;gap:7px;border:1px solid #ffffff20;border-radius:7px;background:#1e4137;overflow:hidden}
+ .screen-body .screen-ranking .rank-name{font-size:12px;line-height:1.3}.screen-body .screen-ranking .rank-name small{font-size:10px}.screen-body .screen-ranking .rank-number{font-size:17px;width:20px;flex-shrink:0}.screen-body .screen-ranking .rank-row strong{font-size:20px;white-space:nowrap}
+ .screen-body .screen-footer{padding:3px 16px;font-size:10px;line-height:1.4;min-width:0}
+}
+@media (min-width:900px) and (min-height:600px) and (max-height:740px) and (orientation:landscape){
+ .screen-body .answer-paper .paper-state b{display:none}
+ .screen-body .screen-question h1{font-size:24px}.screen-body .screen-question p{font-size:10px}.screen-body .screen-question .screen-auto-status{font-size:11px}
+}
+
+.wall-page-controls{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}.wall-page-controls button:disabled{opacity:.35}.screen-room-line>div{flex-wrap:wrap}.answer-card.empty-slot{background:#1b392f;border-color:#ffffff12;box-shadow:none;opacity:.45}.answer-card.empty-slot .answer-paper{background:#ffffff04;color:#839782}.empty-slot-mark{font-size:32px}.empty-slot .answer-card-head{color:#9bb097}

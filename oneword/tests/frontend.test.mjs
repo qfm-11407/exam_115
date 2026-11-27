@@ -1,3 +1,4 @@
+import {webcrypto} from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -18,7 +19,7 @@ async function pageFixture(page, responses) {
   const events=[],calls=[],store=new Map(),intervals=[];
   class Events{constructor(url){this.url=url;events.push(this)}close(){}send(state){this.onmessage({data:JSON.stringify(state)})}}
   const document={hidden:false,body:{dataset:{page}},getElementById:id=>nodes.get(id)||null,querySelectorAll:()=>[],addEventListener(){},createElement:()=>element(),documentElement:{requestFullscreen:async()=>{}}};
-  const sandbox={document,EventSource:Events,URLSearchParams,history:{replaceState(){}},location:{search:'?room=ABCDEF',hash:'',origin:'http://localhost:4178'},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},navigator:{},console,setTimeout:()=>1,clearTimeout(){},setInterval:fn=>{intervals.push(fn);return 1},Date,fetch:async(url,options)=>{calls.push({url,options});const result=await responses(url,options);return {ok:result.status<400,status:result.status,json:async()=>result.body}}};
+  const sandbox={document,EventSource:Events,URLSearchParams,history:{replaceState(){}},location:{search:'?room=ABCDEF',hash:'',origin:'http://localhost:4178'},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},crypto:webcrypto,Uint8Array,navigator:{},console,setTimeout:()=>1,clearTimeout(){},setInterval:fn=>{intervals.push(fn);return 1},Date,fetch:async(url,options)=>{calls.push({url,options});const result=await responses(url,options);return {ok:result.status<400,status:result.status,json:async()=>result.body}}};
   vm.runInNewContext(source,sandbox,{filename:`${page}-controller.js`});
   await new Promise(resolve=>setImmediate(resolve));
   return{nodes,events,calls,intervals,document,store,get:id=>nodes.get(id)};

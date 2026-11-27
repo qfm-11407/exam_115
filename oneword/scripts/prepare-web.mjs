@@ -1,6 +1,6 @@
 import {readFile,writeFile,copyFile} from 'node:fs/promises';
 const root=new URL('../',import.meta.url),source=new URL('../public/',import.meta.url);
-for(const file of ['style.css','canvas.js'])await copyFile(new URL(file,source),new URL(file,root));
+for(const file of ['style.css','canvas.js','screen-wall.css'])await copyFile(new URL(file,source),new URL(file,root));
 for(const [from,to] of [['index.html','index.html'],['teacher.html','teacher.html'],['play.html','student.html'],['screen.html','screen.html']]){
   let s=await readFile(new URL(from,source),'utf8');
   s=s.replaceAll('href="/style.css"','href="./style.css"').replaceAll('src="/app.js"','src="./app.js"').replaceAll('href="/teacher"','href="./teacher.html"').replaceAll('href="/play"','href="./student.html"').replaceAll('href="/"','href="./index.html"');
@@ -10,11 +10,13 @@ for(const [from,to] of [['index.html','index.html'],['teacher.html','teacher.htm
   s=s.replaceAll('金鑰僅保留於教師電腦的程式記憶體，重啟後需重新輸入。模型需有帳號使用權限，判讀效果須實測。','金鑰保存在 GAS 的私人 Script Properties，不會寫入 GitHub 或回傳給學生。模型需有帳號使用權限，判讀效果須實測。');
   s=s.replace('id="concurrency" type="number" min="1" max="6" value="3"','id="concurrency" type="number" min="1" max="3" value="2"');
   s=s.replace('教師控制台請留在教師電腦；上課期間保持啟動視窗開啟。','上課期間保持教師控制頁開啟。大螢幕建議另開視窗，避免控制頁長時間被瀏覽器暫停。');
-  if(from==='index.html')s=s.replace('<footer class="page-footer">',`<section class="backend-setup card"><div><span class="kicker">CLOUD CONNECTION</span><h2>連接教室的雲端後端</h2><p class="muted">首次使用請設定已部署的 GAS 網頁應用程式網址。這不是 API 金鑰。</p></div><form id="backend-form"><label>GAS 部署網址<input id="backend-url" type="url" placeholder="https://script.google.com/macros/s/…/exec" required></label><button class="button primary" type="submit">儲存並測試連線</button></form><p id="backend-status" class="muted" role="status"></p><p class="muted">GAS 的 ALLOWED_ORIGINS 請設定為 <strong id="site-origin"></strong>。<a class="setup-doc-link" href="./DEPLOY_GAS.md" target="_blank" rel="noopener">部署步驟 ↗</a></p></section><footer class="page-footer">`);
+  if(from==='index.html')s=s.replace('<footer class="page-footer">',`<section class="backend-setup card"><div><span class="kicker">CLOUD CONNECTION</span><h2>教室雲端後端</h2><p id="backend-description" class="muted">載入教室連線設定中。</p></div><details id="backend-details" open><summary>檢查或變更雲端連線</summary><form id="backend-form"><label>GAS 部署網址<input id="backend-url" type="url" placeholder="https://script.google.com/macros/s/…/exec" required></label><button class="button primary" type="submit">儲存並測試連線</button></form><p id="backend-status" class="muted" role="status"></p><p class="muted">GAS 的 ALLOWED_ORIGINS 請設定為 <strong id="site-origin"></strong>。<a class="setup-doc-link" href="./DEPLOY_GAS.md" target="_blank" rel="noopener">部署步驟 ↗</a></p></details></section><footer class="page-footer">`);
+  s=s.replaceAll('src="./app.js"','src="./app.js?v=20261127-idioms-2130"').replaceAll('href="./style.css"','href="./style.css?v=20261112-review-2123"');
+  s=s.replaceAll('href="/screen-wall.css"','href="./screen-wall.css?v=20261112-review-2123"');
   await writeFile(new URL(to,root),s);
 }
 let s=await readFile(new URL('app.js',source),'utf8');
-s=s.replace("import { InkPad } from './canvas.js';", "import { InkPad } from './canvas.js';\nimport { client, GASClient, saveBackend } from './transport.js';");
+s=s.replace("import { InkPad } from './canvas.js';", "import { InkPad } from './canvas.js';\nimport { client, GASClient, saveBackend } from './transport.js?v=20261127-idioms-2130';");
 const begin=s.indexOf('async function api('),end=s.indexOf('function connection(',begin);
 if(begin<0||end<0)throw new Error('Cannot locate transport adapter');
 s=s.slice(0,begin)+`async function api(url,data,token) { return client.request(url,data,token); }
@@ -22,33 +24,52 @@ function connect(code,receive) {
   return client.subscribe(code,state=>{offset=state.serverTime-Date.now();liveState=state;receive(state);},(ok,message)=>{connection(ok);if(!ok&&message)toast(message,true);},document.body.dataset.page==='screen');
 }
 `+s.slice(end);
-s=s.replace("let room, admin, refreshing = false, idiomCount = 0, selectedNetwork = '', previousPhase;", "let room, admin, refreshing = false, idiomCount = 0, previousPhase, workers = 0;\n  function pumpWorkers() { if (!room?.round?.pending) return; const count=Math.min(admin.settings.concurrency,room.round.pending); while(workers<count) { workers++; client.rpc('worker',{room:room.code}).catch(error=>toast(error.message,true)).finally(()=>{workers--;}); } }");
+const workerPump=await readFile(new URL('worker-pump.js',import.meta.url),'utf8');
+const teacherWorkerRequest = `async function requestJudging(data) {
+    const roundNumber = room?.code === data.room && room.round?.id === data.roundId ? room.round.number : null;
+    try {
+      const result = await client.rpc(admin?.features?.batchJudging ? 'workerBatch' : 'worker', data);
+      diagnostics.requestResult(data.room, roundNumber, 'grading', null);
+      return result;
+    } catch (error) {
+      diagnostics.requestResult(data.room, roundNumber, 'grading', error);
+      throw error;
+    }
+  }`;
+s=s.replace("let room, admin, refreshing = false, idiomCount = 0, selectedNetwork = '', previousPhase;", "let room, admin, refreshing = false, idiomCount = 0, previousPhase, refreshTimer;\n"+workerPump+"\n  "+teacherWorkerRequest+"\n  const workerPumpRunner=createWorkerPump({run:requestJudging,changed:()=>{clearTimeout(refreshTimer);refreshTimer=setTimeout(refresh,180);},error:error=>toast(error.message,true)});\n  function pumpWorkers(){workerPumpRunner.sync({code:room?.code,roundId:room?.round?.id,pending:room?.round?.pending||0,limit:admin?.features?.batchJudging?1:(admin?.settings?.concurrency||2),enabled:Boolean(room&&!room.ended&&room.round&&room.round.phase!=='revealed')});}\n  function scheduleRefresh(){clearTimeout(refreshTimer);const urgent=room?.round&&((room.automation?.enabled&&room.automation.status==='running')||room.round.pending>0||room.round.phase==='collecting'||(room.round.phase==='writing'&&remaining(room.round)<=8));refreshTimer=setTimeout(refresh,urgent?1500:3500);}");
 s=s.replace('if (refreshing || document.hidden) return; refreshing = true;', 'if (!client.backend || !client.token || refreshing) return; refreshing = true;');
 s=s.replace('renderTeacher();\n    } catch (error)', 'renderTeacher(); pumpWorkers();\n    } catch (error)');
 s=s.replace("if (error.status === 401) { $('login-panel')", "if (error.status === 401) { client.token=''; $('login-error').textContent=error.message; $('login-panel')");
-s=s.replace("$('open-screen').href = `/screen?room=${room.code}`; $('open-play').href = `/play?room=${room.code}`; $('export-link').href = `/api/admin/rooms/${room.code}/export`;", "$('open-screen').href = client.pageURL('screen.html',room.code); $('open-play').href = client.pageURL('student.html',room.code); $('export-link').href = '#';");
+s=s.replace("$('open-screen').href = `/screen?room=${room.code}`; $('open-play').href = `/play?room=${room.code}`; $('export-link').href = `/api/admin/rooms/${room.code}/export`;", "$('open-screen').href = client.pageURL('screen.html',room.code); $('open-play').href = studentEntryURL(room.code); $('export-link').href = '#';");
 const networkStart=s.indexOf('    const addresses = admin.addresses'),networkEnd=s.indexOf("    $('round-label')",networkStart);
 if(networkStart<0||networkEnd<0)throw new Error('Cannot locate LAN controls');s=s.slice(0,networkStart)+"    updateJoinLink();\n"+s.slice(networkEnd);
 const joinStart=s.indexOf('  function updateJoinLink()'),joinEnd=s.indexOf("  $('draw-button').onclick",joinStart);
-s=s.slice(0,joinStart)+"  function updateJoinLink() { if (room) $('join-url').value = client.pageURL('student.html',room.code); }\n  $('export-link').onclick=async event=>{event.preventDefault();if(!room)return;try{const result=await api(`/api/admin/rooms/${room.code}/export`);const url=URL.createObjectURL(new Blob([result.csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=result.filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(error){toast(error.message,true);}};\n"+s.slice(joinEnd);
-const hashStart=s.indexOf('  const hash = new URLSearchParams(location.hash'),hashEnd=s.indexOf('  const createDialog',hashStart);
+s=s.slice(0,joinStart)+"  function studentEntryURL(code){return admin?.features?.directStudent?client.studentURL(code):client.pageURL('student.html',code); }\n  function updateJoinLink() { if (room) setJoinLink(studentEntryURL(room.code)); }\n  $('export-link').onclick=async event=>{event.preventDefault();if(!room)return;try{const result=await api(`/api/admin/rooms/${room.code}/export`);const url=URL.createObjectURL(new Blob([result.csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=result.filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(error){toast(error.message,true);}};\n"+s.slice(joinEnd);
+const hashStart=s.indexOf('  const hash = new URLSearchParams(location.hash'),hashEnd=s.indexOf('  function updateRoomConfirmation',hashStart);
 s=s.slice(0,hashStart)+"  refresh();\n  if(!client.backend)$('login-error').textContent='請先回首頁設定 GAS 後端連線。';\n"+s.slice(hashEnd);
-s=s.replace('setInterval(refresh, 1600)','setInterval(refresh, 3500)');
-s=s.replace("queued:'排隊'", "uploading:'保存中', 'upload-error':'上傳待重試', queued:'排隊'");
+s=s.replace('setInterval(refresh, 1600)','scheduleRefresh()');
+s=s.replace('finally { refreshing = false; }','finally { refreshing = false; scheduleRefresh(); }');
+s=s.replace("queued:'排隊'", "receiving:'等候存圖', uploading:'保存中', 'upload-error':'上傳待重試', queued:'排隊'");
+s=s.replaceAll('`word-arena-pending:${','`oneword:${client.backend}:pending:${');
+s=s.replaceAll('`word-arena-claim:${','`oneword:${client.backend}:claim:${');
 s=s.replaceAll('`word-arena-player:${','`oneword:${client.backend}:player:${').replaceAll('`word-arena-draft:${','`oneword:${client.backend}:draft:${');
 s=s.replace("history.replaceState(null, '', `/play?room=${data.room}`)", "history.replaceState(null, '', client.pageURL('student.html',data.room))");
-s=s.replace("submitted = true; toast('已交卷，等待統一揭曉');", "submitted = true; client.rpc('studentWorker',{room:state.code,roundId},identity.token).catch(()=>{}); toast('圖片已保存，等待統一揭曉');");
-s=s.replace("  $('join-code').value = code;", "  $('join-code').value = code;\n  if(!client.backend)$('join-error').textContent='請使用教師分享的完整作答網址，或回首頁設定 GAS 後端。';");
+s=s.replace("submitted = true; toast('已交卷，等待統一揭曉');", "submitted = true; toast('圖片已保存，等待統一揭曉');");
+s=s.replace("  $('join-code').value = code;", "  $('join-code').value = code;\n  if(!client.backend)$('join-error').textContent='請使用教師分享的完整作答網址，或回首頁設定 GAS 後端。';\n  function updateDirectStudentLink(){const link=$('direct-student-link');link.hidden=!client.backend;if(client.backend)link.href=client.studentURL($('join-code').value.trim().toUpperCase());}\n  updateDirectStudentLink();$('join-code').addEventListener('input',updateDirectStudentLink);");
 s += `
 if(page==='home') {
   $('backend-url').value=client.backend; $('site-origin').textContent=location.origin;
+  $('backend-details').open=!client.backend;
+  $('backend-description').textContent=client.backend?'已預設教室雲端後端，可直接進入教師端或學生端，不需重新貼上網址。':'尚未設定教室雲端後端，請展開下方設定並測試連線。';
   const entryLinks=Array.from(document.querySelectorAll('a[href="./teacher.html"],a[href="./student.html"]'),a=>({node:a,file:a.getAttribute('href').includes('teacher')?'teacher.html':'student.html'}));
-  function updateEntryLinks(){entryLinks.forEach(item=>{item.node.href=client.pageURL(item.file);});}
+  function updateEntryLinks(){entryLinks.forEach(item=>{item.node.href=item.file==='student.html'&&client.backend?client.studentURL():client.pageURL(item.file);});}
   updateEntryLinks();
   $('backend-form').onsubmit=async event=>{event.preventDefault();const button=$('backend-form').querySelector('button');button.disabled=true;let tester;try{const url=saveBackend($('backend-url').value.trim());tester=new GASClient(url);$('backend-status').textContent='正在連接 GAS…';await tester.rpc('ping',{},'',0);$('backend-status').textContent='連線成功。現在可以進入教師控制台或學生作答頁。';client.dispose();client.backend=url;updateEntryLinks();}catch(error){$('backend-status').textContent=error.message;}finally{tester?.dispose();button.disabled=false;}};
 }
 `;
 await writeFile(new URL('app.js',root),s);
 await writeFile(new URL('.nojekyll',root),'');
-let css=await readFile(new URL('style.css',root),'utf8');css+='\n.backend-setup{max-width:1000px;margin:0 auto 40px;padding:28px}.backend-setup h2{margin:7px 0}.backend-setup form{display:flex;align-items:end;gap:15px;margin:20px 0}.backend-setup label{flex:1}.backend-setup p{overflow-wrap:anywhere}.setup-doc-link{color:var(--green);text-decoration:underline;margin-left:12px}@media(max-width:700px){.backend-setup{margin:0 20px 30px}.backend-setup form{flex-direction:column;align-items:stretch}.home-main{min-height:initial;padding-top:45px;padding-bottom:45px}}\n';await writeFile(new URL('style.css',root),css);
+let css=await readFile(new URL('style.css',root),'utf8');css+='\n.backend-setup{max-width:1000px;margin:0 auto 40px;padding:28px}.backend-setup h2{margin:7px 0}.backend-setup summary{cursor:pointer;color:var(--green);font-weight:700}.backend-setup form{display:flex;align-items:end;gap:15px;margin:20px 0}.backend-setup label{flex:1}.backend-setup p{overflow-wrap:anywhere}.setup-doc-link{color:var(--green);text-decoration:underline;margin-left:12px}@media(max-width:700px){.backend-setup{margin:0 20px 30px}.backend-setup form{flex-direction:column;align-items:stretch}.home-main{min-height:initial;padding-top:45px;padding-bottom:45px}}\n';await writeFile(new URL('style.css',root),css);
 console.log('Web pages prepared in oneword/ (relative URLs; GitHub Pages ready).');
+
+await import('./prepare-student.mjs');

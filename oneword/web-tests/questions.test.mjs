@@ -1,19 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {idiomBank,drawIdiomQuestion} from '../questions.mjs';
+import { idiomBank, drawIdiomQuestion, otherIdiomAnswers } from '../questions.mjs';
 
-test('the existing 148-idiom catalog generates four valid blank positions per idiom (592 combinations)',()=>{
-  assert.equal(idiomBank.length,148);assert.equal(new Set(idiomBank.map(x=>x.idiom)).size,148);
-  let variants=0;
-  for(let i=0;i<idiomBank.length;i++){
-    const prompts=new Set();
-    for(let blank=0;blank<4;blank++){
-      const draws=[(i+0.25)/idiomBank.length,(blank+0.25)/4];let calls=0;
-      const q=drawIdiomQuestion(()=>draws[calls++]);
-      assert.equal(calls,2);assert.equal(q.idiom,idiomBank[i].idiom);assert.equal(q.blankIndex,blank);assert.equal(q.answer,Array.from(q.idiom)[blank]);assert.equal((q.prompt.match(/□/g)||[]).length,1);assert.equal(q.sourcePage,idiomBank[i].page);
-      const mask=Array.from(q.idiom).map((c,n)=>n===blank?'□':c).join('');assert.ok(q.prompt.includes(mask));prompts.add(q.prompt);variants++;
-    }
-    assert.equal(prompts.size,4);
-  }
-  assert.equal(variants,592);
+test('the complete bank preserves punctuation and accepts valid alternate completions', () => {
+  assert.equal(idiomBank.length, 5554);
+  assert.equal(new Set(idiomBank.map(({ idiom }) => idiom)).size, 5554);
+  const index = idiomBank.findIndex(({ idiom }) => idiom === '不入虎穴，焉得虎子');
+  const draws = [(index + 0.25) / idiomBank.length, 4.25 / 8];
+  const q = drawIdiomQuestion(() => draws.shift());
+  assert.equal(q.answer, '焉');
+  assert.equal(q.blankIndex, 5);
+  assert.equal(q.prompt, '「不入虎穴，□得虎子」請填入缺少的一字。');
+  assert.ok(otherIdiomAnswers('萍水相逢', 3, '逢').includes('遇'));
+  const first = drawIdiomQuestion(() => 0);
+  const next = drawIdiomQuestion(() => 0, [first.idiom]);
+  assert.notEqual(first.idiom, next.idiom);
 });
