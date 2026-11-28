@@ -3593,20 +3593,26 @@ body{padding-bottom:64px}
   /* 位置列 */
   let CRUMBS = null, crumbSig = '';
   const hubHref = () => { const a = document.getElementById('pe115-home'); return (a && a.getAttribute('href')) || 'periodicexam_115.html'; };
-  const crumbCSS = `.pm-crumb{display:flex; align-items:center; gap:2px; overflow-x:auto; scrollbar-width:none; background:#1f2433; color:#fff; border-radius:99px; padding:5px 8px; box-shadow:0 4px 14px rgba(0,0,0,.25); font:700 14px/1.2 'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif; box-sizing:border-box}
+  /* 位置列樣式（2026-11-28 改版）：白底指標牌＋路線色「◀ 回上一層」大按鈕；捷運版白底灰框、島嶼版米色木牌、冬季雪國冰藍 */
+  const crumbCSS = `.pm-crumb{--pm-c:#1f2433; display:flex; align-items:center; gap:6px; max-width:100%; overflow:hidden; background:#fff; color:#1f2433; border:1.5px solid #dfe3e8; border-radius:14px;
+      padding:5px 10px 5px 5px; box-shadow:0 4px 14px rgba(31,36,51,.14); font:700 15px/1.2 'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif; box-sizing:border-box}
     .pm-crumb::-webkit-scrollbar{display:none} .pm-crumb[hidden]{display:none !important}
-    .pm-crumb a,.pm-crumb button{all:unset; cursor:pointer; white-space:nowrap; padding:5px 8px; border-radius:99px; color:#c9d3ff}
-    .pm-crumb a:hover,.pm-crumb button:hover,.pm-crumb a:focus-visible,.pm-crumb button:focus-visible{background:rgba(255,255,255,.14); color:#fff; outline:none}
-    .pm-crumb .cur{white-space:nowrap; padding:5px 8px; color:#fff} .pm-crumb .sep{color:#6b7394; padding:0 1px}
-    .pm-crumb-in{max-width:100%; background:rgba(31,36,51,.92)}
-    #pe-crumb{position:fixed; left:12px; bottom:12px; z-index:2147483000; display:flex; align-items:center; gap:2px; max-width:calc(100vw - 96px); overflow-x:auto; scrollbar-width:none;
-      background:#1f2433; color:#fff; border-radius:99px; padding:5px 8px; box-shadow:0 4px 14px rgba(0,0,0,.25); font:700 14px/1.2 'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif}
-    #pe-crumb::-webkit-scrollbar{display:none}
-    #pe-crumb a,#pe-crumb button{all:unset; cursor:pointer; white-space:nowrap; padding:5px 8px; border-radius:99px; color:#c9d3ff}
-    #pe-crumb a:hover,#pe-crumb button:hover,#pe-crumb a:focus-visible,#pe-crumb button:focus-visible{background:rgba(255,255,255,.14); color:#fff; outline:none}
-    #pe-crumb .cur{white-space:nowrap; padding:5px 8px; color:#fff} #pe-crumb .sep{color:#6b7394; padding:0 1px}
+    .pm-crumb .pm-back{all:unset; flex:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; background:var(--pm-c); color:#fff; padding:7px 13px 7px 10px; border-radius:10px; font-weight:800; white-space:nowrap; box-shadow:inset 0 -3px 0 rgba(0,0,0,.2)}
+    .pm-crumb .pm-back:hover{filter:brightness(1.12)} .pm-crumb .pm-back:active{transform:translateY(1px); box-shadow:inset 0 -1px 0 rgba(0,0,0,.2)}
+    .pm-crumb .pm-back:focus-visible{outline:3px solid var(--pm-c); outline-offset:2px}
+    .pm-crumb .pm-back b{font-size:12px; line-height:1} .pm-crumb .pm-back{max-width:60%} .pm-crumb .pm-back span{overflow:hidden; text-overflow:ellipsis}
+    .pm-crumb .pm-trail{display:flex; align-items:center; gap:1px; min-width:0; overflow-x:auto; scrollbar-width:none} .pm-crumb .pm-trail::-webkit-scrollbar{display:none}
+    .pm-crumb .pm-trail a,.pm-crumb .pm-trail button{all:unset; cursor:pointer; display:inline-flex; align-items:center; white-space:nowrap; padding:5px 6px; border-radius:8px; color:#475467; text-decoration:underline; text-decoration-color:#cfd4dc; text-underline-offset:4px}
+    .pm-crumb .pm-trail a:hover,.pm-crumb .pm-trail button:hover{background:rgba(31,36,51,.07); color:#1f2433; text-decoration-color:currentColor}
+    .pm-crumb .pm-trail a:focus-visible,.pm-crumb .pm-trail button:focus-visible{outline:2px solid var(--pm-c); outline-offset:1px}
+    .pm-crumb .cur{display:inline-flex; align-items:center; white-space:nowrap; padding:5px 6px; color:var(--pm-c); font-weight:900}
+    .pm-crumb .sep{color:#98a2b3; padding:0 1px}
+    .pm-crumb .pm-code{display:inline-grid; place-items:center; width:19px; height:19px; border-radius:5px; background:var(--pm-c); color:#fff; font:900 11px/1 system-ui,sans-serif; font-style:normal; margin-right:5px}
+    html:not(.pe-metro) .pm-crumb{background:#fffaf0; border-color:#e3cfa6; box-shadow:0 4px 14px rgba(120,84,40,.16)}
+    html.pe-winter:not(.pe-metro) .pm-crumb{background:#f7fbfe; border-color:#c4dcea; box-shadow:0 4px 14px rgba(40,90,120,.16)}
+    #pe-crumb{position:fixed; left:12px; bottom:12px; z-index:2147483000; max-width:calc(100vw - 110px)}
     body.pe-crumb-on #pe115-home{display:none !important} body.pe-crumb-on #pe-scene .pm-place{display:none}
-    @media (max-width:700px){ #pe-crumb{font-size:13px; left:8px; bottom:8px; max-width:calc(100vw - 70px)} }
+    @media (max-width:700px){ .pm-crumb{font-size:14px} .pm-crumb .pm-back{padding:7px 11px 7px 9px} #pe-crumb{left:8px; bottom:8px; max-width:calc(100vw - 64px)} }
     @media print{ #pe-crumb{display:none} }
     details.pm-rules{margin:14px 0; border:1px dashed #cfd4dc; border-radius:14px; padding:8px 14px; background:rgba(255,255,255,.6)}
     details.pm-rules > summary{cursor:pointer; font-weight:800; color:#475467; font-size:15px} details.pm-rules[open] > summary{margin-bottom:6px}
@@ -3621,16 +3627,24 @@ body{padding-bottom:64px}
     let nav = document.getElementById('pe-crumb');
     if (!document.getElementById('pe115-crumb-css')) { const st = document.createElement('style'); st.id = 'pe115-crumb-css'; st.textContent = crumbCSS; document.head.appendChild(st); }
     if (!nav) { nav = document.createElement('nav'); nav.id = 'pe-crumb'; nav.className = 'pm-crumb'; nav.setAttribute('aria-label', '目前位置'); document.body.appendChild(nav); document.body.classList.add('pe-crumb-on'); }
-    const host = slot || nav, sig = (slot ? 'S' : 'F') + all.map(c => c.label).join('›');
+    const host = slot || nav, sig = (slot ? 'S' : 'F') + (isMetro() ? 'M' : 'I') + all.map(c => c.label).join('›');
     nav.hidden = !!slot;
     if (sig === crumbSig && host.childElementCount) return; crumbSig = sig;
     document.querySelectorAll('.pe-map [data-crumb-slot]').forEach(e => { if (e !== slot) e.innerHTML = ''; });
     let inner = host === nav ? nav : host.querySelector('.pm-crumb');
     if (!inner) { host.innerHTML = '<nav class="pm-crumb pm-crumb-in" aria-label="目前位置"></nav>'; inner = host.firstChild; }
     inner._list = all;
-    inner.innerHTML = all.map((c, i) => (i ? '<span class="sep">›</span>' : '') + (i === all.length - 1 ? `<span class="cur" aria-current="location">${esc(c.label)}</span>`
-      : c.href ? `<a href="${esc(c.href)}" data-ci="${i}">${esc(c.label)}</a>` : `<button type="button" data-ci="${i}">${esc(c.label)}</button>`)).join('');
-    inner.scrollLeft = inner.scrollWidth;
+    /* 第一顆是路線色的「◀ 回上一層」大按鈕，後面是完整路徑（可點任一層）；捷運版在路線名稱前加路線代號方塊 */
+    let LM = { color: '#1f2433', name: '' }; try { LM = pageLine(); } catch (e) {}
+    const col = LM.multi ? (isMetro() ? '#495057' : '#8a5a2b') : LM.color, metro = isMetro();
+    inner.style.setProperty('--pm-c', col);
+    const lab = c => (metro && !LM.multi && c.label === LM.name ? `<i class="pm-code" aria-hidden="true">${esc(LM.code)}</i>` : '') + esc(c.label);
+    const bi = all.length - 2, back = all[bi];
+    const btn = back ? (back.href ? `<a class="pm-back" href="${esc(back.href)}" data-ci="${bi}" aria-label="回上一層：${esc(back.label)}"><b>◀</b><span>回 ${esc(String(back.label).replace(/^🌏\s*/, ''))}</span></a>`
+      : `<button type="button" class="pm-back" data-ci="${bi}" aria-label="回上一層：${esc(back.label)}"><b>◀</b><span>回 ${esc(String(back.label).replace(/^🌏\s*/, ''))}</span></button>`) : '';
+    inner.innerHTML = btn + '<span class="pm-trail">' + all.map((c, i) => (i ? '<span class="sep">›</span>' : '') + (i === all.length - 1 ? `<span class="cur" aria-current="location">${lab(c)}</span>`
+      : c.href ? `<a href="${esc(c.href)}" data-ci="${i}">${lab(c)}</a>` : `<button type="button" data-ci="${i}">${lab(c)}</button>`)).join('') + '</span>';
+    const tr = inner.querySelector('.pm-trail'); if (tr) tr.scrollLeft = tr.scrollWidth;   // 路徑太長時捲到最後（目前位置），「◀ 回上一層」固定在最前面
   }
   document.addEventListener('click', e => {
     const a = e.target.closest && e.target.closest('.pm-crumb [data-ci]'); if (!a) return;
